@@ -72,13 +72,26 @@ embedded.kafka.topicsToCreate=some_topic
 ## List of properties per data service
 ### embedded-kafka
 #### Consumes
-* embedded.kafka.enabled
-* embedded.zookeeper.enabled
-* embedded.kafka.topicsToCreate
-* embedded.kafka.dockerImage (default is set to kafka 0.11.x)
+* embedded.zookeeper.enabled `(true|false, default is true)`
+* embedded.kafka.enabled `(true|false, default is true)`
+* embedded.kafka.topicsToCreate `(comma separated list of topic names)`
+* embedded.kafka.dockerImage `(default is set to kafka 0.11.x)`
   * To use kafka 0.10.x place "confluentinc/cp-kafka:3.2.2" or most recent [from 3.2.x branch](https://hub.docker.com/r/confluentinc/cp-kafka/tags/)
   * To use kafka 0.11.x place "confluentinc/cp-kafka:3.3.0" or most recent [from 3.3.x branch](https://hub.docker.com/r/confluentinc/cp-kafka/tags/)
-### Produces
+#### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
+### embedded-aerospike
+#### Consumes
+* embedded.aerospike.enabled `(true|false, default is true)`
+#### Produces
+* embedded.aerospike.host
+* embedded.aerospike.port
+* embedded.aerospike.namespace
+* AerospikeTimeTravelService
+  * timeTravelTo
+  * nextDay
+  * addDays
+  * addHours
+  * rollbackTime
 
