@@ -23,8 +23,8 @@
  */
 package com.playtika.test.kafka;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
-import com.playtika.test.kafka.utils.ContainerUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,7 @@ public class KafkaTopicsConfigurer {
     }
 
     private String[] getCreateTopicCmd(String topicName, String kafkaZookeeperConnect) {
-        return new String[] {
+        return new String[]{
                 "kafka-topics",
                 "--create", "--topic", topicName,
                 "--partitions", "1",

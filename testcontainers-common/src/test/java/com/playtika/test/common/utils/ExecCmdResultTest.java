@@ -21,17 +21,15 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.common.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
 
-@AllArgsConstructor
-@Value
-public class EmbeddedAerospikeInfo {
+public class ExecCmdResultTest {
 
-	String namespace;
-	String host;
-	int port;
-
+    @Test
+    public void shouldHave_equalsAndHashcodeContract() {
+        EqualsVerifier.forClass(ContainerUtils.ExecCmdResult.class).verify();
+    }
 }

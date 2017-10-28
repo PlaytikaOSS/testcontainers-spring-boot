@@ -30,16 +30,18 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.NetworkSettings;
 import com.github.dockerjava.api.model.Ports;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
 
 import java.util.Map;
 
-import static com.playtika.test.aerospike.EmbeddedAerospikeAutoConfiguration.AEROSPIKE_PORT;
-
 @Slf4j
+@AllArgsConstructor
 public class AerospikeStartupCheckStrategy extends StartupCheckStrategy {
+
+    AerospikeProperties properties;
 
     @Override
     public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
@@ -50,11 +52,12 @@ public class AerospikeStartupCheckStrategy extends StartupCheckStrategy {
             return StartupStatus.FAILED;
         }
 
-        int port = getMappedPort(response.getNetworkSettings(), AEROSPIKE_PORT);
+        int port = getMappedPort(response.getNetworkSettings(), properties.port);
         String host = DockerClientFactory.instance().dockerHostIpAddress();
 
+        //TODO: Remove dependency to client https://www.aerospike.com/docs/tools/asmonitor/common_tasks.html
         try (AerospikeClient client = new AerospikeClient(host, port)) {
-            if(client.isConnected()) {
+            if (client.isConnected()) {
                 return StartupStatus.SUCCESSFUL;
             }
             return StartupStatus.NOT_YET_KNOWN;

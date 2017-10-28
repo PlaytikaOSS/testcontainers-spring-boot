@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.configuration.camel;
 
+import com.playtika.test.common.spring.DependsOnPostProcessor;
 import com.playtika.test.kafka.configuration.KafkaContainerConfiguration;
 import org.apache.camel.CamelContext;
 import org.apache.camel.spring.boot.CamelAutoConfiguration;
@@ -33,6 +34,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
+
+import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
+import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
+import static java.util.Arrays.asList;
+
 @Configuration
 @ConditionalOnClass(CamelContext.class)
 @ConditionalOnBean(KafkaContainerConfiguration.class)
@@ -41,6 +48,6 @@ public class EmbeddedKafkaCamelAutoConfiguration {
 
     @Bean
     public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
-        return new KafkaCamelDependencyPostProcessor();
+        return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME});
     }
 }

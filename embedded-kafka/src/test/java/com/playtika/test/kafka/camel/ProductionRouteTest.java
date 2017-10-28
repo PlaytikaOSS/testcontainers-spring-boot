@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -78,8 +79,14 @@ public class ProductionRouteTest {
     @EnableAutoConfiguration
     public static class TestConfiguration {
 
+        @Value("${embedded.zookeeper.zookeeperConnect}")
+        String zookeeperConnect;
+
+        @Value("${embedded.kafka.brokerList}")
+        String kafkaBrokerList;
+
         @Bean
-        public SampleRouteConfiguration sampleRouteConfiguration(String zookeeperConnect, String kafkaBrokerList) {
+        public SampleRouteConfiguration sampleRouteConfiguration() {
             return () -> "kafka:" + kafkaBrokerList +
                     "?" +
                     "zookeeperConnect=" + zookeeperConnect +

@@ -23,7 +23,7 @@
  */
 package com.playtika.test.kafka.properties;
 
-import com.playtika.test.kafka.utils.ContainerUtils;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -33,7 +33,10 @@ import javax.annotation.PostConstruct;
 @ConfigurationProperties("embedded.zookeeper")
 public class ZookeeperConfigurationProperties {
 
-    int mappingPort;
+    public static final String ZOOKEEPER_BEAN_NAME = "zookeeper";
+
+    boolean enabled = true;
+    int zookeeperPort = 0;
     int sessionTimeoutMs = 5_000;
     int socketTimeoutMs = 5_000;
     String dataFileSystemBind = "target/embedded-zk-data";
@@ -46,8 +49,8 @@ public class ZookeeperConfigurationProperties {
      */
     @PostConstruct
     private void init() {
-        if (this.mappingPort == 0) {
-            this.mappingPort = ContainerUtils.getAvailableMappingPort();
+        if (this.zookeeperPort == 0) {
+            this.zookeeperPort = ContainerUtils.getAvailableMappingPort();
         }
     }
 }

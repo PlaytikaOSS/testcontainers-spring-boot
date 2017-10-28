@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.checks;
 
+import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,16 +38,16 @@ public class ZookeeperStartupCheckStrategy extends AbstractStartupCheckStrategy 
     private final ZookeeperConfigurationProperties properties;
 
     @Override
-    String getContainerType() {
+    public String getContainerType() {
         return CONTAINER_TYPE;
     }
 
     @Override
-    String[] getHealthCheckCmd() {
+    public String[] getHealthCheckCmd() {
         return new String[] {
                 "cub",
                 "zk-ready",
-                String.format("localhost:%d", this.properties.getMappingPort()),
+                String.format("localhost:%d", this.properties.getZookeeperPort()),
                 TIMEOUT_IN_SEC
         };
     }

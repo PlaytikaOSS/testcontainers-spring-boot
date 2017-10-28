@@ -83,6 +83,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.kafka.brokerList
 ### embedded-aerospike
 #### Consumes
+* aerospike [client library](https://mvnrepository.com/artifact/com.aerospike/aerospike-client) 
 * embedded.aerospike.enabled `(true|false, default is true)`
 #### Produces
 * embedded.aerospike.host

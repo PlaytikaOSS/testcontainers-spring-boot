@@ -21,21 +21,21 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.checks;
+package com.playtika.test.common.checks;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import com.playtika.test.kafka.utils.ContainerUtils;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
 
-import static com.playtika.test.kafka.utils.ContainerUtils.ExecCmdResult;
+import static com.playtika.test.common.utils.ContainerUtils.ExecCmdResult;
 
 @Slf4j
 public abstract class AbstractStartupCheckStrategy extends StartupCheckStrategy {
 
-    abstract String getContainerType();
-    abstract String[] getHealthCheckCmd();
+    public abstract String getContainerType();
+    public abstract String[] getHealthCheckCmd();
 
     @Override
     public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
@@ -44,16 +44,16 @@ public abstract class AbstractStartupCheckStrategy extends StartupCheckStrategy 
 
         InspectContainerResponse response = dockerClient.inspectContainerCmd(containerId).exec();
         if (!response.getState().getRunning()) {
-            log.error("{} failed to start", containerType);
-            return StartupStatus.FAILED;
+            log.debug("{} failed to start", containerType);
+            return StartupStatus.NOT_YET_KNOWN;
         }
 
         ExecCmdResult healthCheckCmdResult = ContainerUtils.execCmd(dockerClient, containerId, getHealthCheckCmd());
 
         if (healthCheckCmdResult.getExitCode() != 0) {
-            log.error("{} health check failed with exitCode: {}, output: {}",
+            log.debug("{} health check failed with exitCode: {}, output: {}",
                     containerType, healthCheckCmdResult.getExitCode(), healthCheckCmdResult.getOutput());
-            return StartupStatus.FAILED;
+            return StartupStatus.NOT_YET_KNOWN;
         }
 
         log.info("{} container is successfully started", containerType);

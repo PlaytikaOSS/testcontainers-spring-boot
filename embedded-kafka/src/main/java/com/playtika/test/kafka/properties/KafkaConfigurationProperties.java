@@ -23,7 +23,7 @@
  */
 package com.playtika.test.kafka.properties;
 
-import com.playtika.test.kafka.utils.ContainerUtils;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -35,12 +35,16 @@ import java.util.Collections;
 @ConfigurationProperties("embedded.kafka")
 public class KafkaConfigurationProperties {
 
-    int mappingPort;
+    public static final String KAFKA_BEAN_NAME = "kafka";
+
+    boolean enabled = true;
+    int brokerPort = 0;
     int socketTimeoutMs = 5_000;
     int bufferSize = 64 * 1024;
     String dataFileSystemBind = "target/embedded-kafka-data";
     String dockerImage = "confluentinc/cp-kafka:3.3.0";
     Collection<String> topicsToCreate = Collections.emptyList();
+    transient final int replicationFactor = 1;
 
     /**
      * Kafka container port will be assigned automatically if free port is available.
@@ -48,8 +52,8 @@ public class KafkaConfigurationProperties {
      */
     @PostConstruct
     private void init() {
-        if (this.mappingPort == 0) {
-            this.mappingPort = ContainerUtils.getAvailableMappingPort();
+        if (this.brokerPort == 0) {
+            this.brokerPort = ContainerUtils.getAvailableMappingPort();
         }
     }
 }

@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.checks;
 
+import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,19 +39,19 @@ public class KafkaStartupCheckStrategy extends AbstractStartupCheckStrategy {
     private final KafkaConfigurationProperties properties;
 
     @Override
-    String getContainerType() {
+    public String getContainerType() {
         return CONTAINER_TYPE;
     }
 
     @Override
-    String[] getHealthCheckCmd() {
+    public String[] getHealthCheckCmd() {
         return new String[] {
                 "cub",
                 "kafka-ready",
                 MIN_BROKERS_COUNT,
                 TIMEOUT_IN_SEC,
                 "-b",
-                String.format("localhost:%d", this.properties.getMappingPort())
+                String.format("localhost:%d", this.properties.getBrokerPort())
         };
     }
 

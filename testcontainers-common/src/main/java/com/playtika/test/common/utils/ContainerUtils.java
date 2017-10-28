@@ -21,20 +21,23 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.utils;
+package com.playtika.test.common.utils;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import lombok.Value;
+import org.slf4j.Logger;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.OutputFrame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class ContainerUtils {
 
@@ -45,6 +48,23 @@ public class ContainerUtils {
         catch (IOException e) {
             throw new IllegalStateException("Cannot find available port for mapping: " + e.getMessage(), e);
         }
+    }
+
+    public static Consumer<OutputFrame> containerLogsConsumer(Logger log) {
+        return (OutputFrame outputFrame) -> {
+            switch (outputFrame.getType()) {
+                case STDERR:
+                    log.debug(outputFrame.getUtf8String());
+                    break;
+                case STDOUT:
+                case END:
+                    log.debug(outputFrame.getUtf8String());
+                    break;
+                default:
+                    log.debug(outputFrame.getUtf8String());
+                    break;
+            }
+        };
     }
 
     public static String getContainerHostname(GenericContainer container) {

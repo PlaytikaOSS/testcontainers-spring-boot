@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.utils;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 

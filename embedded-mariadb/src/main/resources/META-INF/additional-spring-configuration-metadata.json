@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.mariadb.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.mariadb.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of mariadb server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of mariadb server on startup."
+        }
+      ]
+    }
+  ]
+}

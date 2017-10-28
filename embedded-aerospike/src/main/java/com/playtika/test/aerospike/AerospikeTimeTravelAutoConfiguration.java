@@ -30,14 +30,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnBean({AerospikeClient.class, EmbeddedAerospikeInfo.class})
+@ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
 public class AerospikeTimeTravelAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
     public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
-                                                           EmbeddedAerospikeInfo info) {
-        return new ExpiredDocumentsCleaner(client, info.getNamespace());
+                                                           AerospikeProperties properties) {
+        return new ExpiredDocumentsCleaner(client, properties.getNamespace());
     }
 
     @Bean

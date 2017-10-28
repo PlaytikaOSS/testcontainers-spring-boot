@@ -1,0 +1,31 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.kafka.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.zookeeper.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.kafka.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of kafka cluster on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of kafka cluster on startup."
+        }
+      ]
+    }
+  ]
+}

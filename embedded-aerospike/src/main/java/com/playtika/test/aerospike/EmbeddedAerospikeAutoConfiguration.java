@@ -24,14 +24,13 @@
 package com.playtika.test.aerospike;
 
 import com.aerospike.client.AerospikeClient;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
+import com.playtika.test.common.spring.DependsOnPostProcessor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -39,88 +38,69 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.OutputFrame;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.function.Consumer;
 
+import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
+@Slf4j
 @Order(HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
 @ConditionalOnClass(AerospikeClient.class)
+@EnableConfigurationProperties(AerospikeProperties.class)
 @Configuration
 public class EmbeddedAerospikeAutoConfiguration {
 
-    static final int AEROSPIKE_PORT = 3000;
-    static final String NAMESPACE = "TEST";
-
-    @Autowired
-    ConfigurableEnvironment environment;
-
     @Bean
     @ConditionalOnMissingBean
-    public AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy() {
-        return new AerospikeStartupCheckStrategy();
+    public AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy(AerospikeProperties properties) {
+        return new AerospikeStartupCheckStrategy(properties);
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
+    @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public GenericContainer aerosike(AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy) {
-        GenericContainer aerosike =
-                new GenericContainer("aerospike:3.15.0.1")
+    public GenericContainer aerosike(AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy,
+                                     ConfigurableEnvironment environment,
+                                     AerospikeProperties properties) {
+        GenericContainer aerospike =
+                new GenericContainer(properties.dockerImage)
                         .withStartupCheckStrategy(aerospikeStartupCheckStrategy)
-                        .withExposedPorts(AEROSPIKE_PORT)
+                        .withExposedPorts(properties.port)
+                        .withLogConsumer(containerLogsConsumer(log))
                         .withClasspathResourceMapping(
                                 "aerospike.conf",
                                 "/etc/aerospike/aerospike.conf",
                                 BindMode.READ_ONLY);
-        return aerosike;
+        aerospike.start();
+        registerAerospikeEnvironment(aerospike, environment, properties);
+        return aerospike;
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public EmbeddedAerospikeInfo embeddedAerospikeInfo(GenericContainer aerosike) {
-        Integer mappedPort = aerosike.getMappedPort(AEROSPIKE_PORT);
+    private void registerAerospikeEnvironment(GenericContainer aerosike,
+                                              ConfigurableEnvironment environment,
+                                              AerospikeProperties properties) {
+        Integer mappedPort = aerosike.getMappedPort(properties.port);
         String host = aerosike.getContainerIpAddress();
-        EmbeddedAerospikeInfo info = new EmbeddedAerospikeInfo(NAMESPACE, host, mappedPort);
-
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.aerospike.host", info.getHost());
-        map.put("embedded.aerospike.port", info.getPort());
-        map.put("embedded.aerospike.namespace", NAMESPACE);
+        map.put("embedded.aerospike.host", host);
+        map.put("embedded.aerospike.port", mappedPort);
+        map.put("embedded.aerospike.namespace", properties.namespace);
         MapPropertySource propertySource = new MapPropertySource("embeddedAerospikeInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-
-        return info;
     }
 
     @ConditionalOnClass(AerospikeClient.class)
     @Configuration
-    protected static class AerospikeBeanPostProcessor implements BeanFactoryPostProcessor {
+    protected static class AerospikeClientPostProcessorConfiguration {
 
-        @Override
-        public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-            setupDepends(beanFactory, AerospikeClient.class, "aerosike");
+        @Bean
+        public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
+            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
         }
 
-        private void setupDepends(ConfigurableListableBeanFactory beanFactory, Class<?> beanClass, String dependsOnBean) {
-            boolean includeNonSingletons = true;
-            boolean allowEagerInit = true;
-            String[] beanNamesForType = beanFactory.getBeanNamesForType(beanClass, includeNonSingletons, allowEagerInit);
-            List<String> beansOfType = Arrays.asList(beanNamesForType);
-            beansOfType.forEach(
-                    beanName -> setupDependsOn(beanFactory, beanName, dependsOnBean)
-            );
-        }
-
-        private void setupDependsOn(ConfigurableListableBeanFactory beanFactory, String beanName, String dependsOnBean) {
-            BeanDefinition bean = beanFactory.getBeanDefinition(beanName);
-            Set<String> dependsOn = new LinkedHashSet<>(asList(bean.getDependsOn()));
-            dependsOn.add(dependsOnBean);
-            bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));
-        }
-
-        private static List<String> asList(String[] array) {
-            return (array == null ? Collections.emptyList() : Arrays.asList(array));
-        }
     }
 }

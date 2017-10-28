@@ -26,6 +26,7 @@ package com.playtika.test.kafka.configuration;
 import com.playtika.test.kafka.checks.ZookeeperStartupCheckStrategy;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
+import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
+
 @Configuration
 @ConditionalOnProperty(value = "embedded.zookeeper.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(ZookeeperConfigurationProperties.class)
@@ -49,38 +53,48 @@ import java.util.LinkedHashMap;
 public class ZookeeperContainerConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean
     public ZookeeperStartupCheckStrategy zookeeperStartupCheckStrategy(ZookeeperConfigurationProperties zookeeperProperties) {
         return new ZookeeperStartupCheckStrategy(zookeeperProperties);
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public GenericContainer zookeeper(ZookeeperStartupCheckStrategy zookeeperStartupCheckStrategy, ZookeeperConfigurationProperties zookeeperProperties) throws IOException {
+    @Bean(name = ZOOKEEPER_BEAN_NAME, destroyMethod = "stop")
+    public GenericContainer zookeeper(ZookeeperStartupCheckStrategy zookeeperStartupCheckStrategy,
+                                      ZookeeperConfigurationProperties zookeeperProperties,
+                                      ConfigurableEnvironment environment) throws IOException {
         String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
         String zkData = Paths.get(zookeeperProperties.getDataFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
         log.info("Writing zookeeper data to: {}", zkData);
         String zkTransactionLogs = Paths.get(zookeeperProperties.getTxnLogsFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
         log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
 
-        int mappingPort = zookeeperProperties.getMappingPort();
-        return new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
+        int mappingPort = zookeeperProperties.getZookeeperPort();
+        GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
                 .withStartupCheckStrategy(zookeeperStartupCheckStrategy)
+                .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("ZOOKEEPER_CLIENT_PORT", String.valueOf(mappingPort))
                 .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
                 .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE)
                 .withExposedPorts(mappingPort)
-                .withFixedExposedPort(mappingPort, mappingPort);
+                .withFixedExposedPort(mappingPort , mappingPort);
+        zookeeper.start();
+        registerZookeperEnvironment(zookeeper, environment, zookeeperProperties);
+        return zookeeper;
     }
 
-    @Bean
-    public String zookeeperConnect(ConfigurableEnvironment environment, ZookeeperConfigurationProperties zookeeperProperties) {
-        String zookeeperConnect = String.format("localhost:%d", zookeeperProperties.getMappingPort());
+    private void registerZookeperEnvironment(GenericContainer zookeeper,
+                                             ConfigurableEnvironment environment,
+                                             ZookeeperConfigurationProperties zookeeperProperties) {
+
+        Integer port = zookeeper.getMappedPort(zookeeperProperties.getZookeeperPort());
+        String host = zookeeper.getContainerIpAddress();
+
+        String zookeeperConnect = String.format("%s:%d", host, port);
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.zookeeper.zookeeperConnect", zookeeperConnect);
         MapPropertySource propertySource = new MapPropertySource("embeddedZookeeperInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-
         log.trace("embedded.zookeeper.zookeeperConnect: {}", zookeeperConnect);
-        return zookeeperConnect;
     }
 }

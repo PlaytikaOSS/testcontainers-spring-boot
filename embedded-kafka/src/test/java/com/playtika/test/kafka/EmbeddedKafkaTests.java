@@ -37,6 +37,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -61,9 +62,9 @@ public class EmbeddedKafkaTests {
     private static final String TOPIC = "topic1";
     private static final String MESSAGE = "test message";
 
-    @Autowired
+    @Value("${embedded.kafka.brokerList}")
     String kafkaBrokerList;
-    @Autowired
+    @Value("${embedded.zookeeper.zookeeperConnect}")
     String zookeeperConnect;
     @Autowired
     private ZkClient zkClient;
@@ -145,7 +146,8 @@ public class EmbeddedKafkaTests {
     static class TestConfiguration {
 
         @Bean(destroyMethod = "close")
-        public ZkClient zkClient(String zookeeperConnect, ZookeeperConfigurationProperties zookeeperProperties) {
+        public ZkClient zkClient(@Value("${embedded.zookeeper.zookeeperConnect}") String zookeeperConnect,
+                                 ZookeeperConfigurationProperties zookeeperProperties) {
             return new ZkClient(zookeeperConnect, zookeeperProperties.getSessionTimeoutMs(),
                     zookeeperProperties.getSocketTimeoutMs(), ZKStringSerializer$.MODULE$);
         }

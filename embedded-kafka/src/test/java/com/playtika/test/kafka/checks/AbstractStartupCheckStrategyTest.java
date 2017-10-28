@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.checks;
 
+import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
 import org.junit.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
@@ -49,12 +50,12 @@ public class AbstractStartupCheckStrategyTest {
     private static class PositiveStartupCheckStrategy extends AbstractStartupCheckStrategy {
 
         @Override
-        String getContainerType() {
+        public String getContainerType() {
             return "Positive Test";
         }
 
         @Override
-        String[] getHealthCheckCmd() {
+        public String[] getHealthCheckCmd() {
             return new String[] {"echo", "health check passed"};
         }
     }
@@ -62,12 +63,12 @@ public class AbstractStartupCheckStrategyTest {
     private static class NegativeStartupCheckStrategy extends AbstractStartupCheckStrategy {
 
         @Override
-        String getContainerType() {
+        public String getContainerType() {
             return "Negative Test";
         }
 
         @Override
-        String[] getHealthCheckCmd() {
+        public String[] getHealthCheckCmd() {
             return new String[] {"/bin/sh", "-c", "invalid command"};
         }
     }
