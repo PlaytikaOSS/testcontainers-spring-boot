@@ -26,7 +26,7 @@ package com.playtika.test.kafka.configuration;
 import com.github.dockerjava.api.model.Link;
 import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.kafka.KafkaTopicsConfigurer;
-import com.playtika.test.kafka.checks.KafkaStartupCheckStrategy;
+import com.playtika.test.kafka.checks.KafkaStatusCheck;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -60,13 +60,13 @@ public class KafkaContainerConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public KafkaStartupCheckStrategy kafkaStartupCheckStrategy(KafkaConfigurationProperties kafkaProperties) {
-        return new KafkaStartupCheckStrategy(kafkaProperties);
+    public KafkaStatusCheck kafkaStartupCheckStrategy(KafkaConfigurationProperties kafkaProperties) {
+        return new KafkaStatusCheck(kafkaProperties);
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer kafka(GenericContainer zookeeper,
-                                  KafkaStartupCheckStrategy kafkaStartupCheckStrategy,
+                                  KafkaStatusCheck kafkaStatusCheck,
                                   KafkaConfigurationProperties kafkaProperties,
                                   ZookeeperConfigurationProperties zookeeperProperties,
                                   ConfigurableEnvironment environment) {
@@ -80,7 +80,7 @@ public class KafkaContainerConfiguration {
         log.info("Writing kafka data to: {}", kafkaData);
 
         GenericContainer kafka = new FixedHostPortGenericContainer<>(kafkaProperties.getDockerImage())
-                .withStartupCheckStrategy(kafkaStartupCheckStrategy)
+                .withStartupCheckStrategy(kafkaStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("KAFKA_ZOOKEEPER_CONNECT", "zookeeper:" + zookeeperProperties.getZookeeperPort())
                 .withEnv("KAFKA_BROKER_ID", "-1")

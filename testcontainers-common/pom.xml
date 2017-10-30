@@ -12,10 +12,4 @@
 
     <artifactId>testcontainers-common</artifactId>
 
-    <properties>
-    </properties>
-
-    <dependencies>
-
-    </dependencies>
 </project>

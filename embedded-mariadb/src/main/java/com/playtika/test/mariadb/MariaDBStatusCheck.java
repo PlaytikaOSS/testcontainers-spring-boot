@@ -21,38 +21,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.checks;
+package com.playtika.test.mariadb;
 
 import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
-import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class KafkaStartupCheckStrategy extends AbstractStartupCheckStrategy {
-
-    private static final String CONTAINER_TYPE = "Kafka";
-    private static final String MIN_BROKERS_COUNT = "1";
-    private static final String TIMEOUT_IN_SEC = "30";
-
-    private final KafkaConfigurationProperties properties;
-
-    @Override
-    public String getContainerType() {
-        return CONTAINER_TYPE;
-    }
+public class MariaDBStatusCheck extends AbstractStartupCheckStrategy {
 
     @Override
     public String[] getHealthCheckCmd() {
         return new String[] {
-                "cub",
-                "kafka-ready",
-                MIN_BROKERS_COUNT,
-                TIMEOUT_IN_SEC,
-                "-b",
-                String.format("localhost:%d", this.properties.getBrokerPort())
+                "mysql",
+                "-h",
+                "127.0.0.1",
+                "-e",
+                "SELECT 1"
+
         };
     }
-
 }

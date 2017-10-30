@@ -21,19 +21,24 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.couchbase;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties("embedded.aerospike")
-public class AerospikeProperties {
-
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
-
-    boolean enabled = true;
-    String dockerImage = "aerospike:3.15.0.1";
-    final String namespace = "TEST";
-    final int port = 3000;
+@ConfigurationProperties("embedded.couchbase")
+public class CouchbaseProperties {
+    static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
+    boolean enabled;
+    String services="kv,index,n1ql,fts";
+    String dockerImage = "couchbase:community-4.5.1";
+    int clusterRamMb = 256;
+    int bucketRamMb = 100;
+    String bucketType = "couchbase";
+    final String user = "Administrator";
+    final String password = "password";
+    final String bucket = "test";
+    final int httpDirectPort = 8091;
+    final int carrierDirectPort = 11210;
 }

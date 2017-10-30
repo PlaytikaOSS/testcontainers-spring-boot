@@ -21,19 +21,32 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.kafka.checks;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
+import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@Data
-@ConfigurationProperties("embedded.aerospike")
-public class AerospikeProperties {
+@Slf4j
+@RequiredArgsConstructor
+public class KafkaStatusCheck extends AbstractStartupCheckStrategy {
 
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
+    private static final String MIN_BROKERS_COUNT = "1";
+    private static final String TIMEOUT_IN_SEC = "30";
 
-    boolean enabled = true;
-    String dockerImage = "aerospike:3.15.0.1";
-    final String namespace = "TEST";
-    final int port = 3000;
+    private final KafkaConfigurationProperties properties;
+
+    @Override
+    public String[] getHealthCheckCmd() {
+        return new String[] {
+                "cub",
+                "kafka-ready",
+                MIN_BROKERS_COUNT,
+                TIMEOUT_IN_SEC,
+                "-b",
+                String.format("localhost:%d", this.properties.getBrokerPort())
+        };
+    }
+
 }

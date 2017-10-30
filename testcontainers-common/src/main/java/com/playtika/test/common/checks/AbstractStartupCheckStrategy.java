@@ -34,29 +34,33 @@ import static com.playtika.test.common.utils.ContainerUtils.ExecCmdResult;
 @Slf4j
 public abstract class AbstractStartupCheckStrategy extends StartupCheckStrategy {
 
-    public abstract String getContainerType();
+    public String getContainerType(){
+        return getClass().getSimpleName();
+    }
+
     public abstract String[] getHealthCheckCmd();
 
     @Override
     public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
-        String containerType = getContainerType();
-        log.info("Check {} container status, id: {} ", containerType, containerId);
+        String commandName = getContainerType();
+        log.debug("{} execution for container id: {} ", commandName, containerId);
 
         InspectContainerResponse response = dockerClient.inspectContainerCmd(containerId).exec();
         if (!response.getState().getRunning()) {
-            log.debug("{} failed to start", containerType);
+            log.debug("{} Container {} is not started", commandName, containerId);
             return StartupStatus.NOT_YET_KNOWN;
         }
 
         ExecCmdResult healthCheckCmdResult = ContainerUtils.execCmd(dockerClient, containerId, getHealthCheckCmd());
 
+        log.debug("{} executed with exitCode: {}, output: {}",
+                commandName, healthCheckCmdResult.getExitCode(), healthCheckCmdResult.getOutput());
+
         if (healthCheckCmdResult.getExitCode() != 0) {
-            log.debug("{} health check failed with exitCode: {}, output: {}",
-                    containerType, healthCheckCmdResult.getExitCode(), healthCheckCmdResult.getOutput());
+            log.debug("{} executed with exitCode !=0, considering status as unknown", commandName);
             return StartupStatus.NOT_YET_KNOWN;
         }
-
-        log.info("{} container is successfully started", containerType);
+        log.debug("{} command executed, considering container {} successfully started", commandName, containerId);
         return StartupStatus.SUCCESSFUL;
     }
 }

@@ -21,19 +21,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.common.checks;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.github.dockerjava.api.DockerClient;
 
-@Data
-@ConfigurationProperties("embedded.aerospike")
-public class AerospikeProperties {
+public abstract class AbstractInitOnStartupStrategy extends AbstractStartupCheckStrategy {
 
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
+    private volatile boolean wasExecutedOnce;
 
-    boolean enabled = true;
-    String dockerImage = "aerospike:3.15.0.1";
-    final String namespace = "TEST";
-    final int port = 3000;
+    public abstract String [] getScriptToExecute();
+
+    @Override
+    public String[] getHealthCheckCmd() {
+        return getScriptToExecute();
+    }
+
+    @Override
+    public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
+        if (wasExecutedOnce) {
+            return StartupStatus.SUCCESSFUL;
+        }
+        StartupStatus startupStatus = super.checkStartupState(dockerClient, containerId);
+        if (startupStatus == StartupStatus.SUCCESSFUL) {
+            wasExecutedOnce = true;
+            return StartupStatus.SUCCESSFUL;
+        }
+        return StartupStatus.NOT_YET_KNOWN;
+    }
 }

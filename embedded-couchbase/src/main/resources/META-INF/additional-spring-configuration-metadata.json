@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.couchbase.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.couchbase.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of couchbase server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of couchbase server on startup."
+        }
+      ]
+    }
+  ]
+}

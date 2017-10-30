@@ -21,34 +21,36 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.checks;
+package com.playtika.test.couchbase.rest;
 
-import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
-import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
+import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
+import com.playtika.test.couchbase.CouchbaseProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * https://developer.couchbase.com/documentation/server/3.x/admin/REST/rest-bucket-create.html
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class ZookeeperStartupCheckStrategy extends AbstractStartupCheckStrategy {
+public class CreateBucket extends AbstractInitOnStartupStrategy {
 
-    private static final String CONTAINER_TYPE = "Zookeeper";
-    private static final String TIMEOUT_IN_SEC = "30";
-
-    private final ZookeeperConfigurationProperties properties;
+    private final CouchbaseProperties properties;
 
     @Override
-    public String getContainerType() {
-        return CONTAINER_TYPE;
-    }
-
-    @Override
-    public String[] getHealthCheckCmd() {
-        return new String[] {
-                "cub",
-                "zk-ready",
-                String.format("localhost:%d", this.properties.getZookeeperPort()),
-                TIMEOUT_IN_SEC
+    public String[] getScriptToExecute() {
+        return new String[]{
+                "curl", "-X", "POST",
+                "-u", "Administrator:password",
+                "http://127.0.0.1:8091/pools/default/buckets",
+                "-d", "name=" + properties.getBucket(),
+                "-d", "bucketType=" + properties.getBucketType(),
+                "-d", "flushEnabled=1",
+                "-d", "ramQuotaMB=" + properties.getBucketRamMb(),
+                "-d", "replicaNumber=0",
+                "-d", "replicaIndex=0",
+                "-d", "authType=sasl",
+                "-d", "saslPassword=" + properties.getPassword(),
         };
     }
 

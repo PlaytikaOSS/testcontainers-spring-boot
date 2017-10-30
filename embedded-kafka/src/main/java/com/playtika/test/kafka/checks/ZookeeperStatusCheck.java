@@ -21,19 +21,29 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.kafka.checks;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
+import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@Data
-@ConfigurationProperties("embedded.aerospike")
-public class AerospikeProperties {
+@Slf4j
+@RequiredArgsConstructor
+public class ZookeeperStatusCheck extends AbstractStartupCheckStrategy {
 
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
+    private static final String TIMEOUT_IN_SEC = "30";
 
-    boolean enabled = true;
-    String dockerImage = "aerospike:3.15.0.1";
-    final String namespace = "TEST";
-    final int port = 3000;
+    private final ZookeeperConfigurationProperties properties;
+
+    @Override
+    public String[] getHealthCheckCmd() {
+        return new String[]{
+                "cub",
+                "zk-ready",
+                String.format("localhost:%d", this.properties.getZookeeperPort()),
+                TIMEOUT_IN_SEC
+        };
+    }
+
 }

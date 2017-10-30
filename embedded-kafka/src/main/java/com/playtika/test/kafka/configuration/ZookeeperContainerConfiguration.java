@@ -23,7 +23,7 @@
  */
 package com.playtika.test.kafka.configuration;
 
-import com.playtika.test.kafka.checks.ZookeeperStartupCheckStrategy;
+import com.playtika.test.kafka.checks.ZookeeperStatusCheck;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -54,12 +54,12 @@ public class ZookeeperContainerConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ZookeeperStartupCheckStrategy zookeeperStartupCheckStrategy(ZookeeperConfigurationProperties zookeeperProperties) {
-        return new ZookeeperStartupCheckStrategy(zookeeperProperties);
+    public ZookeeperStatusCheck zookeeperStartupCheckStrategy(ZookeeperConfigurationProperties zookeeperProperties) {
+        return new ZookeeperStatusCheck(zookeeperProperties);
     }
 
     @Bean(name = ZOOKEEPER_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer zookeeper(ZookeeperStartupCheckStrategy zookeeperStartupCheckStrategy,
+    public GenericContainer zookeeper(ZookeeperStatusCheck zookeeperStatusCheck,
                                       ZookeeperConfigurationProperties zookeeperProperties,
                                       ConfigurableEnvironment environment) throws IOException {
         String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
@@ -70,7 +70,7 @@ public class ZookeeperContainerConfiguration {
 
         int mappingPort = zookeeperProperties.getZookeeperPort();
         GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
-                .withStartupCheckStrategy(zookeeperStartupCheckStrategy)
+                .withStartupCheckStrategy(zookeeperStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("ZOOKEEPER_CLIENT_PORT", String.valueOf(mappingPort))
                 .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)

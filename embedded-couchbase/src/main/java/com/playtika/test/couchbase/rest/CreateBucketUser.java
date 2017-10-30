@@ -21,19 +21,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.couchbase.rest;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
+import com.playtika.test.couchbase.CouchbaseProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@Data
-@ConfigurationProperties("embedded.aerospike")
-public class AerospikeProperties {
+/**
+ * Couchbase UI 5.x + charles
+ */
+@Slf4j
+@RequiredArgsConstructor
+public class CreateBucketUser extends AbstractInitOnStartupStrategy {
 
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
+    private final CouchbaseProperties properties;
 
-    boolean enabled = true;
-    String dockerImage = "aerospike:3.15.0.1";
-    final String namespace = "TEST";
-    final int port = 3000;
+    @Override
+    public String[] getScriptToExecute() {
+        return new String[]{
+                "curl", "-X", "PUT",
+                "-u", "Administrator:password",
+                "http://127.0.0.1:8091/settings/rbac/users/local/" + properties.getBucket(),
+                "-d", "roles=bucket_full_access%5B" + properties.getBucket() + "%5D",
+                "-d", "name=",
+                "-d", "password=password"
+        };
+    }
 }
