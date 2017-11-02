@@ -128,12 +128,23 @@ embedded.kafka.topicsToCreate=some_topic
   * addDays
   * addHours
   * rollbackTime
+### embedded-memsql
+##### Consumes
+* embedded.memsql.enabled `(true|false, default is 'true')`
+* embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:6.0.7')`
+##### Produces
+* embedded.memsql.port
+* embedded.memsql.adminPort
+* embedded.memsql.host
+* embedded.memsql.schema
+* embedded.memsql.user
+* embedded.memsql.password
 ### embedded-neo4j
 ##### Consumes
 * 
 ##### Produces
 * 
-### embedded-memsql
+### embedded-redis
 ##### Consumes
 * 
 ##### Produces

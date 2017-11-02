@@ -21,7 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.mariadb;
+package com.playtika.test.memsql;
 
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,77 +35,80 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
+import static com.playtika.test.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
 @Configuration
 @Order(HIGHEST_PRECEDENCE)
-@ConditionalOnProperty(name = "embedded.mariadb.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(MariaDBProperties.class)
-public class EmbeddedMariaDBAutoConfiguration {
+@ConditionalOnProperty(name = "embedded.memsql.enabled", matchIfMissing = true)
+@EnableConfigurationProperties(MemSqlProperties.class)
+public class EmbeddedMemSqlAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    MariaDBStatusCheck mariaDBStartupCheckStrategy(MariaDBProperties properties){
-        return new MariaDBStatusCheck();
+    MemSqlStatusCheck memSqlStartupCheckStrategy(MemSqlProperties properties) {
+        return new MemSqlStatusCheck();
     }
 
-    @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
-    public GenericContainer mariadb(ConfigurableEnvironment environment,
-                                    MariaDBProperties properties,
-                                    MariaDBStatusCheck mariaDBStatusCheck) throws Exception {
-        log.info("Starting mariadb server. Docker image: {}", properties.dockerImage);
+    @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
+    public GenericContainer memsql(ConfigurableEnvironment environment,
+                                   MemSqlProperties properties,
+                                   MemSqlStatusCheck memSqlStatusCheck) throws Exception {
+        log.info("Starting memsql server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer mariadb =
+        GenericContainer memsql =
                 new GenericContainer(properties.dockerImage)
-                        .withStartupCheckStrategy(mariaDBStatusCheck)
-                        .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "true")
-                        .withEnv("MYSQL_USER", properties.getUser())
-                        .withEnv("MYSQL_PASSWORD", properties.getPassword())
-                        .withEnv("MYSQL_DATABASE", properties.getDatabase())
+                        .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
+                        .withStartupCheckStrategy(memSqlStatusCheck)
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port);
-        mariadb.start();
-        registerMariadbEnvironment(mariadb, environment, properties);
-        return mariadb;
+                        .withExposedPorts(properties.port, properties.adminPort)
+                        .withClasspathResourceMapping(
+                                "mem.sql",
+                                "/schema.sql",
+                                BindMode.READ_ONLY);
+        ;
+        memsql.start();
+        registerMemSqlEnvironment(memsql, environment, properties);
+        return memsql;
     }
 
-    private void registerMariadbEnvironment(GenericContainer mariadb,
-                                            ConfigurableEnvironment environment,
-                                            MariaDBProperties properties) {
-        Integer mappedPort = mariadb.getMappedPort(properties.port);
-        String host = mariadb.getContainerIpAddress();
+    private void registerMemSqlEnvironment(GenericContainer memsql,
+                                           ConfigurableEnvironment environment,
+                                           MemSqlProperties properties) {
+        Integer mappedPort = memsql.getMappedPort(properties.port);
+        Integer mappedAdminPort = memsql.getMappedPort(properties.adminPort);
+        String host = memsql.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mariadb.port", mappedPort);
-        map.put("embedded.mariadb.host", host);
-        map.put("embedded.mariadb.schema", properties.getDatabase());
-        map.put("embedded.mariadb.user", properties.getUser());
-        map.put("embedded.mariadb.password", properties.getPassword());
+        map.put("embedded.memsql.adminPort", mappedAdminPort);
+        map.put("embedded.memsql.port", mappedPort);
+        map.put("embedded.memsql.host", host);
+        map.put("embedded.memsql.schema", properties.getDatabase());
+        map.put("embedded.memsql.user", properties.getUser());
+        map.put("embedded.memsql.password", properties.getPassword());
 
-        String jdbcURL = "jdbc:mysql://{}:{}/{}";
-        log.info("Started mariadb server. Connection details: {}, " +
-                "JDBC connection url: " + jdbcURL, map, host, mappedPort, properties.getDatabase());
+        log.info("Started memsql server. Connection details {}. Admin UI: http://localhost:{}, user: {}, password: {}",
+                map, mappedAdminPort, properties.getUser(), properties.getPassword());
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedMariaInfo", map);
+        MapPropertySource propertySource = new MapPropertySource("embeddedMemSqlInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }
 
-
     @Configuration
     @ConditionalOnBean(DataSource.class)
-    public static class EmbeddedMariaDbDataSourceDependencyContext {
+    public static class EmbeddedMemSqlDataSourceDependencyContext {
 
         @Bean
         public BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
-            return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_MARIADB});
+            return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_MEMSQL});
         }
     }
 }

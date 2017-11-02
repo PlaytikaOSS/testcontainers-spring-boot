@@ -19,11 +19,10 @@
         <module>embedded-kafka</module>
         <module>embedded-aerospike</module>
         <module>embedded-mariadb</module>
+        <module>embedded-memsql</module>
         <module>embedded-couchbase</module>
-        <!--<module>embedded-couchbase-3</module>-->
         <!--<module>embedded-redis</module>-->
         <!--<module>embedded-neo4j</module>-->
-        <!--<module>embedded-memsql</module>-->
         <!--<module>embedded-zookeper</module>-->
     </modules>
 
@@ -34,7 +33,7 @@
 
         <testcontainers.version>1.4.2</testcontainers.version>
         <spring.cloud.version>Dalston.SR3</spring.cloud.version>
-        <docker-java.version>3.0.13</docker-java.version>
+        <docker-java.version>3.0.14</docker-java.version>
 
         <equalsverifier.version>2.3.1</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>

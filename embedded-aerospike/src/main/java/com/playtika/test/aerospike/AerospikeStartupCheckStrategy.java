@@ -45,7 +45,7 @@ public class AerospikeStartupCheckStrategy extends StartupCheckStrategy {
 
     @Override
     public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
-        log.info("Check Aerospike container {} status", containerId);
+        log.debug("Check Aerospike container {} status", containerId);
 
         InspectContainerResponse response = dockerClient.inspectContainerCmd(containerId).exec();
         if (!response.getState().getRunning()) {
@@ -62,7 +62,7 @@ public class AerospikeStartupCheckStrategy extends StartupCheckStrategy {
             }
             return StartupStatus.NOT_YET_KNOWN;
         } catch (AerospikeException.Connection e) {
-            log.warn("Aerospike container: {} not yet started. {}", containerId, e.getMessage());
+            log.debug("Aerospike container: {} not yet started. {}", containerId, e.getMessage());
         }
 
         return StartupStatus.NOT_YET_KNOWN;

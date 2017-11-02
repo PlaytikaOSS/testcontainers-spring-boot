@@ -79,6 +79,8 @@ public class KafkaContainerConfiguration {
         String kafkaData = Paths.get(kafkaProperties.getDataFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
         log.info("Writing kafka data to: {}", kafkaData);
 
+        log.info("Starting kafka broker. Docker image: {}", kafkaProperties.getDockerImage());
+
         GenericContainer kafka = new FixedHostPortGenericContainer<>(kafkaProperties.getDockerImage())
                 .withStartupCheckStrategy(kafkaStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
@@ -100,14 +102,16 @@ public class KafkaContainerConfiguration {
                                           KafkaConfigurationProperties kafkaProperties) {
         Integer mappedPort = kafka.getMappedPort(kafkaProperties.getBrokerPort());
         String host = kafka.getContainerIpAddress();
+
         String kafkaBrokerList = format("%s:%d", host, mappedPort);
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.kafka.brokerList", kafkaBrokerList);
         MapPropertySource propertySource = new MapPropertySource("embeddedKafkaInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
 
-        log.trace("embedded.kafka.brokerList: {}", kafkaBrokerList);
+        log.info("Started kafka broker. Connection details: {}", map);
+
+        environment.getPropertySources().addFirst(propertySource);
     }
 
     @Bean

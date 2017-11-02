@@ -21,19 +21,20 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.mariadb;
+package com.playtika.test.memsql;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties("embedded.mariadb")
-public class MariaDBProperties {
-    static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
+@ConfigurationProperties("embedded.memsql")
+public class MemSqlProperties {
+    static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
     boolean enabled;
-    String dockerImage = "mariadb:10.3.2";
-    final String user = "mariadb";
-    final String password = "letmein";
+    String dockerImage = "memsql/quickstart:6.0.7";
+    final String user = "root";
+    final String password = "";
     final String database = "test_db";
     final int port = 3306;
+    final int adminPort = 9000;
 }

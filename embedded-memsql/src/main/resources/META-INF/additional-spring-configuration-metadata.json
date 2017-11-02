@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.memsql.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.memsql.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of memsql server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of memsql server on startup."
+        }
+      ]
+    }
+  ]
+}

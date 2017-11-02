@@ -31,10 +31,10 @@ import com.playtika.test.common.checks.CompositeStartupCheckStrategy;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import com.playtika.test.couchbase.rest.CreateBucket;
 import com.playtika.test.couchbase.rest.CreateBucketUser;
-import com.playtika.test.couchbase.rest.SetupRamQuotas;
 import com.playtika.test.couchbase.rest.SetupAdminUserAndPassword;
 import com.playtika.test.couchbase.rest.SetupIndexesType;
 import com.playtika.test.couchbase.rest.SetupNodeStorage;
+import com.playtika.test.couchbase.rest.SetupRamQuotas;
 import com.playtika.test.couchbase.rest.SetupServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -67,6 +67,9 @@ public class EmbeddedCouchbaseAutoConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
     public GenericContainer couchbase(ConfigurableEnvironment environment,
                                       CouchbaseProperties properties) throws Exception {
+
+        log.info("Starting couchbase server. Docker image: {}", properties.dockerImage);
+
         CompositeStartupCheckStrategy compositeStartupCheck = getCompositeStartupCheckStrategy(properties);
         GenericContainer couchbase = new GenericContainer(properties.dockerImage)
                 .withStartupCheckStrategy(compositeStartupCheck)
@@ -106,9 +109,6 @@ public class EmbeddedCouchbaseAutoConfiguration {
         Integer mappedCarrierPort = couchbase.getMappedPort(properties.carrierDirectPort);
         String host = couchbase.getContainerIpAddress();
 
-        log.info("Started couchbase server. Admin UI: http://localhost:{}, user: {}, password: {}"
-                , mappedHttpPort, properties.getUser(), properties.getPassword());
-
         System.setProperty("com.couchbase.bootstrapHttpDirectPort", String.valueOf(mappedHttpPort));
         System.setProperty("com.couchbase.bootstrapCarrierDirectPort", String.valueOf(mappedCarrierPort));
 
@@ -119,6 +119,11 @@ public class EmbeddedCouchbaseAutoConfiguration {
         map.put("embedded.couchbase.bucket", properties.bucket);
         map.put("embedded.couchbase.user", properties.bucket);
         map.put("embedded.couchbase.password", properties.password);
+
+        log.info("Started aerospike server. Connection details {},  " +
+                "Admin UI: http://localhost:{}, user: {}, password: {}",
+                map, mappedHttpPort, properties.getUser(), properties.getPassword());
+
         MapPropertySource propertySource = new MapPropertySource("embeddedCouchbaseInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }

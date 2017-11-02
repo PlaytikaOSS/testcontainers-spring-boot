@@ -66,6 +66,8 @@ public class EmbeddedAerospikeAutoConfiguration {
     public GenericContainer aerosike(AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy,
                                      ConfigurableEnvironment environment,
                                      AerospikeProperties properties) {
+        log.info("Starting aerospike server. Docker image: {}", properties.dockerImage);
+
         GenericContainer aerospike =
                 new GenericContainer(properties.dockerImage)
                         .withStartupCheckStrategy(aerospikeStartupCheckStrategy)
@@ -85,10 +87,14 @@ public class EmbeddedAerospikeAutoConfiguration {
                                               AerospikeProperties properties) {
         Integer mappedPort = aerosike.getMappedPort(properties.port);
         String host = aerosike.getContainerIpAddress();
+
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.aerospike.host", host);
         map.put("embedded.aerospike.port", mappedPort);
         map.put("embedded.aerospike.namespace", properties.namespace);
+
+        log.info("Started aerospike server. Connection details {}", map);
+
         MapPropertySource propertySource = new MapPropertySource("embeddedAerospikeInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }

@@ -68,6 +68,8 @@ public class ZookeeperContainerConfiguration {
         String zkTransactionLogs = Paths.get(zookeeperProperties.getTxnLogsFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
         log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
 
+        log.info("Starting zookeeper server. Docker image: {}", zookeeperProperties.getDockerImage());
+
         int mappingPort = zookeeperProperties.getZookeeperPort();
         GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
                 .withStartupCheckStrategy(zookeeperStatusCheck)
@@ -76,8 +78,9 @@ public class ZookeeperContainerConfiguration {
                 .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
                 .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE)
                 .withExposedPorts(mappingPort)
-                .withFixedExposedPort(mappingPort , mappingPort);
+                .withFixedExposedPort(mappingPort, mappingPort);
         zookeeper.start();
+
         registerZookeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;
     }
@@ -85,15 +88,16 @@ public class ZookeeperContainerConfiguration {
     private void registerZookeperEnvironment(GenericContainer zookeeper,
                                              ConfigurableEnvironment environment,
                                              ZookeeperConfigurationProperties zookeeperProperties) {
-
         Integer port = zookeeper.getMappedPort(zookeeperProperties.getZookeeperPort());
         String host = zookeeper.getContainerIpAddress();
 
         String zookeeperConnect = String.format("%s:%d", host, port);
-
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.zookeeper.zookeeperConnect", zookeeperConnect);
         MapPropertySource propertySource = new MapPropertySource("embeddedZookeeperInfo", map);
+
+        log.info("Started zookeeper server. Connection details:  {}", map);
+
         environment.getPropertySources().addFirst(propertySource);
         log.trace("embedded.zookeeper.zookeeperConnect: {}", zookeeperConnect);
     }
