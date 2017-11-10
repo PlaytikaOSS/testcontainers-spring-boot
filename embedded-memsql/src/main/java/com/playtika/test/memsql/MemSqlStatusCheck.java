@@ -23,49 +23,13 @@
  */
 package com.playtika.test.memsql;
 
-import com.github.dockerjava.api.DockerClient;
 import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.rnorth.ducttape.ratelimits.RateLimiter;
-import org.rnorth.ducttape.ratelimits.RateLimiterBuilder;
-import org.rnorth.ducttape.unreliables.Unreliables;
-
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
 public class MemSqlStatusCheck extends AbstractStartupCheckStrategy {
-
-    private static final int MEMSQL_STARTUP_TIMEOUT = 120;
-
-    private static final RateLimiter DOCKER_CLIENT_RATE_LIMITER = RateLimiterBuilder
-            .newBuilder()
-            .withRate(12, TimeUnit.MINUTES)
-            .withConstantThroughput()
-            .build();
-
-    @Override
-    public boolean waitUntilStartupSuccessful(DockerClient dockerClient, String containerId) {
-        final Boolean[] startedOK = {null};
-        Unreliables.retryUntilTrue(MEMSQL_STARTUP_TIMEOUT, TimeUnit.SECONDS, () -> {
-            //noinspection CodeBlock2Expr
-            return DOCKER_CLIENT_RATE_LIMITER.getWhenReady(() -> {
-                StartupStatus state = checkStartupState(dockerClient, containerId);
-                switch (state) {
-                    case SUCCESSFUL:
-                        startedOK[0] = true;
-                        return true;
-                    case FAILED:
-                        startedOK[0] = false;
-                        return true;
-                    default:
-                        return false;
-                }
-            });
-        });
-        return startedOK[0];
-    }
 
     @Override
     public String[] getHealthCheckCmd() {

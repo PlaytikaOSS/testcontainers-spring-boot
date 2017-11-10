@@ -31,10 +31,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MemSqlProperties {
     static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
     boolean enabled;
-    String dockerImage = "memsql/quickstart:6.0.7";
+    String dockerImage = "memsql/quickstart:minimal-6.0.8";
     final String user = "root";
     final String password = "";
     final String database = "test_db";
     final int port = 3306;
-    final int adminPort = 9000;
 }

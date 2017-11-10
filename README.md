@@ -171,14 +171,17 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes
 * embedded.memsql.enabled `(true|false, default is 'true')`
-* embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:6.0.7')`
+* embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:minimal-6.0.8')`
 ##### Produces
 * embedded.memsql.port
-* embedded.memsql.adminPort
 * embedded.memsql.host
 * embedded.memsql.schema
 * embedded.memsql.user
 * embedded.memsql.password
+##### Notes
+* Images without "minimal" tag do no start withing 30 secs, so they are unusable
+* There should be at least 1.5 GB of RAM available for memsql to start
+* You can enable debug logs for com.playtika.test category to troubleshoot issues
 ### embedded-redis
 ##### Maven dependency
 ```xml

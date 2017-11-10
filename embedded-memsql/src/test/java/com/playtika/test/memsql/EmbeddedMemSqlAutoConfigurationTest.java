@@ -55,11 +55,14 @@ public class EmbeddedMemSqlAutoConfigurationTest {
     @Test
     public void shouldConnectToMemSQL() throws Exception {
         assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("MemSQL");
+        jdbcTemplate.execute("create table foo (id int primary key);");
+        jdbcTemplate.execute("insert into foo values (1), (2), (3);");
+        assertThat(jdbcTemplate.queryForList("select * from foo")).hasSize(3);
+
     }
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.memsql.adminPort")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.schema")).isNotEmpty();

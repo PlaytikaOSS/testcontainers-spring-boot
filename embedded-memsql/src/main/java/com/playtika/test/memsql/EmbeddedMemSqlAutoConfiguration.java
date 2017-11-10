@@ -64,17 +64,15 @@ public class EmbeddedMemSqlAutoConfiguration {
                                    MemSqlStatusCheck memSqlStatusCheck) throws Exception {
         log.info("Starting memsql server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer memsql =
-                new GenericContainer(properties.dockerImage)
-                        .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
-                        .withStartupCheckStrategy(memSqlStatusCheck)
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port, properties.adminPort)
-                        .withClasspathResourceMapping(
-                                "mem.sql",
-                                "/schema.sql",
-                                BindMode.READ_ONLY);
-        ;
+        GenericContainer memsql = new GenericContainer<>(properties.dockerImage)
+                .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
+                .withStartupCheckStrategy(memSqlStatusCheck)
+                .withLogConsumer(containerLogsConsumer(log))
+                .withExposedPorts(properties.port)
+                .withClasspathResourceMapping(
+                        "mem.sql",
+                        "/schema.sql",
+                        BindMode.READ_ONLY);
         memsql.start();
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;
@@ -84,19 +82,16 @@ public class EmbeddedMemSqlAutoConfiguration {
                                            ConfigurableEnvironment environment,
                                            MemSqlProperties properties) {
         Integer mappedPort = memsql.getMappedPort(properties.port);
-        Integer mappedAdminPort = memsql.getMappedPort(properties.adminPort);
         String host = memsql.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.memsql.adminPort", mappedAdminPort);
         map.put("embedded.memsql.port", mappedPort);
         map.put("embedded.memsql.host", host);
         map.put("embedded.memsql.schema", properties.getDatabase());
         map.put("embedded.memsql.user", properties.getUser());
         map.put("embedded.memsql.password", properties.getPassword());
 
-        log.info("Started memsql server. Connection details {}. Admin UI: http://localhost:{}, user: {}, password: {}",
-                map, mappedAdminPort, properties.getUser(), properties.getPassword());
+        log.info("Started memsql server. Connection details {} ", map);
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMemSqlInfo", map);
         environment.getPropertySources().addFirst(propertySource);
