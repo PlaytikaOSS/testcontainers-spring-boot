@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.redis.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.redis.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of redis server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of redis server on startup."
+        }
+      ]
+    }
+  ]
+}

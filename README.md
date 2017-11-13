@@ -71,6 +71,14 @@ embedded.kafka.topicsToCreate=some_topic
 
 ## List of properties per data service
 ### embedded-mariadb
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mariadb</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 ##### Consumes
 * embedded.mariadb.enabled `(true|false, default is 'true')`
 * embedded.mariadb.dockerImage `(default is set to 'mariadb:10.3.2')`
@@ -82,6 +90,14 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.mariadb.user
 * embedded.mariadb.password
 ### embedded-couchbase
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-couchbase</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 ##### Consumes
 * embedded.couchbase.enabled `(true|false, default is 'true')`
 * embedded.couchbase.services `(comma separated list, default is 'kv,index,n1ql,fts')`
@@ -102,6 +118,14 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.couchbase.user
 * embedded.couchbase.password
 ### embedded-kafka
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-kafka</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 ##### Consumes
 * embedded.zookeeper.enabled `(true|false, default is 'true')`
 * embedded.kafka.enabled `(true|false, default is 'true')`
@@ -113,6 +137,14 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
 ### embedded-aerospike
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-aerospike</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 ##### Consumes
 * aerospike [client library](https://mvnrepository.com/artifact/com.aerospike/aerospike-client) 
 * embedded.aerospike.enabled `(true|false, default is 'true')`
@@ -129,6 +161,14 @@ embedded.kafka.topicsToCreate=some_topic
   * addHours
   * rollbackTime
 ### embedded-memsql
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-memsql</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 ##### Consumes
 * embedded.memsql.enabled `(true|false, default is 'true')`
 * embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:6.0.7')`
@@ -139,12 +179,24 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.memsql.schema
 * embedded.memsql.user
 * embedded.memsql.password
-### embedded-neo4j
-##### Consumes
-* 
-##### Produces
-* 
 ### embedded-redis
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-redis</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes
+* embedded.redis.enabled `(true|false, default is 'true')`
+* embedded.redis.dockerImage `(default is set to 'redis:4.0.2')`
+##### Produces
+* embedded.redis.host
+* embedded.redis.port
+* embedded.redis.user
+* embedded.redis.password 
+### embedded-neo4j
 ##### Consumes
 * 
 ##### Produces

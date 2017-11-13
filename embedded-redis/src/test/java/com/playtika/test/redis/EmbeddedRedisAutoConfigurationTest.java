@@ -21,7 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.memsql;
+package com.playtika.test.redis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -31,15 +31,19 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedMemSqlAutoConfigurationTest.TestConfiguration.class)
-public class EmbeddedMemSqlAutoConfigurationTest {
+@SpringBootTest(classes = EmbeddedRedisAutoConfigurationTest.TestConfiguration.class)
+public class EmbeddedRedisAutoConfigurationTest {
+
+    @Autowired
+    private StringRedisTemplate template;
 
     @EnableAutoConfiguration
     @Configuration
@@ -47,23 +51,23 @@ public class EmbeddedMemSqlAutoConfigurationTest {
     }
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
     ConfigurableEnvironment environment;
 
     @Test
-    public void shouldConnectToMemSQL() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("MemSQL");
+    public void springDataRedisShouldWork() throws Exception {
+        ValueOperations<String, String> ops = this.template.opsForValue();
+        String key = "spring.boot.redis.test";
+        if (!this.template.hasKey(key)) {
+            ops.set(key, "foo");
+        }
+        assertThat( ops.get(key)).isEqualTo("foo");
     }
 
     @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.memsql.adminPort")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.schema")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.password")).isEqualTo("");
+    public void propertiesAreAvalable() {
+        assertThat(environment.getProperty("embedded.redis.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.password")).isNotEmpty();
     }
 }

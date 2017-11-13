@@ -21,7 +21,7 @@
         <module>embedded-mariadb</module>
         <module>embedded-memsql</module>
         <module>embedded-couchbase</module>
-        <!--<module>embedded-redis</module>-->
+        <module>embedded-redis</module>
         <!--<module>embedded-neo4j</module>-->
         <!--<module>embedded-zookeper</module>-->
     </modules>
