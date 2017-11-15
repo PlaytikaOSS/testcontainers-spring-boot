@@ -21,29 +21,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.couchbase.rest;
+package com.playtika.test.couchbase.springdata;
 
-import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
-import com.playtika.test.couchbase.CouchbaseProperties;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.couchbase.client.java.repository.annotation.Field;
+import com.couchbase.client.java.repository.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.couchbase.core.mapping.Document;
 
-/**
- * https://developer.couchbase.com/documentation/server/current/rest-api/rest-node-provisioning.html
- */
-@Slf4j
-@RequiredArgsConstructor
-public class SetupServices extends AbstractInitOnStartupStrategy {
+@Builder(toBuilder = true)
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document
+public class TestDocument {
 
-    private final CouchbaseProperties properties;
+    @Id
+    String key;
 
-    @Override
-    public String[] getScriptToExecute() {
-        return new String[]{
-                "curl", "-X", "POST",
-                "-u", "Administrator:password",
-                "http://127.0.0.1:8091/node/controller/setupServices",
-                "-d", "services=" + properties.getServices()
-        };
-    }
+    @Field
+    String title;
+
 }

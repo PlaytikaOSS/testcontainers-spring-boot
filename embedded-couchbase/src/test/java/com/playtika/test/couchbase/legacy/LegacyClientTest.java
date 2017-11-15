@@ -21,29 +21,28 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.couchbase.rest;
+package com.playtika.test.couchbase.legacy;
 
-import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
-import com.playtika.test.couchbase.CouchbaseProperties;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.couchbase.client.CouchbaseClient;
+import com.playtika.test.couchbase.EmbeddedCouchbaseAutoConfigurationTest;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * https://developer.couchbase.com/documentation/server/current/rest-api/rest-node-provisioning.html
- */
-@Slf4j
-@RequiredArgsConstructor
-public class SetupServices extends AbstractInitOnStartupStrategy {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private final CouchbaseProperties properties;
+public class LegacyClientTest extends EmbeddedCouchbaseAutoConfigurationTest {
 
-    @Override
-    public String[] getScriptToExecute() {
-        return new String[]{
-                "curl", "-X", "POST",
-                "-u", "Administrator:password",
-                "http://127.0.0.1:8091/node/controller/setupServices",
-                "-d", "services=" + properties.getServices()
-        };
+    static final String KEY = "test::legacy";
+    static final String VALUE = "myvalue";
+
+    @Autowired
+    CouchbaseClient couchbaseClient;
+
+    @Test
+    public void oldClientShouldWork() throws Exception {
+        couchbaseClient.set(KEY, VALUE);
+
+        assertThat(couchbaseClient.get(KEY)).isEqualTo(VALUE);
     }
+
 }

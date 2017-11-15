@@ -31,14 +31,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CouchbaseProperties {
     static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
     boolean enabled;
-    String services="kv,index,n1ql,fts";
+    String services = "kv,index,n1ql,fts";
     String dockerImage = "couchbase:community-4.5.1";
     int clusterRamMb = 256;
     int bucketRamMb = 100;
     String bucketType = "couchbase";
+
     final String user = "Administrator";
     final String password = "password";
     final String bucket = "test";
+
     final int httpDirectPort = 8091;
+    final int queryServicePort = 8092;
+    final int queryRestTrafficPort = 8093;
+    final int searchServicePort = 8094;
+    final int analyticsServicePort = 8095;
+
+    final int memcachedSslPort = 11207;
+    final int memcachedPort = 11211;
     final int carrierDirectPort = 11210;
+    final int queryRestTrafficSslPort = 18091;
+    final int queryServiceSslPort = 18092;
+    final int n1qlSslPort = 18093;
+    final int searchServiceHttpsPort = 18094;
 }

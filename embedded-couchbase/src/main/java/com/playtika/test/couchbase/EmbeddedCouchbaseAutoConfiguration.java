@@ -26,16 +26,7 @@ package com.playtika.test.couchbase;
 import com.couchbase.client.CouchbaseClient;
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
-import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
-import com.playtika.test.common.checks.CompositeStartupCheckStrategy;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
-import com.playtika.test.couchbase.rest.CreateBucket;
-import com.playtika.test.couchbase.rest.CreateBucketUser;
-import com.playtika.test.couchbase.rest.SetupAdminUserAndPassword;
-import com.playtika.test.couchbase.rest.SetupIndexesType;
-import com.playtika.test.couchbase.rest.SetupNodeStorage;
-import com.playtika.test.couchbase.rest.SetupRamQuotas;
-import com.playtika.test.couchbase.rest.SetupServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,14 +38,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
-import static java.util.Arrays.asList;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
@@ -69,36 +56,10 @@ public class EmbeddedCouchbaseAutoConfiguration {
                                       CouchbaseProperties properties) throws Exception {
 
         log.info("Starting couchbase server. Docker image: {}", properties.dockerImage);
-
-        CompositeStartupCheckStrategy compositeStartupCheck = getCompositeStartupCheckStrategy(properties);
-        GenericContainer couchbase = new GenericContainer(properties.dockerImage)
-                .withStartupCheckStrategy(compositeStartupCheck)
-                .withLogConsumer(containerLogsConsumer(log))
-                .withExposedPorts(
-                        properties.httpDirectPort
-                        , properties.carrierDirectPort
-                );
+        GenericContainer couchbase = CouchbaseContainerFactory.create(properties, log);
         couchbase.start();
         registerCouchbaseEnvironment(couchbase, environment, properties);
         return couchbase;
-    }
-
-    /**
-     * https://developer.couchbase.com/documentation/server/current/rest-api/rest-node-provisioning.html
-     */
-    private CompositeStartupCheckStrategy getCompositeStartupCheckStrategy(CouchbaseProperties properties) {
-        List<StartupCheckStrategy> strategies = asList(new AbstractInitOnStartupStrategy[]{
-                new SetupNodeStorage(properties),
-                new SetupRamQuotas(properties),
-                new SetupServices(properties),
-                new SetupIndexesType(properties),
-                new SetupAdminUserAndPassword(properties),
-                new CreateBucket(properties),
-                new CreateBucketUser(properties),
-        });
-        return CompositeStartupCheckStrategy.builder()
-                .checksToPerform(strategies)
-                .build();
     }
 
     private void registerCouchbaseEnvironment(GenericContainer couchbase,
@@ -120,8 +81,8 @@ public class EmbeddedCouchbaseAutoConfiguration {
         map.put("embedded.couchbase.user", properties.bucket);
         map.put("embedded.couchbase.password", properties.password);
 
-        log.info("Started aerospike server. Connection details {},  " +
-                "Admin UI: http://localhost:{}, user: {}, password: {}",
+        log.info("Started couchbase server. Connection details {},  " +
+                        "Admin UI: http://localhost:{}, user: {}, password: {}",
                 map, mappedHttpPort, properties.getUser(), properties.getPassword());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedCouchbaseInfo", map);
