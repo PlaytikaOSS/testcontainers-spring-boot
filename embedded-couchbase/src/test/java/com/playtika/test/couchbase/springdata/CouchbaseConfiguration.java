@@ -23,11 +23,14 @@
  */
 package com.playtika.test.couchbase.springdata;
 
+import com.couchbase.client.java.AsyncBucket;
+import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 
@@ -67,4 +70,8 @@ public class CouchbaseConfiguration extends AbstractCouchbaseConfiguration {
                 .build();
     }
 
+    @Bean
+    AsyncBucket asyncCouchbaseBucket(Bucket bucket) {
+        return bucket.async();
+    }
 }

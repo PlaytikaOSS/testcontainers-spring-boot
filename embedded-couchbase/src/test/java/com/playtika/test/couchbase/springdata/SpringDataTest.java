@@ -23,18 +23,26 @@
  */
 package com.playtika.test.couchbase.springdata;
 
+import com.couchbase.client.java.AsyncBucket;
+import com.couchbase.client.java.Bucket;
 import com.playtika.test.couchbase.EmbeddedCouchbaseAutoConfigurationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.List;
 
+import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringDataTest extends EmbeddedCouchbaseAutoConfigurationTest {
 
     @Autowired
     TestDocumentRepository documentRepository;
+
+    @Autowired
+    ConfigurableListableBeanFactory beanFactory;
 
     @Test
     public void springDataShouldWork() throws Exception {
@@ -58,6 +66,30 @@ public class SpringDataTest extends EmbeddedCouchbaseAutoConfigurationTest {
         List<TestDocument> resultList = documentRepository.findByTitle(title);
 
         assertThat(resultList.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldSetupDependsOnForNewClient() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(Bucket.class);
+        assertThat(beanNamesForType)
+                .as("New sync client should be present")
+                .hasSize(1)
+                .contains("couchbaseBucket");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+
+        beanNamesForType = beanFactory.getBeanNamesForType(AsyncBucket.class);
+        assertThat(beanNamesForType)
+                .as("New async client should be present")
+                .hasSize(1)
+                .contains("asyncCouchbaseBucket");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                .isNotNull()
+                .isNotEmpty()
+                .contains(BEAN_NAME_EMBEDDED_COUCHBASE);
     }
 
     private TestDocument saveDocument(String key, String value) {

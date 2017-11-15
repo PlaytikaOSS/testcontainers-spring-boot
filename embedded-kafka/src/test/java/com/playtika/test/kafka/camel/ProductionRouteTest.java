@@ -35,10 +35,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
+import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         classes = {
@@ -50,6 +56,8 @@ import org.springframework.context.annotation.Configuration;
 @RunWith(CamelSpringRunner.class)
 public class ProductionRouteTest {
 
+    @Autowired
+    ConfigurableListableBeanFactory beanFactory;
     @Autowired
     private CamelContext camelContext;
     @Autowired
@@ -73,6 +81,22 @@ public class ProductionRouteTest {
 
         routeMonitor.getResultEndpoint().expectedBodiesReceived(message);
         routeMonitor.getResultEndpoint().assertIsSatisfied(3000);
+    }
+
+    @Test
+    public void shouldSetupDependsOnForCamel() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(CamelContext.class);
+        assertThat(beanNamesForType)
+                .as("CamelContext should be present")
+                .hasSize(1);
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                .isNotNull()
+                .isNotEmpty()
+                .contains(KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME);
     }
 
     @Configuration

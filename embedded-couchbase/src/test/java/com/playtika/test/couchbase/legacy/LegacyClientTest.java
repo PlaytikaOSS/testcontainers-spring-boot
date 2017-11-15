@@ -27,7 +27,10 @@ import com.couchbase.client.CouchbaseClient;
 import com.playtika.test.couchbase.EmbeddedCouchbaseAutoConfigurationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LegacyClientTest extends EmbeddedCouchbaseAutoConfigurationTest {
@@ -38,6 +41,9 @@ public class LegacyClientTest extends EmbeddedCouchbaseAutoConfigurationTest {
     @Autowired
     CouchbaseClient couchbaseClient;
 
+    @Autowired
+    ConfigurableListableBeanFactory beanFactory;
+
     @Test
     public void oldClientShouldWork() throws Exception {
         couchbaseClient.set(KEY, VALUE);
@@ -45,4 +51,20 @@ public class LegacyClientTest extends EmbeddedCouchbaseAutoConfigurationTest {
         assertThat(couchbaseClient.get(KEY)).isEqualTo(VALUE);
     }
 
+    @Test
+    public void shouldSetupDependsOnForOldClient() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(CouchbaseClient.class);
+        assertThat(beanNamesForType)
+                .as("Old couchbase client should be present")
+                .hasSize(1)
+                .contains("testCouchbaseClient");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                .isNotNull()
+                .isNotEmpty()
+                .contains(BEAN_NAME_EMBEDDED_COUCHBASE);
+    }
 }

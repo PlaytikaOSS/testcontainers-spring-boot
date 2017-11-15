@@ -21,31 +21,32 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.configuration.camel;
+package com.playtika.test.aerospike;
 
+import com.aerospike.client.AerospikeClient;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
-import com.playtika.test.kafka.configuration.KafkaContainerConfiguration;
-import org.apache.camel.CamelContext;
-import org.apache.camel.spring.boot.CamelAutoConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
-import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
-import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
+import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 
+@Slf4j
+@Order
 @Configuration
-@ConditionalOnClass(CamelContext.class)
-@ConditionalOnBean(KafkaContainerConfiguration.class)
-@AutoConfigureAfter(CamelAutoConfiguration.class)
-public class EmbeddedKafkaCamelAutoConfiguration {
+@ConditionalOnClass(AerospikeClient.class)
+public class EmbeddedAerospikeDependenciesAutoConfiguration {
 
-    @Bean
-    @ConditionalOnBean(CamelContext.class)
-    public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
-        return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME});
+    @Configuration
+    @ConditionalOnBean(AerospikeClient.class)
+    protected static class AerospikeClientPostProcessorConfiguration {
+        @Bean
+        public BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
+            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
+        }
     }
 }

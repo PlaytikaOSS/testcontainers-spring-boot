@@ -1,2 +1,5 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.mariadb.EmbeddedMariaDBAutoConfiguration
+  com.playtika.test.mariadb.EmbeddedMariaDBAutoConfiguration
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.playtika.test.mariadb.EmbeddedMariaDBDependenciesAutoConfiguration

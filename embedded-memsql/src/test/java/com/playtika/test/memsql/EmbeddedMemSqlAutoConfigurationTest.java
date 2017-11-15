@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.sql.DataSource;
+
+import static com.playtika.test.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -41,10 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = EmbeddedMemSqlAutoConfigurationTest.TestConfiguration.class)
 public class EmbeddedMemSqlAutoConfigurationTest {
 
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
+    @Autowired
+    ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -62,11 +65,33 @@ public class EmbeddedMemSqlAutoConfigurationTest {
     }
 
     @Test
+    public void shouldSetupDependsOnForAllDataSources() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+        assertThat(beanNamesForType)
+                .as("Auto-configured datasource should be present")
+                .hasSize(1)
+                .contains("dataSource");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                .isNotNull()
+                .isNotEmpty()
+                .contains(BEAN_NAME_EMBEDDED_MEMSQL);
+    }
+
+    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.memsql.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.schema")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.memsql.password")).isEqualTo("");
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }

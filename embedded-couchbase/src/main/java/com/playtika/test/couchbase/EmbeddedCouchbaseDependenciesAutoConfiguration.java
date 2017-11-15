@@ -21,31 +21,55 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.configuration.camel;
+package com.playtika.test.couchbase;
 
+import com.couchbase.client.CouchbaseClient;
+import com.couchbase.client.java.AsyncBucket;
+import com.couchbase.client.java.Bucket;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
-import com.playtika.test.kafka.configuration.KafkaContainerConfiguration;
-import org.apache.camel.CamelContext;
-import org.apache.camel.spring.boot.CamelAutoConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
-import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
-import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
+import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
 
+@Slf4j
+@Order
 @Configuration
-@ConditionalOnClass(CamelContext.class)
-@ConditionalOnBean(KafkaContainerConfiguration.class)
-@AutoConfigureAfter(CamelAutoConfiguration.class)
-public class EmbeddedKafkaCamelAutoConfiguration {
+@ConditionalOnBean(EmbeddedCouchbaseAutoConfiguration.class)
+public class EmbeddedCouchbaseDependenciesAutoConfiguration {
 
-    @Bean
-    @ConditionalOnBean(CamelContext.class)
-    public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
-        return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME});
+    @Configuration
+    @ConditionalOnClass(Bucket.class)
+    public static class CouchbaseBucketDependencyContext {
+
+        @Bean
+        public BeanFactoryPostProcessor bucketDependencyPostProcessor() {
+            return new DependsOnPostProcessor(Bucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
+        }
+    }
+
+    @Configuration
+    @ConditionalOnClass(AsyncBucket.class)
+    public static class CouchbaseAsyncBucketDependencyContext {
+
+        @Bean
+        public BeanFactoryPostProcessor asyncBucketDependencyPostProcessor() {
+            return new DependsOnPostProcessor(AsyncBucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
+        }
+    }
+
+    @Configuration
+    @ConditionalOnClass(CouchbaseClient.class)
+    public static class CouchbaseClientDependencyContext {
+
+        @Bean
+        public BeanFactoryPostProcessor couchbaseClientDependencyPostProcessor() {
+            return new DependsOnPostProcessor(CouchbaseClient.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
+        }
     }
 }

@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties("embedded.couchbase")
 public class CouchbaseProperties {
-    static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
+    public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
     boolean enabled;
     String services = "kv,index,n1ql,fts";
     String dockerImage = "couchbase:community-4.5.1";

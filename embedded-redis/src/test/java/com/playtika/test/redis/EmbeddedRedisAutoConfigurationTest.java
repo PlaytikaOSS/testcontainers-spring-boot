@@ -27,20 +27,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EmbeddedRedisAutoConfigurationTest.TestConfiguration.class)
 public class EmbeddedRedisAutoConfigurationTest {
+
+    @Autowired
+    ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
     private StringRedisTemplate template;
@@ -60,11 +68,36 @@ public class EmbeddedRedisAutoConfigurationTest {
         if (!this.template.hasKey(key)) {
             ops.set(key, "foo");
         }
-        assertThat( ops.get(key)).isEqualTo("foo");
+        assertThat(ops.get(key)).isEqualTo("foo");
+    }
+
+
+    @Test
+    public void shouldSetupDependsOnForAllClients() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(RedisConnectionFactory.class);
+        assertThat(beanNamesForType)
+                .as("RedisConnectionFactory should be present")
+                .hasSize(1)
+                .contains("redisConnectionFactory");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+
+        beanNamesForType = beanFactory.getBeanNamesForType(RedisTemplate.class);
+        assertThat(beanNamesForType)
+                .as("redisTemplates should be present")
+                .hasSize(2)
+                .contains("redisTemplate", "stringRedisTemplate");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                .isNotNull()
+                .isNotEmpty()
+                .contains(BEAN_NAME_EMBEDDED_REDIS);
     }
 
     @Test
-    public void propertiesAreAvalable() {
+    public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.redis.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.redis.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.redis.user")).isNotEmpty();

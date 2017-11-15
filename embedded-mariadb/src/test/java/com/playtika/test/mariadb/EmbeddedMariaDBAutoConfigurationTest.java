@@ -24,16 +24,25 @@
 package com.playtika.test.mariadb;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jdbc.pool.PoolConfiguration;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.sql.DataSource;
+
+import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -41,10 +50,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = EmbeddedMariaDBAutoConfigurationTest.TestConfiguration.class)
 public class EmbeddedMariaDBAutoConfigurationTest {
 
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
+    @Autowired
+    ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -58,11 +65,52 @@ public class EmbeddedMariaDBAutoConfigurationTest {
     }
 
     @Test
-    public void propertiesAreAvalable() {
+    public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.mariadb.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.schema")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.password")).isNotEmpty();
+    }
+
+    @Test
+    public void shouldSetupDependsOnForAllDataSources() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+        assertThat(beanNamesForType)
+                .as("Custom datasource should be present")
+                .hasSize(1)
+                .contains("customDatasource");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                .isNotNull()
+                .isNotEmpty()
+                .contains(BEAN_NAME_EMBEDDED_MARIADB);
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
+
+        @Value("${spring.datasource.url}")
+        String jdbcUrl;
+        @Value("${spring.datasource.username}")
+        String user;
+        @Value("${spring.datasource.password}")
+        String password;
+
+        @Bean(destroyMethod = "close")
+        public DataSource customDatasource() {
+            PoolConfiguration poolConfiguration = new PoolProperties();
+            poolConfiguration.setUrl(jdbcUrl);
+            poolConfiguration.setDriverClassName("org.mariadb.jdbc.Driver");
+            poolConfiguration.setUsername(user);
+            poolConfiguration.setPassword(password);
+            poolConfiguration.setTestOnBorrow(true);
+            poolConfiguration.setTestOnReturn(true);
+            return new org.apache.tomcat.jdbc.pool.DataSource(poolConfiguration);
+        }
     }
 }

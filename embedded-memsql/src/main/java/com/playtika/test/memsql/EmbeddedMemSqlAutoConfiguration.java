@@ -23,10 +23,7 @@
  */
 package com.playtika.test.memsql;
 
-import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,7 +35,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 
-import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
@@ -95,15 +91,5 @@ public class EmbeddedMemSqlAutoConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMemSqlInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-    }
-
-    @Configuration
-    @ConditionalOnBean(DataSource.class)
-    public static class EmbeddedMemSqlDataSourceDependencyContext {
-
-        @Bean
-        public BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
-            return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_MEMSQL});
-        }
     }
 }
