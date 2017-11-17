@@ -21,29 +21,32 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.couchbase.rest;
+package com.playtika.test.aerospike;
 
-import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
-import com.playtika.test.couchbase.CouchbaseProperties;
-import lombok.RequiredArgsConstructor;
+import com.aerospike.client.AerospikeClient;
+import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
-/**
- * https://developer.couchbase.com/documentation/server/current/rest-api/rest-node-provisioning.html
- */
+import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+
 @Slf4j
-@RequiredArgsConstructor
-public class SetupServices extends AbstractInitOnStartupStrategy {
+@Order
+@Configuration
+@ConditionalOnClass(AerospikeClient.class)
+public class EmbeddedAerospikeDependenciesAutoConfiguration {
 
-    private final CouchbaseProperties properties;
-
-    @Override
-    public String[] getScriptToExecute() {
-        return new String[]{
-                "curl", "-X", "POST",
-                "-u", "Administrator:password",
-                "http://127.0.0.1:8091/node/controller/setupServices",
-                "-d", "services=" + properties.getServices()
-        };
+    @Configuration
+    @ConditionalOnBean(AerospikeClient.class)
+    protected static class AerospikeClientPostProcessorConfiguration {
+        @Bean
+        public BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
+            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
+        }
     }
 }

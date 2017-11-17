@@ -21,37 +21,17 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.couchbase;
+package com.playtika.test.couchbase.springdata;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.couchbase.core.query.N1qlPrimaryIndexed;
+import org.springframework.data.couchbase.repository.CouchbaseRepository;
+import org.springframework.stereotype.Repository;
 
-@Data
-@ConfigurationProperties("embedded.couchbase")
-public class CouchbaseProperties {
-    public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
-    boolean enabled;
-    String services = "kv,index,n1ql,fts";
-    String dockerImage = "couchbase:community-4.5.1";
-    int clusterRamMb = 256;
-    int bucketRamMb = 100;
-    String bucketType = "couchbase";
+import java.util.List;
 
-    final String user = "Administrator";
-    final String password = "password";
-    final String bucket = "test";
+@Repository
+@N1qlPrimaryIndexed
+public interface TestDocumentRepository extends CouchbaseRepository<TestDocument, String> {
 
-    final int httpDirectPort = 8091;
-    final int queryServicePort = 8092;
-    final int queryRestTrafficPort = 8093;
-    final int searchServicePort = 8094;
-    final int analyticsServicePort = 8095;
-
-    final int memcachedSslPort = 11207;
-    final int memcachedPort = 11211;
-    final int carrierDirectPort = 11210;
-    final int queryRestTrafficSslPort = 18091;
-    final int queryServiceSslPort = 18092;
-    final int n1qlSslPort = 18093;
-    final int searchServiceHttpsPort = 18094;
+    List<TestDocument> findByTitle(String title);
 }

@@ -21,66 +21,48 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.mariadb;
 
-import com.aerospike.client.AerospikeClient;
-import com.aerospike.client.Bin;
-import com.aerospike.client.Key;
-import com.aerospike.client.Record;
-import com.aerospike.client.policy.ClientPolicy;
-import com.aerospike.client.policy.WritePolicy;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import javax.sql.DataSource;
+
+import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedAerospikeAutoConfigurationTest.TestConfiguration.class)
-public class EmbeddedAerospikeAutoConfigurationTest {
-
-    protected static final String SET = "values";
-
-    @Value("${embedded.aerospike.namespace}")
-    protected String namespace;
+@SpringBootTest(classes = AutoConfiguredDatasourceDependsOnTest.TestConfiguration.class)
+public class AutoConfiguredDatasourceDependsOnTest {
 
     @Autowired
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    AerospikeClient client;
-
-    @Autowired
-    WritePolicy policy;
+    JdbcTemplate jdbcTemplate;
 
     @Test
-    public void shouldSave() throws Exception {
-        Key key = new Key(namespace, SET, "key1");
-        Bin bin = new Bin("mybin", "myvalue");
-        client.put(policy, key, bin);
-
-        Record actual = client.get(policy, key);
-
-        assertThat(actual.bins).hasSize(1);
-        assertThat(actual.bins.get("mybin")).isEqualTo("myvalue");
+    public void shouldConnectToMariaDB() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("MariaDB");
     }
 
     @Test
-    public void shouldSetupDependsOnForAerospikeClient() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(AerospikeClient.class);
+    public void shouldSetupDependsOnForAllDataSources() throws Exception {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
         assertThat(beanNamesForType)
-                .as("AerospikeClient should be present")
+                .as("Auto-configured datasource should be present")
                 .hasSize(1)
-                .contains("aerospikeClient");
+                .contains("dataSource");
         asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 
@@ -88,31 +70,11 @@ public class EmbeddedAerospikeAutoConfigurationTest {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
                 .isNotNull()
                 .isNotEmpty()
-                .contains(AEROSPIKE_BEAN_NAME);
+                .contains(BEAN_NAME_EMBEDDED_MARIADB);
     }
 
     @EnableAutoConfiguration
     @Configuration
     static class TestConfiguration {
-
-        @Value("${embedded.aerospike.host}")
-        String host;
-        @Value("${embedded.aerospike.port}")
-        int port;
-
-        @Bean(destroyMethod = "close")
-        public AerospikeClient aerospikeClient() {
-            ClientPolicy clientPolicy = new ClientPolicy();
-            clientPolicy.timeout = 10_000;//in millis
-            return new AerospikeClient(clientPolicy, host, port);
-        }
-
-        @Bean
-        public WritePolicy policy() {
-            WritePolicy policy = new WritePolicy();
-            policy.totalTimeout = 200;//in millis
-            return policy;
-        }
     }
-
 }

@@ -21,37 +21,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.couchbase;
+package com.playtika.test.couchbase.springdata;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 @Data
-@ConfigurationProperties("embedded.couchbase")
-public class CouchbaseProperties {
-    public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
-    boolean enabled;
-    String services = "kv,index,n1ql,fts";
-    String dockerImage = "couchbase:community-4.5.1";
-    int clusterRamMb = 256;
-    int bucketRamMb = 100;
-    String bucketType = "couchbase";
+@Validated
+@ConfigurationProperties(prefix = "couchbase")
+public class CouchbaseConfigurationProperties {
 
-    final String user = "Administrator";
-    final String password = "password";
-    final String bucket = "test";
+    private String hosts;
+    private String bucket;
+    private String password;
 
-    final int httpDirectPort = 8091;
-    final int queryServicePort = 8092;
-    final int queryRestTrafficPort = 8093;
-    final int searchServicePort = 8094;
-    final int analyticsServicePort = 8095;
+    private int bootstrapHttpDirectPort;
+    private int bootstrapCarrierDirectPort;
 
-    final int memcachedSslPort = 11207;
-    final int memcachedPort = 11211;
-    final int carrierDirectPort = 11210;
-    final int queryRestTrafficSslPort = 18091;
-    final int queryServiceSslPort = 18092;
-    final int n1qlSslPort = 18093;
-    final int searchServiceHttpsPort = 18094;
 }

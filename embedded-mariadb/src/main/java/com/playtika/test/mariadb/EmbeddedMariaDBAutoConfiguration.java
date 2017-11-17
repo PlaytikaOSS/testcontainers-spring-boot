@@ -23,10 +23,7 @@
  */
 package com.playtika.test.mariadb;
 
-import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,7 +34,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 
-import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
@@ -53,11 +49,12 @@ public class EmbeddedMariaDBAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    MariaDBStatusCheck mariaDBStartupCheckStrategy(MariaDBProperties properties){
+    MariaDBStatusCheck mariaDBStartupCheckStrategy(MariaDBProperties properties) {
         return new MariaDBStatusCheck();
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
+    @ConditionalOnMissingBean
     public GenericContainer mariadb(ConfigurableEnvironment environment,
                                     MariaDBProperties properties,
                                     MariaDBStatusCheck mariaDBStatusCheck) throws Exception {
@@ -96,16 +93,5 @@ public class EmbeddedMariaDBAutoConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMariaInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-    }
-
-
-    @Configuration
-    @ConditionalOnBean(DataSource.class)
-    public static class EmbeddedMariaDbDataSourceDependencyContext {
-
-        @Bean
-        public BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
-            return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_MARIADB});
-        }
     }
 }

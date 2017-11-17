@@ -21,16 +21,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.utils;
+package com.playtika.test.couchbase.springdata;
 
-import com.playtika.test.common.utils.ContainerUtils;
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.Test;
+import com.couchbase.client.java.repository.annotation.Field;
+import com.couchbase.client.java.repository.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.couchbase.core.mapping.Document;
 
-public class ExecCmdResultTest {
+@Builder(toBuilder = true)
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document
+public class TestDocument {
 
-    @Test
-    public void shouldHave_equalsAndHashcodeContract() {
-        EqualsVerifier.forClass(ContainerUtils.ExecCmdResult.class).verify();
-    }
+    @Id
+    String key;
+
+    @Field
+    String title;
+
 }

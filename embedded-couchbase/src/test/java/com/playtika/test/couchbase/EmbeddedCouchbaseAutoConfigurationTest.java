@@ -1,58 +1,45 @@
+/*
+* The MIT License (MIT)
+*
+* Copyright (c) 2017 Playtika
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+ */
 package com.playtika.test.couchbase;
 
-import com.couchbase.client.CouchbaseClient;
-import org.junit.Ignore;
+import com.playtika.test.couchbase.legacy.LegacyClientConfiguration;
+import com.playtika.test.couchbase.springdata.CouchbaseConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedCouchbaseAutoConfigurationTest.SpringBootApp.class)
-public class EmbeddedCouchbaseAutoConfigurationTest {
-
-    public static final String KEY = "test::1";
-    public static final String VALUE = "myvalue";
+@SpringBootTest(classes = {CouchbaseConfiguration.class, LegacyClientConfiguration.class})
+public abstract class EmbeddedCouchbaseAutoConfigurationTest {
 
     @Autowired
     ConfigurableEnvironment environment;
-
-    @Autowired
-    TestDocumentRepository documentRepository;
-
-    @Autowired
-    CouchbaseClient couchbaseClient;
-
-    @Test
-    public void springDataShouldWork() throws Exception {
-
-        assertThat(documentRepository).isNotNull();
-        assertThat(documentRepository.findOne(KEY)).isNull();
-
-        TestDocument testDocument = TestDocument.builder()
-                .key(KEY)
-                .title(VALUE)
-                .build();
-        documentRepository.save(testDocument);
-
-        assertThat(documentRepository.findOne(KEY)).isEqualTo(testDocument);
-    }
-
-    @Ignore("Figure out how to rewrite ports for old client")
-    @Test
-    public void oldClientShouldWork() throws Exception {
-        couchbaseClient.set(KEY, VALUE).get(5, TimeUnit.SECONDS);
-
-        assertThat(couchbaseClient.get(KEY)).isEqualTo(VALUE);
-    }
 
     @Test
     public void propertiesAreAvailable() {
@@ -65,10 +52,4 @@ public class EmbeddedCouchbaseAutoConfigurationTest {
         assertThat(System.getProperty("com.couchbase.bootstrapHttpDirectPort")).isNotEmpty();
         assertThat(System.getProperty("com.couchbase.bootstrapCarrierDirectPort")).isNotEmpty();
     }
-
-    @Configuration
-    @Import({SpringDataCouchbaseConfiguration.class, LegacyClientConfiguration.class})
-    static class SpringBootApp {
-    }
-
 }
