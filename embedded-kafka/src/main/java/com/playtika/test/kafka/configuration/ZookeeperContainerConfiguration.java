@@ -46,10 +46,10 @@ import java.util.LinkedHashMap;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
 
+@Slf4j
 @Configuration
 @ConditionalOnProperty(value = "embedded.zookeeper.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(ZookeeperConfigurationProperties.class)
-@Slf4j
 public class ZookeeperContainerConfiguration {
 
     @Bean
@@ -80,14 +80,13 @@ public class ZookeeperContainerConfiguration {
                 .withExposedPorts(mappingPort)
                 .withFixedExposedPort(mappingPort, mappingPort);
         zookeeper.start();
-
-        registerZookeperEnvironment(zookeeper, environment, zookeeperProperties);
+        registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;
     }
 
-    private void registerZookeperEnvironment(GenericContainer zookeeper,
-                                             ConfigurableEnvironment environment,
-                                             ZookeeperConfigurationProperties zookeeperProperties) {
+    private void registerZookeeperEnvironment(GenericContainer zookeeper,
+                                              ConfigurableEnvironment environment,
+                                              ZookeeperConfigurationProperties zookeeperProperties) {
         Integer port = zookeeper.getMappedPort(zookeeperProperties.getZookeeperPort());
         String host = zookeeper.getContainerIpAddress();
 
