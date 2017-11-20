@@ -21,10 +21,12 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.kafka.configuration.camel;
+package com.playtika.test.neo4j;
 
 import com.playtika.test.common.spring.DependsOnPostProcessor;
-import org.apache.camel.CamelContext;
+import lombok.extern.slf4j.Slf4j;
+import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -32,17 +34,29 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
-import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
+import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
+@Slf4j
 @Configuration
 @AutoConfigureOrder
-@ConditionalOnClass(CamelContext.class)
-@AutoConfigureAfter(name = "org.apache.camel.spring.boot.CamelAutoConfiguration")
-public class EmbeddedKafkaCamelAutoConfiguration {
+@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration")
+public class EmbeddedNeo4jDependenciesAutoConfiguration {
 
-    @Bean
-    public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
-        return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME});
+    @Configuration
+    @ConditionalOnClass(Session.class)
+    public static class Neo4jSessionDependencyContext {
+        @Bean
+        public BeanFactoryPostProcessor neo4jSessionDependencyPostProcessor() {
+            return new DependsOnPostProcessor(Session.class, new String[]{BEAN_NAME_EMBEDDED_NEO4J});
+        }
+    }
+
+    @Configuration
+    @ConditionalOnClass(SessionFactory.class)
+    public static class Neo4jSessionFactoryDependencyContext {
+        @Bean
+        public BeanFactoryPostProcessor neo4jSessionFactoryDependencyPostProcessor() {
+            return new DependsOnPostProcessor(SessionFactory.class, new String[]{BEAN_NAME_EMBEDDED_NEO4J});
+        }
     }
 }

@@ -21,30 +21,23 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.neo4j;
 
-import com.aerospike.client.AerospikeClient;
-import com.playtika.test.common.spring.DependsOnPostProcessor;
+import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
-
+/**
+ * https://neo4j.com/docs/operations-manual/current/configuration/wait-for-start/
+ */
 @Slf4j
-@Configuration
-@AutoConfigureOrder
-@ConditionalOnClass(AerospikeClient.class)
-public class EmbeddedAerospikeDependenciesAutoConfiguration {
+@RequiredArgsConstructor
+public class Neo4jStatusCheck extends AbstractStartupCheckStrategy {
 
-    @Configuration
-    protected static class AerospikeClientPostProcessorConfiguration {
-        @Bean
-        public BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
-            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
-        }
+    @Override
+    public String[] getHealthCheckCmd() {
+        return new String[]{
+                "bash", "/neo4j-health.sh"
+        };
     }
 }

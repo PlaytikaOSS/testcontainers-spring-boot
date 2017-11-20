@@ -29,18 +29,18 @@ import com.couchbase.client.java.Bucket;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
 
 @Slf4j
-@Order
 @Configuration
-@ConditionalOnBean(EmbeddedCouchbaseAutoConfiguration.class)
+@AutoConfigureOrder
+@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration")
 public class EmbeddedCouchbaseDependenciesAutoConfiguration {
 
     @Configuration

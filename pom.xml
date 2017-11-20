@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.8.RELEASE</version>
     </parent>
 
     <licenses>
@@ -36,8 +36,8 @@
         <module>embedded-memsql</module>
         <module>embedded-couchbase</module>
         <module>embedded-redis</module>
-        <!--<module>embedded-neo4j</module>-->
-        <!--<module>embedded-zookeper</module>-->
+        <module>embedded-neo4j</module>
+        <!--<module>embedded-zookeeper</module>-->
     </modules>
 
     <properties>
@@ -46,7 +46,7 @@
         <java.version>1.8</java.version>
 
         <testcontainers.version>1.4.2</testcontainers.version>
-        <spring.cloud.version>Dalston.SR3</spring.cloud.version>
+        <spring.cloud.version>Dalston.SR4</spring.cloud.version>
         <docker-java.version>3.0.14</docker-java.version>
 
         <equalsverifier.version>2.3.1</equalsverifier.version>
