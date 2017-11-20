@@ -21,7 +21,7 @@ jobs:
       - checkout
       - run:
           name: Run build with tests
-          command:  if [[ -z "$RELEASE" ]]; then  mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -U -P sonar -nsu --batch-mode -Dmaven.test.redirectTestOutputToFile=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ;fi
+          command:  if [[ -z "$GIT_USER_EMAIL" ]]; then  mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -U -P sonar -nsu --batch-mode -Dmaven.test.redirectTestOutputToFile=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ;fi
       - run:
            name: Save test results
            command: |
@@ -46,13 +46,13 @@ jobs:
       - run:
           name: Release step
           command: |
-                   if [[ -n $RELEASE ]]; then
+                   if [[ -n $GIT_USER_EMAIL ]]; then
                        openssl enc -d -aes-256-cbc -in ~/project/.circleci/gpg.playtika.private.enc -out ~/project/.circleci/gpg.playtika.private -k $PGP_SSL  ;
                        gpg --import ~/project/.circleci/gpg.playtika.pub ;
                        gpg --import ~/project/.circleci/gpg.playtika.private ;
                        gpg -k
                        git config --global user.email $GIT_USER_EMAIL ;
                        git config --global user.name "$GIT_USER_NAME" ;
-                       mvn -B -P ossrh release:clean release:prepare -Darguments=-Dmaven.test.skip=true -DreleaseVersion=$RELEASE -DdevelopmentVersion=$NEXT ;
-                       mvn -B -s  ~/project/.circleci/circleci.settings.xml release:perform ;
+                       mvn -B -P ossrh -Dmaven.test.skip=true install;
+                       mvn -B -s  ~/project/.circleci/circleci.settings.xml deploy ;
                    fi
