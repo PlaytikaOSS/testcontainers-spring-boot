@@ -21,12 +21,11 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.redis;
+package com.playtika.test.neo4j;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,58 +38,66 @@ import org.testcontainers.containers.GenericContainer;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
+import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Slf4j
 @Configuration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@ConditionalOnProperty(name = "embedded.redis.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(RedisProperties.class)
-public class EmbeddedRedisAutoConfiguration {
+@EnableConfigurationProperties(Neo4jProperties.class)
+public class EmbeddedNeo4jAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    RedisStatusCheck redisStartupCheckStrategy(RedisProperties properties) {
-        return new RedisStatusCheck();
+    Neo4jStatusCheck neo4jStartupCheckStrategy(Neo4jProperties properties) {
+        return new Neo4jStatusCheck();
     }
 
-    @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
-    public GenericContainer redis(ConfigurableEnvironment environment,
-                                  RedisProperties properties,
-                                  RedisStatusCheck redisStatusCheck) throws Exception {
+    @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
+    public GenericContainer neo4j(ConfigurableEnvironment environment,
+                                  Neo4jProperties properties,
+                                  Neo4jStatusCheck Neo4jStatusCheck) throws Exception {
 
-        log.info("Starting redis server. Docker image: {}", properties.dockerImage);
+        log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer redis =
+        GenericContainer neo4j =
                 new GenericContainer(properties.dockerImage)
-                        .withStartupCheckStrategy(redisStatusCheck)
+                        .withStartupCheckStrategy(Neo4jStatusCheck)
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port)
-                        .withEnv("REDIS_USER", properties.getUser())
-                        .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCommand("redis-server", "--requirepass", properties.getPassword())
+                        .withExposedPorts(
+                                properties.httpsPort
+                                , properties.httpPort
+                                , properties.boltPort)
                         .withClasspathResourceMapping(
-                                "redis-health.sh",
-                                "/redis-health.sh",
+                                "neo4j-health.sh",
+                                "/neo4j-health.sh",
                                 BindMode.READ_ONLY
                         );
-        redis.start();
-        registerRedisEnvironment(redis, environment, properties);
-        return redis;
+        neo4j.start();
+        registerNeo4jEnvironment(neo4j, environment, properties);
+        return neo4j;
     }
 
-    private void registerRedisEnvironment(GenericContainer redis,
+    private void registerNeo4jEnvironment(GenericContainer neo4j,
                                           ConfigurableEnvironment environment,
-                                          RedisProperties properties) {
-        Integer mappedPort = redis.getMappedPort(properties.port);
-        String host = redis.getContainerIpAddress();
+                                          Neo4jProperties properties) {
+        Integer httpsPort = neo4j.getMappedPort(properties.httpsPort);
+        Integer httpPort = neo4j.getMappedPort(properties.httpPort);
+        Integer boltPort = neo4j.getMappedPort(properties.boltPort);
+        String host = neo4j.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.redis.port", mappedPort);
-        map.put("embedded.redis.host", host);
-        map.put("embedded.redis.password", properties.getPassword());
-        map.put("embedded.redis.user", properties.getUser());
-        MapPropertySource propertySource = new MapPropertySource("embeddedRedisInfo", map);
+        map.put("embedded.neo4j.httpsPort", httpsPort);
+        map.put("embedded.neo4j.httpPort", httpPort);
+        map.put("embedded.neo4j.boltPort", boltPort);
+        map.put("embedded.neo4j.host", host);
+        map.put("embedded.neo4j.password", properties.getPassword());
+        map.put("embedded.neo4j.user", properties.getUser());
+
+        log.info("Started couchbase server. Connection details {},  " +
+                        "Admin UI: http://localhost:{}, user: {}, password: {}",
+                map, httpPort, properties.getUser(), properties.getPassword());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedNeo4jInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }
 }

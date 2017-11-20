@@ -61,7 +61,7 @@ By adding module into classpath, you will get stateful service, like couchbase o
 /src/test/resources/application.properties
 
 ```properties
-spring.kafka.zookeperHost=${embedded.zookeeper.zookeeperConnect}
+spring.kafka.zookeeperHost=${embedded.zookeeper.zookeeperConnect}
 spring.kafka.brokerList=${embedded.kafka.brokerList}
 ```
  /src/test/resources/bootstrap.properties
@@ -200,11 +200,24 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.redis.user
 * embedded.redis.password 
 ### embedded-neo4j
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-neo4j</artifactId>
+    <scope>test</scope>
+</dependency>
+```
 ##### Consumes
-* 
+* embedded.neo4j.enabled `(true|false, default is 'true')`
+* embedded.neo4j.dockerImage `(default is set to 'neo4j:3.2.7')`
 ##### Produces
-* 
-### embedded-zookeper
+* embedded.neo4j.user
+* embedded.neo4j.password
+* embedded.neo4j.httpsPort
+* embedded.neo4j.httpPort
+* embedded.neo4j.boltPort
+### embedded-zookeeper
 ##### Consumes
 * 
 ##### Produces

@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.neo4j.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.neo4j.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of neo4j server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of neo4j server on startup."
+        }
+      ]
+    }
+  ]
+}
