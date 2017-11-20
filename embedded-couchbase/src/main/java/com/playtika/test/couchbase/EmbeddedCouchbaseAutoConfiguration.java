@@ -23,18 +23,13 @@
  */
 package com.playtika.test.couchbase;
 
-import com.couchbase.client.CouchbaseClient;
-import com.couchbase.client.java.AsyncBucket;
-import com.couchbase.client.java.Bucket;
-import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -42,11 +37,10 @@ import org.testcontainers.containers.GenericContainer;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
 @Configuration
-@Order(HIGHEST_PRECEDENCE)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.couchbase.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class EmbeddedCouchbaseAutoConfiguration {
@@ -87,35 +81,5 @@ public class EmbeddedCouchbaseAutoConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedCouchbaseInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-    }
-
-    @Configuration
-    @ConditionalOnClass(Bucket.class)
-    public static class CouchbaseBucketDependencyContext {
-
-        @Bean
-        public BeanFactoryPostProcessor bucketDependencyPostProcessor() {
-            return new DependsOnPostProcessor(Bucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
-        }
-    }
-
-    @Configuration
-    @ConditionalOnClass(AsyncBucket.class)
-    public static class CouchbaseAsyncBucketDependencyContext {
-
-        @Bean
-        public BeanFactoryPostProcessor asyncBucketDependencyPostProcessor() {
-            return new DependsOnPostProcessor(AsyncBucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
-        }
-    }
-
-    @Configuration
-    @ConditionalOnClass(CouchbaseClient.class)
-    public static class CouchbaseClientDependencyContext {
-
-        @Bean
-        public BeanFactoryPostProcessor couchbaseClientDependencyPostProcessor() {
-            return new DependsOnPostProcessor(CouchbaseClient.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
-        }
     }
 }

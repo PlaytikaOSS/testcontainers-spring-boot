@@ -21,30 +21,20 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.neo4j;
 
-import com.aerospike.client.AerospikeClient;
-import com.playtika.test.common.spring.DependsOnPostProcessor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
-
-@Slf4j
-@Configuration
-@AutoConfigureOrder
-@ConditionalOnClass(AerospikeClient.class)
-public class EmbeddedAerospikeDependenciesAutoConfiguration {
-
-    @Configuration
-    protected static class AerospikeClientPostProcessorConfiguration {
-        @Bean
-        public BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
-            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
-        }
-    }
+@Data
+@ConfigurationProperties("embedded.neo4j")
+public class Neo4jProperties {
+    static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
+    boolean enabled;
+    String dockerImage = "neo4j:3.2.7";
+    final String user = "neo4j";
+    final String password = "letmein";
+    final int httpsPort = 7473;
+    final int httpPort = 7474;
+    final int boltPort = 7687;
 }

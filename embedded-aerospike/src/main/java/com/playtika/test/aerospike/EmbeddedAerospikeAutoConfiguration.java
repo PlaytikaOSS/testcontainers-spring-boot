@@ -24,35 +24,31 @@
 package com.playtika.test.aerospike;
 
 import com.aerospike.client.AerospikeClient;
-import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.output.OutputFrame;
 
 import java.util.LinkedHashMap;
-import java.util.function.Consumer;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
-@Order(HIGHEST_PRECEDENCE)
+@Configuration
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
 @ConditionalOnClass(AerospikeClient.class)
 @EnableConfigurationProperties(AerospikeProperties.class)
-@Configuration
 public class EmbeddedAerospikeAutoConfiguration {
 
     @Bean
@@ -97,16 +93,5 @@ public class EmbeddedAerospikeAutoConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedAerospikeInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-    }
-
-    @ConditionalOnClass(AerospikeClient.class)
-    @Configuration
-    protected static class AerospikeClientPostProcessorConfiguration {
-
-        @Bean
-        public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
-            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
-        }
-
     }
 }

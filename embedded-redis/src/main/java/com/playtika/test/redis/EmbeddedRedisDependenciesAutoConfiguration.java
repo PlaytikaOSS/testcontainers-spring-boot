@@ -27,12 +27,10 @@ import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import redis.clients.jedis.Jedis;
@@ -40,14 +38,13 @@ import redis.clients.jedis.Jedis;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
 @Slf4j
-@Order
 @Configuration
-@AutoConfigureAfter(RedisAutoConfiguration.class)
+@AutoConfigureOrder
+@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration")
 public class EmbeddedRedisDependenciesAutoConfiguration {
 
     @Configuration
     @ConditionalOnClass(RedisConnectionFactory.class)
-    @ConditionalOnBean(RedisConnectionFactory.class)
     public static class RedisConnectionFactoryDependencyContext {
         @Bean
         public BeanFactoryPostProcessor redisConnectionFactoryDependencyPostProcessor() {
@@ -57,7 +54,6 @@ public class EmbeddedRedisDependenciesAutoConfiguration {
 
     @Configuration
     @ConditionalOnClass(RedisTemplate.class)
-    @ConditionalOnBean(RedisTemplate.class)
     public static class RedisTemplateDependencyContext {
         @Bean
         public BeanFactoryPostProcessor redisTemplateDependencyPostProcessor() {
@@ -67,7 +63,6 @@ public class EmbeddedRedisDependenciesAutoConfiguration {
 
     @Configuration
     @ConditionalOnClass(Jedis.class)
-    @ConditionalOnBean(Jedis.class)
     public static class JedisDependencyContext {
         @Bean
         public BeanFactoryPostProcessor jedisDependencyPostProcessor() {
