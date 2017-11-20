@@ -1,7 +1,21 @@
-# Embeddable data services library using docker and testcontainers
+# Data services library
 
 If you are writing services using spring boot (and maybe spring cloud) and you do [medium sized](https://testing.googleblog.com/2010/12/test-sizes.html) tests during build process, then this set of spring boot auto-configurations might be handy.
 By adding module into classpath, you will get stateful service, like couchbase or kafka, auto-started and available for connection from your application service w/o wiring any additional code.
+[Docker](https://www.docker.com/) and [TestContainers](https://www.testcontainers.org/) are used to bootstrap stateful service.
+
+# Table of Contents
+1. [How to use](#how-to-use)
+2. [List of properties per data service](#list-of-properties-per-data-service)
+   1. [embedded-mariadb](#embedded-mariadb)
+   2. [embedded-couchbase](#embedded-couchbase)
+   3. [embedded-kafka](#embedded-kafka)
+   4. [embedded-aerospike](#embedded-aerospike)
+   5. [embedded-memsql](#embedded-memsql)
+   6. [embedded-redis](#embedded-redis)
+   7. [embedded-neo4j](#embedded-neo4j)
+   8. [embedded-zookeeper](#embedded-zookeeper)
+3. [How to contribute](#how-to-contribute)
 
 ## How to use
 #### Make sure you have spring boot and spring cloud in classpath of your tests
@@ -222,6 +236,17 @@ embedded.kafka.topicsToCreate=some_topic
 * 
 ##### Produces
 * 
-
-
-
+## How to contribute
+### Flow
+* There is 2 branches in project: master and develop
+* You need to fork project and create branch from develop
+* You do not need to update project version in pom.xml files, this will be done by release job
+* Once finished - create pull request to develop from your fork, pass review and wait for merge
+* On release, ci job will merge develop into master and remove snapshot + publish artifacts into public maven repo
+### Release
+* Release build is done on using [gitflow-maven-plugin](https://github.com/aleksandr-m/gitflow-maven-plugin)
+* Release is done per each major change, critical bug
+* Release can be done by contributor request
+* Contacts to start release: 
+   * [obevzenko@playtika.com](mailto:obevzenko@playtika.com)
+   * [ivasylyev@playtika.com](mailto:ivasylyev@playtika.com)
