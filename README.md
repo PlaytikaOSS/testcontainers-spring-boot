@@ -1,5 +1,7 @@
 # Data services library
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9bf7bea79a2b4048bf3ed8fa247092d1)](https://www.codacy.com/app/alekseibevzenko/testcontainers-spring-boot?utm_source=github.com&utm_medium=referral&utm_content=Playtika/testcontainers-spring-boot&utm_campaign=badger)
+
 If you are writing services using spring boot (and maybe spring cloud) and you do [medium sized](https://testing.googleblog.com/2010/12/test-sizes.html) tests during build process, then this set of spring boot auto-configurations might be handy.
 By adding module into classpath, you will get stateful service, like couchbase or kafka, auto-started and available for connection from your application service w/o wiring any additional code.
 [Docker](https://www.docker.com/) and [TestContainers](https://www.testcontainers.org/) are used to bootstrap stateful service.
