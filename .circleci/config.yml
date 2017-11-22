@@ -53,6 +53,6 @@ jobs:
                        gpg -k
                        git config --global user.email $GIT_USER_EMAIL ;
                        git config --global user.name "$GIT_USER_NAME" ;
-                       mvn -B -P ossrh -Dmaven.test.skip=true install;
-                       mvn -B -s  ~/project/.circleci/circleci.settings.xml deploy ;
+                       mvn -B -s  ~/project/.circleci/circleci.settings.xml -P ossrh  deploy ;
+
                    fi
