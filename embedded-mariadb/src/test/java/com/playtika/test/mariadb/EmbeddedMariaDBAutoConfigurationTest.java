@@ -65,6 +65,14 @@ public class EmbeddedMariaDBAutoConfigurationTest {
     }
 
     @Test
+    public void shouldSaveAndGetUnicode() throws Exception {
+        jdbcTemplate.execute("CREATE TABLE employee(id INT, name VARCHAR(64));");
+        jdbcTemplate.execute("insert into employee (id, name) values (1, 'some data \uD83D\uDE22');");
+
+        assertThat(jdbcTemplate.queryForObject("select name from employee where id = 1", String.class)).isEqualTo("some data \uD83D\uDE22");
+    }
+
+    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.mariadb.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.host")).isNotEmpty();

@@ -32,6 +32,9 @@ public class MariaDBProperties {
     static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
     boolean enabled;
     String dockerImage = "mariadb:10.3.2";
+    String encoding = "utf8mb4";
+    String collation = "utf8mb4_unicode_ci";
+
     final String user = "mariadb";
     final String password = "letmein";
     final String database = "test_db";
