@@ -67,6 +67,9 @@ public class EmbeddedMariaDBAutoConfiguration {
                         .withEnv("MYSQL_USER", properties.getUser())
                         .withEnv("MYSQL_PASSWORD", properties.getPassword())
                         .withEnv("MYSQL_DATABASE", properties.getDatabase())
+                        .withCommand(
+                                "--character-set-server=" + properties.getEncoding(),
+                                "--collation-server=" + properties.getCollation())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port);
         mariadb.start();
