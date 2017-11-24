@@ -100,6 +100,8 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes
 * embedded.mariadb.enabled `(true|false, default is 'true')`
+* embedded.mariadb.encoding `(default is 'utf8mb4')`
+* embedded.mariadb.collation `(default is 'utf8mb4_unicode_ci')`
 * embedded.mariadb.dockerImage `(default is set to 'mariadb:10.3.2')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mariadb/tags/)
 ##### Produces
