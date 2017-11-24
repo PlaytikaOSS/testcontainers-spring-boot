@@ -43,16 +43,3 @@ jobs:
             path: ~/artifacts
       - store_artifacts:
             path: ~/artifacts
-      - run:
-          name: Release step
-          command: |
-                   if [[ -n $GIT_USER_EMAIL ]]; then
-                       openssl enc -d -aes-256-cbc -in ~/project/.circleci/gpg.playtika.private.enc -out ~/project/.circleci/gpg.playtika.private -k $PGP_SSL  ;
-                       gpg --import ~/project/.circleci/gpg.playtika.pub ;
-                       gpg --import ~/project/.circleci/gpg.playtika.private ;
-                       gpg -k
-                       git config --global user.email $GIT_USER_EMAIL ;
-                       git config --global user.name "$GIT_USER_NAME" ;
-                       mvn -B -s  ~/project/.circleci/circleci.settings.xml -P ossrh  deploy ;
-
-                   fi
