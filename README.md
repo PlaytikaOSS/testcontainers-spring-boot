@@ -193,6 +193,7 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Consumes
 * embedded.memsql.enabled `(true|false, default is 'true')`
 * embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:minimal-6.0.8')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/memsql/quickstart/tags/)
 ##### Produces
 * embedded.memsql.port
 * embedded.memsql.host
@@ -215,6 +216,7 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Consumes
 * embedded.redis.enabled `(true|false, default is 'true')`
 * embedded.redis.dockerImage `(default is set to 'redis:4.0.2')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/redis/tags/)
 ##### Produces
 * embedded.redis.host
 * embedded.redis.port
@@ -232,6 +234,7 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Consumes
 * embedded.neo4j.enabled `(true|false, default is 'true')`
 * embedded.neo4j.dockerImage `(default is set to 'neo4j:3.2.7')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/neo4j/tags/)
 ##### Produces
 * embedded.neo4j.user
 * embedded.neo4j.password
