@@ -23,25 +23,15 @@ By adding module into classpath, you will get stateful service, like couchbase o
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
-#### Make sure you have spring boot and spring cloud in classpath of your tests
+#### Make sure you have [spring boot and spring cloud](http://projects.spring.io/spring-cloud/#quick-start) in classpath of your tests
 ```xml
 <project>
 ...
       <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-            </exclusions>
+             ...
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-  
 ...
 </project>
 ```
