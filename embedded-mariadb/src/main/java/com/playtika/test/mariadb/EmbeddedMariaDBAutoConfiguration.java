@@ -54,7 +54,6 @@ public class EmbeddedMariaDBAutoConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
-    @ConditionalOnMissingBean
     public GenericContainer mariadb(ConfigurableEnvironment environment,
                                     MariaDBProperties properties,
                                     MariaDBStatusCheck mariaDBStatusCheck) throws Exception {
