@@ -23,44 +23,31 @@
  */
 package com.playtika.test.common.checks;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
 
 import static com.playtika.test.common.utils.ContainerUtils.ExecCmdResult;
 
 @Slf4j
-public abstract class AbstractStartupCheckStrategy extends StartupCheckStrategy {
+public abstract class AbstractCommandWaitStrategy extends AbstractRetryingWaitStrategy {
 
-    public String getContainerType(){
-        return getClass().getSimpleName();
-    }
+    public abstract String[] getCheckCommand();
 
-    public abstract String[] getHealthCheckCmd();
-
-    @Override
-    public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
+    protected boolean isReady() {
         String commandName = getContainerType();
-        log.debug("{} execution for container id: {} ", commandName, containerId);
+        String containerId = container.getContainerId();
+        log.debug("{} execution of command {} for container id: {} ", commandName, containerId);
 
-        InspectContainerResponse response = dockerClient.inspectContainerCmd(containerId).exec();
-        if (!response.getState().getRunning()) {
-            log.debug("{} Container {} is not started", commandName, containerId);
-            return StartupStatus.NOT_YET_KNOWN;
-        }
-
-        ExecCmdResult healthCheckCmdResult = ContainerUtils.execCmd(dockerClient, containerId, getHealthCheckCmd());
+        ExecCmdResult healthCheckCmdResult = ContainerUtils.execCmd(container.getDockerClient(), containerId, getCheckCommand());
 
         log.debug("{} executed with exitCode: {}, output: {}",
                 commandName, healthCheckCmdResult.getExitCode(), healthCheckCmdResult.getOutput());
 
         if (healthCheckCmdResult.getExitCode() != 0) {
             log.debug("{} executed with exitCode !=0, considering status as unknown", commandName);
-            return StartupStatus.NOT_YET_KNOWN;
+            return false;
         }
         log.debug("{} command executed, considering container {} successfully started", commandName, containerId);
-        return StartupStatus.SUCCESSFUL;
+        return true;
     }
 }

@@ -25,47 +25,44 @@ package com.playtika.test.aerospike;
 
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.AerospikeException;
-import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.NetworkSettings;
 import com.github.dockerjava.api.model.Ports;
+import com.playtika.test.common.checks.AbstractRetryingWaitStrategy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
-import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
 
 import java.util.Map;
 
 @Slf4j
 @AllArgsConstructor
-public class AerospikeStartupCheckStrategy extends StartupCheckStrategy {
+public class AerospikeWaitStrategy extends AbstractRetryingWaitStrategy {
 
-    AerospikeProperties properties;
+    private final AerospikeProperties properties;
 
     @Override
-    public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
+    protected boolean isReady() {
+        String containerId = container.getContainerId();
         log.debug("Check Aerospike container {} status", containerId);
 
-        InspectContainerResponse response = dockerClient.inspectContainerCmd(containerId).exec();
-        if (!response.getState().getRunning()) {
-            return StartupStatus.FAILED;
+        InspectContainerResponse containerInfo = container.getContainerInfo();
+        if (containerInfo == null) {
+            log.debug("Aerospike container[{}] doesn't contain info. Abnormal situation, should not happen.", containerId);
+            return false;
         }
 
-        int port = getMappedPort(response.getNetworkSettings(), properties.port);
+        int port = getMappedPort(containerInfo.getNetworkSettings(), properties.port);
         String host = DockerClientFactory.instance().dockerHostIpAddress();
 
         //TODO: Remove dependency to client https://www.aerospike.com/docs/tools/asmonitor/common_tasks.html
         try (AerospikeClient client = new AerospikeClient(host, port)) {
-            if (client.isConnected()) {
-                return StartupStatus.SUCCESSFUL;
-            }
-            return StartupStatus.NOT_YET_KNOWN;
+            return client.isConnected();
         } catch (AerospikeException.Connection e) {
             log.debug("Aerospike container: {} not yet started. {}", containerId, e.getMessage());
         }
-
-        return StartupStatus.NOT_YET_KNOWN;
+        return false;
     }
 
     private int getMappedPort(NetworkSettings networkSettings, int originalPort) {

@@ -63,7 +63,6 @@ public class EmbeddedRedisAutoConfiguration {
 
         GenericContainer redis =
                 new GenericContainer(properties.dockerImage)
-                        .withStartupCheckStrategy(redisStatusCheck)
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withEnv("REDIS_USER", properties.getUser())
@@ -72,8 +71,8 @@ public class EmbeddedRedisAutoConfiguration {
                         .withClasspathResourceMapping(
                                 "redis-health.sh",
                                 "/redis-health.sh",
-                                BindMode.READ_ONLY
-                        );
+                                BindMode.READ_ONLY)
+                        .waitingFor(redisStatusCheck);
         redis.start();
         registerRedisEnvironment(redis, environment, properties);
         return redis;

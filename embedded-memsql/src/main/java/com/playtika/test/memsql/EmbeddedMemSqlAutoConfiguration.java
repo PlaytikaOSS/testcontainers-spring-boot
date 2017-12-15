@@ -62,13 +62,13 @@ public class EmbeddedMemSqlAutoConfiguration {
 
         GenericContainer memsql = new GenericContainer<>(properties.dockerImage)
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
-                .withStartupCheckStrategy(memSqlStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.port)
                 .withClasspathResourceMapping(
                         "mem.sql",
                         "/schema.sql",
-                        BindMode.READ_ONLY);
+                        BindMode.READ_ONLY)
+                .waitingFor(memSqlStatusCheck);
         memsql.start();
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;

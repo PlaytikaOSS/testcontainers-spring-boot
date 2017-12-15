@@ -61,7 +61,6 @@ public class EmbeddedMariaDBAutoConfiguration {
 
         GenericContainer mariadb =
                 new GenericContainer(properties.dockerImage)
-                        .withStartupCheckStrategy(mariaDBStatusCheck)
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "true")
                         .withEnv("MYSQL_USER", properties.getUser())
                         .withEnv("MYSQL_PASSWORD", properties.getPassword())
@@ -70,7 +69,8 @@ public class EmbeddedMariaDBAutoConfiguration {
                                 "--character-set-server=" + properties.getEncoding(),
                                 "--collation-server=" + properties.getCollation())
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port);
+                        .withExposedPorts(properties.port)
+                        .waitingFor(mariaDBStatusCheck);
         mariadb.start();
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;

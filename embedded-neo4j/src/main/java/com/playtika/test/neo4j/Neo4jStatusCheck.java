@@ -23,7 +23,7 @@
  */
 package com.playtika.test.neo4j;
 
-import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
+import com.playtika.test.common.checks.AbstractCommandWaitStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,10 +32,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class Neo4jStatusCheck extends AbstractStartupCheckStrategy {
+public class Neo4jStatusCheck extends AbstractCommandWaitStrategy {
 
     @Override
-    public String[] getHealthCheckCmd() {
+    public String[] getCheckCommand() {
         return new String[]{
                 "bash", "/neo4j-health.sh"
         };

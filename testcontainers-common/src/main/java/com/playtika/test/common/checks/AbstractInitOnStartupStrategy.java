@@ -23,29 +23,23 @@
  */
 package com.playtika.test.common.checks;
 
-import com.github.dockerjava.api.DockerClient;
-
-public abstract class AbstractInitOnStartupStrategy extends AbstractStartupCheckStrategy {
+public abstract class AbstractInitOnStartupStrategy extends AbstractCommandWaitStrategy {
 
     private volatile boolean wasExecutedOnce;
 
-    public abstract String [] getScriptToExecute();
+    public abstract String[] getScriptToExecute();
 
     @Override
-    public String[] getHealthCheckCmd() {
+    public String[] getCheckCommand() {
         return getScriptToExecute();
     }
 
     @Override
-    public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
+    protected void waitUntilReady() {
         if (wasExecutedOnce) {
-            return StartupStatus.SUCCESSFUL;
+            return;
         }
-        StartupStatus startupStatus = super.checkStartupState(dockerClient, containerId);
-        if (startupStatus == StartupStatus.SUCCESSFUL) {
-            wasExecutedOnce = true;
-            return StartupStatus.SUCCESSFUL;
-        }
-        return StartupStatus.NOT_YET_KNOWN;
+        super.waitUntilReady();
+        wasExecutedOnce = true;
     }
 }

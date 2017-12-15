@@ -55,23 +55,21 @@ public class EmbeddedNeo4jAutoConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
     public GenericContainer neo4j(ConfigurableEnvironment environment,
                                   Neo4jProperties properties,
-                                  Neo4jStatusCheck Neo4jStatusCheck) throws Exception {
+                                  Neo4jStatusCheck neo4jStatusCheck) throws Exception {
 
         log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer neo4j =
-                new GenericContainer(properties.dockerImage)
-                        .withStartupCheckStrategy(Neo4jStatusCheck)
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(
-                                properties.httpsPort
-                                , properties.httpPort
-                                , properties.boltPort)
-                        .withClasspathResourceMapping(
-                                "neo4j-health.sh",
-                                "/neo4j-health.sh",
-                                BindMode.READ_ONLY
-                        );
+        GenericContainer neo4j = new GenericContainer(properties.dockerImage)
+                .withLogConsumer(containerLogsConsumer(log))
+                .withExposedPorts(
+                        properties.httpsPort,
+                        properties.httpPort,
+                        properties.boltPort)
+                .withClasspathResourceMapping(
+                        "neo4j-health.sh",
+                        "/neo4j-health.sh",
+                        BindMode.READ_ONLY)
+                .waitingFor(neo4jStatusCheck);
         neo4j.start();
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;
