@@ -72,13 +72,13 @@ public class ZookeeperContainerConfiguration {
 
         int mappingPort = zookeeperProperties.getZookeeperPort();
         GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
-                .withStartupCheckStrategy(zookeeperStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("ZOOKEEPER_CLIENT_PORT", String.valueOf(mappingPort))
                 .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
                 .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE)
                 .withExposedPorts(mappingPort)
-                .withFixedExposedPort(mappingPort, mappingPort);
+                .withFixedExposedPort(mappingPort, mappingPort)
+                .waitingFor(zookeeperStatusCheck);
         zookeeper.start();
         registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;

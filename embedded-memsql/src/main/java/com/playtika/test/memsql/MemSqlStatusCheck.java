@@ -23,16 +23,16 @@
  */
 package com.playtika.test.memsql;
 
-import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
+import com.playtika.test.common.checks.AbstractCommandWaitStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MemSqlStatusCheck extends AbstractStartupCheckStrategy {
+public class MemSqlStatusCheck extends AbstractCommandWaitStrategy {
 
     @Override
-    public String[] getHealthCheckCmd() {
+    public String[] getCheckCommand() {
         return new String[]{
                 "mysql",
                 "-u",

@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 
-public class AbstractStartupCheckStrategyTest {
+public class AbstractCommandWaitStrategyTest {
 
     private static final GenericContainer TEST_CONTAINER = new GenericContainer("alpine:latest")
             .withCommand("/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done");
@@ -35,18 +35,18 @@ public class AbstractStartupCheckStrategyTest {
     @Test
     public void should_passStartupChecks_andStartContainer() {
         TEST_CONTAINER
-                .withStartupCheckStrategy(new PositiveStartupCheckStrategy())
+                .waitingFor(new PositiveCommandWaitStrategy())
                 .start();
     }
 
     @Test(expected = ContainerLaunchException.class)
     public void should_failStartupChecks_ifHealthCheckCmdIsFailed() {
         TEST_CONTAINER
-                .withStartupCheckStrategy(new NegativeStartupCheckStrategy())
+                .waitingFor(new NegativeCommandWaitStrategy())
                 .start();
     }
 
-    private static class PositiveStartupCheckStrategy extends AbstractStartupCheckStrategy {
+    private static class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
 
         @Override
         public String getContainerType() {
@@ -54,12 +54,12 @@ public class AbstractStartupCheckStrategyTest {
         }
 
         @Override
-        public String[] getHealthCheckCmd() {
+        public String[] getCheckCommand() {
             return new String[] {"echo", "health check passed"};
         }
     }
 
-    private static class NegativeStartupCheckStrategy extends AbstractStartupCheckStrategy {
+    private static class NegativeCommandWaitStrategy extends AbstractCommandWaitStrategy {
 
         @Override
         public String getContainerType() {
@@ -67,7 +67,7 @@ public class AbstractStartupCheckStrategyTest {
         }
 
         @Override
-        public String[] getHealthCheckCmd() {
+        public String[] getCheckCommand() {
             return new String[] {"/bin/sh", "-c", "invalid command"};
         }
     }

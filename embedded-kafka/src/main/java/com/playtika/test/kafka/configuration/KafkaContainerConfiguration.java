@@ -82,7 +82,6 @@ public class KafkaContainerConfiguration {
         log.info("Starting kafka broker. Docker image: {}", kafkaProperties.getDockerImage());
 
         GenericContainer kafka = new FixedHostPortGenericContainer<>(kafkaProperties.getDockerImage())
-                .withStartupCheckStrategy(kafkaStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("KAFKA_ZOOKEEPER_CONNECT", "zookeeper:" + zookeeperProperties.getZookeeperPort())
                 .withEnv("KAFKA_BROKER_ID", "-1")
@@ -91,7 +90,8 @@ public class KafkaContainerConfiguration {
                 .withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE)
                 .withCreateContainerCmdModifier(cmd -> cmd.withLinks(new Link(zookeeperHostname, "zookeeper")))
                 .withExposedPorts(kafkaMappingPort)
-                .withFixedExposedPort(kafkaMappingPort, kafkaMappingPort);
+                .withFixedExposedPort(kafkaMappingPort, kafkaMappingPort)
+                .waitingFor(kafkaStatusCheck);
         kafka.start();
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;

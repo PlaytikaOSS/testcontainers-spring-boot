@@ -23,26 +23,36 @@
  */
 package com.playtika.test.common.checks;
 
-import com.github.dockerjava.api.DockerClient;
-import lombok.Builder;
-import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
+import lombok.extern.slf4j.Slf4j;
+import org.rnorth.ducttape.TimeoutException;
+import org.rnorth.ducttape.unreliables.Unreliables;
+import org.testcontainers.containers.ContainerLaunchException;
+import org.testcontainers.containers.GenericContainer;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-@Builder
-public class CompositeStartupCheckStrategy extends StartupCheckStrategy {
+import static java.lang.String.format;
 
-    List<StartupCheckStrategy> checksToPerform = new LinkedList<>();
+@Slf4j
+public abstract class AbstractRetryingWaitStrategy extends GenericContainer.AbstractWaitStrategy {
+
+    protected String getContainerType() {
+        return getClass().getSimpleName();
+    }
 
     @Override
-    public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
-        for (StartupCheckStrategy check : checksToPerform) {
-            StartupStatus startupStatus = check.checkStartupState(dockerClient, containerId);
-            if (startupStatus != StartupStatus.SUCCESSFUL) {
-                return StartupStatus.NOT_YET_KNOWN;
-            }
+    protected void waitUntilReady() {
+        long seconds = startupTimeout.getSeconds();
+        try {
+            Unreliables.retryUntilTrue((int) seconds, TimeUnit.SECONDS,
+                    () -> getRateLimiter().getWhenReady(this::isReady));
+        } catch (TimeoutException e) {
+            throw new ContainerLaunchException(
+                    format("[%s] notifies that container[%s] is not ready after [%d] seconds, container cannot be started.",
+                            getContainerType(), container.getContainerId(), seconds));
         }
-        return StartupStatus.SUCCESSFUL;
     }
+
+    protected abstract boolean isReady();
+
 }

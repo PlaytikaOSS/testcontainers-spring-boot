@@ -23,23 +23,22 @@
  */
 package com.playtika.test.mariadb;
 
-import com.playtika.test.common.checks.AbstractStartupCheckStrategy;
+import com.playtika.test.common.checks.AbstractCommandWaitStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MariaDBStatusCheck extends AbstractStartupCheckStrategy {
+public class MariaDBStatusCheck extends AbstractCommandWaitStrategy {
 
     @Override
-    public String[] getHealthCheckCmd() {
+    public String[] getCheckCommand() {
         return new String[] {
                 "mysql",
                 "-h",
                 "127.0.0.1",
                 "-e",
                 "SELECT 1"
-
         };
     }
 }

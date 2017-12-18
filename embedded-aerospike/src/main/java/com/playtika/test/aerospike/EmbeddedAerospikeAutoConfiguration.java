@@ -37,11 +37,16 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.WaitAllStrategy;
+import org.testcontainers.containers.wait.WaitStrategy;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Slf4j
 @Configuration
@@ -53,26 +58,31 @@ public class EmbeddedAerospikeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy(AerospikeProperties properties) {
-        return new AerospikeStartupCheckStrategy(properties);
+    public AerospikeWaitStrategy aerospikeStartupCheckStrategy(AerospikeProperties properties) {
+        return new AerospikeWaitStrategy(properties);
     }
 
     @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public GenericContainer aerosike(AerospikeStartupCheckStrategy aerospikeStartupCheckStrategy,
+    public GenericContainer aerosike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                      ConfigurableEnvironment environment,
                                      AerospikeProperties properties) {
         log.info("Starting aerospike server. Docker image: {}", properties.dockerImage);
+        WaitStrategy waitStrategy = new WaitAllStrategy()
+                .withStrategy(aerospikeWaitStrategy)
+                .withStrategy(new HostPortWaitStrategy())
+                .withStartupTimeout(Duration.of(60, SECONDS));
 
         GenericContainer aerospike =
                 new GenericContainer(properties.dockerImage)
-                        .withStartupCheckStrategy(aerospikeStartupCheckStrategy)
                         .withExposedPorts(properties.port)
                         .withLogConsumer(containerLogsConsumer(log))
                         .withClasspathResourceMapping(
                                 "aerospike.conf",
                                 "/etc/aerospike/aerospike.conf",
-                                BindMode.READ_ONLY);
+                                BindMode.READ_ONLY)
+                        .waitingFor(waitStrategy);
+
         aerospike.start();
         registerAerospikeEnvironment(aerospike, environment, properties);
         return aerospike;

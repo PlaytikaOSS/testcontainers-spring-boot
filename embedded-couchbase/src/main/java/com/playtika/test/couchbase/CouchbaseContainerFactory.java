@@ -23,20 +23,17 @@
  */
 package com.playtika.test.couchbase;
 
-import com.playtika.test.common.checks.AbstractInitOnStartupStrategy;
-import com.playtika.test.common.checks.CompositeStartupCheckStrategy;
 import com.playtika.test.couchbase.rest.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
+import org.testcontainers.containers.wait.WaitAllStrategy;
+import org.testcontainers.containers.wait.WaitStrategy;
 
-import java.util.List;
-
+import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static java.util.Arrays.asList;
 
 /**
  * https://blog.couchbase.com/testing-spring-data-couchbase-applications-with-testcontainers/
@@ -57,26 +54,23 @@ class CouchbaseContainerFactory {
                 .withFixedExposedPort(properties.memcachedPort, properties.memcachedPort)
                 .withFixedExposedPort(properties.queryRestTrafficSslPort, properties.queryRestTrafficSslPort)
                 .withFixedExposedPort(properties.queryServiceSslPort, properties.queryServiceSslPort)
-                .withStartupCheckStrategy(getCompositeStartupCheckStrategy(properties))
-                .withLogConsumer(containerLogsConsumer(containerLogger));
+                .withLogConsumer(containerLogsConsumer(containerLogger))
+                .waitingFor(getCompositeWaitStrategy(properties));
     }
 
     /**
      * https://developer.couchbase.com/documentation/server/current/rest-api/rest-node-provisioning.html
      */
-    private static CompositeStartupCheckStrategy getCompositeStartupCheckStrategy(CouchbaseProperties properties) {
-        List<StartupCheckStrategy> strategies = asList(new AbstractInitOnStartupStrategy[]{
-                new SetupNodeStorage(properties),
-                new SetupRamQuotas(properties),
-                new SetupServices(properties),
-                new SetupIndexesType(properties),
-                new SetupAdminUserAndPassword(properties),
-                new CreateBucket(properties),
-                new CreatePrimaryIndex(properties),
-                new CreateBucketUser(properties),
-        });
-        return CompositeStartupCheckStrategy.builder()
-                .checksToPerform(strategies)
-                .build();
+    private static WaitStrategy getCompositeWaitStrategy(CouchbaseProperties properties) {
+        return new WaitAllStrategy()
+                .withStrategy(new SetupNodeStorage(properties))
+                .withStrategy(new SetupRamQuotas(properties))
+                .withStrategy(new SetupServices(properties))
+                .withStrategy(new SetupIndexesType(properties))
+                .withStrategy(new SetupAdminUserAndPassword(properties))
+                .withStrategy(new CreateBucket(properties))
+                .withStrategy(new CreatePrimaryIndex(properties))
+                .withStrategy(new CreateBucketUser(properties))
+                .withStartupTimeout(DEFAULT_CONTAINER_WAIT_DURATION);
     }
 }

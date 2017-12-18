@@ -28,6 +28,7 @@ import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import lombok.Value;
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
@@ -36,16 +37,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+@UtilityClass
 public class ContainerUtils {
 
+    public static final Duration DEFAULT_CONTAINER_WAIT_DURATION = Duration.ofSeconds(60);
+
     public static int getAvailableMappingPort() {
-        try (ServerSocket socket = new ServerSocket(0)){
+        try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException("Cannot find available port for mapping: " + e.getMessage(), e);
         }
     }
@@ -86,10 +90,9 @@ public class ContainerUtils {
         String cmdStdout;
         String cmdStderr;
 
-        try(ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-            ByteArrayOutputStream stderr = new ByteArrayOutputStream();
-            ExecStartResultCallback cmdCallback = new ExecStartResultCallback(stdout, stderr))
-        {
+        try (ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+             ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+             ExecStartResultCallback cmdCallback = new ExecStartResultCallback(stdout, stderr)) {
             dockerClient.execStartCmd(cmd.getId()).exec(cmdCallback).awaitCompletion();
             cmdStdout = stdout.toString(StandardCharsets.UTF_8.name());
             cmdStderr = stderr.toString(StandardCharsets.UTF_8.name());
@@ -108,4 +111,5 @@ public class ContainerUtils {
         int exitCode;
         String output;
     }
+
 }
