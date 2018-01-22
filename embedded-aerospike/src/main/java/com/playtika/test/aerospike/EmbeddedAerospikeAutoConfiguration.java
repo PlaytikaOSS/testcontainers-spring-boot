@@ -63,7 +63,6 @@ public class EmbeddedAerospikeAutoConfiguration {
     }
 
     @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
-    @ConditionalOnMissingBean
     public GenericContainer aerosike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                      ConfigurableEnvironment environment,
                                      AerospikeProperties properties) {
