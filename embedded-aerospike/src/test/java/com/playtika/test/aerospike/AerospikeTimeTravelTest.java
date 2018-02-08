@@ -65,6 +65,17 @@ public class AerospikeTimeTravelTest extends EmbeddedAerospikeAutoConfigurationT
     }
 
     @Test
+    public void shouldNotRemoveNonExpiringDocuments() throws Exception {
+        Key key = new Key(namespace, SET, "shouldRemoveExpired");
+        putBin(key, 0);
+
+        Instant twoDays = Instant.now().plus(2, ChronoUnit.DAYS);
+        expiredDocumentsCleaner.cleanExpiredDocumentsBefore(twoDays);
+
+        assertThat(client.get(null, key)).isNotNull();
+    }
+
+    @Test
     public void shouldAddHours() {
         Key key = new Key(namespace, SET, "shouldTimeTravel");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));

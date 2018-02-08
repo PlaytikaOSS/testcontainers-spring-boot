@@ -1,5 +1,6 @@
 function remove_expired(rec, expireTime)
-    if (record.ttl(rec) < expireTime) then
+    local recordTtl = record.ttl(rec)
+    if (recordTtl > 0 and recordTtl < expireTime) then
         aerospike:remove(rec)
     end
 end
