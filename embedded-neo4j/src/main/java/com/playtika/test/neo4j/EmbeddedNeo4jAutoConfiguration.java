@@ -91,7 +91,7 @@ public class EmbeddedNeo4jAutoConfiguration {
         map.put("embedded.neo4j.password", properties.getPassword());
         map.put("embedded.neo4j.user", properties.getUser());
 
-        log.info("Started couchbase server. Connection details {},  " +
+        log.info("Started neo4j server. Connection details {},  " +
                         "Admin UI: http://localhost:{}, user: {}, password: {}",
                 map, httpPort, properties.getUser(), properties.getPassword());
 
