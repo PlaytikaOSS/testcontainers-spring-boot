@@ -33,7 +33,7 @@ public class AerospikeProperties {
     static final String AEROSPIKE_BEAN_NAME = "aerospike";
 
     boolean enabled = true;
-    String dockerImage = "aerospike:3.15.0.1";
+    String dockerImage = "aerospike/aerospike-server:3.16.0.1";
     final String namespace = "TEST";
     final int port = 3000;
 }
