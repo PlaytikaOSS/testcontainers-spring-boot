@@ -73,13 +73,14 @@ public class EmbeddedAerospikeAutoConfiguration {
                 .withStartupTimeout(Duration.of(60, SECONDS));
 
         GenericContainer aerospike =
-                new GenericContainer(properties.dockerImage)
+                new GenericContainer<>(properties.dockerImage)
                         .withExposedPorts(properties.port)
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withClasspathResourceMapping(
-                                "aerospike.conf",
-                                "/etc/aerospike/aerospike.conf",
-                                BindMode.READ_ONLY)
+                        // see https://github.com/aerospike/aerospike-server.docker/blob/master/aerospike.template.conf
+                        .withEnv("NAMESPACE", properties.namespace)
+                        .withEnv("SERVICE_PORT", String.valueOf(properties.port))
+                        .withEnv("MEM_GB", String.valueOf(1))
+                        .withEnv("STORAGE_GB", String.valueOf(1))
                         .waitingFor(waitStrategy);
 
         aerospike.start();
