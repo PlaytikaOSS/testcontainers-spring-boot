@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,6 +39,7 @@ import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAM
 @Configuration
 @AutoConfigureOrder
 @ConditionalOnClass(AerospikeClient.class)
+@ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
 public class EmbeddedAerospikeDependenciesAutoConfiguration {
 
     @Configuration

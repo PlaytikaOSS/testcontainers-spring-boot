@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,6 +41,7 @@ import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED
 @Slf4j
 @Configuration
 @AutoConfigureOrder
+@ConditionalOnProperty(name = "embedded.couchbase.enabled", matchIfMissing = true)
 @AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration")
 public class EmbeddedCouchbaseDependenciesAutoConfiguration {
 
