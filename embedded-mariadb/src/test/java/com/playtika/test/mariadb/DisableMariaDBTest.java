@@ -21,30 +21,36 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.mariadb;
 
-import com.aerospike.client.AerospikeClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@Configuration
-@ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
-@ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
-public class AerospikeTimeTravelAutoConfiguration {
+import javax.sql.DataSource;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
-                                                           AerospikeProperties properties) {
-        return new ExpiredDocumentsCleaner(client, properties.getNamespace());
+import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@Slf4j
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DisableMariaDBTest.TestConfiguration.class, properties = "embedded.mariadb.enabled=false")
+public class DisableMariaDBTest {
+
+    @Test
+    public void contextLoad() throws Exception {
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public AerospikeTimeTravelService aerospikeTimeTravelService(ExpiredDocumentsCleaner expiredDocumentsCleaner) {
-        return new AerospikeTimeTravelService(expiredDocumentsCleaner);
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }

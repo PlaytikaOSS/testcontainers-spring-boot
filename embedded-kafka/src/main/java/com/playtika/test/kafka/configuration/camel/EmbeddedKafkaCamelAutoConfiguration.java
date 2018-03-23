@@ -29,6 +29,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,6 +39,7 @@ import static com.playtika.test.kafka.properties.ZookeeperConfigurationPropertie
 @Configuration
 @AutoConfigureOrder
 @ConditionalOnClass(CamelContext.class)
+@ConditionalOnProperty(value = {"embedded.kafka.enabled", "embedded.zookeeper.enabled"}, havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(name = "org.apache.camel.spring.boot.CamelAutoConfiguration")
 public class EmbeddedKafkaCamelAutoConfiguration {
 

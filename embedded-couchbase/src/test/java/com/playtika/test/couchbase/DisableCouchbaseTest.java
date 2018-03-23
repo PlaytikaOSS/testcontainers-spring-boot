@@ -21,30 +21,28 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.aerospike;
+package com.playtika.test.couchbase;
 
-import com.aerospike.client.AerospikeClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@Configuration
-@ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
-@ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
-public class AerospikeTimeTravelAutoConfiguration {
+@Slf4j
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DisableCouchbaseTest.TestConfiguration.class,
+        properties = {"embedded.couchbase.enabled=false"})
+public class DisableCouchbaseTest {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
-                                                           AerospikeProperties properties) {
-        return new ExpiredDocumentsCleaner(client, properties.getNamespace());
+    @Test
+    public void contextLoad() throws Exception {
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public AerospikeTimeTravelService aerospikeTimeTravelService(ExpiredDocumentsCleaner expiredDocumentsCleaner) {
-        return new AerospikeTimeTravelService(expiredDocumentsCleaner);
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }
