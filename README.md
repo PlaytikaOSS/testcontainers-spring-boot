@@ -23,14 +23,14 @@ By adding module into classpath, you will get stateful service, like couchbase o
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
-#### Make sure you have [spring boot and spring cloud](http://projects.spring.io/spring-cloud/#quick-start) in classpath of your tests
+#### Make sure you have [spring boot and spring cloud](http://projects.spring.io/spring-cloud/#quick-start) in classpath of your tests. In case if you need to [pick version](https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter).
 ```xml
 <project>
 ...
       <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-             ...
+            ...
         </dependency>
 ...
 </project>
