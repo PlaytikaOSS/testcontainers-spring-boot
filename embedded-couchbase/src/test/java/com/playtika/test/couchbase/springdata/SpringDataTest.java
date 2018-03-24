@@ -49,11 +49,11 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
         String key = "test::1";
         String value = "myvalue";
         assertThat(documentRepository).isNotNull();
-        assertThat(documentRepository.exists(key)).isFalse();
+        assertThat(documentRepository.existsById(key)).isFalse();
 
         TestDocument testDocument = saveDocument(key, value);
 
-        assertThat(documentRepository.findOne(key)).isEqualTo(testDocument);
+        assertThat(documentRepository.findById(key).get()).isEqualTo(testDocument);
     }
 
     @Test
