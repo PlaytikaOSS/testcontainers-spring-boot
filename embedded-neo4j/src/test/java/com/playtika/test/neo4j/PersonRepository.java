@@ -1,11 +1,8 @@
 package com.playtika.test.neo4j;
 
-import java.util.List;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-import org.springframework.data.neo4j.repository.GraphRepository;
-import org.springframework.data.repository.CrudRepository;
-
-public interface PersonRepository extends GraphRepository<Person> {
+public interface PersonRepository extends Neo4jRepository<Person, String> {
 
     Person findByName(String name);
 }

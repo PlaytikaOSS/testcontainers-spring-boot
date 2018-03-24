@@ -7,7 +7,8 @@
 
 If you are writing services using spring boot (and maybe spring cloud) and you do [medium sized](https://testing.googleblog.com/2010/12/test-sizes.html) tests during build process, then this set of spring boot auto-configurations might be handy.
 By adding module into classpath, you will get stateful service, like couchbase or kafka, auto-started and available for connection from your application service w/o wiring any additional code.
-[Docker](https://www.docker.com/) and [TestContainers](https://www.testcontainers.org/) are used to bootstrap stateful service.
+[Docker](https://www.docker.com/) and [TestContainers](https://www.testcontainers.org/) are used to bootstrap stateful service using spring cloud [bootstrap phase](https://cloud.spring.io/spring-cloud-static/spring-cloud.html#_the_bootstrap_application_context).
+Usage of spring cloud in your production code is optional, but you will need it in tests. See "how to" below.
 
 # Table of Contents
 1. [How to use](#how-to-use)
@@ -88,7 +89,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * embedded.mariadb.enabled `(true|false, default is 'true')`
 * embedded.mariadb.encoding `(default is 'utf8mb4')`
 * embedded.mariadb.collation `(default is 'utf8mb4_unicode_ci')`
@@ -109,7 +110,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * embedded.couchbase.enabled `(true|false, default is 'true')`
 * embedded.couchbase.services `(comma separated list, default is 'kv,index,n1ql,fts')`
 * embedded.couchbase.clusterRamMb `(default is set to '256')`
@@ -137,7 +138,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * embedded.zookeeper.enabled `(true|false, default is 'true')`
 * embedded.kafka.enabled `(true|false, default is 'true')`
 * embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
@@ -156,7 +157,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * aerospike [client library](https://mvnrepository.com/artifact/com.aerospike/aerospike-client) 
 * embedded.aerospike.enabled `(true|false, default is 'true')`
 * embedded.aerospike.dockerImage `(default is set to 'aerospike:3.15.0.1')`
@@ -180,7 +181,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * embedded.memsql.enabled `(true|false, default is 'true')`
 * embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:minimal-6.0.8')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/memsql/quickstart/tags/)
@@ -203,7 +204,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * embedded.redis.enabled `(true|false, default is 'true')`
 * embedded.redis.dockerImage `(default is set to 'redis:4.0.2')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/redis/tags/)
@@ -221,7 +222,7 @@ embedded.kafka.topicsToCreate=some_topic
     <scope>test</scope>
 </dependency>
 ```
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * embedded.neo4j.enabled `(true|false, default is 'true')`
 * embedded.neo4j.dockerImage `(default is set to 'neo4j:3.2.7')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/neo4j/tags/)
@@ -232,7 +233,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.neo4j.httpPort
 * embedded.neo4j.boltPort
 ### embedded-zookeeper
-##### Consumes
+##### Consumes (via bootstrap.properties)
 * 
 ##### Produces
 * 
