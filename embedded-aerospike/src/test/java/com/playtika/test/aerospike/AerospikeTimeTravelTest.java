@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AerospikeTimeTravelTest extends EmbeddedAerospikeAutoConfigurationTest {
+public class AerospikeTimeTravelTest extends EmbeddedAerospikeBootstrapConfigurationTest {
 
     @Autowired
     private ExpiredDocumentsCleaner expiredDocumentsCleaner;

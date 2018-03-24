@@ -46,7 +46,7 @@ import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.redis.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(RedisProperties.class)
-public class EmbeddedRedisAutoConfiguration {
+public class EmbeddedRedisBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

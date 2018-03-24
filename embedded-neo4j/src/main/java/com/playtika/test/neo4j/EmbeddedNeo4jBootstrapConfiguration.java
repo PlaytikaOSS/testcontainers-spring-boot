@@ -46,7 +46,7 @@ import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.neo4j.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(Neo4jProperties.class)
-public class EmbeddedNeo4jAutoConfiguration {
+public class EmbeddedNeo4jBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

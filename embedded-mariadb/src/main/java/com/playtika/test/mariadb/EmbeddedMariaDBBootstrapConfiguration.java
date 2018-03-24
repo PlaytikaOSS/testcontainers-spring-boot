@@ -45,7 +45,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Order(HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.mariadb.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MariaDBProperties.class)
-public class EmbeddedMariaDBAutoConfiguration {
+public class EmbeddedMariaDBBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

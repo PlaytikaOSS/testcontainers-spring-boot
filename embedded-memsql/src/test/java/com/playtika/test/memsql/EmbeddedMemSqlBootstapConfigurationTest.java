@@ -21,19 +21,15 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.mariadb;
+package com.playtika.test.memsql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jdbc.pool.PoolConfiguration;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,14 +37,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
 
-import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
+import static com.playtika.test.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedMariaDBAutoConfigurationTest.TestConfiguration.class)
-public class EmbeddedMariaDBAutoConfigurationTest {
+@SpringBootTest(classes = EmbeddedMemSqlBootstapConfigurationTest.TestConfiguration.class)
+public class EmbeddedMemSqlBootstapConfigurationTest {
 
     @Autowired
     ConfigurableListableBeanFactory beanFactory;
@@ -60,34 +56,21 @@ public class EmbeddedMariaDBAutoConfigurationTest {
     ConfigurableEnvironment environment;
 
     @Test
-    public void shouldConnectToMariaDB() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("MariaDB");
-    }
+    public void shouldConnectToMemSQL() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("MemSQL");
+        jdbcTemplate.execute("create table foo (id int primary key);");
+        jdbcTemplate.execute("insert into foo values (1), (2), (3);");
+        assertThat(jdbcTemplate.queryForList("select * from foo")).hasSize(3);
 
-    @Test
-    public void shouldSaveAndGetUnicode() throws Exception {
-        jdbcTemplate.execute("CREATE TABLE employee(id INT, name VARCHAR(64));");
-        jdbcTemplate.execute("insert into employee (id, name) values (1, 'some data \uD83D\uDE22');");
-
-        assertThat(jdbcTemplate.queryForObject("select name from employee where id = 1", String.class)).isEqualTo("some data \uD83D\uDE22");
-    }
-
-    @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.mariadb.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mariadb.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mariadb.schema")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mariadb.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mariadb.password")).isNotEmpty();
     }
 
     @Test
     public void shouldSetupDependsOnForAllDataSources() throws Exception {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
         assertThat(beanNamesForType)
-                .as("Custom datasource should be present")
+                .as("Auto-configured datasource should be present")
                 .hasSize(1)
-                .contains("customDatasource");
+                .contains("dataSource");
         asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 
@@ -95,30 +78,20 @@ public class EmbeddedMariaDBAutoConfigurationTest {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
                 .isNotNull()
                 .isNotEmpty()
-                .contains(BEAN_NAME_EMBEDDED_MARIADB);
+                .contains(BEAN_NAME_EMBEDDED_MEMSQL);
+    }
+
+    @Test
+    public void propertiesAreAvailable() {
+        assertThat(environment.getProperty("embedded.memsql.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.memsql.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.memsql.schema")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.memsql.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.memsql.password")).isEqualTo("");
     }
 
     @EnableAutoConfiguration
     @Configuration
     static class TestConfiguration {
-
-        @Value("${spring.datasource.url}")
-        String jdbcUrl;
-        @Value("${spring.datasource.username}")
-        String user;
-        @Value("${spring.datasource.password}")
-        String password;
-
-        @Bean(destroyMethod = "close")
-        public DataSource customDatasource() {
-            PoolConfiguration poolConfiguration = new PoolProperties();
-            poolConfiguration.setUrl(jdbcUrl);
-            poolConfiguration.setDriverClassName("org.mariadb.jdbc.Driver");
-            poolConfiguration.setUsername(user);
-            poolConfiguration.setPassword(password);
-            poolConfiguration.setTestOnBorrow(true);
-            poolConfiguration.setTestOnReturn(true);
-            return new org.apache.tomcat.jdbc.pool.DataSource(poolConfiguration);
-        }
     }
 }

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {CouchbaseConfiguration.class, LegacyClientConfiguration.class})
-public abstract class EmbeddedCouchbaseAutoConfigurationTest {
+public abstract class EmbeddedCouchbaseBootstrapConfigurationTest {
 
     @Autowired
     ConfigurableEnvironment environment;

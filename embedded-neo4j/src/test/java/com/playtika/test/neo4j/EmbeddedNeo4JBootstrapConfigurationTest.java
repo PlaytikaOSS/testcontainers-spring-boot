@@ -45,9 +45,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedNeo4jAutoConfigurationTest.TestConfiguration.class)
+@SpringBootTest(classes = EmbeddedNeo4JBootstrapConfigurationTest.TestConfiguration.class)
 @ActiveProfiles("test")
-public class EmbeddedNeo4jAutoConfigurationTest {
+public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Autowired
     PersonRepository personRepository;

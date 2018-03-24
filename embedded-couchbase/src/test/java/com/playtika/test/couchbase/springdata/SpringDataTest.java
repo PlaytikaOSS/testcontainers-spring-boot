@@ -25,7 +25,7 @@ package com.playtika.test.couchbase.springdata;
 
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
-import com.playtika.test.couchbase.EmbeddedCouchbaseAutoConfigurationTest;
+import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -36,7 +36,7 @@ import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SpringDataTest extends EmbeddedCouchbaseAutoConfigurationTest {
+public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 
     @Autowired
     TestDocumentRepository documentRepository;

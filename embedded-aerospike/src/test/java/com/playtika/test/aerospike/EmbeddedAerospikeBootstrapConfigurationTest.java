@@ -45,8 +45,8 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedAerospikeAutoConfigurationTest.TestConfiguration.class)
-public class EmbeddedAerospikeAutoConfigurationTest {
+@SpringBootTest(classes = EmbeddedAerospikeBootstrapConfigurationTest.TestConfiguration.class)
+public class EmbeddedAerospikeBootstrapConfigurationTest {
 
     protected static final String SET = "values";
 

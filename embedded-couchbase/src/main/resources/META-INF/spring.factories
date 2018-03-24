@@ -1,5 +1,5 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.couchbase.EmbeddedCouchbaseAutoConfiguration
+com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.playtika.test.couchbase.EmbeddedCouchbaseDependenciesAutoConfiguration
