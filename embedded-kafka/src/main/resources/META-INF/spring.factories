@@ -1,5 +1,5 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.kafka.configuration.EmbeddedKafkaAutoConfiguration
+com.playtika.test.kafka.configuration.EmbeddedKafkaBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.playtika.test.kafka.configuration.camel.EmbeddedKafkaCamelAutoConfiguration

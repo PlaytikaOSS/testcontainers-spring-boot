@@ -34,5 +34,5 @@ import org.springframework.core.annotation.Order;
         ZookeeperContainerConfiguration.class,
         KafkaContainerConfiguration.class
 })
-public class EmbeddedKafkaAutoConfiguration {
+public class EmbeddedKafkaBootstrapConfiguration {
 }

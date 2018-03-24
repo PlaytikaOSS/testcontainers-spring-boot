@@ -54,7 +54,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
 @ConditionalOnClass(AerospikeClient.class)
 @EnableConfigurationProperties(AerospikeProperties.class)
-public class EmbeddedAerospikeAutoConfiguration {
+public class EmbeddedAerospikeBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

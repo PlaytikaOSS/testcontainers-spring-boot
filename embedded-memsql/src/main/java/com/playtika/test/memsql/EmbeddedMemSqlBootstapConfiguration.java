@@ -46,7 +46,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Order(HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.memsql.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MemSqlProperties.class)
-public class EmbeddedMemSqlAutoConfiguration {
+public class EmbeddedMemSqlBootstapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

@@ -24,7 +24,7 @@
 package com.playtika.test.couchbase.legacy;
 
 import com.couchbase.client.CouchbaseClient;
-import com.playtika.test.couchbase.EmbeddedCouchbaseAutoConfigurationTest;
+import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -33,7 +33,7 @@ import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LegacyClientTest extends EmbeddedCouchbaseAutoConfigurationTest {
+public class LegacyClientTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 
     static final String KEY = "test::legacy";
     static final String VALUE = "myvalue";

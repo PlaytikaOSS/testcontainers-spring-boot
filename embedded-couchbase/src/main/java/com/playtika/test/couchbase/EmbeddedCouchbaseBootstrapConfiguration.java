@@ -43,7 +43,7 @@ import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.couchbase.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(CouchbaseProperties.class)
-public class EmbeddedCouchbaseAutoConfiguration {
+public class EmbeddedCouchbaseBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
     public GenericContainer couchbase(ConfigurableEnvironment environment,
