@@ -32,8 +32,10 @@ public class MemSqlProperties {
     static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
     boolean enabled;
     String dockerImage = "memsql/quickstart:minimal-6.0.8";
-    final String user = "root";
-    final String password = "";
-    final String database = "test_db";
-    final int port = 3306;
+    String user = "root";
+    String password = "";
+    String database = "test_db";
+    String schema = "test_db";
+    String host = "localhost";
+    int port = 3306;
 }

@@ -37,6 +37,7 @@ public class KafkaConfigurationProperties {
 
     public static final String KAFKA_BEAN_NAME = "kafka";
 
+    String brokerList;
     boolean enabled = true;
     int brokerPort = 0;
     int socketTimeoutMs = 5_000;

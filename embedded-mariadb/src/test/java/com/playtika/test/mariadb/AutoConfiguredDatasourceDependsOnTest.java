@@ -42,7 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = AutoConfiguredDatasourceDependsOnTest.TestConfiguration.class)
+@SpringBootTest(
+          classes = AutoConfiguredDatasourceDependsOnTest.TestConfiguration.class
+        , properties = "spring.profiles.active=enabled"
+)
 public class AutoConfiguredDatasourceDependsOnTest {
 
     @Autowired

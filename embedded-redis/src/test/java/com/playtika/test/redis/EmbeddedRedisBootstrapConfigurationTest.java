@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EmbeddedRedisBootstrapConfigurationTest.TestConfiguration.class)
-@ActiveProfiles("test")
+@ActiveProfiles("enabled")
 public class EmbeddedRedisBootstrapConfigurationTest {
 
     @Autowired
