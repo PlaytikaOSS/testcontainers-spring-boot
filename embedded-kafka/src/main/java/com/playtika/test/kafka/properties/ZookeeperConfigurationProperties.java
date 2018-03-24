@@ -35,6 +35,7 @@ public class ZookeeperConfigurationProperties {
 
     public static final String ZOOKEEPER_BEAN_NAME = "zookeeper";
 
+    String zookeeperConnect;
     boolean enabled = true;
     int zookeeperPort = 0;
     int sessionTimeoutMs = 5_000;

@@ -35,8 +35,10 @@ public class MariaDBProperties {
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";
 
-    final String user = "mariadb";
-    final String password = "letmein";
-    final String database = "test_db";
-    final int port = 3306;
+    String user = "mariadb";
+    String password = "letmein";
+    String database = "test_db";
+    String schema = "test_db";
+    String host = "localhost";
+    int port = 3306;
 }

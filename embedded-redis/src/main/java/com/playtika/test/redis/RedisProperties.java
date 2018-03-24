@@ -32,7 +32,8 @@ public class RedisProperties {
     static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
     boolean enabled;
     String dockerImage = "redis:4.0.2";
-    final String user = "root";
-    final String password = "passw";
-    final int port = 6379;
+    String user = "root";
+    String password = "passw";
+    String host = "localhost";
+    int port = 6379;
 }

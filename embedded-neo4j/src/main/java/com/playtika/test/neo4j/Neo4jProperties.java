@@ -32,9 +32,10 @@ public class Neo4jProperties {
     static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
     boolean enabled;
     String dockerImage = "neo4j:3.2.7";
-    final String user = "neo4j";
-    final String password = "letmein";
-    final int httpsPort = 7473;
-    final int httpPort = 7474;
-    final int boltPort = 7687;
+    String user = "neo4j";
+    String password = "letmein";
+    String host = "localhost";
+    int httpsPort = 7473;
+    int httpPort = 7474;
+    int boltPort = 7687;
 }

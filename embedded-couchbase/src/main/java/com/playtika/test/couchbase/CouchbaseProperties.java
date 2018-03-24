@@ -26,6 +26,9 @@ package com.playtika.test.couchbase;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * https://blog.couchbase.com/testing-spring-data-couchbase-applications-with-testcontainers/
+ */
 @Data
 @ConfigurationProperties("embedded.couchbase")
 public class CouchbaseProperties {
@@ -37,21 +40,27 @@ public class CouchbaseProperties {
     int bucketRamMb = 100;
     String bucketType = "couchbase";
 
-    final String user = "Administrator";
-    final String password = "password";
-    final String bucket = "test";
+    String host = "localhost";
+    String user = "Administrator";
+    String password = "password";
+    String bucket = "test";
 
-    final int httpDirectPort = 8091;
-    final int queryServicePort = 8092;
-    final int queryRestTrafficPort = 8093;
-    final int searchServicePort = 8094;
-    final int analyticsServicePort = 8095;
+    int bootstrapHttpDirectPort = 8091;
+    int httpDirectPort = 8091;
 
-    final int memcachedSslPort = 11207;
-    final int memcachedPort = 11211;
-    final int carrierDirectPort = 11210;
-    final int queryRestTrafficSslPort = 18091;
-    final int queryServiceSslPort = 18092;
-    final int n1qlSslPort = 18093;
-    final int searchServiceHttpsPort = 18094;
+    int queryServicePort = 8092;
+    int queryRestTrafficPort = 8093;
+    int searchServicePort = 8094;
+    int analyticsServicePort = 8095;
+
+    int memcachedSslPort = 11207;
+    int memcachedPort = 11211;
+
+    int bootstrapCarrierDirectPort = 11210;
+    int carrierDirectPort = 11210;
+
+    int queryRestTrafficSslPort = 18091;
+    int queryServiceSslPort = 18092;
+    int n1qlSslPort = 18093;
+    int searchServiceHttpsPort = 18094;
 }

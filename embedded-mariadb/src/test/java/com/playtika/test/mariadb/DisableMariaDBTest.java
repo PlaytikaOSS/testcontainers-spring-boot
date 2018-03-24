@@ -42,7 +42,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = DisableMariaDBTest.TestConfiguration.class, properties = "embedded.mariadb.enabled=false")
+@SpringBootTest(
+        classes = DisableMariaDBTest.TestConfiguration.class,
+        properties = {
+                  "embedded.mariadb.enabled=false"
+                , "spring.profiles.active=disabled"
+        }
+)
 public class DisableMariaDBTest {
 
     @Test

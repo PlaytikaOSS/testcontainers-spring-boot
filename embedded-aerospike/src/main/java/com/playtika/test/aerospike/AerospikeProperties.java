@@ -34,6 +34,7 @@ public class AerospikeProperties {
 
     boolean enabled = true;
     String dockerImage = "aerospike/aerospike-server:3.16.0.1";
-    final String namespace = "TEST";
-    final int port = 3000;
+    String namespace = "TEST";
+    String host = "localhost";
+    int port = 3000;
 }
