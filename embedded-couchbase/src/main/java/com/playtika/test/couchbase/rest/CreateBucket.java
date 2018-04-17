@@ -41,7 +41,7 @@ public class CreateBucket extends AbstractInitOnStartupStrategy {
     public String[] getScriptToExecute() {
         return new String[]{
                 "curl", "-X", "POST",
-                "-u", "Administrator:password",
+                "-u", properties.getCredentials(),
                 "http://127.0.0.1:8091/pools/default/buckets",
                 "-d", "name=" + properties.getBucket(),
                 "-d", "bucketType=" + properties.getBucketType(),

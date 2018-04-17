@@ -26,6 +26,8 @@ package com.playtika.test.couchbase;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import static java.lang.String.format;
+
 /**
  * https://blog.couchbase.com/testing-spring-data-couchbase-applications-with-testcontainers/
  */
@@ -63,4 +65,16 @@ public class CouchbaseProperties {
     int queryServiceSslPort = 18092;
     int n1qlSslPort = 18093;
     int searchServiceHttpsPort = 18094;
+
+    public void setPassword(String password) {
+        if (password.length() < 6) {
+            throw new IllegalArgumentException("Couchbase requires password length >= 6 chars, password=" + password);
+        }
+        this.password = password;
+    }
+
+    public String getCredentials() {
+        return format("%s:%s", user, password);
+    }
 }
+

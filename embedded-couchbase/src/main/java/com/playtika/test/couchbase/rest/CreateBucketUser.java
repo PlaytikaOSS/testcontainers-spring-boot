@@ -41,11 +41,11 @@ public class CreateBucketUser extends AbstractInitOnStartupStrategy {
     public String[] getScriptToExecute() {
         return new String[]{
                 "curl", "-X", "PUT",
-                "-u", "Administrator:password",
+                "-u", properties.getCredentials(),
                 "http://127.0.0.1:8091/settings/rbac/users/local/" + properties.getBucket(),
                 "-d", "roles=bucket_full_access%5B" + properties.getBucket() + "%5D",
                 "-d", "name=",
-                "-d", "password=password"
+                "-d", "password=" + properties.getPassword()
         };
     }
 }

@@ -41,7 +41,7 @@ public class SetupAdminUserAndPassword extends AbstractInitOnStartupStrategy {
     public String[] getScriptToExecute() {
         return new String[]{
                 "curl", "-X", "POST",
-                "-u", "Administrator:password",
+                "-u", properties.getCredentials(),
                 "http://127.0.0.1:8091/settings/web",
                 "-d", "username=" + properties.getUser() +
                 "&password=" + properties.getPassword() + "&port=SAME"
