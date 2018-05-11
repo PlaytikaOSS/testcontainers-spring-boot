@@ -37,6 +37,7 @@
         <module>embedded-couchbase</module>
         <module>embedded-redis</module>
         <module>embedded-neo4j</module>
+        <module>embedded-postgresql</module>
         <!--<module>embedded-zookeeper</module>-->
     </modules>
 
