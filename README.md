@@ -21,6 +21,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    6. [embedded-redis](#embedded-redis)
    7. [embedded-neo4j](#embedded-neo4j)
    8. [embedded-zookeeper](#embedded-zookeeper)
+   9. [embedded-postgresql](#embedded-postgresql)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -237,6 +238,25 @@ embedded.kafka.topicsToCreate=some_topic
 * 
 ##### Produces
 * 
+### embedded-postgresql
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-postgresql</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.postgresql.enabled `(true|false, default is 'true')`
+* embedded.postgresql.dockerImage `(default is set to 'postgres:9.6.8')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/postgres/tags/)
+##### Produces
+* embedded.postgresql.port
+* embedded.postgresql.host
+* embedded.postgresql.schema
+* embedded.postgresql.user
+* embedded.postgresql.password
 ## How to contribute
 ### Flow
 * There is 2 branches in project: master and develop
