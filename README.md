@@ -22,6 +22,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    7. [embedded-neo4j](#embedded-neo4j)
    8. [embedded-zookeeper](#embedded-zookeeper)
    9. [embedded-postgresql](#embedded-postgresql)
+   10. [embedded-elasticsearch](#embedded-elasticsearch)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -257,6 +258,25 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.postgresql.schema
 * embedded.postgresql.user
 * embedded.postgresql.password
+### embedded-elasticsearch
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-elasticsearch</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.elasticsearch.enabled `(true|false, default is 'true')`
+* embedded.elasticsearch.dockerImage `(default is set to 'docker.elastic.co/elasticsearch/elasticsearch:6.2.4')`
+* embedded.elasticsearch.indices `(indices to create, no indices are created by default)`
+  * You can pick wanted version on [docker.elastic.co](https://www.docker.elastic.co)
+##### Produces
+* embedded.elasticsearch.clusterName
+* embedded.elasticsearch.host
+* embedded.elasticsearch.httpPort
+* embedded.elasticsearch.transportPort
 ## How to contribute
 ### Flow
 * There is 2 branches in project: master and develop
