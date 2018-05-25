@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2017 Playtika
+* Copyright (c) 2018 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -23,46 +23,58 @@
  */
 package com.playtika.test.aerospike;
 
+import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
+import org.joda.time.Duration;
 
-import java.util.concurrent.TimeUnit;
-
+/**
+ * Please instead use AerospikeTestOperations
+ */
+@Deprecated
+@RequiredArgsConstructor
 public class AerospikeTimeTravelService {
 
-    private ExpiredDocumentsCleaner expiredDocumentsCleaner;
+    private final AerospikeTestOperations testOperations;
 
-    public AerospikeTimeTravelService(ExpiredDocumentsCleaner expiredDocumentsCleaner) {
-        this.expiredDocumentsCleaner = expiredDocumentsCleaner;
-    }
-
+    /**
+     * Please instead use AerospikeTestOperations
+     */
+    @Deprecated
     public void timeTravelTo(DateTime futureTime) {
-        DateTime now = DateTime.now();
-        if(futureTime.isBeforeNow()) {
-            throw new IllegalArgumentException("Time should be in future. Now is: " + now + " time is:" + futureTime);
-        } else {
-            timeTravel(futureTime);
-        }
+        testOperations.timeTravelTo(futureTime);
     }
 
+    /**
+     * Please instead use AerospikeTestOperations
+     */
+    @Deprecated
     public void nextDay() {
-        timeTravel(DateTime.now().plusDays(1));
+        testOperations.timeTravelTo(DateTime.now().plusDays(1));
     }
 
+    /**
+     * Please instead use AerospikeTestOperations
+     */
+    @Deprecated
     public void addDays(int days) {
-        addHours((int) TimeUnit.DAYS.toHours((long)days));
+        testOperations.addDuration(Duration.standardDays(days));
     }
 
+    /**
+     * Please instead use AerospikeTestOperations
+     */
+    @Deprecated
     public void addHours(int hours) {
-        timeTravel(DateTime.now().plusHours(hours).plusMinutes(1));
+        testOperations.addDuration(Duration.standardHours(hours));
     }
 
+    /**
+     * Please instead use AerospikeTestOperations
+     */
+    @Deprecated
     public void rollbackTime() {
-        DateTimeUtils.setCurrentMillisSystem();
+        testOperations.rollbackTime();
     }
 
-    private void timeTravel(DateTime newNow) {
-        DateTimeUtils.setCurrentMillisFixed(newNow.getMillis());
-        expiredDocumentsCleaner.cleanExpiredDocumentsBefore(newNow.getMillis());
-    }
+
 }
