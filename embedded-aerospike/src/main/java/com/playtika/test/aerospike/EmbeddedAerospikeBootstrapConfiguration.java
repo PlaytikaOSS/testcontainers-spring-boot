@@ -63,7 +63,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     }
 
     @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer aerosike(AerospikeWaitStrategy aerospikeWaitStrategy,
+    public GenericContainer aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                      ConfigurableEnvironment environment,
                                      AerospikeProperties properties) {
         log.info("Starting aerospike server. Docker image: {}", properties.dockerImage);
@@ -91,11 +91,11 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         return aerospike;
     }
 
-    private void registerAerospikeEnvironment(GenericContainer aerosike,
+    private void registerAerospikeEnvironment(GenericContainer aerospike,
                                               ConfigurableEnvironment environment,
                                               AerospikeProperties properties) {
-        Integer mappedPort = aerosike.getMappedPort(properties.port);
-        String host = aerosike.getContainerIpAddress();
+        Integer mappedPort = aerospike.getMappedPort(properties.port);
+        String host = aerospike.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.aerospike.host", host);
