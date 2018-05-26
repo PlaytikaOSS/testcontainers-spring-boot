@@ -36,12 +36,12 @@ import java.util.function.Supplier;
 public class AerospikeTestOperations {
 
     private final ExpiredDocumentsCleaner expiredDocumentsCleaner;
-    private final GenericContainer aerosike;
+    private final GenericContainer aerospike;
 
     public void addNetworkLatencyForResponses(long millis) {
         executeCommandInContainer(() -> {
                     try {
-                        return aerosike.execInContainer("tc", "qdisc", "add", "dev", "eth0", "root", "netem", "delay", millis + "ms");
+                        return aerospike.execInContainer("tc", "qdisc", "add", "dev", "eth0", "root", "netem", "delay", millis + "ms");
                     } catch (Exception e) {
                         throw new IllegalStateException("Failed to execute command", e);
                     }
@@ -52,7 +52,7 @@ public class AerospikeTestOperations {
     public void removeNetworkLatencyForResponses() {
         executeCommandInContainer(() -> {
             try {
-                return aerosike.execInContainer("tc", "qdisc", "del", "dev", "eth0", "root");
+                return aerospike.execInContainer("tc", "qdisc", "del", "dev", "eth0", "root");
             } catch (Exception e) {
                 throw new IllegalStateException("Failed to execute command", e);
             }

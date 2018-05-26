@@ -46,6 +46,11 @@ public class KafkaConfigurationProperties {
     String dockerImage = "confluentinc/cp-kafka:3.3.0";
     Collection<String> topicsToCreate = Collections.emptyList();
     transient final int replicationFactor = 1;
+    //https://github.com/kafka-dev/kafka/blob/0.6.1/core/src/test/scala/unit/kafka/utils/TestUtils.scala#L114
+    transient final int logFlushIntervalMs = 1;
+    //https://github.com/spring-projects/spring-kafka/blob/v1.3.5.RELEASE/spring-kafka-test/src/main/java/org/springframework/kafka/test/rule/KafkaEmbedded.java#L193
+    transient final int replicaSocketTimeoutMs = 1000;
+    transient final int controllerSocketTimeoutMs = 1000;
 
     /**
      * Kafka container port will be assigned automatically if free port is available.
