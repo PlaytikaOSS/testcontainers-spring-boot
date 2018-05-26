@@ -24,6 +24,7 @@
 package com.playtika.test.aerospike;
 
 import com.aerospike.client.AerospikeClient;
+import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -35,7 +36,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.WaitAllStrategy;
@@ -81,6 +81,9 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
+                        .withCreateContainerCmdModifier(cmd ->
+                                        cmd.withCapAdd(Capability.NET_ADMIN)
+                        )
                         .waitingFor(waitStrategy);
 
         aerospike.start();

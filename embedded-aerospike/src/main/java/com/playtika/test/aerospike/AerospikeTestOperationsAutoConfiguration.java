@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2017 Playtika
+* Copyright (c) 2018 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.testcontainers.containers.GenericContainer;
 
 @Configuration
 @ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
-public class AerospikeTimeTravelAutoConfiguration {
+public class AerospikeTestOperationsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
@@ -44,7 +45,14 @@ public class AerospikeTimeTravelAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AerospikeTimeTravelService aerospikeTimeTravelService(ExpiredDocumentsCleaner expiredDocumentsCleaner) {
-        return new AerospikeTimeTravelService(expiredDocumentsCleaner);
+    public AerospikeTestOperations aerospikeTestOperations(ExpiredDocumentsCleaner expiredDocumentsCleaner,
+                                                           GenericContainer aerospike) {
+        return new AerospikeTestOperations(expiredDocumentsCleaner, aerospike);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AerospikeTimeTravelService aerospikeTimeTravelService(AerospikeTestOperations aerospikeTestOperations) {
+        return new AerospikeTimeTravelService(aerospikeTestOperations);
     }
 }

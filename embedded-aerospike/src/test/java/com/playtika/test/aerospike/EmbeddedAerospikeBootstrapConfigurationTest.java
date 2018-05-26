@@ -29,6 +29,7 @@ import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
+import org.assertj.core.data.Offset;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,9 @@ public class EmbeddedAerospikeBootstrapConfigurationTest {
     @Autowired
     WritePolicy policy;
 
+    @Autowired
+    AerospikeTestOperations aerospikeTestOperations;
+
     @Test
     public void shouldSave() throws Exception {
         Key key = new Key(namespace, SET, "key1");
@@ -82,6 +86,28 @@ public class EmbeddedAerospikeBootstrapConfigurationTest {
                 .hasSize(1)
                 .contains("aerospikeClient");
         asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    @Test
+    public void shouldAddLatency() throws Exception {
+        aerospikeTestOperations.addNetworkLatencyForResponses(1500);
+
+        long total = getExecutionTimeOfOperation();
+
+        assertThat(total).isCloseTo(1500L, Offset.offset(20L));
+
+        aerospikeTestOperations.removeNetworkLatencyForResponses();
+
+        total = getExecutionTimeOfOperation();
+        assertThat(total).isLessThan(20);
+    }
+
+    private long getExecutionTimeOfOperation() {
+        Key key = new Key(namespace, SET, "key1");
+
+        long start = System.currentTimeMillis();
+        client.get(policy, key);
+        return System.currentTimeMillis() - start;
     }
 
     private void hasDependsOn(String beanName) {
