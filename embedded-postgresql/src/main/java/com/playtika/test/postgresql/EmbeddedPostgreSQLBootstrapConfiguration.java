@@ -24,8 +24,11 @@
 package com.playtika.test.postgresql;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.util.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -35,6 +38,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.MountableFile;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
@@ -44,7 +48,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Configuration
 @Order(HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.postgresql.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(PostgreSQLProperties.class)
+@EnableConfigurationProperties(value = {PostgreSQLProperties.class, FileRequiredProperties.class})
 public class EmbeddedPostgreSQLBootstrapConfiguration {
 
     @Bean
@@ -56,6 +60,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_POSTGRESQL, destroyMethod = "stop")
     public GenericContainer postgresql(ConfigurableEnvironment environment,
                                        PostgreSQLProperties properties,
+                                       FileRequiredProperties fileRequiredProperties,
                                        PostgreSQLStatusCheck postgreSQLStatusCheck) {
         log.info("Starting postgresql server. Docker image: {}", properties.dockerImage);
 
@@ -71,6 +76,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                 .waitingFor(postgreSQLStatusCheck);
         postgresql.start();
         registerPostgresqlEnvironment(postgresql, environment, properties);
+        putRequiredFileOnContainer(postgresql, fileRequiredProperties);
         return postgresql;
     }
 
@@ -94,4 +100,14 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         MapPropertySource propertySource = new MapPropertySource("embeddedPostgreInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }
+    
+	private void putRequiredFileOnContainer(GenericContainer postgresql,
+			FileRequiredProperties fileRequiredProperties) {
+		fileRequiredProperties.getPathForFiles().stream()
+				.filter(Objects::nonNull)
+				.filter(fileDetails -> !StringUtils.isEmpty(fileDetails.getCopyPath())
+						&& !StringUtils.isEmpty(fileDetails.getFileName()))
+				.forEach(fileDetails -> postgresql.copyFileToContainer(
+						MountableFile.forClasspathResource(fileDetails.getFileName()), fileDetails.getCopyPath()));
+	}
 }
