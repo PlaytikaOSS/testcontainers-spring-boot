@@ -37,9 +37,11 @@ public class KafkaConfigurationProperties {
 
     public static final String KAFKA_BEAN_NAME = "kafka";
 
-    String brokerList;
+    protected String brokerList;
+    protected String containerBrokerList;
     boolean enabled = true;
-    int brokerPort = 0;
+    protected int brokerPort = 0;
+    protected int containerBrokerPort = 0;
     int socketTimeoutMs = 5_000;
     int bufferSize = 64 * 1024;
     String dataFileSystemBind = "target/embedded-kafka-data";
@@ -61,5 +63,10 @@ public class KafkaConfigurationProperties {
         if (this.brokerPort == 0) {
             this.brokerPort = ContainerUtils.getAvailableMappingPort();
         }
+
+        if (this.containerBrokerPort == 0) {
+            this.containerBrokerPort = ContainerUtils.getAvailableMappingPort();
+        }
     }
+    
 }

@@ -25,6 +25,7 @@ package com.playtika.test.couchbase;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,9 +34,11 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 
 import java.util.LinkedHashMap;
 
+import static com.playtika.test.couchbase.CouchbaseContainerFactory.COUCHBASE_HOST_NAME;
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
 
 @Slf4j
@@ -45,12 +48,21 @@ import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class EmbeddedCouchbaseBootstrapConfiguration {
 
+    @Bean(destroyMethod = "close")
+    @ConditionalOnMissingBean(Network.class)
+    public Network couchbaseNetwork() {
+        Network network = Network.newNetwork();
+        log.info("Created docker Network id={}", network.getId());
+        return network;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
     public GenericContainer couchbase(ConfigurableEnvironment environment,
-                                      CouchbaseProperties properties) throws Exception {
+                                      CouchbaseProperties properties,
+                                      Network network) {
 
         log.info("Starting couchbase server. Docker image: {}", properties.dockerImage);
-        GenericContainer couchbase = CouchbaseContainerFactory.create(properties, log);
+        GenericContainer couchbase = CouchbaseContainerFactory.create(properties, log, network);
         couchbase.start();
         registerCouchbaseEnvironment(couchbase, environment, properties);
         return couchbase;
@@ -71,6 +83,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
         map.put("embedded.couchbase.bootstrapHttpDirectPort", mappedHttpPort);
         map.put("embedded.couchbase.bootstrapCarrierDirectPort", mappedCarrierPort);
         map.put("embedded.couchbase.host", host);
+        map.put("embedded.couchbase.containerHost", COUCHBASE_HOST_NAME); // access from other containers
         map.put("embedded.couchbase.bucket", properties.bucket);
         map.put("embedded.couchbase.user", properties.bucket);
         map.put("embedded.couchbase.password", properties.password);
