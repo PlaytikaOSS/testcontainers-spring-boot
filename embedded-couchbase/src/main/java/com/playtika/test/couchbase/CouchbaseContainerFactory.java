@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.WaitAllStrategy;
 import org.testcontainers.containers.wait.WaitStrategy;
 
@@ -42,7 +43,9 @@ import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsume
 @AllArgsConstructor
 class CouchbaseContainerFactory {
 
-    static GenericContainer create(CouchbaseProperties properties, Logger containerLogger) {
+    public static final String COUCHBASE_HOST_NAME = "couchbase.testcontainer.docker";
+
+    protected static GenericContainer create(CouchbaseProperties properties, Logger containerLogger, Network network) {
         return new FixedHostPortGenericContainer<>(properties.dockerImage)
                 .withFixedExposedPort(properties.carrierDirectPort, properties.carrierDirectPort)
                 .withFixedExposedPort(properties.httpDirectPort, properties.httpDirectPort)
@@ -55,6 +58,8 @@ class CouchbaseContainerFactory {
                 .withFixedExposedPort(properties.queryRestTrafficSslPort, properties.queryRestTrafficSslPort)
                 .withFixedExposedPort(properties.queryServiceSslPort, properties.queryServiceSslPort)
                 .withLogConsumer(containerLogsConsumer(containerLogger))
+                .withNetwork(network)
+                .withNetworkAliases(COUCHBASE_HOST_NAME)
                 .waitingFor(getCompositeWaitStrategy(properties));
     }
 

@@ -18,6 +18,7 @@
         <camel-kafka.version>2.16.5</camel-kafka.version>
         <io.netty.version>3.7.0.Final</io.netty.version>
         <kafka_2.11.version>0.8.2.2</kafka_2.11.version>
+        <kafka-clients.version>0.8.2.2</kafka-clients.version>
         <scala.version>2.11.0</scala.version>
         <zookeeper.version>3.4.6</zookeeper.version>
     </properties>
@@ -43,6 +44,11 @@
                         <groupId>org.slf4j</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka_2.11.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.camel</groupId>
@@ -75,6 +81,11 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.11</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

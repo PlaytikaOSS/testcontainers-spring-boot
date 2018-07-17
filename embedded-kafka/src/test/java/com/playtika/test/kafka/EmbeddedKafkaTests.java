@@ -1,25 +1,25 @@
 /*
-* The MIT License (MIT)
-*
-* Copyright (c) 2018 Playtika
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2018 Playtika
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package com.playtika.test.kafka;
 
@@ -31,6 +31,7 @@ import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.message.MessageAndMetadata;
 import kafka.utils.ZKStringSerializer$;
+import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -48,7 +49,8 @@ import java.util.*;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.*;
+import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -69,17 +71,17 @@ public class EmbeddedKafkaTests {
     @Autowired
     private ZkClient zkClient;
     @Autowired
-    KafkaTopicsConfigurer kafkaTopicsConfigurer;
+    private KafkaTopicsConfigurer kafkaTopicsConfigurer;
 
     @Test
-    public void should_autoCreateTopic() throws Exception {
+    public void shouldAutoCreateTopic() {
         boolean exists = AdminUtils.topicExists(this.zkClient, "autoCreatedTopic");
 
         assertTrue("Topic should be pre-created", exists);
     }
 
     @Test
-    public void should_createTopic() throws Exception {
+    public void shouldCreateTopic() {
         String topicToCreate = "topicToCreate";
         this.kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate));
 
@@ -133,6 +135,7 @@ public class EmbeddedKafkaTests {
 
     private Map<String, Object> getKafkaConsumerConfiguration() {
         Map<String, Object> configs = new HashMap<>();
+        configs.put("metadata.broker.list", kafkaBrokerList);
         configs.put("zookeeper.connect", zookeeperConnect);
         configs.put(GROUP_ID_CONFIG, "testGroup");
         configs.put(AUTO_OFFSET_RESET_CONFIG, "smallest");
@@ -151,5 +154,7 @@ public class EmbeddedKafkaTests {
             return new ZkClient(zookeeperConnect, zookeeperProperties.getSessionTimeoutMs(),
                     zookeeperProperties.getSocketTimeoutMs(), ZKStringSerializer$.MODULE$);
         }
+
     }
+
 }
