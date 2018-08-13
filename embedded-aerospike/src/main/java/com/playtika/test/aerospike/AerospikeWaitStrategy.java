@@ -44,10 +44,10 @@ public class AerospikeWaitStrategy extends AbstractRetryingWaitStrategy {
 
     @Override
     protected boolean isReady() {
-        String containerId = container.getContainerId();
+        String containerId = waitStrategyTarget.getContainerId();
         log.debug("Check Aerospike container {} status", containerId);
 
-        InspectContainerResponse containerInfo = container.getContainerInfo();
+        InspectContainerResponse containerInfo = waitStrategyTarget.getContainerInfo();
         if (containerInfo == null) {
             log.debug("Aerospike container[{}] doesn't contain info. Abnormal situation, should not happen.", containerId);
             return false;

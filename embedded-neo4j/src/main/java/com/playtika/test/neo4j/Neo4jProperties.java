@@ -23,12 +23,15 @@
  */
 package com.playtika.test.neo4j;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.neo4j")
-public class Neo4jProperties {
+public class Neo4jProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
     boolean enabled;
     String dockerImage = "neo4j:3.2.7";

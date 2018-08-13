@@ -72,7 +72,8 @@ public class EmbeddedRedisBootstrapConfiguration {
                                 "redis-health.sh",
                                 "/redis-health.sh",
                                 BindMode.READ_ONLY)
-                        .waitingFor(redisStatusCheck);
+                        .waitingFor(redisStatusCheck)
+                        .withStartupTimeout(properties.getTimeoutDuration());
         redis.start();
         registerRedisEnvironment(redis, environment, properties);
         return redis;

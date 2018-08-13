@@ -25,6 +25,7 @@ package com.playtika.test.common.checks;
 
 import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.DockerClientFactory;
 
 import static com.playtika.test.common.utils.ContainerUtils.ExecCmdResult;
 
@@ -35,10 +36,11 @@ public abstract class AbstractCommandWaitStrategy extends AbstractRetryingWaitSt
 
     protected boolean isReady() {
         String commandName = getContainerType();
-        String containerId = container.getContainerId();
+        String containerId = waitStrategyTarget.getContainerId();
         log.debug("{} execution of command {} for container id: {} ", commandName, containerId);
 
-        ExecCmdResult healthCheckCmdResult = ContainerUtils.execCmd(container.getDockerClient(), containerId, getCheckCommand());
+        ExecCmdResult healthCheckCmdResult =
+                ContainerUtils.execCmd(DockerClientFactory.instance().client(), containerId, getCheckCommand());
 
         log.debug("{} executed with exitCode: {}, output: {}",
                 commandName, healthCheckCmdResult.getExitCode(), healthCheckCmdResult.getOutput());

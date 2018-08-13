@@ -23,12 +23,15 @@
  */
 package com.playtika.test.mariadb;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.mariadb")
-public class MariaDBProperties {
+public class MariaDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
     boolean enabled;
     String dockerImage = "mariadb:10.3.2";

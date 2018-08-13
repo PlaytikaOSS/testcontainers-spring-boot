@@ -23,12 +23,15 @@
  */
 package com.playtika.test.redis;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.redis")
-public class RedisProperties {
+public class RedisProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
     boolean enabled;
     String dockerImage = "redis:4.0.2";

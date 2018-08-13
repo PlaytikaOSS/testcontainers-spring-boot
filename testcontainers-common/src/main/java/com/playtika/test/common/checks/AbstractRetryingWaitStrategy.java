@@ -27,14 +27,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.ContainerLaunchException;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 
 @Slf4j
-public abstract class AbstractRetryingWaitStrategy extends GenericContainer.AbstractWaitStrategy {
+public abstract class AbstractRetryingWaitStrategy extends AbstractWaitStrategy {
 
     protected String getContainerType() {
         return getClass().getSimpleName();
@@ -49,7 +49,7 @@ public abstract class AbstractRetryingWaitStrategy extends GenericContainer.Abst
         } catch (TimeoutException e) {
             throw new ContainerLaunchException(
                     format("[%s] notifies that container[%s] is not ready after [%d] seconds, container cannot be started.",
-                            getContainerType(), container.getContainerId(), seconds));
+                            getContainerType(), waitStrategyTarget.getContainerId(), seconds));
         }
     }
 

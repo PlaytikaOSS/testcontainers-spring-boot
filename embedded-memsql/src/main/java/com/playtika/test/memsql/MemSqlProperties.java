@@ -23,12 +23,15 @@
  */
 package com.playtika.test.memsql;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.memsql")
-public class MemSqlProperties {
+public class MemSqlProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
     boolean enabled;
     String dockerImage = "memsql/quickstart:minimal-6.0.8";

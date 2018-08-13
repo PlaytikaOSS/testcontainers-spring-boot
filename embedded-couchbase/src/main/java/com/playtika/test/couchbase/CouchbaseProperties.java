@@ -23,7 +23,9 @@
  */
 package com.playtika.test.couchbase;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static java.lang.String.format;
@@ -32,8 +34,9 @@ import static java.lang.String.format;
  * https://blog.couchbase.com/testing-spring-data-couchbase-applications-with-testcontainers/
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.couchbase")
-public class CouchbaseProperties {
+public class CouchbaseProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
     boolean enabled;
     String services = "kv,index,n1ql,fts";

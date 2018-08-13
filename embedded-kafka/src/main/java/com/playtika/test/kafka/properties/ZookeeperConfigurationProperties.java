@@ -23,15 +23,18 @@
  */
 package com.playtika.test.kafka.properties;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.utils.ContainerUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.zookeeper")
-public class ZookeeperConfigurationProperties {
+public class ZookeeperConfigurationProperties extends CommonContainerProperties {
 
     public static final String ZOOKEEPER_BEAN_NAME = "zookeeper";
 

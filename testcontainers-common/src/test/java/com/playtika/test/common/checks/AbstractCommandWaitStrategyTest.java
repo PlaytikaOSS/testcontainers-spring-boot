@@ -26,23 +26,27 @@ package com.playtika.test.common.checks;
 import org.junit.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
+
+import java.time.Duration;
 
 public class AbstractCommandWaitStrategyTest {
 
-    private static final GenericContainer TEST_CONTAINER = new GenericContainer("alpine:latest")
-            .withCommand("/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done");
-
     @Test
     public void should_passStartupChecks_andStartContainer() {
-        TEST_CONTAINER
-                .waitingFor(new PositiveCommandWaitStrategy())
-                .start();
+        startContainerWithWaitStrategy(new PositiveCommandWaitStrategy());
     }
 
     @Test(expected = ContainerLaunchException.class)
     public void should_failStartupChecks_ifHealthCheckCmdIsFailed() {
-        TEST_CONTAINER
-                .waitingFor(new NegativeCommandWaitStrategy())
+        startContainerWithWaitStrategy(new NegativeCommandWaitStrategy());
+    }
+
+    private void startContainerWithWaitStrategy(WaitStrategy waitStrategy) {
+        new GenericContainer("alpine:latest")
+                .withCommand("/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done")
+                .waitingFor(waitStrategy)
+                .withStartupTimeout(Duration.ofSeconds(15))
                 .start();
     }
 
@@ -55,7 +59,7 @@ public class AbstractCommandWaitStrategyTest {
 
         @Override
         public String[] getCheckCommand() {
-            return new String[] {"echo", "health check passed"};
+            return new String[]{"echo", "health check passed"};
         }
     }
 
@@ -68,7 +72,7 @@ public class AbstractCommandWaitStrategyTest {
 
         @Override
         public String[] getCheckCommand() {
-            return new String[] {"/bin/sh", "-c", "invalid command"};
+            return new String[]{"/bin/sh", "-c", "invalid command"};
         }
     }
 }

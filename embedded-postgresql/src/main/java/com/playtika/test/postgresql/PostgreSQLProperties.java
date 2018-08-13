@@ -23,12 +23,15 @@
  */
 package com.playtika.test.postgresql;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.postgresql")
-public class PostgreSQLProperties {
+public class PostgreSQLProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_POSTGRESQL = "embeddedPostgreSql";
     boolean enabled;
     String dockerImage = "postgres:10.3";

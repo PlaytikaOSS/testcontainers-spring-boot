@@ -70,7 +70,8 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                 "--collation-server=" + properties.getCollation())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
-                        .waitingFor(mariaDBStatusCheck);
+                        .waitingFor(mariaDBStatusCheck)
+                        .withStartupTimeout(properties.getTimeoutDuration());
         mariadb.start();
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;

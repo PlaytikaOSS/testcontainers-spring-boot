@@ -23,8 +23,10 @@
  */
 package com.playtika.test.kafka.properties;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.utils.ContainerUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
@@ -32,8 +34,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.kafka")
-public class KafkaConfigurationProperties {
+public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     public static final String KAFKA_BEAN_NAME = "kafka";
 
@@ -68,5 +71,5 @@ public class KafkaConfigurationProperties {
             this.containerBrokerPort = ContainerUtils.getAvailableMappingPort();
         }
     }
-    
+
 }

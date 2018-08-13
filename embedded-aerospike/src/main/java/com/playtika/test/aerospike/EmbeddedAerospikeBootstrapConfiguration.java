@@ -37,9 +37,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.HostPortWaitStrategy;
-import org.testcontainers.containers.wait.WaitAllStrategy;
-import org.testcontainers.containers.wait.WaitStrategy;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -64,8 +64,8 @@ public class EmbeddedAerospikeBootstrapConfiguration {
 
     @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
-                                     ConfigurableEnvironment environment,
-                                     AerospikeProperties properties) {
+                                      ConfigurableEnvironment environment,
+                                      AerospikeProperties properties) {
         log.info("Starting aerospike server. Docker image: {}", properties.dockerImage);
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(aerospikeWaitStrategy)
@@ -81,10 +81,9 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
-                        .withCreateContainerCmdModifier(cmd ->
-                                        cmd.withCapAdd(Capability.NET_ADMIN)
-                        )
-                        .waitingFor(waitStrategy);
+                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
+                        .waitingFor(waitStrategy)
+                        .withStartupTimeout(properties.getTimeoutDuration());
 
         aerospike.start();
         registerAerospikeEnvironment(aerospike, environment, properties);

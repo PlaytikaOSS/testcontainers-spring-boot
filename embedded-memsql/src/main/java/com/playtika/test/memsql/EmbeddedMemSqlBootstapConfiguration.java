@@ -68,7 +68,8 @@ public class EmbeddedMemSqlBootstapConfiguration {
                         "mem.sql",
                         "/schema.sql",
                         BindMode.READ_ONLY)
-                .waitingFor(memSqlStatusCheck);
+                .waitingFor(memSqlStatusCheck)
+                .withStartupTimeout(properties.getTimeoutDuration());
         memsql.start();
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;
