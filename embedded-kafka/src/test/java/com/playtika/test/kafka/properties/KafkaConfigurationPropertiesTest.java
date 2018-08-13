@@ -34,6 +34,8 @@ public class KafkaConfigurationPropertiesTest {
     @Test
     public void shouldHave_equalsAndHashcodeContract() {
         EqualsVerifier.forClass(KafkaConfigurationProperties.class)
-                .suppress(NONFINAL_FIELDS, STRICT_INHERITANCE).verify();
+                .suppress(NONFINAL_FIELDS, STRICT_INHERITANCE)
+                .withRedefinedSuperclass()
+                .verify();
     }
 }

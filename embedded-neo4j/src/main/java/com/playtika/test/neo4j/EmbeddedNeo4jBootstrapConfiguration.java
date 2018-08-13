@@ -71,7 +71,8 @@ public class EmbeddedNeo4jBootstrapConfiguration {
                         "neo4j-health.sh",
                         "/neo4j-health.sh",
                         BindMode.READ_ONLY)
-                .waitingFor(neo4jStatusCheck);
+                .waitingFor(neo4jStatusCheck)
+                .withStartupTimeout(properties.getTimeoutDuration());
         neo4j.start();
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;

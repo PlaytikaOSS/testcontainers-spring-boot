@@ -92,7 +92,8 @@ public class ZookeeperContainerConfiguration {
                 .withFixedExposedPort(mappingPort, mappingPort)
                 .withNetwork(network)
                 .withNetworkAliases(ZOOKEEPER_HOST_NAME)
-                .waitingFor(zookeeperStatusCheck);
+                .waitingFor(zookeeperStatusCheck)
+                .withStartupTimeout(zookeeperProperties.getTimeoutDuration());
         zookeeper.start();
         registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;

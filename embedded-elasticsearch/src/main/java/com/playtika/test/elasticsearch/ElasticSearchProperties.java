@@ -26,12 +26,15 @@ package com.playtika.test.elasticsearch;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.elasticsearch")
-public class ElasticSearchProperties {
+public class ElasticSearchProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
     boolean enabled;
     String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:6.2.4";

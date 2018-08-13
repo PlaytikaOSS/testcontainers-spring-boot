@@ -97,6 +97,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.mariadb.collation `(default is 'utf8mb4_unicode_ci')`
 * embedded.mariadb.dockerImage `(default is set to 'mariadb:10.3.2')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mariadb/tags/)
+* embedded.mariadb.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.mariadb.port
 * embedded.mariadb.host
@@ -122,6 +123,7 @@ embedded.kafka.topicsToCreate=some_topic
   * NOTE: Versions of couchbase 2.x/3.x are not functional via docker, consider use of [CouchbaseMock](https://github.com/couchbase/CouchbaseMock)
 * embedded.couchbase.bucketType `(default is set to 'couchbase')`
   * Used for test [bucket creation](https://developer.couchbase.com/documentation/server/3.x/admin/REST/rest-bucket-create.html)
+* embedded.couchbase.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.couchbase.bootstrapHttpDirectPort
   * Please note that this also produced as System property for [couchbase java client](https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java)
@@ -142,11 +144,13 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes (via bootstrap.properties)
 * embedded.zookeeper.enabled `(true|false, default is 'true')`
+* embedded.zookeeper.waitTimeoutInSeconds `(default is 60 seconds)`
 * embedded.kafka.enabled `(true|false, default is 'true')`
 * embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
 * embedded.kafka.dockerImage `(default is set to kafka 0.11.x)`
   * To use kafka 0.10.x place "confluentinc/cp-kafka:3.2.2" or recent [from 3.2.x branch](https://hub.docker.com/r/confluentinc/cp-kafka/tags/)
   * To use kafka 0.11.x place "confluentinc/cp-kafka:3.3.0" or recent [from 3.3.x branch](https://hub.docker.com/r/confluentinc/cp-kafka/tags/)
+* embedded.kafka.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
@@ -164,6 +168,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.aerospike.enabled `(true|false, default is 'true')`
 * embedded.aerospike.dockerImage `(default is set to 'aerospike:3.15.0.1')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/aerospike/tags/)
+* embedded.aerospike.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.aerospike.host
 * embedded.aerospike.port
@@ -187,6 +192,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.memsql.enabled `(true|false, default is 'true')`
 * embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:minimal-6.0.8')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/memsql/quickstart/tags/)
+* embedded.memsql.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.memsql.port
 * embedded.memsql.host
@@ -210,6 +216,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.redis.enabled `(true|false, default is 'true')`
 * embedded.redis.dockerImage `(default is set to 'redis:4.0.2')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/redis/tags/)
+* embedded.redis.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.redis.host
 * embedded.redis.port
@@ -228,6 +235,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.neo4j.enabled `(true|false, default is 'true')`
 * embedded.neo4j.dockerImage `(default is set to 'neo4j:3.2.7')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/neo4j/tags/)
+* embedded.neo4j.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.neo4j.user
 * embedded.neo4j.password
@@ -252,6 +260,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.postgresql.enabled `(true|false, default is 'true')`
 * embedded.postgresql.dockerImage `(default is set to 'postgres:9.6.8')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/postgres/tags/)
+* embedded.postgresql.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.postgresql.port
 * embedded.postgresql.host
@@ -272,6 +281,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.elasticsearch.dockerImage `(default is set to 'docker.elastic.co/elasticsearch/elasticsearch:6.2.4')`
 * embedded.elasticsearch.indices `(indices to create, no indices are created by default)`
   * You can pick wanted version on [docker.elastic.co](https://www.docker.elastic.co)
+* embedded.elasticsearch.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.elasticsearch.clusterName
 * embedded.elasticsearch.host

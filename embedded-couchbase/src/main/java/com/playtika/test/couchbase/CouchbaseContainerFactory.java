@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.WaitAllStrategy;
-import org.testcontainers.containers.wait.WaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
@@ -60,7 +60,8 @@ class CouchbaseContainerFactory {
                 .withLogConsumer(containerLogsConsumer(containerLogger))
                 .withNetwork(network)
                 .withNetworkAliases(COUCHBASE_HOST_NAME)
-                .waitingFor(getCompositeWaitStrategy(properties));
+                .waitingFor(getCompositeWaitStrategy(properties))
+                .withStartupTimeout(properties.getTimeoutDuration());
     }
 
     /**

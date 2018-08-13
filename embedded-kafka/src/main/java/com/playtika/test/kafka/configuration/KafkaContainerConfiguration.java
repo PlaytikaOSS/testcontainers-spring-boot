@@ -108,7 +108,8 @@ public class KafkaContainerConfiguration {
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
-                .waitingFor(kafkaStatusCheck);
+                .waitingFor(kafkaStatusCheck)
+                .withStartupTimeout(kafkaProperties.getTimeoutDuration());
 
         kafka.start();
         registerKafkaEnvironment(kafka, environment, kafkaProperties);

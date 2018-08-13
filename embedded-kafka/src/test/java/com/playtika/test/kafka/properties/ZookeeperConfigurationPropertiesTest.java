@@ -34,6 +34,8 @@ public class ZookeeperConfigurationPropertiesTest {
     @Test
     public void shouldHave_equalsAndHashcodeContract() {
         EqualsVerifier.forClass(ZookeeperConfigurationProperties.class)
-                .suppress(NONFINAL_FIELDS, STRICT_INHERITANCE).verify();
+                .suppress(NONFINAL_FIELDS, STRICT_INHERITANCE)
+                .withRedefinedSuperclass()
+                .verify();
     }
 }

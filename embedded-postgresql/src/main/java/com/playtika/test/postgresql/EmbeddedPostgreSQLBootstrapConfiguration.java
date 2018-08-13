@@ -23,8 +23,6 @@
  */
 package com.playtika.test.postgresql;
 
-import java.util.LinkedHashMap;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,6 +33,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+
+import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
@@ -60,15 +60,16 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         log.info("Starting postgresql server. Docker image: {}", properties.dockerImage);
 
         GenericContainer postgresql =
-            new GenericContainer(properties.dockerImage)
-                .withEnv("POSTGRES_USER", properties.getUser())
-                .withEnv("POSTGRES_PASSWORD", properties.getPassword())
-                .withEnv("PGPASSWORD", properties.password) // for health check
-                .withEnv("POSTGRES_DB", properties.getDatabase())
-                .withCommand("postgres")
-                .withLogConsumer(containerLogsConsumer(log))
-                .withExposedPorts(properties.port)
-                .waitingFor(postgreSQLStatusCheck);
+                new GenericContainer(properties.dockerImage)
+                        .withEnv("POSTGRES_USER", properties.getUser())
+                        .withEnv("POSTGRES_PASSWORD", properties.getPassword())
+                        .withEnv("PGPASSWORD", properties.password) // for health check
+                        .withEnv("POSTGRES_DB", properties.getDatabase())
+                        .withCommand("postgres")
+                        .withLogConsumer(containerLogsConsumer(log))
+                        .withExposedPorts(properties.port)
+                        .waitingFor(postgreSQLStatusCheck)
+                        .withStartupTimeout(properties.getTimeoutDuration());
         postgresql.start();
         registerPostgresqlEnvironment(postgresql, environment, properties);
         return postgresql;
@@ -89,7 +90,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
         String jdbcURL = "jdbc:postgresql://{}:{}/{}";
         log.info("Started postgresql server. Connection details: {}, " +
-            "JDBC connection url: " + jdbcURL, map, host, mappedPort, properties.getDatabase());
+                "JDBC connection url: " + jdbcURL, map, host, mappedPort, properties.getDatabase());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedPostgreInfo", map);
         environment.getPropertySources().addFirst(propertySource);

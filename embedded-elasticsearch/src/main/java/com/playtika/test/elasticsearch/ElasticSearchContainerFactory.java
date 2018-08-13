@@ -23,15 +23,14 @@
  */
 package com.playtika.test.elasticsearch;
 
+import com.playtika.test.elasticsearch.rest.CreateIndex;
+import com.playtika.test.elasticsearch.rest.WaitForGreenStatus;
 import org.slf4j.Logger;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.HostPortWaitStrategy;
-import org.testcontainers.containers.wait.WaitAllStrategy;
-import org.testcontainers.containers.wait.WaitStrategy;
-
-import com.playtika.test.elasticsearch.rest.CreateIndex;
-import com.playtika.test.elasticsearch.rest.WaitForGreenStatus;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
@@ -40,20 +39,25 @@ class ElasticSearchContainerFactory {
 
     static GenericContainer create(ElasticSearchProperties properties, Logger containerLogger) {
         return new FixedHostPortGenericContainer(properties.dockerImage)
-            .withExposedPorts(properties.httpPort, properties.transportPort)
-            .withEnv("cluster.name", properties.getClusterName())
-            .withEnv("discovery.type", "single-node")
-            .withEnv("ES_JAVA_OPTS", "-Xms" + properties.getClusterRamMb() + "m -Xmx" + properties.getClusterRamMb() + "m")
-            .withLogConsumer(containerLogsConsumer(containerLogger))
-            .waitingFor(getCompositeWaitStrategy(properties));
+                .withExposedPorts(properties.httpPort, properties.transportPort)
+                .withEnv("cluster.name", properties.getClusterName())
+                .withEnv("discovery.type", "single-node")
+                .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
+                .withLogConsumer(containerLogsConsumer(containerLogger))
+                .waitingFor(getCompositeWaitStrategy(properties))
+                .withStartupTimeout(properties.getTimeoutDuration());
+    }
+
+    private static String getJavaOpts(ElasticSearchProperties properties) {
+        return "-Xms" + properties.getClusterRamMb() + "m -Xmx" + properties.getClusterRamMb() + "m";
     }
 
     private static WaitStrategy getCompositeWaitStrategy(ElasticSearchProperties properties) {
         WaitAllStrategy strategy = new WaitAllStrategy()
-            .withStrategy(new HostPortWaitStrategy());
+                .withStrategy(new HostPortWaitStrategy());
         properties.indices.forEach(index -> strategy.withStrategy(new CreateIndex(properties, index)));
         return strategy
-            .withStrategy(new WaitForGreenStatus(properties))
-            .withStartupTimeout(DEFAULT_CONTAINER_WAIT_DURATION);
+                .withStrategy(new WaitForGreenStatus(properties))
+                .withStartupTimeout(DEFAULT_CONTAINER_WAIT_DURATION);
     }
 }
