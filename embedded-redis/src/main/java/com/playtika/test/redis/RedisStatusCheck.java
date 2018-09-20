@@ -34,7 +34,7 @@ public class RedisStatusCheck extends AbstractCommandWaitStrategy {
     @Override
     public String[] getCheckCommand() {
         return new String[] {
-                "bash", "/redis-health.sh"
+                "redis-cli", "-a", "$REDIS_PASSWORD", "ping"
         };
     }
 }

@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.LinkedHashMap;
@@ -68,10 +67,6 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCommand("redis-server", "--requirepass", properties.getPassword())
-                        .withClasspathResourceMapping(
-                                "redis-health.sh",
-                                "/redis-health.sh",
-                                BindMode.READ_ONLY)
                         .waitingFor(redisStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
         redis.start();
