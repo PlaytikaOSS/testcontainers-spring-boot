@@ -47,7 +47,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.8.3</testcontainers.version>
+        <testcontainers.version>1.9.1</testcontainers.version>
         <spring.cloud.version>Finchley.SR1</spring.cloud.version>
         <docker-java.version>3.0.14</docker-java.version>
 
