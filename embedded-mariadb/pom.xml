@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.9</version>
+        <version>1.10-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-mariadb</artifactId>
