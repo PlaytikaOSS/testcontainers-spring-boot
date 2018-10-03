@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.Duration.standardDays;
 import static org.joda.time.Duration.standardHours;
 
-public class AerospikeTimeTravelTest extends EmbeddedAerospikeBootstrapConfigurationTest {
+public class AerospikeTimeTravelTest extends BaseAerospikeTest {
 
     @Autowired
     private ExpiredDocumentsCleaner expiredDocumentsCleaner;

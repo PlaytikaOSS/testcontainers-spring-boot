@@ -36,7 +36,7 @@ public class AerospikeProperties extends CommonContainerProperties {
     static final String AEROSPIKE_BEAN_NAME = "aerospike";
 
     boolean enabled = true;
-    String dockerImage = "aerospike/aerospike-server:3.16.0.1";
+    String dockerImage = "aerospike/aerospike-server:4.3.0.8";
     String namespace = "TEST";
     String host = "localhost";
     int port = 3000;
