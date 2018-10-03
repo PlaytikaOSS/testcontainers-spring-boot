@@ -34,7 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MemSqlProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
     boolean enabled;
-    String dockerImage = "memsql/quickstart:minimal-6.0.8";
+    String dockerImage = "memsql/quickstart:minimal-6.5.16";
     String user = "root";
     String password = "";
     String database = "test_db";
