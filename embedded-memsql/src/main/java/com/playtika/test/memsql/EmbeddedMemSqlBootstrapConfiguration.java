@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 
@@ -46,7 +46,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Order(HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.memsql.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MemSqlProperties.class)
-public class EmbeddedMemSqlBootstapConfiguration {
+public class EmbeddedMemSqlBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
@@ -57,17 +57,14 @@ public class EmbeddedMemSqlBootstapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
     public GenericContainer memsql(ConfigurableEnvironment environment,
                                    MemSqlProperties properties,
-                                   MemSqlStatusCheck memSqlStatusCheck) throws Exception {
+                                   MemSqlStatusCheck memSqlStatusCheck) {
         log.info("Starting memsql server. Docker image: {}", properties.dockerImage);
 
         GenericContainer memsql = new GenericContainer<>(properties.dockerImage)
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.port)
-                .withClasspathResourceMapping(
-                        "mem.sql",
-                        "/schema.sql",
-                        BindMode.READ_ONLY)
+                .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .waitingFor(memSqlStatusCheck)
                 .withStartupTimeout(properties.getTimeoutDuration());
         memsql.start();

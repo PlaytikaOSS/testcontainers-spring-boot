@@ -43,10 +43,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedMemSqlBootstapConfigurationTest.TestConfiguration.class,
+@SpringBootTest(classes = EmbeddedMemSqlBootstrapConfigurationTest.TestConfiguration.class,
         properties = {"spring.profiles.active=enabled"}
 )
-public class EmbeddedMemSqlBootstapConfigurationTest {
+public class EmbeddedMemSqlBootstrapConfigurationTest {
 
     @Autowired
     ConfigurableListableBeanFactory beanFactory;
@@ -63,7 +63,6 @@ public class EmbeddedMemSqlBootstapConfigurationTest {
         jdbcTemplate.execute("create table foo (id int primary key);");
         jdbcTemplate.execute("insert into foo values (1), (2), (3);");
         assertThat(jdbcTemplate.queryForList("select * from foo")).hasSize(3);
-
     }
 
     @Test
