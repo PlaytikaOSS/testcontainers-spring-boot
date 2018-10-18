@@ -42,7 +42,6 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     protected String brokerList;
     protected String containerBrokerList;
-    boolean enabled = true;
     protected int brokerPort = 0;
     protected int containerBrokerPort = 0;
     int socketTimeoutMs = 5_000;

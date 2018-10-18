@@ -21,26 +21,21 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.mariadb;
+package com.playtika.test.dynamodb;
 
-import com.playtika.test.common.properties.CommonContainerProperties;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.mariadb")
-public class MariaDBProperties extends CommonContainerProperties {
-    static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
-    String dockerImage = "mariadb:10.3.2";
-    String encoding = "utf8mb4";
-    String collation = "utf8mb4_unicode_ci";
+import static nl.jqno.equalsverifier.Warning.NONFINAL_FIELDS;
+import static nl.jqno.equalsverifier.Warning.STRICT_INHERITANCE;
 
-    String user = "mariadb";
-    String password = "letmein";
-    String database = "test_db";
-    String schema = "test_db";
-    String host = "localhost";
-    int port = 3306;
+public class DynamodbConfigurationPropertiesTest {
+
+    @Test
+    public void shouldHave_equalsAndHashcodeContract() {
+        EqualsVerifier.forClass(DynamoDBProperties.class)
+                .suppress(NONFINAL_FIELDS, STRICT_INHERITANCE)
+                .withRedefinedSuperclass()
+                .verify();
+    }
 }

@@ -23,6 +23,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    8. [embedded-zookeeper](#embedded-zookeeper)
    9. [embedded-postgresql](#embedded-postgresql)
    10. [embedded-elasticsearch](#embedded-elasticsearch)
+   11. [embedded-dynamodb](#embedded-dynamodb)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -287,6 +288,24 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.elasticsearch.host
 * embedded.elasticsearch.httpPort
 * embedded.elasticsearch.transportPort
+### embedded-dynamodb
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-dynamodb</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.dynamodb.enabled `(true|false, default is 'true')`
+* embedded.dynamodb.dockerImage `(default is set to 'amazon/dynamodb-local:latest')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/amazon/dynamodb-local/)
+##### Produces
+* embedded.dynamodb.host
+* embedded.dynamodb.port
+* embedded.dynamodb.accessKey
+* embedded.dynamodb.secretKey
 ## How to contribute
 ### Flow
 * There is 2 branches in project: master and develop
