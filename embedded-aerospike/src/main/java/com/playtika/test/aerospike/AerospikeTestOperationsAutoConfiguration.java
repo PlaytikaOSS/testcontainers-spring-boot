@@ -24,7 +24,7 @@
 package com.playtika.test.aerospike;
 
 import com.aerospike.client.AerospikeClient;
-import com.playtika.test.common.properties.PackageProperties;
+import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,14 +43,14 @@ public class AerospikeTestOperationsAutoConfiguration {
 
     @Bean
     @ConfigurationProperties("embedded.aerospike.install")
-    PackageProperties aerospikePackageProperties() {
-        PackageProperties properties = new PackageProperties();
+    InstallPackageProperties aerospikePackageProperties() {
+        InstallPackageProperties properties = new InstallPackageProperties();
         properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
         return properties;
     }
 
     @Bean
-    PackageInstaller aerospikePackageInstaller(PackageProperties aerospikePackageProperties,
+    PackageInstaller aerospikePackageInstaller(InstallPackageProperties aerospikePackageProperties,
                                                GenericContainer aerospike) {
         return new PackageInstaller(aerospikePackageProperties, aerospike);
     }

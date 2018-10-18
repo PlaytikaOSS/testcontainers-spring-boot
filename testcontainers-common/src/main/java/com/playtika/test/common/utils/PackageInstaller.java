@@ -23,7 +23,7 @@
  */
 package com.playtika.test.common.utils;
 
-import com.playtika.test.common.properties.PackageProperties;
+import com.playtika.test.common.properties.InstallPackageProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.Container;
@@ -35,11 +35,15 @@ import javax.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class PackageInstaller {
 
-    private final PackageProperties properties;
+    private final InstallPackageProperties properties;
     private final GenericContainer container;
 
     @PostConstruct
     protected void installPackages() {
+        if (!properties.isEnabled()) {
+            log.trace("Packages installation skipped for container: {}", container);
+            return;
+        }
         if (properties.getPackages().isEmpty()) {
             log.trace("No packages configured to be installed into container: {}", container);
             return;
@@ -47,6 +51,7 @@ public class PackageInstaller {
 
         updatePackageList();
         properties.getPackages().forEach(this::installPackageIfNeeded);
+        log.debug("Installed packages: {} into container: {}", properties.getPackages(), container);
     }
 
     private void updatePackageList() {
