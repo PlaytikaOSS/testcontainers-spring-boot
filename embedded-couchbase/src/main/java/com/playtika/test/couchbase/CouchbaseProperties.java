@@ -38,7 +38,6 @@ import static java.lang.String.format;
 @ConfigurationProperties("embedded.couchbase")
 public class CouchbaseProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
-    boolean enabled;
     String services = "kv,index,n1ql,fts";
     String dockerImage = "couchbase:community-4.5.1";
     int clusterRamMb = 256;

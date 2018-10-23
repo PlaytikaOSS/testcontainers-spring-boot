@@ -21,27 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.elasticsearch;
+package com.playtika.test.dynamodb.springdata;
 
-import java.util.ArrayList;
+import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.springframework.data.repository.CrudRepository;
+
 import java.util.List;
 
-import com.playtika.test.common.properties.CommonContainerProperties;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-@Data
-@EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.elasticsearch")
-public class ElasticSearchProperties extends CommonContainerProperties {
-    public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
-    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:6.2.4";
-
-    String clusterName = "test_cluster";
-    String host = "localhost";
-    List<String> indices = new ArrayList<>();
-    int httpPort = 9200;
-    int transportPort = 9300;
-    int clusterRamMb = 256;
+@EnableScan
+public interface UserRepository extends CrudRepository<User, String> {
+    List<User> findByLastName(String lastName);
+    List<User> findByFirstName(String firstName);
 }

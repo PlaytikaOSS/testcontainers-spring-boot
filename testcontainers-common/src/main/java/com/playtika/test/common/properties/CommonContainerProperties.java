@@ -8,6 +8,7 @@ import java.time.Duration;
 public class CommonContainerProperties {
 
     private long waitTimeoutInSeconds = 60;
+    private boolean enabled = true;
 
     public Duration getTimeoutDuration() {
         return Duration.ofSeconds(waitTimeoutInSeconds);

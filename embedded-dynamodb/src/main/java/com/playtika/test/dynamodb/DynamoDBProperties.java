@@ -21,7 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.mariadb;
+package com.playtika.test.dynamodb;
 
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
@@ -30,17 +30,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.mariadb")
-public class MariaDBProperties extends CommonContainerProperties {
-    static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
-    String dockerImage = "mariadb:10.3.2";
-    String encoding = "utf8mb4";
-    String collation = "utf8mb4_unicode_ci";
+@ConfigurationProperties("embedded.dynamodb")
+public class DynamoDBProperties extends CommonContainerProperties {
+    
+    static final String BEAN_NAME_EMBEDDED_DYNAMODB = "embeddedDynamoDb";
 
-    String user = "mariadb";
-    String password = "letmein";
-    String database = "test_db";
-    String schema = "test_db";
+    String dockerImage = "amazon/dynamodb-local:latest";
     String host = "localhost";
-    int port = 3306;
+    int port = 8000;
+
+    String accessKey = "n/a";
+    String secretKey = "n/a";
+
 }

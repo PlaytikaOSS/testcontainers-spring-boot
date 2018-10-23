@@ -40,7 +40,6 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
 
     String zookeeperConnect;
     protected String containerZookeeperConnect;
-    boolean enabled = true;
     int zookeeperPort = 0;
     int sessionTimeoutMs = 5_000;
     int socketTimeoutMs = 5_000;
