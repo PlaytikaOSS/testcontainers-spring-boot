@@ -40,6 +40,7 @@
         <module>embedded-postgresql</module>
         <module>embedded-elasticsearch</module>
         <module>embedded-dynamodb</module>
+        <module>embedded-voltdb</module>
         <!--<module>embedded-zookeeper</module>-->
     </modules>
 
