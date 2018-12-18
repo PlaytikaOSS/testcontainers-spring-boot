@@ -306,6 +306,24 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.dynamodb.port
 * embedded.dynamodb.accessKey
 * embedded.dynamodb.secretKey
+### embedded-voltdb
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-voltdb</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.voltdb.enabled `(true|false, default is 'true')`
+* embedded.mariadb.dockerImage `(default is set to 'voltdb/voltdb-community:8.3.3')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/voltdb/voltdb-community/tags/)
+##### Produces
+* embedded.voltdb.host
+* embedded.voltdb.port
+
+VoltDB container has no security enabled, you can use any credentials.  
 ## How to contribute
 ### Flow
 * There is 2 branches in project: master and develop
