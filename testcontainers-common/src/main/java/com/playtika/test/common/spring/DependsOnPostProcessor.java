@@ -63,6 +63,6 @@ public class DependsOnPostProcessor implements BeanFactoryPostProcessor {
     }
 
     private static List<String> asList(String[] array) {
-        return (array == null ? new ArrayList<>() : Arrays.asList(array));
+        return (array == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(array)));
     }
 }
