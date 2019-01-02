@@ -167,7 +167,7 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Consumes (via bootstrap.properties)
 * aerospike [client library](https://mvnrepository.com/artifact/com.aerospike/aerospike-client) 
 * embedded.aerospike.enabled `(true|false, default is 'true')`
-* embedded.aerospike.dockerImage `(default is set to 'aerospike:3.15.0.1')`
+* embedded.aerospike.dockerImage `(default is set to 'aerospike/aerospike-server:4.3.0.8')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/aerospike/tags/)
 * embedded.aerospike.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
