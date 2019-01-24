@@ -47,7 +47,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     int socketTimeoutMs = 5_000;
     int bufferSize = 64 * 1024;
     String dataFileSystemBind = "target/embedded-kafka-data";
-    String dockerImage = "confluentinc/cp-kafka:3.3.0";
+    String dockerImage = "confluentinc/cp-kafka:4.1.2";
     Collection<String> topicsToCreate = Collections.emptyList();
     transient final int replicationFactor = 1;
     //https://github.com/kafka-dev/kafka/blob/0.6.1/core/src/test/scala/unit/kafka/utils/TestUtils.scala#L114

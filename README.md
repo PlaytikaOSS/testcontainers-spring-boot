@@ -146,11 +146,11 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Consumes (via bootstrap.properties)
 * embedded.zookeeper.enabled `(true|false, default is 'true')`
 * embedded.zookeeper.waitTimeoutInSeconds `(default is 60 seconds)`
+* embedded.zookeeper.dockerImage `(default : confluentinc/cp-zookeeper:4.1.2)`
 * embedded.kafka.enabled `(true|false, default is 'true')`
 * embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
-* embedded.kafka.dockerImage `(default is set to kafka 0.11.x)`
-  * To use kafka 0.10.x place "confluentinc/cp-kafka:3.2.2" or recent [from 3.2.x branch](https://hub.docker.com/r/confluentinc/cp-kafka/tags/)
-  * To use kafka 0.11.x place "confluentinc/cp-kafka:3.3.0" or recent [from 3.3.x branch](https://hub.docker.com/r/confluentinc/cp-kafka/tags/)
+* embedded.kafka.dockerImage `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
+  * To use another kafka version pick corresponding docker image from [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
 * embedded.kafka.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
