@@ -215,9 +215,11 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes (via bootstrap.properties)
 * embedded.redis.enabled `(true|false, default is 'true')`
-* embedded.redis.dockerImage `(default is set to 'redis:4.0.2')`
+* embedded.redis.dockerImage `(default is set to 'redis:4.0.12')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/redis/tags/)
-* embedded.redis.waitTimeoutInSeconds `(default is 60 seconds)`
+* embedded.redis.waitTimeoutInSeconds `(default is 60 seconds)`  
+* embedded.redis.clustered `(default is 'false')`
+  * If 'true' Redis is started in cluster mode
 ##### Produces
 * embedded.redis.host
 * embedded.redis.port
