@@ -1,7 +1,7 @@
 
 [![CircleCI](https://circleci.com/gh/Playtika/testcontainers-spring-boot/tree/master.svg?style=shield&circle-token=d229579db6903be702f2416a357d1a01fb5c5fc0)](https://circleci.com/gh/Playtika/testcontainers-spring-boot/tree/master)
 [![codecov](https://codecov.io/gh/Playtika/testcontainers-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/Playtika/testcontainers-spring-boot)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9bf7bea79a2b4048bf3ed8fa247092d1)](https://www.codacy.com/app/alekseibevzenko/testcontainers-spring-boot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Playtika/testcontainers-spring-boot&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9bf7bea79a2b4048bf3ed8fa247092d1)](https://www.codacy.com/app/PlaytikaCodacy/testcontainers-spring-boot?utm_source=github.com&utm_medium=referral&utm_content=Playtika/testcontainers-spring-boot&utm_campaign=Badge_Grade_Dashboard)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot)
 # Data services library
 
