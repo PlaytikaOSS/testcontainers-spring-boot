@@ -23,6 +23,7 @@
  */
 package com.playtika.test.redis;
 
+import com.playtika.test.redis.wait.RedisStatusCheck;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
@@ -51,7 +52,7 @@ public class EmbeddedRedisBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    RedisStatusCheck redisStartupCheckStrategy() {
+    public RedisStatusCheck redisStartupCheckStrategy() {
         return new RedisStatusCheck();
     }
 

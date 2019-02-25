@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.redis;
+package com.playtika.test.redis.wait;
 
 import com.google.common.base.Joiner;
 import com.playtika.test.common.checks.AbstractRetryingWaitStrategy;
+import com.playtika.test.redis.RedisProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.ContainerLaunchException;
