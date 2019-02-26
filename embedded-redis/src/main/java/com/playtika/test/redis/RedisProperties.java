@@ -33,9 +33,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.redis")
 public class RedisProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
-    String dockerImage = "redis:4.0.12";
-    String user = "root";
-    String password = "passw";
-    String host = "localhost";
-    int port = 6379;
+    public String dockerImage = "redis:4.0.12";
+    public String user = "root";
+    public String password = "passw";
+    public String host = "localhost";
+    public int port = 6379;
 }

@@ -23,6 +23,8 @@
  */
 package com.playtika.test.redis;
 
+import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
+import com.playtika.test.redis.wait.RedisClusterWaitStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
@@ -36,7 +38,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
@@ -55,10 +56,8 @@ public class EmbeddedRedisClusterBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    WaitStrategy redisClusterWaitStrategy(RedisProperties properties) {
-        return new WaitAllStrategy()
-                .withStrategy(new RedisStatusCheck())
-                .withStrategy(new RedisClusterStatusCheck(properties));
+    public RedisClusterWaitStrategy redisClusterWaitStrategy(RedisProperties properties) {
+        return new DefaultRedisClusterWaitStrategy(properties);
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")

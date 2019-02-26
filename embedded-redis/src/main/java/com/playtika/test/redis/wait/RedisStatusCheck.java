@@ -21,7 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
  */
-package com.playtika.test.redis;
+package com.playtika.test.redis.wait;
 
 import com.playtika.test.common.checks.AbstractCommandWaitStrategy;
 import lombok.RequiredArgsConstructor;
