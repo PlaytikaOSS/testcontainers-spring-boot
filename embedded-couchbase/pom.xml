@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.20-SNAPSHOT</version>
+        <version>1.24-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-couchbase</artifactId>
@@ -20,10 +20,6 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
         </dependency>
         <dependency>
             <groupId>com.couchbase.client</groupId>

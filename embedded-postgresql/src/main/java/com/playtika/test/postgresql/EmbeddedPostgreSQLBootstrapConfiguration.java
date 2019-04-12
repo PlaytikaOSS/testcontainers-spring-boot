@@ -33,6 +33,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 
@@ -44,7 +45,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Configuration
 @Order(HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.postgresql.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(PostgreSQLProperties.class)
+@EnableConfigurationProperties({PostgreSQLProperties.class, FilesToCopyProperties.class})
 public class EmbeddedPostgreSQLBootstrapConfiguration {
 
     @Bean
@@ -56,6 +57,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_POSTGRESQL, destroyMethod = "stop")
     public GenericContainer postgresql(ConfigurableEnvironment environment,
                                        PostgreSQLProperties properties,
+                                       FilesToCopyProperties filesToCopyProperties,
                                        PostgreSQLStatusCheck postgreSQLStatusCheck) {
         log.info("Starting postgresql server. Docker image: {}", properties.dockerImage);
 
@@ -72,6 +74,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withStartupTimeout(properties.getTimeoutDuration());
         postgresql.start();
         registerPostgresqlEnvironment(postgresql, environment, properties);
+        copyFilesToContainer(postgresql, filesToCopyProperties);
         return postgresql;
     }
 
@@ -94,5 +97,19 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedPostgreInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+    }
+
+    /**
+     * Copies configured files from classpath or system path from properties
+     * 
+     * @param postgresql The postgres container
+     * @param filesToCopy Configurations to copy files from classpath or system
+     */
+    private void copyFilesToContainer(GenericContainer postgresql, FilesToCopyProperties filesToCopy) {
+        filesToCopy.getFilestocopy().stream().forEach(file -> {
+            postgresql.copyFileToContainer(file.getInputResource().contains("classpath:")
+            ? MountableFile.forClasspathResource(file.getInputResource().replace("classpath:", ""))
+            : MountableFile.forHostPath(file.getInputResource()), file.getContainerPath());
+        });
     }
 }

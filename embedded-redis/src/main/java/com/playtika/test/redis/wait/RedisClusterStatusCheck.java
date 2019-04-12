@@ -23,7 +23,6 @@
  */
 package com.playtika.test.redis.wait;
 
-import com.google.common.base.Joiner;
 import com.playtika.test.common.checks.AbstractRetryingWaitStrategy;
 import com.playtika.test.redis.RedisProperties;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +69,7 @@ public class RedisClusterStatusCheck extends AbstractRetryingWaitStrategy {
                             "-- nodes:\n{}\n",
                             "-- info:\n{}\n" +
                             "-- config:\n{}" +
-                            clusterInfo, clusterNodes, info, Joiner.on("\n").join(config));
+                            clusterInfo, clusterNodes, info, String.join("\n", config));
         }
     }
 }
