@@ -41,6 +41,7 @@ import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
+import java.net.URI;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +59,8 @@ import static java.lang.String.format;
 public class KafkaContainerConfiguration {
 
     public static final String KAFKA_HOST_NAME = "kafka-broker.testcontainer.docker";
+
+    private static final String DOCKER_HOST = "DOCKER_HOST";
 
     @Bean
     @ConditionalOnMissingBean
@@ -94,7 +97,7 @@ public class KafkaContainerConfiguration {
                 //see: https://github.com/wurstmeister/kafka-docker/blob/master/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
                 .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "EXTERNAL_PLAINTEXT:PLAINTEXT,INTERNAL_PLAINTEXT:PLAINTEXT")
-                .withEnv("KAFKA_ADVERTISED_LISTENERS", "EXTERNAL_PLAINTEXT://localhost:" + kafkaExternalPort + ",INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort)
+                .withEnv("KAFKA_ADVERTISED_LISTENERS", "EXTERNAL_PLAINTEXT://" + kafkaHost() + ":" + kafkaExternalPort + ",INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort)
                 .withEnv("KAFKA_LISTENERS", "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort+",INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort)
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
@@ -115,6 +118,27 @@ public class KafkaContainerConfiguration {
         kafka.start();
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;
+    }
+
+    private String kafkaHost() {
+        final String dockerHost = System.getenv(DOCKER_HOST);
+
+        if (dockerHost != null) {
+            try {
+                    final String dockerHostHost = new URI(dockerHost).getHost();
+
+                    log.info("From {}={} parsed Kafka host: {}", DOCKER_HOST, dockerHost, dockerHostHost);
+
+                    return dockerHostHost;
+
+            } catch (Exception e) {
+                log.info("Failed to parse {}={}, use localhost instead: {}", DOCKER_HOST, dockerHost, e.getMessage());
+            }
+        }
+
+        log.info("Use localhost as Kafka host");
+
+        return "localhost";
     }
 
     private void registerKafkaEnvironment(GenericContainer kafka,
