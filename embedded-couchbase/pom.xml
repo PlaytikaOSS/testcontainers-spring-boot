@@ -22,10 +22,6 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.couchbase.client</groupId>
             <artifactId>couchbase-client</artifactId>
             <version>${couchbase-client-1.x.version}</version>

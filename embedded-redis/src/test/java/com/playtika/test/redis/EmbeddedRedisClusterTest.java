@@ -23,7 +23,6 @@
  */
 package com.playtika.test.redis;
 
-import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +42,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,7 +96,7 @@ public class EmbeddedRedisClusterTest {
                                                         @Value("${embedded.redis.password}") String redisPassword) {
             log.info(format("Connecting to Redis Cluster node: %s:%s", redisHost, redisPort));
             RedisClusterConfiguration redisConfiguration = new RedisClusterConfiguration(
-                    ImmutableList.of(format("%s:%s", redisHost, redisPort)));
+                    Collections.singletonList(format("%s:%s", redisHost, redisPort)));
             redisConfiguration.setPassword(RedisPassword.of(redisPassword));
             return new JedisConnectionFactory(redisConfiguration);
         }

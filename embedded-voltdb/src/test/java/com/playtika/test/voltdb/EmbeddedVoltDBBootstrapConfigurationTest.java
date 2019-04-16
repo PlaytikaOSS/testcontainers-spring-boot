@@ -23,7 +23,6 @@
  */
 package com.playtika.test.voltdb;
 
-import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +37,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.CallableStatement;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +63,7 @@ public class EmbeddedVoltDBBootstrapConfigurationTest {
             CallableStatement call = con.prepareCall("{call @SystemInformation(?)}");
             call.setString(1, "overview");
             return call;
-        }, ImmutableList.of());
+        }, Collections.emptyList());
         assertThat(result).isNotEmpty();
     }
 
