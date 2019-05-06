@@ -41,7 +41,6 @@
         <module>embedded-elasticsearch</module>
         <module>embedded-dynamodb</module>
         <module>embedded-voltdb</module>
-        <!--<module>embedded-zookeeper</module>-->
     </modules>
 
     <properties>
@@ -49,9 +48,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.9.1</testcontainers.version>
+        <testcontainers.version>1.11.2</testcontainers.version>
         <spring.cloud.version>Finchley.SR1</spring.cloud.version>
-        <docker-java.version>3.0.14</docker-java.version>
 
         <equalsverifier.version>2.3.1</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -185,17 +183,6 @@
                 <version>${testcontainers.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.docker-java</groupId>
-                <artifactId>docker-java</artifactId>
-                <version>${docker-java.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>testcontainers-common</artifactId>
                 <version>${project.version}</version>
@@ -221,10 +208,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java</artifactId>
         </dependency>
         <!--
              spring and its friends is provided due to being application container,
