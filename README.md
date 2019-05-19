@@ -16,14 +16,15 @@ Usage of spring cloud in your production code is optional, but you will need it 
    1. [embedded-mariadb](#embedded-mariadb)
    2. [embedded-couchbase](#embedded-couchbase)
    3. [embedded-kafka](#embedded-kafka)
-   4. [embedded-aerospike](#embedded-aerospike)
-   5. [embedded-memsql](#embedded-memsql)
-   6. [embedded-redis](#embedded-redis)
-   7. [embedded-neo4j](#embedded-neo4j)
-   8. [embedded-zookeeper](#embedded-zookeeper)
-   9. [embedded-postgresql](#embedded-postgresql)
-   10. [embedded-elasticsearch](#embedded-elasticsearch)
-   11. [embedded-dynamodb](#embedded-dynamodb)
+   4. [embedded-rabbitmq](#embedded-rabbitmq)
+   5. [embedded-aerospike](#embedded-aerospike)
+   6. [embedded-memsql](#embedded-memsql)
+   7. [embedded-redis](#embedded-redis)
+   8. [embedded-neo4j](#embedded-neo4j)
+   9. [embedded-zookeeper](#embedded-zookeeper)
+   10. [embedded-postgresql](#embedded-postgresql)
+   11. [embedded-elasticsearch](#embedded-elasticsearch)
+   12. [embedded-dynamodb](#embedded-dynamodb)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -155,6 +156,26 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
+### embedded-rabbitmq
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-rabbitmq</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.rabbitmq.enabled `(true|false, default is 'true')`
+* embedded.rabbitmq.user `(default : rabbitmq)`
+* embedded.rabbitmq.password `(default : rabbitmq)`
+* embedded.rabbitmq.vhost `(virtual host, default: '/')`
+* embedded.rabbitmq.dockerImage `(default: rabbitmq/3-management)`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/rabbitmq/tags/)
+* embedded.rabbitmq.waitTimeoutInSeconds `(default is 60 seconds)`
+##### Produces
+* embedded.rabbitmq.host
+* embedded.rabbitmq.port
 ### embedded-aerospike
 ##### Maven dependency
 ```xml

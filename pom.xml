@@ -41,6 +41,7 @@
         <module>embedded-elasticsearch</module>
         <module>embedded-dynamodb</module>
         <module>embedded-voltdb</module>
+        <module>embedded-rabbitmq</module>
     </modules>
 
     <properties>
