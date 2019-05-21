@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.rabbitmq.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.rabbitmq.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of rabbit server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of rabbit server on startup."
+        }
+      ]
+    }
+  ]
+}
