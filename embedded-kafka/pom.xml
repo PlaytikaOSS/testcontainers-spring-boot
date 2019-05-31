@@ -14,7 +14,7 @@
 
     <properties>
         <!-- tests for container via camel and kafka 0.8.x client-->
-        <camel.version>2.18.3</camel.version>
+        <camel.version>2.24.0</camel.version>
         <camel-kafka.version>2.16.5</camel-kafka.version>
         <io.netty.version>3.7.0.Final</io.netty.version>
         <kafka_2.11.version>0.8.2.2</kafka_2.11.version>
