@@ -53,7 +53,7 @@
         <testcontainers.version>1.11.2</testcontainers.version>
         <spring.cloud.version>Finchley.SR1</spring.cloud.version>
 
-        <equalsverifier.version>2.3.1</equalsverifier.version>
+        <equalsverifier.version>3.1.9</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
