@@ -42,6 +42,7 @@
         <module>embedded-dynamodb</module>
         <module>embedded-voltdb</module>
         <module>embedded-rabbitmq</module>
+        <module>embedded-minio</module>
     </modules>
 
     <properties>

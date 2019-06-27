@@ -41,12 +41,10 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Slf4j
 @Configuration
@@ -70,7 +68,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(aerospikeWaitStrategy)
                 .withStrategy(new HostPortWaitStrategy())
-                .withStartupTimeout(Duration.of(60, SECONDS));
+                .withStartupTimeout(properties.getTimeoutDuration());
 
         GenericContainer aerospike =
                 new GenericContainer<>(properties.dockerImage)

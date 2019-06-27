@@ -25,6 +25,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    10. [embedded-postgresql](#embedded-postgresql)
    11. [embedded-elasticsearch](#embedded-elasticsearch)
    12. [embedded-dynamodb](#embedded-dynamodb)
+   13. [embedded-minio](#embedded-minio)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -84,6 +85,7 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 
 ## List of properties per data service
+
 ### embedded-mariadb
 ##### Maven dependency
 ```xml
@@ -106,6 +108,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.mariadb.schema
 * embedded.mariadb.user
 * embedded.mariadb.password
+
 ### embedded-couchbase
 ##### Maven dependency
 ```xml
@@ -135,6 +138,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.couchbase.bucket
 * embedded.couchbase.user
 * embedded.couchbase.password
+
 ### embedded-kafka
 ##### Maven dependency
 ```xml
@@ -156,6 +160,7 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
+
 ### embedded-rabbitmq
 ##### Maven dependency
 ```xml
@@ -176,6 +181,7 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Produces
 * embedded.rabbitmq.host
 * embedded.rabbitmq.port
+
 ### embedded-aerospike
 ##### Maven dependency
 ```xml
@@ -201,6 +207,7 @@ embedded.kafka.topicsToCreate=some_topic
   * addDays
   * addHours
   * rollbackTime
+
 ### embedded-memsql
 ##### Maven dependency
 ```xml
@@ -225,6 +232,7 @@ embedded.kafka.topicsToCreate=some_topic
 * Images without "minimal" tag do no start withing 30 secs, so they are unusable
 * There should be at least 1.5 GB of RAM available for memsql to start
 * You can enable debug logs for com.playtika.test category to troubleshoot issues
+
 ### embedded-redis
 ##### Maven dependency
 ```xml
@@ -246,6 +254,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.redis.port
 * embedded.redis.user
 * embedded.redis.password 
+
 ### embedded-neo4j
 ##### Maven dependency
 ```xml
@@ -266,11 +275,13 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.neo4j.httpsPort
 * embedded.neo4j.httpPort
 * embedded.neo4j.boltPort
+
 ### embedded-zookeeper
 ##### Consumes (via bootstrap.properties)
 * 
 ##### Produces
 * 
+
 ### embedded-postgresql
 ##### Maven dependency
 ```xml
@@ -291,6 +302,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.postgresql.schema
 * embedded.postgresql.user
 * embedded.postgresql.password
+
 ### embedded-elasticsearch
 ##### Maven dependency
 ```xml
@@ -311,6 +323,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.elasticsearch.host
 * embedded.elasticsearch.httpPort
 * embedded.elasticsearch.transportPort
+
 ### embedded-dynamodb
 ##### Maven dependency
 ```xml
@@ -329,6 +342,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.dynamodb.port
 * embedded.dynamodb.accessKey
 * embedded.dynamodb.secretKey
+
 ### embedded-voltdb
 ##### Maven dependency
 ```xml
@@ -340,13 +354,43 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes (via bootstrap.properties)
 * embedded.voltdb.enabled `(true|false, default is 'true')`
-* embedded.mariadb.dockerImage `(default is set to 'voltdb/voltdb-community:8.3.3')`
+* embedded.voltdb.dockerImage `(default is set to 'voltdb/voltdb-community:8.3.3')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/voltdb/voltdb-community/tags/)
 ##### Produces
 * embedded.voltdb.host
 * embedded.voltdb.port
 
-VoltDB container has no security enabled, you can use any credentials.  
+VoltDB container has no security enabled, you can use any credentials.
+
+### embedded-minio
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-minio</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.minio.enabled `(true|false, default is 'true')`
+* embedded.minio.dockerImage `(default is set to 'minio/minio')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/minio/minio/tags)
+* embedded.minio.accessKey `(default is set to 'AKIAIOSFODNN7EXAMPLE")`
+* embedded.minio.secretKey `(default is set to 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
+* embedded.minio.userName `(default is set to 'minio')`
+* embedded.minio.groupName  `(default is set to 'minio')` 
+* embedded.minio.region  `(default is set to '')`
+* embedded.minio.worm  `(on|off, default is set to 'off')` 
+* embedded.minio.browser  `(on|off, default is set to 'on')` 
+* embedded.minio.directory  `(default is set to '/data')` 
+
+##### Produces
+* embedded.minio.host
+* embedded.minio.port
+* embedded.minio.accessKey
+* embedded.minio.secretKey
+* embedded.minio.region
+  
 ## How to contribute
 ### Flow
 * There is 2 branches in project: master and develop
