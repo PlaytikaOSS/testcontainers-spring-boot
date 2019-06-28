@@ -33,8 +33,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = DisableCouchbaseTest.TestConfiguration.class,
-        properties = {"embedded.couchbase.enabled=false", "spring.profiles.active=disabled"})
+@SpringBootTest(
+        classes = DisableCouchbaseTest.TestConfiguration.class,
+        properties = {
+                "embedded.couchbase.enabled=false",
+                "spring.profiles.active=disabled"
+        })
 public class DisableCouchbaseTest {
 
     @Test

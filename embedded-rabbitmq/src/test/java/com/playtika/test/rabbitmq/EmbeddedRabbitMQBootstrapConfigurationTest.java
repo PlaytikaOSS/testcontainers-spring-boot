@@ -24,7 +24,6 @@
 package com.playtika.test.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.core.Message;
@@ -46,9 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedRabbitMQBootstrapConfigurationTest.TestConfiguration.class)
+@SpringBootTest(
+        classes = EmbeddedRabbitMQBootstrapConfigurationTest.TestConfiguration.class
+)
 @ActiveProfiles("enabled")
-@FixMethodOrder
 public class EmbeddedRabbitMQBootstrapConfigurationTest {
     private static final String QUEUE_NAME = "QUEUE";
 
@@ -70,8 +70,7 @@ public class EmbeddedRabbitMQBootstrapConfigurationTest {
     }
 
     @Test
-    public void testRabbitTemplate() throws Exception
-    {
+    public void testRabbitTemplate() {
         rabbitAdmin.declareQueue(new Queue(QUEUE_NAME));
 
         assertThat(rabbitAdmin.getQueueProperties(QUEUE_NAME)).isNotNull();
@@ -98,17 +97,17 @@ public class EmbeddedRabbitMQBootstrapConfigurationTest {
     public void shouldSetupDependsOnForRabbitTemplate() {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(RabbitTemplate.class);
         assertThat(beanNamesForType)
-            .as("rabbitTemplate should be present")
-            .hasSize(1)
-            .contains("rabbitTemplate");
+                .as("rabbitTemplate should be present")
+                .hasSize(1)
+                .contains("rabbitTemplate");
         asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 
     private void hasDependsOn(String beanName) {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-            .isNotNull()
-            .isNotEmpty()
-            .contains(BEAN_NAME_EMBEDDED_RABBITMQ);
+                .isNotNull()
+                .isNotEmpty()
+                .contains(BEAN_NAME_EMBEDDED_RABBITMQ);
     }
 
 }

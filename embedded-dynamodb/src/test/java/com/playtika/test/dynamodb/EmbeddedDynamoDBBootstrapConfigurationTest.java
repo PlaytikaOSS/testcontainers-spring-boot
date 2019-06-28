@@ -54,10 +54,11 @@ import static org.hamcrest.Matchers.is;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {EmbeddedDynamoDBBootstrapConfigurationTest.TestConfiguration.class},
+@SpringBootTest(
+        classes = EmbeddedDynamoDBBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
-                "embedded.dynamodb.enabled=true"
-                , "spring.profiles.active=enabled"
+                "embedded.dynamodb.enabled=true",
+                "spring.profiles.active=enabled"
         })
 public class EmbeddedDynamoDBBootstrapConfigurationTest {
 

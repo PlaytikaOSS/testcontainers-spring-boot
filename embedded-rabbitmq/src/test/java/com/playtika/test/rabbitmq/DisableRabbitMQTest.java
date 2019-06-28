@@ -37,8 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = DisableRabbitMQTest.TestConfiguration.class,
-    properties = "embedded.rabbitmq.enabled=false")
+@SpringBootTest(
+        classes = DisableRabbitMQTest.TestConfiguration.class,
+        properties = "embedded.rabbitmq.enabled=false")
 public class DisableRabbitMQTest {
     @Autowired
     private ConfigurableEnvironment environment;

@@ -42,8 +42,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @SpringBootTest(
         classes = DisableDynamoDBTest.TestConfiguration.class,
         properties = {
-                "embedded.dynamodb.enabled=false"
-                , "spring.profiles.active=disabled"
+                "embedded.dynamodb.enabled=false",
+                "spring.profiles.active=disabled"
         }
 )
 public class DisableDynamoDBTest {
