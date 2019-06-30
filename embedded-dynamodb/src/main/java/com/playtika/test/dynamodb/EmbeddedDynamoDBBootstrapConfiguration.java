@@ -48,28 +48,28 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 public class EmbeddedDynamoDBBootstrapConfiguration {
 
     @Bean(name = DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
-    public GenericContainer mariadb(ConfigurableEnvironment environment,
+    public GenericContainer dynamoDb(ConfigurableEnvironment environment,
                                     DynamoDBProperties properties) throws Exception {
-        log.info("Starting mariadb server. Docker image: {}", properties.dockerImage);
+        log.info("Starting DynamoDb server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer mariadb =
+        GenericContainer container =
                 new GenericContainer(properties.dockerImage)
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .waitingFor(new HostPortWaitStrategy())
                         .withStartupTimeout(properties.getTimeoutDuration());
 
-        mariadb.start();
+        container.start();
 
-        registerDynamodbEnvironment(mariadb, environment, properties);
-        return mariadb;
+        registerDynamodbEnvironment(container, environment, properties);
+        return container;
     }
 
-    private void registerDynamodbEnvironment(GenericContainer mariadb,
+    private void registerDynamodbEnvironment(GenericContainer container,
                                              ConfigurableEnvironment environment,
                                              DynamoDBProperties properties) {
-        Integer mappedPort = mariadb.getMappedPort(properties.port);
-        String host = mariadb.getContainerIpAddress();
+        Integer mappedPort = container.getMappedPort(properties.port);
+        String host = container.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.dynamodb.port", mappedPort);
@@ -77,7 +77,7 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
         map.put("embedded.dynamodb.accessKey", properties.getAccessKey());
         map.put("embedded.dynamodb.secretKey", properties.getSecretKey());
 
-        log.info("Started dynamodb server. Connection details: {}, ", map);
+        log.info("Started DynamoDb server. Connection details: {}, ", map);
         log.info("Consult with the doc " +
                 "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.UsageNotes.html " +
                 "for more details");

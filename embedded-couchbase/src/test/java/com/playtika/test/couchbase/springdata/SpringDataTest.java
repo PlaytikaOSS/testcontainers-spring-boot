@@ -44,6 +44,9 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     @Autowired
     ConfigurableListableBeanFactory beanFactory;
 
+    @Autowired
+    Bucket bucket;
+
     @Test
     public void springDataShouldWork() throws Exception {
         String key = "test::1";
@@ -58,6 +61,8 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
 
     @Test
     public void n1q1ShouldWork() throws Exception {
+        bucket.bucketManager().createN1qlPrimaryIndex(true, false);
+
         String title = "some query title";
         saveDocument("test::2", "custom value");
         saveDocument("test::3", title);

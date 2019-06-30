@@ -12,7 +12,7 @@
     <artifactId>embedded-dynamodb</artifactId>
 
     <properties>
-        <spring-data-dynamodb.version>5.0.3</spring-data-dynamodb.version>
+        <spring-data-dynamodb.version>5.1.0</spring-data-dynamodb.version>
     </properties>
 
     <dependencies>
