@@ -96,7 +96,7 @@ public class NonAutoConfiguredDatasourceDependsOnTest {
         public DataSource customDatasource() {
             PoolConfiguration poolConfiguration = new PoolProperties();
             poolConfiguration.setUrl(jdbcUrl);
-            poolConfiguration.setDriverClassName("com.mysql.jdbc.Driver");
+            poolConfiguration.setDriverClassName("org.mariadb.jdbc.Driver");
             poolConfiguration.setUsername(user);
             poolConfiguration.setPassword(password);
             poolConfiguration.setTestOnBorrow(true);

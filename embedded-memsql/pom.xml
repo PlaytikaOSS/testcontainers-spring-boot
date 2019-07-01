@@ -12,19 +12,14 @@
 
     <artifactId>embedded-memsql</artifactId>
 
-    <properties>
-        <mysql-connector-java.version>6.0.6</mysql-connector-java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
