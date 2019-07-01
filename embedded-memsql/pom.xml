@@ -13,7 +13,7 @@
     <artifactId>embedded-memsql</artifactId>
 
     <properties>
-        <mysql-connector-java.version>6.0.6</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
     </properties>
 
     <dependencies>
