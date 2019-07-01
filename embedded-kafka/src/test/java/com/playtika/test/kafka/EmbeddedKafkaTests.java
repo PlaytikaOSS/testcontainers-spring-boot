@@ -23,18 +23,14 @@
  */
 package com.playtika.test.kafka;
 
-import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
-import kafka.admin.AdminUtils;
-import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.KafkaStream;
-import kafka.javaapi.consumer.ConsumerConnector;
-import kafka.message.MessageAndMetadata;
-import kafka.utils.ZKStringSerializer$;
-import kafka.utils.ZkUtils;
-import org.I0Itec.zkclient.ZkClient;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +41,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -66,28 +73,22 @@ public class EmbeddedKafkaTests {
 
     @Value("${embedded.kafka.brokerList}")
     String kafkaBrokerList;
-    @Value("${embedded.zookeeper.zookeeperConnect}")
-    String zookeeperConnect;
     @Autowired
-    private ZkClient zkClient;
+    private AdminClient adminClient;
     @Autowired
     private KafkaTopicsConfigurer kafkaTopicsConfigurer;
 
     @Test
-    public void shouldAutoCreateTopic() {
-        boolean exists = AdminUtils.topicExists(this.zkClient, "autoCreatedTopic");
-
-        assertTrue("Topic should be pre-created", exists);
+    public void shouldAutoCreateTopic() throws Exception {
+        assertThatTopicExists("autoCreatedTopic");
     }
 
     @Test
-    public void shouldCreateTopic() {
+    public void shouldCreateTopic() throws Exception {
         String topicToCreate = "topicToCreate";
         this.kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate));
 
-        boolean exists = AdminUtils.topicExists(this.zkClient, topicToCreate);
-
-        assertTrue("Topic should be created", exists);
+        assertThatTopicExists(topicToCreate);
     }
 
     @Test
@@ -99,29 +100,45 @@ public class EmbeddedKafkaTests {
         assertThat(consumedMessage).isEqualTo(MESSAGE);
     }
 
+    private void assertThatTopicExists(String topicName) throws Exception {
+        ListTopicsResult result = adminClient.listTopics();
+        Set<String> topics = result.names().get(10, TimeUnit.SECONDS);
+        assertThat(topics).contains(topicName);
+    }
+
     private void sendMessage(String topic, String message) throws Exception {
-        Map<String, Object> producerConfiguration = getKafkaProducerConfiguration();
-        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerConfiguration);
+        try (KafkaProducer<String, String> kafkaProducer = createProducer()) {
 
-        kafkaProducer.send(new ProducerRecord<>(topic, message)).get();
-        kafkaProducer.close();
-
+            kafkaProducer.send(new ProducerRecord<>(topic, message)).get();
+        }
     }
 
     private String consumeMessage(String topic) {
+        try (KafkaConsumer<String, String> consumer = createConsumer(topic)) {
+            return pollForRecords(consumer).stream()
+                    .map(ConsumerRecord::value)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("no message received"));
+        }
+    }
+
+    private KafkaProducer<String, String> createProducer() {
+        Map<String, Object> producerConfiguration = getKafkaProducerConfiguration();
+        return new KafkaProducer<>(producerConfiguration);
+    }
+
+    private KafkaConsumer<String, String> createConsumer(String topic) {
         Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration();
         Properties properties = new Properties();
         properties.putAll(consumerConfiguration);
-        ConsumerConnector consumer = Consumer.createJavaConsumerConnector(new ConsumerConfig(properties));
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+        consumer.subscribe(singleton(topic));
+        return consumer;
+    }
 
-        Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
-        topicCountMap.put(topic, 1);
-        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
-        List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
-        KafkaStream<byte[], byte[]> messageAndMetadatas = streams.get(0);
-        MessageAndMetadata<byte[], byte[]> next = messageAndMetadatas.iterator().next();
-        consumer.shutdown();
-        return new String(next.message());
+    private static <K, V> List<ConsumerRecord<K, V>> pollForRecords(KafkaConsumer<K, V> consumer) {
+        ConsumerRecords<K, V> received = consumer.poll(Duration.ofSeconds(10));
+        return received == null ? emptyList() : Lists.newArrayList(received);
     }
 
     private Map<String, Object> getKafkaProducerConfiguration() {
@@ -135,10 +152,9 @@ public class EmbeddedKafkaTests {
 
     private Map<String, Object> getKafkaConsumerConfiguration() {
         Map<String, Object> configs = new HashMap<>();
-        configs.put("metadata.broker.list", kafkaBrokerList);
-        configs.put("zookeeper.connect", zookeeperConnect);
+        configs.put("bootstrap.servers", kafkaBrokerList);
         configs.put(GROUP_ID_CONFIG, "testGroup");
-        configs.put(AUTO_OFFSET_RESET_CONFIG, "smallest");
+        configs.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
         configs.put(KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         configs.put(VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         return configs;
@@ -148,13 +164,12 @@ public class EmbeddedKafkaTests {
     @EnableAutoConfiguration
     static class TestConfiguration {
 
-        @Bean(destroyMethod = "close")
-        public ZkClient zkClient(@Value("${embedded.zookeeper.zookeeperConnect}") String zookeeperConnect,
-                                 ZookeeperConfigurationProperties zookeeperProperties) {
-            return new ZkClient(zookeeperConnect, zookeeperProperties.getSessionTimeoutMs(),
-                    zookeeperProperties.getSocketTimeoutMs(), ZKStringSerializer$.MODULE$);
+        @Bean
+        AdminClient adminClient(@Value("${embedded.kafka.brokerList}") String brokers) {
+            Properties config = new Properties();
+            config.put("bootstrap.servers", brokers);
+            return AdminClient.create(config);
         }
-
     }
 
 }

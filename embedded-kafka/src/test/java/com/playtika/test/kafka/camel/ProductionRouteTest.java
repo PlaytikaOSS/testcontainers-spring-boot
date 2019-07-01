@@ -103,29 +103,24 @@ public class ProductionRouteTest {
     @EnableAutoConfiguration
     public static class TestConfiguration {
 
-        @Value("${embedded.zookeeper.zookeeperConnect}")
-        String zookeeperConnect;
-
         @Value("${embedded.kafka.brokerList}")
         String kafkaBrokerList;
 
         @Bean
         public SampleRouteConfiguration sampleRouteConfiguration() {
-            return () -> "kafka:" + kafkaBrokerList +
+            return () -> "kafka:helloTopic" +
                     "?" +
-                    "zookeeperConnect=" + zookeeperConnect +
-                    "&" +
-                    "topic=helloTopic" +
+                    "brokers=" + kafkaBrokerList +
                     "&" +
                     "groupId=testConsumer" +
                     "&" +
-                    "autoOffsetReset=smallest" +
+                    "autoOffsetReset=earliest" +
                     "&" +
                     "autoCommitIntervalMs=100" +
                     "&" +
-                    "serializerClass=kafka.serializer.StringEncoder" +
+                    "serializerClass=org.apache.kafka.common.serialization.StringSerializer" +
                     "&" +
-                    "keySerializerClass=kafka.serializer.StringEncoder" +
+                    "keySerializerClass=org.apache.kafka.common.serialization.StringSerializer" +
                     "&" +
                     "autoCommitEnable=true";
         }
