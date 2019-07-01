@@ -50,7 +50,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.11.2</testcontainers.version>
+        <testcontainers.version>1.11.3</testcontainers.version>
         <spring.cloud.version>Greenwich.SR2</spring.cloud.version>
 
         <equalsverifier.version>3.1.9</equalsverifier.version>
