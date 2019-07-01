@@ -13,58 +13,25 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <!-- tests for container via camel and kafka 0.8.x client-->
         <camel.version>2.24.1</camel.version>
-        <camel-kafka.version>2.16.5</camel-kafka.version>
-        <io.netty.version>3.7.0.Final</io.netty.version>
-        <kafka_2.11.version>0.8.2.2</kafka_2.11.version>
-        <kafka-clients.version>0.8.2.2</kafka-clients.version>
-        <scala.version>2.11.0</scala.version>
-        <zookeeper.version>3.4.6</zookeeper.version>
+        <kafka-clients.version>2.3.0</kafka-clients.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-spring-boot</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka_2.11</artifactId>
-                <version>${kafka_2.11.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>log4j</artifactId>
-                        <groupId>log4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>slf4j-log4j12</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
-                <version>${kafka_2.11.version}</version>
+                <version>${kafka-clients.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.camel</groupId>
-                <artifactId>camel-core</artifactId>
+                <artifactId>camel-bom</artifactId>
                 <version>${camel.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-kafka</artifactId>
-                <version>${camel-kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-test-spring</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -80,22 +47,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-kafka</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

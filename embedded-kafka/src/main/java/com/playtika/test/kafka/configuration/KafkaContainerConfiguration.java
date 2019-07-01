@@ -98,7 +98,7 @@ public class KafkaContainerConfiguration {
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
                 .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "EXTERNAL_PLAINTEXT:PLAINTEXT,INTERNAL_PLAINTEXT:PLAINTEXT")
                 .withEnv("KAFKA_ADVERTISED_LISTENERS", "EXTERNAL_PLAINTEXT://" + kafkaHost() + ":" + kafkaExternalPort + ",INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort)
-                .withEnv("KAFKA_LISTENERS", "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort+",INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort)
+                .withEnv("KAFKA_LISTENERS", "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + ",INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort)
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
                 .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getReplicationFactor()))
@@ -125,11 +125,11 @@ public class KafkaContainerConfiguration {
 
         if (dockerHost != null) {
             try {
-                    final String dockerHostHost = new URI(dockerHost).getHost();
+                final String dockerHostHost = new URI(dockerHost).getHost();
 
-                    log.info("From {}={} parsed Kafka host: {}", DOCKER_HOST, dockerHost, dockerHostHost);
+                log.info("From {}={} parsed Kafka host: {}", DOCKER_HOST, dockerHost, dockerHostHost);
 
-                    return dockerHostHost;
+                return dockerHostHost;
 
             } catch (Exception e) {
                 log.info("Failed to parse {}={}, use localhost instead: {}", DOCKER_HOST, dockerHost, e.getMessage());
