@@ -1,5 +1,5 @@
 
-[![CircleCI](https://circleci.com/gh/Playtika/testcontainers-spring-boot/tree/master.svg?style=shield&circle-token=d229579db6903be702f2416a357d1a01fb5c5fc0)](https://circleci.com/gh/Playtika/testcontainers-spring-boot/tree/master)
+[![CircleCI](https://circleci.com/gh/testcontainers/testcontainers-spring-boot/tree/master.svg?style=shield&circle-token=d229579db6903be702f2416a357d1a01fb5c5fc0)](https://circleci.com/gh/Playtika/testcontainers-spring-boot/tree/master)
 [![codecov](https://codecov.io/gh/Playtika/testcontainers-spring-boot/branch/master/graph/badge.svg)](https://codecov.io/gh/Playtika/testcontainers-spring-boot)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/add0d68eb8e040a1833a8f457189af7b)](https://www.codacy.com/app/PlaytikaCodacy/testcontainers-spring-boot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Playtika/testcontainers-spring-boot&amp;utm_campaign=Badge_Grade)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot)
