@@ -23,8 +23,8 @@
 
     <scm>
         <url>https://svn.apache.org/viewvc/maven</url>
-        <connection>scm:git:git://github.com/Playtika/testcontainers-spring-boot.git</connection>
-        <developerConnection>scm:git:git@github.com:Playtika/testcontainers-spring-boot.git</developerConnection>
+        <connection>scm:git:git://github.com/testcontainers/testcontainers-spring-boot.git</connection>
+        <developerConnection>scm:git:git@github.com:testcontainers/testcontainers-spring-boot.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
