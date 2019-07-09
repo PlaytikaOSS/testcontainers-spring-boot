@@ -23,7 +23,6 @@
  */
 package com.testcontainers.couchbase;
 
-import com.playtika.test.couchbase.rest.*;
 import com.testcontainers.couchbase.rest.CreateBucket;
 import com.testcontainers.couchbase.rest.CreateBucketUser;
 import com.testcontainers.couchbase.rest.CreatePrimaryIndex;
