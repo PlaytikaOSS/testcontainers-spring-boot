@@ -1,5 +1,5 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.memsql.EmbeddedMemSqlBootstrapConfiguration
+com.testcontainers.memsql.EmbeddedMemSqlBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.memsql.EmbeddedMemSqlDependenciesAutoConfiguration
+com.testcontainers.memsql.EmbeddedMemSqlDependenciesAutoConfiguration

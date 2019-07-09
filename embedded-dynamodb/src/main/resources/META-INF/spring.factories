@@ -1,5 +1,5 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.dynamodb.EmbeddedDynamoDBBootstrapConfiguration
+com.testcontainers.dynamodb.EmbeddedDynamoDBBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.dynamodb.EmbeddedDynamoDBDependenciesAutoConfiguration
+com.testcontainers.dynamodb.EmbeddedDynamoDBDependenciesAutoConfiguration

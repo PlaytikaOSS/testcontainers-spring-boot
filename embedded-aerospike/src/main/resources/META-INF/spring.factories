@@ -1,6 +1,6 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.aerospike.EmbeddedAerospikeBootstrapConfiguration
+com.testcontainers.aerospike.EmbeddedAerospikeBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.aerospike.AerospikeTestOperationsAutoConfiguration,\
-com.playtika.test.aerospike.EmbeddedAerospikeDependenciesAutoConfiguration
+com.testcontainers.aerospike.AerospikeTestOperationsAutoConfiguration,\
+com.testcontainers.aerospike.EmbeddedAerospikeDependenciesAutoConfiguration
