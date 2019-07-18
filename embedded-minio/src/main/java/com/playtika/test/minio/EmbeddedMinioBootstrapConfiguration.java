@@ -33,10 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
 
@@ -56,18 +52,12 @@ public class EmbeddedMinioBootstrapConfiguration {
 
     @Bean(name = "minioWaitStrategy")
     @ConditionalOnMissingBean
-    public WaitStrategy minioWaitStrategy(MinioProperties properties) {
-        return new WaitAllStrategy()
-                .withStrategy(new HostPortWaitStrategy())
-                .withStrategy(new HttpWaitStrategy()
-                        .forPath("/minio/health/live")
-                        .forPort(properties.port)
-                        .forStatusCode(200))
-                .withStartupTimeout(properties.getTimeoutDuration());
+    public MinioWaitStrategy minioWaitStrategy(MinioProperties properties) {
+        return new DefaultMinioWaitStrategy(properties);
     }
 
     @Bean(name = MINIO_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer minio(WaitStrategy minioWaitStrategy,
+    public GenericContainer minio(MinioWaitStrategy minioWaitStrategy,
                                   ConfigurableEnvironment environment,
                                   MinioProperties properties) {
         log.info("Starting Minio server. Docker image: {}", properties.dockerImage);
