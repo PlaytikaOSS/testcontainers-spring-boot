@@ -76,8 +76,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
 /src/test/resources/application.properties
 
 ```properties
-spring.kafka.zookeeperHost=${embedded.zookeeper.zookeeperConnect}
-spring.kafka.brokerList=${embedded.kafka.brokerList}
+spring.kafka.bootstrap-servers=${embedded.kafka.brokerList}
 ```
  /src/test/resources/bootstrap.properties
 ```properties
