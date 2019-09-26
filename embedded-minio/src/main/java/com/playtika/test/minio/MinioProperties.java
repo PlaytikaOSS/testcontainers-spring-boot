@@ -40,8 +40,8 @@ public class MinioProperties extends CommonContainerProperties {
     String dockerImage = "minio/minio:RELEASE.2019-09-26T19-42-35Z";
     String accessKey = "AKIAIOSFODNN7EXAMPLE";
     String secretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
-    String userName = "minio";
-    String groupName = "minio";
+    String userName = "root";
+    String groupName = "root";
     String region = "";
     String worm = "off";
     String browser = "on";
