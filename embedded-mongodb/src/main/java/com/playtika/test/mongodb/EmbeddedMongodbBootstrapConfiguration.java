@@ -50,8 +50,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
         return new MongodbStatusCheck();
     }
 
-    private void registerMongodbEnvironment(
-            GenericContainer mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {
+    private void registerMongodbEnvironment(GenericContainer mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {
         Integer mappedPort = mongodb.getMappedPort(properties.getPort());
         String host = mongodb.getContainerIpAddress();
 
@@ -60,13 +59,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
         map.put("embedded.mongodb.host", host);
         map.put("embedded.mongodb.database", properties.getDatabase());
 
-        String connectionUri = "mongodb://{}:{}/{}";
-        log.info(
-                "Started mongodb. Connection Details: {}, " + "Connection URI: " + connectionUri,
-                map,
-                host,
-                mappedPort,
-                properties.getDatabase());
+        log.info("Started mongodb. Connection Details: {}, Connection URI: mongodb://{}:{}/{}", map, host, mappedPort, properties.getDatabase());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMongoInfo", map);
         environment.getPropertySources().addFirst(propertySource);
