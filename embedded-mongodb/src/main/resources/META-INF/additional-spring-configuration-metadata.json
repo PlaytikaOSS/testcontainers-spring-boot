@@ -1,0 +1,30 @@
+{
+  "properties": [
+    {
+      "name": "embedded.mongodb.enabled",
+      "type": "java.lang.String",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.mongodb.dockerImage",
+      "type": "java.lang.String",
+      "defaultValue": "mongo:4.2.0-bionic"
+    },
+    {
+      "name": "embedded.mongodb.host",
+      "type": "java.lang.String",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "embedded.mongodb.port",
+      "type": "java.lang.Integer",
+      "description": "The container internal port. Will be overwritten with mapped port.",
+      "defaultValue": "27017"
+    },
+    {
+      "name": "embedded.mongodb.database",
+      "type": "java.lang.String",
+      "defaultValue": "test"
+    }
+  ]
+}

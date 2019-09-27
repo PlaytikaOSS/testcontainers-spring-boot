@@ -26,6 +26,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    11. [embedded-elasticsearch](#embedded-elasticsearch)
    12. [embedded-dynamodb](#embedded-dynamodb)
    13. [embedded-minio](#embedded-minio)
+   14. [embedded-mongodb](#embedded-mongodb)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -390,6 +391,36 @@ VoltDB container has no security enabled, you can use any credentials.
 * embedded.minio.secretKey
 * embedded.minio.region
   
+### embedded-mongodb
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mongodb</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* embedded.mongodb.enabled `(true|false, default is 'true')`
+* embedded.mongodb.dockerImage `(default is set to 'mongo:4.2.0-bionic')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/_/mongo?tab=tags)
+* embedded.mongodb.host `(default is localhost)`
+* embedded.mongodb.port `(default is 27017)`
+* embedded.mongodb.database `(default is test)`
+
+##### Produces
+* embedded.mongodb.host
+* embedded.mongodb.port `(mapped port)`
+* embedded.mongodb.database
+
+##### Example
+To auto-configure spring-data-mongodb use these properties in your test application.properties:
+```
+spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
+```
+
 ## How to contribute
 ### Flow
 * There is 2 branches in project: master and develop

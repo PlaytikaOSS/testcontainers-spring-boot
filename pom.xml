@@ -34,6 +34,7 @@
         <module>embedded-aerospike</module>
         <module>embedded-mariadb</module>
         <module>embedded-memsql</module>
+        <module>embedded-mongodb</module>
         <module>embedded-couchbase</module>
         <module>embedded-redis</module>
         <module>embedded-neo4j</module>
