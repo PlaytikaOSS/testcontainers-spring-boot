@@ -13,7 +13,7 @@
     <artifactId>embedded-rabbitmq</artifactId>
 
     <properties>
-        <spring-rabbit.version>2.1.7.RELEASE</spring-rabbit.version>
+        <spring-rabbit.version>2.1.10.RELEASE</spring-rabbit.version>
     </properties>
 
     <dependencies>
