@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.27</version>
+        <version>1.28-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-redis</artifactId>
