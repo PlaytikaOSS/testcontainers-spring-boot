@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.MountableFile;
 
 import java.util.Map;
 
@@ -69,7 +70,8 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withExposedPorts(properties.port)
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCommand("redis-server", "--requirepass", properties.getPassword())
+                        .withCopyFileToContainer(MountableFile.forClasspathResource(properties.confFile), "/data/redis.conf")
+                        .withCommand("redis-server", "/data/redis.conf", "--requirepass", properties.getPassword())
                         .waitingFor(redisStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
         redis.start();

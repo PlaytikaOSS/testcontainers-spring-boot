@@ -38,4 +38,5 @@ public class RedisProperties extends CommonContainerProperties {
     public String password = "passw";
     public String host = "localhost";
     public int port = 6379;
+    public String confFile = "empty.conf";
 }
