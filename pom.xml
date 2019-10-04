@@ -54,7 +54,7 @@
         <testcontainers.version>1.12.2</testcontainers.version>
         <spring.cloud.version>Greenwich.SR2</spring.cloud.version>
 
-        <equalsverifier.version>3.1.9</equalsverifier.version>
+        <equalsverifier.version>3.1.10</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
