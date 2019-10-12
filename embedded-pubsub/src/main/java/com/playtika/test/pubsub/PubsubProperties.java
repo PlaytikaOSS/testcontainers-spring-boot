@@ -12,7 +12,7 @@ import java.util.Collection;
 @ConfigurationProperties("embedded.pubsub")
 public class PubsubProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_PUBSUB = "embeddedPubsub";
-    private String dockerImage = "google/cloud-sdk:latest";
+    private String dockerImage = "google/cloud-sdk:257.0.0";
     private String host = "0.0.0.0";
     private int port = 8089;
     private String projectId = "my-project-id";
