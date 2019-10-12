@@ -16,15 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = DisablePubsubTest.TestConfiguration.class,
-        properties = "embedded.pubsub.enabled=false")
+        properties = "embedded.google.pubsub.enabled=false")
 public class DisablePubsubTest {
     @Autowired
     private ConfigurableEnvironment environment;
 
     @Test
     public void propertiesAreNotAvailable() {
-        assertThat(environment.getProperty("embedded.pubsub.port")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.pubsub.host")).isNullOrEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.port")).isNullOrEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.host")).isNullOrEmpty();
     }
 
     @EnableAutoConfiguration

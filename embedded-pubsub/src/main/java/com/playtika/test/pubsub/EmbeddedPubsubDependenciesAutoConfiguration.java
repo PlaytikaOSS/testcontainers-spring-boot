@@ -32,15 +32,15 @@ import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_PUBSUB;
+import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 
 @Configuration
 @AutoConfigureOrder
 @ConditionalOnClass(PubSubTemplate.class)
-@ConditionalOnProperty(name = "embedded.pubsub.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)
 public class EmbeddedPubsubDependenciesAutoConfiguration {
     @Bean
     public BeanFactoryPostProcessor pubsubTemplateDependencyPostProcessor() {
-        return new DependsOnPostProcessor(PubSubTemplate.class, new String[] {BEAN_NAME_EMBEDDED_PUBSUB});
+        return new DependsOnPostProcessor(PubSubTemplate.class, new String[] {BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB});
     }
 }

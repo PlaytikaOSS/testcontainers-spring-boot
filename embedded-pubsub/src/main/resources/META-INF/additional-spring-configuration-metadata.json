@@ -3,14 +3,14 @@
   ],
   "properties": [
     {
-      "name": "embedded.pubsub.enabled",
+      "name": "embedded.google.pubsub.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
     }
   ],
   "hints": [
     {
-      "name": "embedded.pubsub.enabled",
+      "name": "embedded.google.pubsub.enabled",
       "values": [
         {
           "value": "true",

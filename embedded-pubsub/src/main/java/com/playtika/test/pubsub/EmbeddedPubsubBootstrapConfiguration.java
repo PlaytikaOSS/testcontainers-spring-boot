@@ -44,11 +44,11 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Slf4j
 @Configuration
 @Order(HIGHEST_PRECEDENCE)
-@ConditionalOnProperty(name = "embedded.pubsub.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)
 @EnableConfigurationProperties({PubsubProperties.class})
 public class EmbeddedPubsubBootstrapConfiguration {
 
-    @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_PUBSUB, destroyMethod = "stop")
+    @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
     public GenericContainer pubsub(ConfigurableEnvironment environment,
                                    PubsubProperties properties) {
         log.info("Starting Google Cloud Pubsub emulator. Docker image: {}", properties.getDockerImage());
@@ -78,13 +78,13 @@ public class EmbeddedPubsubBootstrapConfiguration {
                                            ConfigurableEnvironment environment,
                                            PubsubProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.pubsub.port", container.getMappedPort(properties.getPort()));
-        map.put("embedded.pubsub.host", container.getContainerIpAddress());
+        map.put("embedded.google.pubsub.port", container.getMappedPort(properties.getPort()));
+        map.put("embedded.google.pubsub.host", container.getContainerIpAddress());
 
         log.info("Started Google Cloud Pubsub emulator. Connection details: {}, ", map);
         log.info("Consult with the doc https://cloud.google.com/pubsub/docs/emulator for more details");
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedPubsubInfo", map);
+        MapPropertySource propertySource = new MapPropertySource("embeddedGooglePubsubInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }
 

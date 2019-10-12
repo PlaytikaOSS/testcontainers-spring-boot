@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_PUBSUB;
+import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,14 +50,14 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.pubsub.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.pubsub.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.port")).isNotEmpty();
 
-        assertThat(environment.getProperty("embedded.pubsub.topicsAndSubscriptions[0].topic")).isEqualTo("topic0");
-        assertThat(environment.getProperty("embedded.pubsub.topicsAndSubscriptions[0].subscription")).isEqualTo("subscription0");
+        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[0].topic")).isEqualTo("topic0");
+        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[0].subscription")).isEqualTo("subscription0");
 
-        assertThat(environment.getProperty("embedded.pubsub.topicsAndSubscriptions[1].topic")).isEqualTo("topic1");
-        assertThat(environment.getProperty("embedded.pubsub.topicsAndSubscriptions[1].subscription")).isEqualTo("subscription1");
+        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[1].topic")).isEqualTo("topic1");
+        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[1].subscription")).isEqualTo("subscription1");
     }
 
     @Test
@@ -91,6 +91,6 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
                 .isNotNull()
                 .isNotEmpty()
-                .contains(BEAN_NAME_EMBEDDED_PUBSUB);
+                .contains(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB);
     }
 }

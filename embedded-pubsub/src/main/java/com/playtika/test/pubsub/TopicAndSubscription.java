@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "embedded.pubsub.topicsandsubscriptions",ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "embedded.google.pubsub.topicsandsubscriptions",ignoreUnknownFields = false)
 public class TopicAndSubscription {
     private String topic;
     private String subscription;
