@@ -12,6 +12,10 @@
 
     <artifactId>embedded-pubsub</artifactId>
 
+    <properties>
+        <google-cloud-pubsub.version>1.92.0</google-cloud-pubsub.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
@@ -20,11 +24,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-pubsub</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-pubsub</artifactId>
-            <version>1.92.0</version>
+            <version>${google-cloud-pubsub.version}</version>
         </dependency>
     </dependencies>
 </project>
