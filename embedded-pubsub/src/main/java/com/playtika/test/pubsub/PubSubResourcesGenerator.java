@@ -46,7 +46,7 @@ public class PubSubResourcesGenerator {
     }
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         properties.getTopicsAndSubscriptions().forEach(this::createTopicAndSubscription);
     }
 
