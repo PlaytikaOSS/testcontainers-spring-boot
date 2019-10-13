@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.google.pubsub.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.google.pubsub.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of pubsub server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of pubsub server on startup."
+        }
+      ]
+    }
+  ]
+}

@@ -44,6 +44,7 @@
         <module>embedded-voltdb</module>
         <module>embedded-rabbitmq</module>
         <module>embedded-minio</module>
+        <module>embedded-google-pubsub</module>
     </modules>
 
     <properties>
