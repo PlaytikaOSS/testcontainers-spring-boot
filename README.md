@@ -27,6 +27,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    12. [embedded-dynamodb](#embedded-dynamodb)
    13. [embedded-minio](#embedded-minio)
    14. [embedded-mongodb](#embedded-mongodb)
+   14. [embedded-google-pubsub](#embedded-google-pubsub)
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -419,6 +420,42 @@ VoltDB container has no security enabled, you can use any credentials.
 To auto-configure spring-data-mongodb use these properties in your test application.properties:
 ```
 spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
+```
+
+### embedded-google-pubsub
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-google-pubsub</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* embedded.google.pubsub.enabled `(true|false, default is 'true')`
+* embedded.google.pubsub.dockerImage `(default is set to 'google/cloud-sdk:257.0.0')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/google/cloud-sdk/)
+* embedded.google.pubsub.host `(default is 0.0.0.0)`
+* embedded.google.pubsub.port `(default is 8089)`
+* embedded.google.pubsub.project-id `(default is my-project-id)`
+* Topics and Subscriptions:
+  * embedded.google.pubsub.topicsAndSubscriptions[0].topic=topic0_name
+  * embedded.google.pubsub.topicsAndSubscriptions[0].subscription=subscription0_name
+  * embedded.google.pubsub.topicsAndSubscriptions[1].topic=topic0_name
+  * embedded.google.pubsub.topicsAndSubscriptions[1].subscription=subscription0_name
+
+##### Produces
+* embedded.google.pubsub.host
+* embedded.google.pubsub.port `(mapped port)`
+* embedded.google.pubsub.project-id
+
+##### Example
+To auto-configure spring-cloud-gcp-starter-pubsub use these properties in your test application.properties:
+```
+spring.cloud.gcp.project-id=${embedded.google.pubsub.project-id}
+spring.cloud.gcp.pubsub.emulatorHost=${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
 ```
 
 ## How to contribute
