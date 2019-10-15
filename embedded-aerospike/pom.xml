@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.31-SNAPSHOT</version>
+        <version>1.31</version>
     </parent>
 
     <artifactId>embedded-aerospike</artifactId>
