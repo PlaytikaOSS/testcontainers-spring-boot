@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = DisablePubsubTest.TestConfiguration.class,
-        properties = "embedded.google.pubsub.enabled=false")
+        properties = {"embedded.google.pubsub.enabled=false", "spring.cloud.gcp.pubsub.enabled=false"})
 public class DisablePubsubTest {
     @Autowired
     private ConfigurableEnvironment environment;
