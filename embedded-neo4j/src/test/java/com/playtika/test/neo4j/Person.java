@@ -3,7 +3,8 @@ package com.playtika.test.neo4j;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
@@ -20,7 +21,8 @@ import static java.util.stream.Collectors.toList;
 @Setter
 public class Person {
 
-    @GraphId
+    @Id
+    @GeneratedValue
     private Long id;
 
     private String name;
