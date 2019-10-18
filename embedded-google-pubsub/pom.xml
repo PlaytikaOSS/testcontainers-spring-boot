@@ -13,7 +13,7 @@
     <artifactId>embedded-google-pubsub</artifactId>
 
     <properties>
-        <google-cloud-pubsub.version>1.97.0</google-cloud-pubsub.version>
+        <google-cloud-pubsub.version>1.98.0</google-cloud-pubsub.version>
     </properties>
 
     <dependencies>
