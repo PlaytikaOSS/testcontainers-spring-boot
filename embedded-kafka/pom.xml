@@ -14,7 +14,7 @@
 
     <properties>
         <camel.version>2.24.2</camel.version>
-        <kafka-clients.version>2.3.0</kafka-clients.version>
+        <kafka-clients.version>2.3.1</kafka-clients.version>
     </properties>
 
     <dependencyManagement>
