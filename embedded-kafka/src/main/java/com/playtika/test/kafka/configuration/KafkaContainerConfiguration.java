@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.configuration;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.kafka.KafkaTopicsConfigurer;
 import com.playtika.test.kafka.checks.KafkaStatusCheck;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
@@ -91,6 +92,7 @@ public class KafkaContainerConfiguration {
         GenericContainer kafka = new FixedHostPortGenericContainer<>(kafkaProperties.getDockerImage())
                 .withLogConsumer(containerLogsConsumer(log))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
+                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .withEnv("KAFKA_ZOOKEEPER_CONNECT", containerZookeeperConnect)
                 .withEnv("KAFKA_BROKER_ID", "-1")
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub

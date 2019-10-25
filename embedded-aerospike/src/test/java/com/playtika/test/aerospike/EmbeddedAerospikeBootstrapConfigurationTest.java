@@ -32,6 +32,7 @@ import org.assertj.core.data.Offset;
 import org.junit.Test;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +63,7 @@ public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTe
 
     @Test
     public void shouldAddLatency() throws Exception {
-        aerospikeTestOperations.addNetworkLatencyForResponses(1500);
+        aerospikeTestOperations.addNetworkLatencyForResponses(ofMillis(1500));
 
         long total = getExecutionTimeOfOperation();
 

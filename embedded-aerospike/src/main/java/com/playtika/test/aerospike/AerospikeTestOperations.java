@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2019 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -23,40 +23,24 @@
  */
 package com.playtika.test.aerospike;
 
+import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
-import org.testcontainers.containers.Container;
-import org.testcontainers.containers.GenericContainer;
-
-import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 public class AerospikeTestOperations {
 
     private final ExpiredDocumentsCleaner expiredDocumentsCleaner;
-    private final GenericContainer aerospike;
+    private final NetworkTestOperations networkTestOperations;
 
-    public void addNetworkLatencyForResponses(long millis) {
-        executeCommandInContainer(() -> {
-                    try {
-                        return aerospike.execInContainer("tc", "qdisc", "add", "dev", "eth0", "root", "netem", "delay", millis + "ms");
-                    } catch (Exception e) {
-                        throw new IllegalStateException("Failed to execute command", e);
-                    }
-                }
-        );
+    public void addNetworkLatencyForResponses(java.time.Duration millis) {
+        networkTestOperations.addNetworkLatencyForResponses(millis);
     }
 
     public void removeNetworkLatencyForResponses() {
-        executeCommandInContainer(() -> {
-            try {
-                return aerospike.execInContainer("tc", "qdisc", "del", "dev", "eth0", "root");
-            } catch (Exception e) {
-                throw new IllegalStateException("Failed to execute command", e);
-            }
-        });
+        networkTestOperations.removeNetworkLatencyForResponses();
     }
 
     public void addDuration(Duration duration) {
@@ -79,12 +63,5 @@ public class AerospikeTestOperations {
     private void timeTravel(DateTime newNow) {
         DateTimeUtils.setCurrentMillisFixed(newNow.getMillis());
         expiredDocumentsCleaner.cleanExpiredDocumentsBefore(newNow.getMillis());
-    }
-
-    private void executeCommandInContainer(Supplier<Container.ExecResult> command) {
-        Container.ExecResult execResult = command.get();
-        if (!execResult.getStderr().isEmpty()) {
-            throw new IllegalStateException("Failed to execute command with message: " + execResult.getStderr());
-        }
     }
 }

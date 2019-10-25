@@ -23,6 +23,7 @@
  */
 package com.playtika.test.elasticsearch;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.elasticsearch.rest.CreateIndex;
 import com.playtika.test.elasticsearch.rest.WaitForGreenStatus;
 import org.slf4j.Logger;
@@ -38,11 +39,12 @@ import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsume
 class ElasticSearchContainerFactory {
 
     static GenericContainer create(ElasticSearchProperties properties, Logger containerLogger) {
-        return new FixedHostPortGenericContainer(properties.dockerImage)
+        return new FixedHostPortGenericContainer<>(properties.dockerImage)
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
+                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .withLogConsumer(containerLogsConsumer(containerLogger))
                 .waitingFor(getCompositeWaitStrategy(properties))
                 .withStartupTimeout(properties.getTimeoutDuration());

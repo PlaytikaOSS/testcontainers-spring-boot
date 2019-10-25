@@ -23,16 +23,19 @@
  */
 package com.playtika.test.elasticsearch.springdata;
 
-import java.util.List;
-
+import com.playtika.test.common.operations.NetworkTestOperations;
+import com.playtika.test.elasticsearch.ElasticSearchProperties;
+import com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
+import org.assertj.core.data.Offset;
 import org.elasticsearch.client.Client;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-import com.playtika.test.elasticsearch.ElasticSearchProperties;
-import com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
+import java.util.List;
+import java.util.concurrent.Callable;
 
+import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +47,9 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
 
+    @Autowired
+    private NetworkTestOperations elasticSearchNetworkTestOperations;
+
     @Test
     public void springDataShouldWork() {
         String key = "test::1";
@@ -54,6 +60,17 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
         TestDocument testDocument = saveDocument(key, value);
 
         assertThat(documentRepository.findById(key).get()).isEqualTo(testDocument);
+    }
+
+    @Test
+    public void shouldEmulateNetworkLatency() throws Exception {
+        elasticSearchNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+                () -> assertThat(durationOf(() -> documentRepository.findById("abc")))
+                        .isCloseTo(1500L, Offset.offset(100L))
+        );
+
+        assertThat(durationOf(() -> documentRepository.findById("abc")))
+                .isLessThan(40L);
     }
 
     @Test
@@ -89,5 +106,11 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
         TestDocument testDocument = new TestDocument(key, value);
         documentRepository.save(testDocument);
         return testDocument;
+    }
+
+    private static long durationOf(Callable<?> op) throws Exception {
+        long start = System.currentTimeMillis();
+        op.call();
+        return System.currentTimeMillis() - start;
     }
 }
