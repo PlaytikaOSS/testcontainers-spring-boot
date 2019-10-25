@@ -6,6 +6,11 @@
       "name": "embedded.postgresql.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.postgresql.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "postgres:10-alpine"
     }
   ],
   "hints": [
@@ -19,6 +24,23 @@
         {
           "value": "false",
           "description": "Disables configuration of postgresql server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.postgresql.docker-image",
+      "values": [
+        {
+          "value": "postgres:10-alpine",
+          "description": "Latest 10.x alpine version. Ref https://hub.docker.com/_/postgres for further info."
+        },
+        {
+          "value": "postgres:11-alpine",
+          "description": "Latest 11.x alpine version. Ref https://hub.docker.com/_/postgres for further info."
+        },
+        {
+          "value": "postgres:12-alpine",
+          "description": "Latest 12.x alpine version. Ref https://hub.docker.com/_/postgres for further info."
         }
       ]
     }

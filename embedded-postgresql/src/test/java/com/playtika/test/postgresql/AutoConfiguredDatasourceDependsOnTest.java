@@ -25,49 +25,75 @@ package com.playtika.test.postgresql;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@ActiveProfiles("enabled")
-@SpringBootTest
-public class AutoConfiguredDatasourceDependsOnTest {
+class AutoConfiguredDatasourceDependsOnTest {
 
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    @ExtendWith(SpringExtension.class)
+    @ActiveProfiles("enabled")
+    @SpringBootTest
+    @DisplayName("Default AutoConfigured Datasource")
+    @Nested
+    class TestDefaults {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+        @Autowired
+        protected ConfigurableListableBeanFactory beanFactory;
 
-    @Test
-    public void shouldConnectToPostgreSQL() {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("PostgreSQL");
+        @Autowired
+        protected JdbcTemplate jdbcTemplate;
+
+        @Test
+        void shouldConnectToPostgreSQL() {
+            assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("PostgreSQL");
+        }
+
+        @Test
+        void shouldSetupDependsOnForAllDataSources() {
+            String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+            assertThat(beanNamesForType)
+                    .as("Auto-configured datasource should be present")
+                    .hasSize(1)
+                    .contains("dataSource");
+            asList(beanNamesForType).forEach(this::hasDependsOn);
+        }
+
+        private void hasDependsOn(String beanName) {
+            assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+                    .isNotNull()
+                    .isNotEmpty()
+                    .contains(BEAN_NAME_EMBEDDED_POSTGRESQL);
+        }
     }
 
-    @Test
-    public void shouldSetupDependsOnForAllDataSources() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
-        assertThat(beanNamesForType)
-            .as("Auto-configured datasource should be present")
-            .hasSize(1)
-            .contains("dataSource");
-        asList(beanNamesForType).forEach(this::hasDependsOn);
+    @TestPropertySource(properties = {
+            "embedded.postgresql.docker-image=postgres:11-alpine"
+    })
+    @Nested
+    @DisplayName("AutoConfigured Datasource with postgres:11-alpine")
+    class Alpine11Image extends TestDefaults {
     }
 
-    private void hasDependsOn(String beanName) {
-        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-            .isNotNull()
-            .isNotEmpty()
-            .contains(BEAN_NAME_EMBEDDED_POSTGRESQL);
+    @TestPropertySource(properties = {
+            "embedded.postgresql.docker-image=postgres:12-alpine"
+    })
+    @Nested
+    @DisplayName("AutoConfigured Datasource with postgres:12-alpine")
+    class Alpine12Image extends TestDefaults {
     }
 }
+
