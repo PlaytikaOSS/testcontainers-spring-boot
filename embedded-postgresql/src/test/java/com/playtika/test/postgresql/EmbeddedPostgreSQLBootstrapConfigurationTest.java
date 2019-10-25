@@ -27,8 +27,8 @@ import javax.sql.DataSource;
 
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -38,17 +38,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
-    EmbeddedPostgreSQLBootstrapConfigurationTest.TestConfiguration.class})
-public class EmbeddedPostgreSQLBootstrapConfigurationTest {
+        EmbeddedPostgreSQLBootstrapConfigurationTest.TestConfiguration.class})
+class EmbeddedPostgreSQLBootstrapConfigurationTest {
 
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
@@ -60,12 +60,12 @@ public class EmbeddedPostgreSQLBootstrapConfigurationTest {
     private ConfigurableEnvironment environment;
 
     @Test
-    public void shouldConnectToPostgreSQL() {
+    void shouldConnectToPostgreSQL() {
         assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("PostgreSQL");
     }
 
     @Test
-    public void shouldSaveAndGetUnicode() {
+    void shouldSaveAndGetUnicode() {
         jdbcTemplate.execute("CREATE TABLE employee(id INT, name VARCHAR(64));");
         jdbcTemplate.execute("insert into employee (id, name) values (1, 'some data \uD83D\uDE22');");
 
@@ -73,7 +73,7 @@ public class EmbeddedPostgreSQLBootstrapConfigurationTest {
     }
 
     @Test
-    public void propertiesAreAvailable() {
+    void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.postgresql.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.schema")).isNotEmpty();
@@ -82,7 +82,7 @@ public class EmbeddedPostgreSQLBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldSetupDependsOnForAllDataSources() {
+    void shouldSetupDependsOnForAllDataSources() {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
         assertThat(beanNamesForType)
             .as("Custom datasource should be present")
