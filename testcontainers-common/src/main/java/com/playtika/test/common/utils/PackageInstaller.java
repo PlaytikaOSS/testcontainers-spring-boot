@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2019 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +33,12 @@ import javax.annotation.PostConstruct;
 
 @Slf4j
 @RequiredArgsConstructor
-public class PackageInstaller {
+public abstract class PackageInstaller {
 
     private final InstallPackageProperties properties;
     private final GenericContainer container;
 
+    protected abstract void install(String packageToInstall);
     @PostConstruct
     protected void installPackages() {
         if (!properties.isEnabled()) {
@@ -54,17 +55,17 @@ public class PackageInstaller {
         log.debug("Installed packages: {} into container: {}", properties.getPackages(), container);
     }
 
-    private void updatePackageList() {
-        executeSafely("apt-get", "update");
+    protected void updatePackageList() {
+        //not required
     }
 
-    private void installPackageIfNeeded(String packageToInstall) {
+    protected void installPackageIfNeeded(String packageToInstall) {
         if (shouldInstall(packageToInstall)) {
-            executeSafely("apt-get", "-qq", "-y", "install", packageToInstall);
+            install(packageToInstall);
         }
     }
 
-    private boolean shouldInstall(String packageToInstall) {
+    protected boolean shouldInstall(String packageToInstall) {
         Container.ExecResult result = executeSafely("which", packageToInstall);
         // returns empty result if package is not installed
         // if package is installed -- returns path
@@ -72,7 +73,7 @@ public class PackageInstaller {
         return result.getStdout().isEmpty();
     }
 
-    private Container.ExecResult executeSafely(String... command) {
+    protected Container.ExecResult executeSafely(String... command) {
         try {
             return container.execInContainer(command);
         } catch (Exception e) {

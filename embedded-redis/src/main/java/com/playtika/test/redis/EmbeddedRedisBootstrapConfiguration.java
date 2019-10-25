@@ -23,6 +23,7 @@
  */
 package com.playtika.test.redis;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.redis.wait.RedisStatusCheck;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -64,12 +65,13 @@ public class EmbeddedRedisBootstrapConfiguration {
         log.info("Starting Redis server. Docker image: {}", properties.dockerImage);
 
         GenericContainer redis =
-                new GenericContainer(properties.dockerImage)
+                new GenericContainer<>(properties.dockerImage)
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCommand("redis-server", "--requirepass", properties.getPassword())
+                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(redisStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
         redis.start();

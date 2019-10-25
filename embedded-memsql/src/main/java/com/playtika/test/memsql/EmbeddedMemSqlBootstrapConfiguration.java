@@ -23,6 +23,7 @@
  */
 package com.playtika.test.memsql;
 
+import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -65,6 +66,7 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
+                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(memSqlStatusCheck)
                 .withStartupTimeout(properties.getTimeoutDuration());
         memsql.start();

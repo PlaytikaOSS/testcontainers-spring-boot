@@ -3,4 +3,5 @@ com.playtika.test.redis.EmbeddedRedisBootstrapConfiguration,\
 com.playtika.test.redis.EmbeddedRedisClusterBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.playtika.test.redis.EmbeddedRedisTestOperationsAutoConfiguration,\
 com.playtika.test.redis.EmbeddedRedisDependenciesAutoConfiguration
