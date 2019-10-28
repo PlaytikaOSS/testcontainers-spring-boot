@@ -52,7 +52,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.12.2</testcontainers.version>
+        <testcontainers.version>1.12.3</testcontainers.version>
         <spring.cloud.version>Greenwich.SR3</spring.cloud.version>
 
         <equalsverifier.version>3.1.10</equalsverifier.version>
