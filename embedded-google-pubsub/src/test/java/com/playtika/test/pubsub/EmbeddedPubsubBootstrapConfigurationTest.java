@@ -52,6 +52,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.google.pubsub.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.google.pubsub.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.project-id")).isNotEmpty();
 
         assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[0].topic")).isEqualTo("topic0");
         assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[0].subscription")).isEqualTo("subscription0");

@@ -20,7 +20,6 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.testcontainers.containers.GenericContainer;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 public class PubSubResourcesGenerator {
@@ -33,11 +32,9 @@ public class PubSubResourcesGenerator {
 
     private final String projectId;
 
-    public PubSubResourcesGenerator(GenericContainer pubsub,
-                             PubsubProperties properties,
-                             String projectId) throws IOException {
+    public PubSubResourcesGenerator(GenericContainer pubsub, PubsubProperties properties) throws IOException {
         this.properties = properties;
-        this.projectId = projectId;
+        this.projectId = properties.getProjectId();
         ManagedChannel channel = ManagedChannelBuilder.forAddress(properties.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext().build();
         channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
         credentialsProvider = NoCredentialsProvider.create();
@@ -45,7 +42,6 @@ public class PubSubResourcesGenerator {
         subscriptionAdminClient = subscriptionAdminClient();
     }
 
-    @PostConstruct
     protected void init() {
         properties.getTopicsAndSubscriptions().forEach(this::createTopicAndSubscription);
     }
