@@ -40,7 +40,7 @@ import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGL
 @ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)
 public class EmbeddedPubsubDependenciesAutoConfiguration {
     @Bean
-    public BeanFactoryPostProcessor pubsubTemplateDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor pubsubTemplateDependencyPostProcessor() {
         return new DependsOnPostProcessor(PubSubTemplate.class, new String[] {BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB});
     }
 }
