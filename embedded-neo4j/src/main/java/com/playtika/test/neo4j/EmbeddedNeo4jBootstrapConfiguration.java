@@ -23,6 +23,7 @@
  */
 package com.playtika.test.neo4j;
 
+import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -61,7 +62,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
 
         log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer neo4j = new GenericContainer(properties.dockerImage)
+        GenericContainer neo4j = new GenericContainer<>(properties.dockerImage)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(
                         properties.httpsPort,
@@ -71,6 +72,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
                         "neo4j-health.sh",
                         "/neo4j-health.sh",
                         BindMode.READ_ONLY)
+                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(neo4jStatusCheck)
                 .withStartupTimeout(properties.getTimeoutDuration());
         neo4j.start();

@@ -23,6 +23,7 @@
  */
 package com.playtika.test.couchbase;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.couchbase.rest.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ class CouchbaseContainerFactory {
                 .withLogConsumer(containerLogsConsumer(containerLogger))
                 .withNetwork(network)
                 .withNetworkAliases(COUCHBASE_HOST_NAME)
+                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(getCompositeWaitStrategy(properties))
                 .withStartupTimeout(properties.getTimeoutDuration());
     }

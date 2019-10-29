@@ -23,6 +23,7 @@
  */
 package com.playtika.test.mariadb;
 
+import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,7 +61,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
         log.info("Starting mariadb server. Docker image: {}", properties.dockerImage);
 
         GenericContainer mariadb =
-                new GenericContainer(properties.dockerImage)
+                new GenericContainer<>(properties.dockerImage)
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "true")
                         .withEnv("MYSQL_USER", properties.getUser())
                         .withEnv("MYSQL_PASSWORD", properties.getPassword())
@@ -70,6 +71,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                 "--collation-server=" + properties.getCollation())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
+                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(mariaDBStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
         mariadb.start();

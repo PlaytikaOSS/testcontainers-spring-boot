@@ -1,6 +1,6 @@
 package com.playtika.test.mongodb;
 
-import java.util.LinkedHashMap;
+import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,6 +12,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+
+import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MONGODB;
@@ -32,10 +34,11 @@ public class EmbeddedMongodbBootstrapConfiguration {
             MongodbProperties properties,
             MongodbStatusCheck mongodbStatusCheck) {
         GenericContainer mongodb =
-                new GenericContainer(properties.getDockerImage())
+                new GenericContainer<>(properties.getDockerImage())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.getPort())
+                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(mongodbStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
 

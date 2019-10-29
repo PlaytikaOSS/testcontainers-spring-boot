@@ -23,9 +23,10 @@
  */
 package com.playtika.test.mongodb;
 
-import java.time.Instant;
-import java.util.UUID;
+import com.playtika.test.common.operations.NetworkTestOperations;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.data.Offset;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+
+import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -52,6 +58,9 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
     @Autowired
     ConfigurableEnvironment environment;
 
+    @Autowired
+    NetworkTestOperations mongodbNetworkTestOperations;
+
     @Test
     public void shouldSaveAndGet() {
         String someId = UUID.randomUUID().toString();
@@ -62,13 +71,30 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
     }
 
     @Test
+    public void shouldEmulateLatency() throws Exception {
+        mongodbNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+                () -> assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
+                        .isCloseTo(1500L, Offset.offset(100L))
+        );
+
+        assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
+                .isLessThan(100L);
+    }
+
+    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.mongodb.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mongodb.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mongodb.database")).isNotEmpty();
     }
 
-    @lombok.Value
+    private static long durationOf(Callable<?> op) throws Exception {
+        long start = System.currentTimeMillis();
+        op.call();
+        return System.currentTimeMillis() - start;
+    }
+
+    @Value
     static class Foo {
         @Id
         String someId;

@@ -25,6 +25,7 @@
 
 package com.playtika.test.minio;
 
+import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -74,6 +75,7 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withEnv("MINIO_WORM", properties.worm)
                         .withEnv("MINIO_BROWSER", properties.browser)
                         .withCommand("server", properties.directory)
+                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(minioWaitStrategy)
                         .withStartupTimeout(properties.getTimeoutDuration());
 
