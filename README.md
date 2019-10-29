@@ -441,10 +441,10 @@ spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.po
 * embedded.google.pubsub.port `(default is 8089)`
 * embedded.google.pubsub.project-id `(default is my-project-id)`
 * Topics and Subscriptions:
-  * embedded.google.pubsub.topicsAndSubscriptions[0].topic=topic0_name
-  * embedded.google.pubsub.topicsAndSubscriptions[0].subscription=subscription0_name
-  * embedded.google.pubsub.topicsAndSubscriptions[1].topic=topic0_name
-  * embedded.google.pubsub.topicsAndSubscriptions[1].subscription=subscription0_name
+  * embedded.google.pubsub.topics-and-subscriptions[0].topic=topic0_name
+  * embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name
+  * embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name
+  * embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name
 
 ##### Produces
 * embedded.google.pubsub.host

@@ -18,26 +18,28 @@ import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.Topic;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.testcontainers.containers.GenericContainer;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 
+@Slf4j
 public class PubSubResourcesGenerator {
 
     private final TransportChannelProvider channelProvider;
     private final CredentialsProvider credentialsProvider;
     private final TopicAdminClient topicAdminClient;
-    public final SubscriptionAdminClient subscriptionAdminClient;
+    private final SubscriptionAdminClient subscriptionAdminClient;
     private final PubsubProperties properties;
 
     private final String projectId;
 
-    public PubSubResourcesGenerator(GenericContainer pubsub,
-                             PubsubProperties properties,
-                             String projectId) throws IOException {
+    public PubSubResourcesGenerator(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub,
+                                    PubsubProperties properties) throws IOException {
         this.properties = properties;
-        this.projectId = projectId;
+        this.projectId = properties.getProjectId();
         ManagedChannel channel = ManagedChannelBuilder.forAddress(properties.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext().build();
         channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
         credentialsProvider = NoCredentialsProvider.create();
@@ -47,7 +49,9 @@ public class PubSubResourcesGenerator {
 
     @PostConstruct
     protected void init() {
+        log.info("Creating topics and subscriptions.");
         properties.getTopicsAndSubscriptions().forEach(this::createTopicAndSubscription);
+        log.info("Creating topics and subscriptions created.");
     }
 
     private void createTopicAndSubscription(TopicAndSubscription ts) {
@@ -63,6 +67,7 @@ public class PubSubResourcesGenerator {
         ProjectSubscriptionName subscription = ProjectSubscriptionName.of(projectId, subscriptionName);
 
         try {
+            log.info("Creating subscription: {}", subscription);
             return subscriptionAdminClient
                     .createSubscription(subscription, topic, PushConfig.getDefaultInstance(), 100);
         } catch (AlreadyExistsException e) {
@@ -73,6 +78,7 @@ public class PubSubResourcesGenerator {
     public Topic createTopic(String topicName) {
         ProjectTopicName topic = ProjectTopicName.of(projectId, topicName);
         try {
+            log.info("Creating topic: {}", topic);
             return topicAdminClient.createTopic(topic);
         } catch (AlreadyExistsException e) {
             return topicAdminClient.getTopic(topic);
@@ -100,5 +106,9 @@ public class PubSubResourcesGenerator {
                 .setCredentialsProvider(credentialsProvider)
                 .build());
 
+    }
+
+    public Subscription getSubscription(ProjectSubscriptionName projectSubscriptionName) {
+        return subscriptionAdminClient.getSubscription(projectSubscriptionName);
     }
 }

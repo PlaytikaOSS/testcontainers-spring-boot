@@ -52,12 +52,13 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.google.pubsub.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.google.pubsub.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.project-id")).isNotEmpty();
 
-        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[0].topic")).isEqualTo("topic0");
-        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[0].subscription")).isEqualTo("subscription0");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[0].topic")).isEqualTo("topic0");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[0].subscription")).isEqualTo("subscription0");
 
-        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[1].topic")).isEqualTo("topic1");
-        assertThat(environment.getProperty("embedded.google.pubsub.topicsAndSubscriptions[1].subscription")).isEqualTo("subscription1");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].topic")).isEqualTo("topic1");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].subscription")).isEqualTo("subscription1");
     }
 
     @Test
@@ -65,8 +66,8 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
         ProjectSubscriptionName subscription0 = ProjectSubscriptionName.of(projectId, "subscription0");
         ProjectSubscriptionName subscription1 = ProjectSubscriptionName.of(projectId, "subscription1");
 
-        assertThat(resourcesGenerator.subscriptionAdminClient.getSubscription(subscription0)).isNotNull();
-        assertThat(resourcesGenerator.subscriptionAdminClient.getSubscription(subscription1)).isNotNull();
+        assertThat(resourcesGenerator.getSubscription(subscription0)).isNotNull();
+        assertThat(resourcesGenerator.getSubscription(subscription1)).isNotNull();
     }
 
     @Test
@@ -78,7 +79,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldSetupDependsOnForRabbitTemplate() {
+    public void shouldSetupDependsOnForPubSubTemplate() {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(PubSubTemplate.class);
         assertThat(beanNamesForType)
                 .as("pubSubTemplate should be present")

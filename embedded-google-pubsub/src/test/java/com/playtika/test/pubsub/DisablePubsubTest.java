@@ -25,6 +25,7 @@ public class DisablePubsubTest {
     public void propertiesAreNotAvailable() {
         assertThat(environment.getProperty("embedded.google.pubsub.port")).isNullOrEmpty();
         assertThat(environment.getProperty("embedded.google.pubsub.host")).isNullOrEmpty();
+        assertThat(environment.getProperty("embedded.google.pubsub.project-id")).isNullOrEmpty();
     }
 
     @EnableAutoConfiguration
