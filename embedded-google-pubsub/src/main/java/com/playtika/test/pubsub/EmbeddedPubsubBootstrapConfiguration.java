@@ -24,6 +24,7 @@
 package com.playtika.test.pubsub;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -80,6 +81,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.google.pubsub.port", container.getMappedPort(properties.getPort()));
         map.put("embedded.google.pubsub.host", container.getContainerIpAddress());
+        map.put("embedded.google.pubsub.project-id", properties.getProjectId());
 
         log.info("Started Google Cloud Pubsub emulator. Connection details: {}, ", map);
         log.info("Consult with the doc https://cloud.google.com/pubsub/docs/emulator for more details");
@@ -88,8 +90,9 @@ public class EmbeddedPubsubBootstrapConfiguration {
         environment.getPropertySources().addFirst(propertySource);
     }
 
-    @Bean
-    public PubSubResourcesGenerator pubSubResourcesGenerator(GenericContainer pubsub, PubsubProperties properties) throws IOException {
-        return new PubSubResourcesGenerator(pubsub, properties, properties.getProjectId());
+    @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR)
+    public PubSubResourcesGenerator pubSubResourcesGenerator(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub,
+                                                             PubsubProperties properties) throws IOException {
+        return new PubSubResourcesGenerator(pubsub, properties);
     }
 }
