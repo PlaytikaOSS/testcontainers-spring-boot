@@ -93,9 +93,6 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR)
     public PubSubResourcesGenerator pubSubResourcesGenerator(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub,
                                                              PubsubProperties properties) throws IOException {
-        PubSubResourcesGenerator pubSubResourcesGenerator = new PubSubResourcesGenerator(pubsub, properties);
-        pubSubResourcesGenerator.init();
-
-        return pubSubResourcesGenerator;
+        return new PubSubResourcesGenerator(pubsub, properties);
     }
 }
