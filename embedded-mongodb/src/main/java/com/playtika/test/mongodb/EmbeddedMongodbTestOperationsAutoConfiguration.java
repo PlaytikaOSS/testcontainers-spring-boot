@@ -5,6 +5,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MONGODB;
 
 @Configuration
 @ConditionalOnBean({MongodbProperties.class})
@@ -29,14 +32,18 @@ public class EmbeddedMongodbTestOperationsAutoConfiguration {
     }
 
     @Bean
-    PackageInstaller mongodbPackageInstaller(InstallPackageProperties mongodbPackageProperties,
-                                             GenericContainer mongodb) {
+    PackageInstaller mongodbPackageInstaller(
+            InstallPackageProperties mongodbPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer mongodb
+    ) {
         return new AptGetPackageInstaller(mongodbPackageProperties, mongodb);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "mongodbNetworkTestOperations")
-    public NetworkTestOperations mongodbNetworkTestOperations(GenericContainer mongodb) {
+    public NetworkTestOperations mongodbNetworkTestOperations(
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer mongodb
+    ) {
         return new DefaultNetworkTestOperations(mongodb);
     }
 }

@@ -28,6 +28,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
 
 @Configuration
 @ConditionalOnBean({MariaDBProperties.class})
@@ -52,14 +55,18 @@ public class EmbeddedMariaDBTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller mariadbPackageInstaller(InstallPackageProperties mariadbPackageProperties,
-                                                    GenericContainer mariadb) {
+    public PackageInstaller mariadbPackageInstaller(
+            InstallPackageProperties mariadbPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer mariadb
+    ) {
         return new AptGetPackageInstaller(mariadbPackageProperties, mariadb);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "mariadbNetworkTestOperations")
-    public NetworkTestOperations mariadbNetworkTestOperations(GenericContainer mariadb) {
+    public NetworkTestOperations mariadbNetworkTestOperations(
+            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer mariadb
+    ) {
         return new DefaultNetworkTestOperations(mariadb);
     }
 }

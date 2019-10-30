@@ -29,6 +29,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 
 @Configuration
 @ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
@@ -53,8 +56,10 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller aerospikePackageInstaller(InstallPackageProperties aerospikePackageProperties,
-                                                      GenericContainer aerospike) {
+    public PackageInstaller aerospikePackageInstaller(
+            InstallPackageProperties aerospikePackageProperties,
+            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer aerospike
+    ) {
         return new AptGetPackageInstaller(aerospikePackageProperties, aerospike);
     }
 
@@ -67,7 +72,9 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "aerospikeNetworkTestOperations")
-    public NetworkTestOperations aerospikeNetworkTestOperations(GenericContainer aerospike) {
+    public NetworkTestOperations aerospikeNetworkTestOperations(
+            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer aerospike
+    ) {
         return new DefaultNetworkTestOperations(aerospike);
     }
 

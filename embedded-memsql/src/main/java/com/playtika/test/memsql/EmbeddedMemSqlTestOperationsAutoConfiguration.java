@@ -28,6 +28,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
 
 @Configuration
 @ConditionalOnBean({MemSqlProperties.class})
@@ -52,14 +55,18 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller memsqlPackageInstaller(InstallPackageProperties memsqlPackageProperties,
-                                            GenericContainer memsql) {
+    public PackageInstaller memsqlPackageInstaller(
+            InstallPackageProperties memsqlPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer memsql
+    ) {
         return new AptGetPackageInstaller(memsqlPackageProperties, memsql);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "memsqlNetworkTestOperations")
-    public NetworkTestOperations memsqlNetworkTestOperations(GenericContainer memsql) {
+    public NetworkTestOperations memsqlNetworkTestOperations(
+            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer memsql
+    ) {
         return new DefaultNetworkTestOperations(memsql);
     }
 }
