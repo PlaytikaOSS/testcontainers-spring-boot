@@ -28,6 +28,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.ApkPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
 @Configuration
 @ConditionalOnBean({RedisProperties.class})
@@ -52,14 +55,18 @@ public class EmbeddedRedisTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller redisPackageInstaller(InstallPackageProperties redisPackageProperties,
-                                           GenericContainer redis) {
+    public PackageInstaller redisPackageInstaller(
+            InstallPackageProperties redisPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer redis
+    ) {
         return new ApkPackageInstaller(redisPackageProperties, redis);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "redisNetworkTestOperations")
-    public NetworkTestOperations redisNetworkTestOperations(GenericContainer redis) {
+    public NetworkTestOperations redisNetworkTestOperations(
+            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer redis
+    ) {
         return new DefaultNetworkTestOperations(redis);
     }
 }

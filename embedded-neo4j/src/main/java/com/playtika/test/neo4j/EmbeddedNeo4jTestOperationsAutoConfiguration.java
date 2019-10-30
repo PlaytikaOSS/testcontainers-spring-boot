@@ -28,6 +28,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.ApkPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Configuration
 @ConditionalOnBean({Neo4jProperties.class})
@@ -52,14 +55,18 @@ public class EmbeddedNeo4jTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller neo4jPackageInstaller(InstallPackageProperties neo4jPackageProperties,
-                                           GenericContainer neo4j) {
+    public PackageInstaller neo4jPackageInstaller(
+            InstallPackageProperties neo4jPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer neo4j
+    ) {
         return new ApkPackageInstaller(neo4jPackageProperties, neo4j);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "neo4jNetworkTestOperations")
-    public NetworkTestOperations neo4jNetworkTestOperations(GenericContainer neo4j) {
+    public NetworkTestOperations neo4jNetworkTestOperations(
+            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer neo4j
+    ) {
         return new DefaultNetworkTestOperations(neo4j);
     }
 }

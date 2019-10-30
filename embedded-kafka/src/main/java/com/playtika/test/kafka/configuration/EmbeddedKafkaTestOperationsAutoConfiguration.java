@@ -29,6 +29,7 @@ import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Collections;
+
+import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 
 @Configuration
 @ConditionalOnBean(KafkaConfigurationProperties.class)
@@ -54,13 +57,13 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller kafkaPackageInstaller(InstallPackageProperties kafkaPackageProperties,
-                                                  GenericContainer kafka) {
+                                                  @Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
         return new AptGetPackageInstaller(kafkaPackageProperties, kafka);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "kafkaNetworkTestOperations")
-    public NetworkTestOperations kafkaNetworkTestOperations(GenericContainer kafka) {
+    public NetworkTestOperations kafkaNetworkTestOperations(@Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
         return new DefaultNetworkTestOperations(kafka);
     }
 }
