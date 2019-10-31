@@ -13,7 +13,6 @@ import java.util.Collections;
 @ConfigurationProperties("embedded.google.pubsub")
 public class PubsubProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB = "embeddedGooglePubsub";
-    public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR = "embeddedGooglePubsubResourcesGenerator";
     private String dockerImage = "google/cloud-sdk:257.0.0";
     private String host = "0.0.0.0";
     private int port = 8089;

@@ -4,6 +4,7 @@ import com.google.pubsub.v1.ProjectSubscriptionName;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -15,12 +16,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
 
 import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -93,5 +98,20 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
                 .isNotNull()
                 .isNotEmpty()
                 .contains(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB);
+    }
+
+    @Test
+    public void shouldCreateManagedChannelWithCorrectIpAndPort() {
+        GenericContainer pubsub = Mockito.mock(GenericContainer.class);
+        when(pubsub.getContainerIpAddress()).thenReturn("0.0.0.0");
+
+        PubsubProperties properties = mock(PubsubProperties.class);
+        when(properties.getPort()).thenReturn(8089);
+
+        EmbeddedPubsubBootstrapConfiguration conf = new EmbeddedPubsubBootstrapConfiguration();
+        conf.managedChannel(pubsub, properties);
+
+        verify(pubsub).getContainerIpAddress();
+        verify(pubsub).getMappedPort(8089);
     }
 }

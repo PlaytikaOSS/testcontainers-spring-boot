@@ -23,6 +23,8 @@
  */
 package com.playtika.test.pubsub;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,6 +50,9 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)
 @EnableConfigurationProperties({PubsubProperties.class})
 public class EmbeddedPubsubBootstrapConfiguration {
+
+    public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR = "embeddedGooglePubsubResourcesGenerator";
+    public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL = "embeddedGooglePubsubManagedChannel";
 
     @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
     public GenericContainer pubsub(ConfigurableEnvironment environment,
@@ -90,9 +95,17 @@ public class EmbeddedPubsubBootstrapConfiguration {
         environment.getPropertySources().addFirst(propertySource);
     }
 
-    @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR)
-    public PubSubResourcesGenerator pubSubResourcesGenerator(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub,
+    @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
+    public ManagedChannel managedChannel(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub, PubsubProperties properties) {
+        return ManagedChannelBuilder.forAddress(pubsub.getContainerIpAddress(),
+                                                pubsub.getMappedPort(properties.getPort()))
+                .usePlaintext()
+                .build();
+    }
+
+    @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR)
+    public PubSubResourcesGenerator pubSubResourcesGenerator(@Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL) ManagedChannel managedChannel,
                                                              PubsubProperties properties) throws IOException {
-        return new PubSubResourcesGenerator(pubsub, properties);
+        return new PubSubResourcesGenerator(managedChannel, properties.getProjectId(), properties.getTopicsAndSubscriptions());
     }
 }

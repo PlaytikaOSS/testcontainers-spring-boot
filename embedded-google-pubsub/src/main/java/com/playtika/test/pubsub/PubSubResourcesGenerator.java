@@ -17,13 +17,11 @@ import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.Topic;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.testcontainers.containers.GenericContainer;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Collection;
 
 @Slf4j
 public class PubSubResourcesGenerator {
@@ -32,15 +30,12 @@ public class PubSubResourcesGenerator {
     private final CredentialsProvider credentialsProvider;
     private final TopicAdminClient topicAdminClient;
     private final SubscriptionAdminClient subscriptionAdminClient;
-    private final PubsubProperties properties;
-
     private final String projectId;
+    private final Collection<TopicAndSubscription> topicAndSubscriptions;
 
-    public PubSubResourcesGenerator(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub,
-                                    PubsubProperties properties) throws IOException {
-        this.properties = properties;
-        this.projectId = properties.getProjectId();
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(properties.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext().build();
+    public PubSubResourcesGenerator(ManagedChannel channel, String projectId, Collection<TopicAndSubscription> topicAndSubscriptions) throws IOException {
+        this.projectId = projectId;
+        this.topicAndSubscriptions = topicAndSubscriptions;
         channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
         credentialsProvider = NoCredentialsProvider.create();
         topicAdminClient = topicAdminClient();
@@ -50,7 +45,7 @@ public class PubSubResourcesGenerator {
     @PostConstruct
     protected void init() {
         log.info("Creating topics and subscriptions.");
-        properties.getTopicsAndSubscriptions().forEach(this::createTopicAndSubscription);
+        topicAndSubscriptions.forEach(this::createTopicAndSubscription);
         log.info("Creating topics and subscriptions created.");
     }
 
