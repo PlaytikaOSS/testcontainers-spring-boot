@@ -40,7 +40,7 @@ public class PubSubResourcesGenerator {
                                     PubsubProperties properties) throws IOException {
         this.properties = properties;
         this.projectId = properties.getProjectId();
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(properties.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(pubsub.getContainerIpAddress(), pubsub.getMappedPort(properties.getPort())).usePlaintext().build();
         channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
         credentialsProvider = NoCredentialsProvider.create();
         topicAdminClient = topicAdminClient();
