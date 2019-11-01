@@ -102,7 +102,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
 
     @Test
     public void shouldCreateManagedChannelWithCorrectIpAndPort() {
-        GenericContainer pubsub = Mockito.mock(GenericContainer.class);
+        GenericContainer pubsub = mock(GenericContainer.class);
         when(pubsub.getContainerIpAddress()).thenReturn("0.0.0.0");
 
         PubsubProperties properties = mock(PubsubProperties.class);
