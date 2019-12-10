@@ -41,7 +41,7 @@ public class SampleProductionRouteContext {
     SampleRouteConfiguration configuration;
 
     @Bean
-    public RouteBuilder productionRouteBuilder() throws Exception {
+    public RouteBuilder productionRouteBuilder() {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
