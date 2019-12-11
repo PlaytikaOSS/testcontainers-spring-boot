@@ -39,20 +39,25 @@ public abstract class PackageInstaller {
     private final GenericContainer container;
 
     protected abstract void install(String packageToInstall);
+
     @PostConstruct
     protected void installPackages() {
+        String dockerImageName = container.getDockerImageName();
+        String containerName = container.getContainerInfo().getName();
         if (!properties.isEnabled()) {
-            log.trace("Packages installation skipped for container: {}", container);
+            log.trace("Packages installation skipped for container: {} docker image: {}", containerName, dockerImageName);
             return;
         }
         if (properties.getPackages().isEmpty()) {
-            log.trace("No packages configured to be installed into container: {}", container);
+            log.trace("No packages configured to be installed into container: {} docker image: {}", containerName, dockerImageName);
             return;
         }
 
+        log.info("Updating package lists in container: {} docker image: {}", containerName, dockerImageName);
         updatePackageList();
+        log.info("Installing packages: {} into container: {} docker image: {}", properties.getPackages(), containerName, dockerImageName);
         properties.getPackages().forEach(this::installPackageIfNeeded);
-        log.debug("Installed packages: {} into container: {}", properties.getPackages(), container);
+        log.info("Installed packages: {} into container: {} docker image: {}", properties.getPackages(), containerName, dockerImageName);
     }
 
     protected void updatePackageList() {
