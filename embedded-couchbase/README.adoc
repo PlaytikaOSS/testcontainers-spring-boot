@@ -1,0 +1,41 @@
+=== embedded-couchbase
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-couchbase</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.couchbase.enabled` `(true|false, default is 'true')`
+* `embedded.couchbase.services` `(comma separated list, default is 'kv,index,n1ql,fts')`
+* `embedded.couchbase.clusterRamMb` `(default is set to '256')`
+* `embedded.couchbase.bucketRamMb` `(default is set to '100')`
+* `embedded.couchbase.dockerImage` `(default is set to 'couchbase:community-4.5.1')`
+** You can pick wanted version on https://hub.docker.com/r/library/couchbase/tags/[dockerhub]
+* `embedded.couchbase.bucketType` `(default is set to 'couchbase')`
+** Used for test https://developer.couchbase.com/documentation/server/3.x/admin/REST/rest-bucket-create.html[bucket creation]
+* `embedded.couchbase.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+* `embedded.couchbase.bootstrapHttpDirectPort`
+** NOTE: this property is also produced as System property for https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java[couchbase java client]
+* `embedded.couchbase.bootstrapCarrierDirectPort`
+** NOTE: this property is also produced as System property for https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java[couchbase java client]
+* `embedded.couchbase.host`
+* `embedded.couchbase.bucket`
+* `embedded.couchbase.user`
+* `embedded.couchbase.password`
+
+==== Notes
+
+Versions of Couchbase 2.x/3.x are not functional via docker, consider use of https://github.com/couchbase/CouchbaseMock[CouchbaseMock].
+
+//TODO: example missing

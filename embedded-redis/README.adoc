@@ -1,0 +1,31 @@
+=== embedded-redis
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-redis</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.redis.enabled` `(true|false, default is 'true')`
+* `embedded.redis.dockerImage` `(default is set to 'redis:4.0.12')`
+** You can pick wanted version on https://hub.docker.com/r/library/redis/tags/[dockerhub]
+* `embedded.redis.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.redis.clustered` `(default is 'false')`
+** If `true` Redis is started in cluster mode
+
+==== Produces
+
+* `embedded.redis.host`
+* `embedded.redis.port`
+* `embedded.redis.user`
+* `embedded.redis.password`
+
+//TODO: example missing

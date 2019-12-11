@@ -1,0 +1,50 @@
+=== embedded-influxdb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-influxdb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.influxdb.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.influxdb.dockerImage` `(String, default is set to 'influxdb:1.5-alpine')`
+** You can pick wanted version on dockerhub
+* `embedded.influxdb.admin-user` `(String, default is 'admin')`
+* `embedded.influxdb.admin-password` `(String, default is 'admin')`
+* `embedded.influxdb.user` `(String, default is 'user')`
+* `embedded.influxdb.password` `(String, default is 'password')`
+* `embedded.influxdb.enable-http-auth` `(boolean true|false, default is 'true')`
+* `embedded.influxdb.host` `(String, default is 'localhost')`
+* `embedded.influxdb.port` `(int, default is '8086')`
+* `embedded.influxdb.database` `(String, default is 'db')`
+
+==== Produces
+
+* `embedded.influxdb.database`
+* `embedded.influxdb.host`
+* `embedded.influxdb.password`
+* `embedded.influxdb.port` (mapped HTTP port)
+* `embedded.influxdb.user`
+
+==== Example
+
+There is currently no starter library for using InfluxDB server version 1.x because it uses basic HTTP protocol to communicate.
+You can anyway create your own properties using those values for example in your test `application.yaml`:
+
+./src/test/resources/application.yaml
+[source,yaml]
+----
+influxdb:
+  url: http://${embedded.influxdb.host}:${embedded.influxdb.port}
+  user: ${embedded.influxdb.user}
+  password: ${embedded.influxdb.password}
+  database: ${embedded.influxdb.database}
+----

@@ -1,0 +1,28 @@
+=== embedded-dynamodb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-dynamodb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.dynamodb.enabled` `(true|false, default is 'true')`
+* `embedded.dynamodb.dockerImage` `(default is set to 'amazon/dynamodb-local:latest')`
+
+==== Produces
+
+* `embedded.dynamodb.host`
+* `embedded.dynamodb.port`
+* `embedded.dynamodb.accessKey`
+* `embedded.dynamodb.secretKey`
+
+
+//TODO: example missing

@@ -1,0 +1,33 @@
+=== embedded-mariadb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mariadb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.mariadb.enabled` `(true|false, default is 'true')`
+* `embedded.mariadb.encoding` `(default is 'utf8mb4')`
+* `embedded.mariadb.collation` `(default is 'utf8mb4_unicode_ci')`
+* `embedded.mariadb.dockerImage` `(default is set to 'mariadb:10.3.2')`
+** You can pick wanted version on https://hub.docker.com/r/library/mariadb/tags/[dockerhub]
+* `embedded.mariadb.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+
+* `embedded.mariadb.port`
+* `embedded.mariadb.host`
+* `embedded.mariadb.schema`
+* `embedded.mariadb.user`
+* `embedded.mariadb.password`
+
+
+//TODO: example missing

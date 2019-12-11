@@ -1,0 +1,34 @@
+=== embedded-aerospike
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-aerospike</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.aerospike.enabled` `(true|false, default is 'true')`
+* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server:4.3.0.8')`
+** You can pick wanted version on https://hub.docker.com/r/library/aerospike/tags/[dockerhub]
+* `embedded.aerospike.waitTimeoutInSeconds` `(default is 60 seconds)`
+*  https://mvnrepository.com/artifact/com.aerospike/aerospike-client[aerospike client library]
+
+==== Produces
+
+* `embedded.aerospike.host`
+* `embedded.aerospike.port`
+* `embedded.aerospike.namespace`
+* Bean `NetworkTestOperations aerospikeNetworkTestOperations`
+* Bean `AerospikeTestOperations aerospikeTestOperations`
+
+//TODO: example missing
+
+//TODO: add example of NetworkTestOperations
+//TODO: add example of AerospikeTestOperations

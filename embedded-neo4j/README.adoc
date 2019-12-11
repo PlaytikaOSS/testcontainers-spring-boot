@@ -1,0 +1,30 @@
+=== embedded-neo4j
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-neo4j</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.neo4j.enabled` `(true|false, default is 'true')`
+* `embedded.neo4j.dockerImage` `(default is set to 'neo4j:3.2.7')`
+** You can pick wanted version on https://hub.docker.com/r/library/neo4j/tags/[dockerhub]
+* `embedded.neo4j.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+
+* `embedded.neo4j.user`
+* `embedded.neo4j.password`
+* `embedded.neo4j.httpsPort`
+* `embedded.neo4j.httpPort`
+* `embedded.neo4j.boltPort`
+
+//TODO: example missing

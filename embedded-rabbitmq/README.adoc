@@ -1,0 +1,30 @@
+=== embedded-rabbitmq
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-rabbitmq</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.rabbitmq.enabled` `(true|false, default is 'true')`
+* `embedded.rabbitmq.user` `(default : rabbitmq)`
+* `embedded.rabbitmq.password` `(default : rabbitmq)`
+* `embedded.rabbitmq.vhost` `(virtual host, default: '/')`
+* `embedded.rabbitmq.dockerImage` `(default: rabbitmq/3-management)`
+** You can pick wanted version on https://hub.docker.com/r/library/rabbitmq/tags/[dockerhub]
+* `embedded.rabbitmq.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+
+* `embedded.rabbitmq.host`
+* `embedded.rabbitmq.port`
+
+//TODO: example missing

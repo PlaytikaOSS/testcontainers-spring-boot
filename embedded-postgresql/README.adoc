@@ -1,0 +1,30 @@
+=== embedded-postgresql
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-postgresql</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.postgresql.enabled` `(true|false, default is 'true')`
+* `embedded.postgresql.dockerImage` `(default is set to 'postgres:9.6.8')`
+** You can pick wanted version on https://hub.docker.com/r/library/postgres/tags/[dockerhub]
+* `embedded.postgresql.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+
+* `embedded.postgresql.port`
+* `embedded.postgresql.host`
+* `embedded.postgresql.schema`
+* `embedded.postgresql.user`
+* `embedded.postgresql.password`
+
+//TODO: example missing
