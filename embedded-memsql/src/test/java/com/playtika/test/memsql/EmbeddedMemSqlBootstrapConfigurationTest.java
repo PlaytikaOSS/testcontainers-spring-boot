@@ -47,8 +47,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EmbeddedMemSqlBootstrapConfigurationTest.TestConfiguration.class,
-        properties = {"spring.profiles.active=enabled"}
-)
+        properties = {
+                "spring.profiles.active=enabled",
+                "embedded.memsql.install.enabled=true"
+        })
 public class EmbeddedMemSqlBootstrapConfigurationTest {
 
     @Autowired
@@ -76,9 +78,9 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
         jdbcTemplate.execute("create table bar (id int primary key);");
         jdbcTemplate.execute("insert into bar values (1), (2), (3);");
 
-        memsqlNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+        memsqlNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
-                        .isGreaterThan(1500L)
+                        .isGreaterThan(1000L)
         );
 
         assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))

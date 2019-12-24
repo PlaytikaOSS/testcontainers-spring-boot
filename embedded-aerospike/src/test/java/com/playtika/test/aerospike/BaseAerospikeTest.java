@@ -37,7 +37,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = BaseAerospikeTest.TestConfiguration.class)
+@SpringBootTest(
+        classes = BaseAerospikeTest.TestConfiguration.class,
+        properties = "embedded.aerospike.install.enabled=true"
+)
 public abstract class BaseAerospikeTest {
 
     protected static final String SET = "values";

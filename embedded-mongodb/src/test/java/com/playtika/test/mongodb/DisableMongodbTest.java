@@ -24,7 +24,6 @@
 package com.playtika.test.mongodb;
 
 import com.playtika.test.mongodb.DisableMongodbTest.TestConfiguration;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +37,18 @@ import org.testcontainers.containers.GenericContainer;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = TestConfiguration.class,
-        properties = {"embedded.mongodb.enabled=false"})
+        properties = "embedded.mongodb.enabled=false"
+)
 public class DisableMongodbTest {
 
-    @Autowired ConfigurableListableBeanFactory beanFactory;
+    @Autowired
+    private ConfigurableListableBeanFactory beanFactory;
 
     @Test
-    public void contextLoad() throws Exception {
+    public void contextLoads() {
         String[] containers = beanFactory.getBeanNamesForType(GenericContainer.class);
         String[] postProcessors = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class);
 
@@ -58,5 +58,6 @@ public class DisableMongodbTest {
 
     @EnableAutoConfiguration
     @Configuration
-    static class TestConfiguration {}
+    static class TestConfiguration {
+    }
 }

@@ -24,7 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-        classes = EmbeddedMinioBootstrapConfigurationTest.MinioTestConfiguration.class
+        classes = EmbeddedMinioBootstrapConfigurationTest.MinioTestConfiguration.class,
+        properties = "embedded.minio.install.enabled=true"
 )
 public class EmbeddedMinioBootstrapConfigurationTest {
 
@@ -54,9 +55,9 @@ public class EmbeddedMinioBootstrapConfigurationTest {
 
     @Test
     public void shouldEmulateLatency() throws Exception {
-        minioNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+        minioNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))
-                        .isCloseTo(1500L, Offset.offset(300L))
+                        .isCloseTo(1000L, Offset.offset(300L))
         );
 
         assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))

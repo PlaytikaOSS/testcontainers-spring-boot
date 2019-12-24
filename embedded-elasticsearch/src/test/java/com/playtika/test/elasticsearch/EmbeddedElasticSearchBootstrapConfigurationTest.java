@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("enabled")
-@SpringBootTest
+@SpringBootTest(properties = "embedded.elasticsearch.install.enabled=true")
 public abstract class EmbeddedElasticSearchBootstrapConfigurationTest {
 
     @Autowired

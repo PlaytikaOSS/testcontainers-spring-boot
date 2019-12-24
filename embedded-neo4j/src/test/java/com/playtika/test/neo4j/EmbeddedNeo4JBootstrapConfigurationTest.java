@@ -48,7 +48,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedNeo4JBootstrapConfigurationTest.TestConfiguration.class)
+@SpringBootTest(
+        classes = EmbeddedNeo4JBootstrapConfigurationTest.TestConfiguration.class,
+        properties = "embedded.neo4j.install.enabled=true"
+)
 @ActiveProfiles("enabled")
 public class EmbeddedNeo4JBootstrapConfigurationTest {
 
@@ -103,9 +106,9 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Test
     public void shouldEmulateLatency() throws Exception {
-        neo4jNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+        neo4jNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> personRepository.findByName("any")))
-                        .isGreaterThan(1500L)
+                        .isGreaterThan(1000L)
         );
 
         assertThat(durationOf(() -> personRepository.findByName("any")))
