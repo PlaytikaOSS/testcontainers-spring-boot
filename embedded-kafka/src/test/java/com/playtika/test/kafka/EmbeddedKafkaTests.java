@@ -70,7 +70,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = EmbeddedKafkaTests.TestConfiguration.class,
-        properties = "embedded.kafka.topicsToCreate=autoCreatedTopic"
+        properties = {
+                "embedded.kafka.topicsToCreate=autoCreatedTopic",
+                "embedded.kafka.install.enabled=true"
+        }
 )
 public class EmbeddedKafkaTests {
 
@@ -110,9 +113,9 @@ public class EmbeddedKafkaTests {
 
     @Test
     public void shouldEmulateLatencyOnSend() throws Exception {
-        kafkaNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+        kafkaNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> sendMessage(TOPIC, "abc0")))
-                        .isGreaterThan(1500L)
+                        .isGreaterThan(1000L)
         );
 
         assertThat(durationOf(() -> sendMessage(TOPIC, "abc1")))

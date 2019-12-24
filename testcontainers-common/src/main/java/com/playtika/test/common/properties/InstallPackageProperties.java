@@ -8,6 +8,6 @@ import java.util.Set;
 @Data
 public class InstallPackageProperties {
 
-    boolean enabled = true;
+    boolean enabled = false;
     Set<String> packages = new HashSet<>();
 }

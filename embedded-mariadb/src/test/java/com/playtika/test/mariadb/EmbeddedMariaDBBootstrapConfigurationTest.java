@@ -42,7 +42,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
-
 import java.util.concurrent.Callable;
 
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
@@ -53,9 +52,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-        classes = EmbeddedMariaDBBootstrapConfigurationTest.TestConfiguration.class
-        , properties = "spring.profiles.active=enabled"
-)
+        classes = EmbeddedMariaDBBootstrapConfigurationTest.TestConfiguration.class,
+        properties = {
+                "spring.profiles.active=enabled",
+                "embedded.mariadb.install.enabled=true"
+        })
 public class EmbeddedMariaDBBootstrapConfigurationTest {
 
     @Autowired
@@ -88,9 +89,9 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
         jdbcTemplate.execute("CREATE TABLE operator(id INT, name VARCHAR(64));");
         jdbcTemplate.execute("insert into operator (id, name) values (1, 'test');");
 
-        mariadbNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+        mariadbNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
-                        .isCloseTo(1500L, Offset.offset(100L))
+                        .isCloseTo(1000L, Offset.offset(100L))
         );
 
         assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))

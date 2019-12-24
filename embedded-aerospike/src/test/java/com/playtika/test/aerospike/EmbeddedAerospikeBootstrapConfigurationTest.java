@@ -63,11 +63,11 @@ public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTe
 
     @Test
     public void shouldAddLatency() throws Exception {
-        aerospikeTestOperations.addNetworkLatencyForResponses(ofMillis(1500));
+        aerospikeTestOperations.addNetworkLatencyForResponses(ofMillis(1000));
 
         long total = getExecutionTimeOfOperation();
 
-        assertThat(total).isCloseTo(1500L, Offset.offset(20L));
+        assertThat(total).isCloseTo(1000L, Offset.offset(20L));
 
         aerospikeTestOperations.removeNetworkLatencyForResponses();
 

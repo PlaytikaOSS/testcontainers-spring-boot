@@ -37,8 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = {CouchbaseConfiguration.class, LegacyClientConfiguration.class},
-        properties = {"spring.profiles.active=enabled"}
-)
+        properties = {
+                "spring.profiles.active=enabled",
+                "embedded.couchbase.install.enabled=true"
+        })
 public abstract class EmbeddedCouchbaseBootstrapConfigurationTest {
 
     @Autowired

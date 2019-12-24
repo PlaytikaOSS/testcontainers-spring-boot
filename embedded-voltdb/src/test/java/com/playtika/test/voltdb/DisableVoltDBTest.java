@@ -27,12 +27,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.containers.GenericContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,11 +46,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DisableVoltDBTest {
 
     @Autowired
-    private Environment environment;
+    ConfigurableListableBeanFactory beanFactory;
 
     @Test
-    public void voltDBDoesNotStart() {
-        assertThat(environment.getProperty("embedded.voltdb.host")).isNull();
+    public void contextLoads() {
+        String[] containers = beanFactory.getBeanNamesForType(GenericContainer.class);
+        String[] postProcessors = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class);
+
+        assertThat(containers).isEmpty();
+        assertThat(postProcessors).doesNotContain("datasourceDependencyPostProcessor");
     }
 
     @EnableAutoConfiguration

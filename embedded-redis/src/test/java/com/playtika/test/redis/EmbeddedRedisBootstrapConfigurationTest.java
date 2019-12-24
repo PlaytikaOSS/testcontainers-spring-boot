@@ -49,7 +49,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EmbeddedRedisBootstrapConfigurationTest.TestConfiguration.class)
+@SpringBootTest(
+        classes = EmbeddedRedisBootstrapConfigurationTest.TestConfiguration.class,
+        properties = "embedded.redis.install.enabled=true"
+)
 @ActiveProfiles("enabled")
 public class EmbeddedRedisBootstrapConfigurationTest {
 

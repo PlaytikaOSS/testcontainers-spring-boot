@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         properties = {
-                "embedded.mongodb.enabled=true",
+                "embedded.mongodb.install.enabled=true",
                 "spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}"
         })
 public class EmbeddedMongodbBootstrapConfigurationTest {
@@ -72,9 +72,9 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
 
     @Test
     public void shouldEmulateLatency() throws Exception {
-        mongodbNetworkTestOperations.withNetworkLatency(ofMillis(1500),
+        mongodbNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
-                        .isCloseTo(1500L, Offset.offset(100L))
+                        .isCloseTo(1000L, Offset.offset(100L))
         );
 
         assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
