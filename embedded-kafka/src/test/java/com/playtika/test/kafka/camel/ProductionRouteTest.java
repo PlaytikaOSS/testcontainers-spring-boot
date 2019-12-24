@@ -75,16 +75,17 @@ public class ProductionRouteTest {
     }
 
     @Test
-    public void should_sendAndReceiveMessage() throws Exception {
+    public void should_sendAndReceiveMessage() throws InterruptedException {
         String message = "this is a test!";
         producerTemplate.sendBodyAndHeader(routeConfiguration.helloTopicEndpoint(), message, KafkaConstants.KEY, "12345678");
 
         routeMonitor.getResultEndpoint().expectedBodiesReceived(message);
-        routeMonitor.getResultEndpoint().assertIsSatisfied(3000);
+        routeMonitor.getResultEndpoint().setResultWaitTime(3000);
+        routeMonitor.getResultEndpoint().assertIsSatisfied();
     }
 
     @Test
-    public void shouldSetupDependsOnForCamel() throws Exception {
+    public void shouldSetupDependsOnForCamel() {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(CamelContext.class);
         assertThat(beanNamesForType)
                 .as("CamelContext should be present")
