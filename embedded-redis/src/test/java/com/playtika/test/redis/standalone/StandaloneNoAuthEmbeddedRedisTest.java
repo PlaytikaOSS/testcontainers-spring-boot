@@ -21,22 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.redis;
+package com.playtika.test.redis.standalone;
 
-import com.playtika.test.common.properties.CommonContainerProperties;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.redis")
-public class RedisProperties extends CommonContainerProperties {
-    public static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
-    public String dockerImage = "redis:4.0.12-alpine";
-    public String user = "root";
-    public String password = "passw";
-    public String host = "localhost";
-    public int port = 6379;
-    public boolean requirepass = true;
+import java.time.Clock;
+
+@ActiveProfiles("noauth")
+public class StandaloneNoAuthEmbeddedRedisTest extends BaseStandaloneEmbeddedRedisTest {
+
+    @MockBean
+    Clock clock;
 }

@@ -77,9 +77,11 @@ public class EmbeddedRedisClusterBootstrapConfiguration {
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCopyFileToContainer(MountableFile.forClasspathResource("redis-cluster.conf"), "/data/redis-cluster.conf")
                         .withCopyFileToContainer(MountableFile.forClasspathResource("nodes.conf"), "/data/nodes.conf")
-                        .withCommand("redis-server", "/data/redis-cluster.conf", "--requirepass", properties.getPassword())
                         .waitingFor(redisClusterWaitStrategy)
                         .withStartupTimeout(properties.getTimeoutDuration());
+        if (properties.isRequirepass()) {
+            redis = redis.withCommand("redis-server", "/data/redis-cluster.conf", "--requirepass", properties.getPassword());
+        }
         redis.start();
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.port);
         log.info("Started Redis cluster. Connection details: {}", redisEnv);

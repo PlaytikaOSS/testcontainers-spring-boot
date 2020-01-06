@@ -70,10 +70,12 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withExposedPorts(properties.port)
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCommand("redis-server", "--requirepass", properties.getPassword())
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(redisStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
+        if (properties.isRequirepass()) {
+            redis = redis.withCommand("redis-server", "--requirepass", properties.getPassword());
+        }
         redis.start();
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, redis.getMappedPort(properties.port));
         log.info("Started Redis server. Connection details: {}", redisEnv);
