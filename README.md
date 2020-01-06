@@ -250,6 +250,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.redis.waitTimeoutInSeconds `(default is 60 seconds)`  
 * embedded.redis.clustered `(default is 'false')`
   * If 'true' Redis is started in cluster mode
+* embedded.redis.requirepass `(default is 'true')`
 ##### Produces
 * embedded.redis.host
 * embedded.redis.port
