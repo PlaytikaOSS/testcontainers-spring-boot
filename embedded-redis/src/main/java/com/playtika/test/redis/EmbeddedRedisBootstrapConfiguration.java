@@ -1,97 +1,117 @@
 /*
-* The MIT License (MIT)
-*
-* Copyright (c) 2018 Playtika
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 Playtika
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package com.playtika.test.redis;
 
+import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.Capability;
+import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
 import com.playtika.test.redis.wait.RedisStatusCheck;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.utility.MountableFile;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
+import static com.playtika.test.redis.FileUtils.resolveTemplate;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
 @Slf4j
 @Configuration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@Conditional(EmbeddedRedisBootstrapConfiguration.EmbeddedRedisCondition.class)
+@ConditionalOnProperty(name = "embedded.redis.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(RedisProperties.class)
 public class EmbeddedRedisBootstrapConfiguration {
 
-    @Bean
+    public final static String REDIS_WAIT_STRATEGY_BEAN_NAME = "redisStartupCheckStrategy";
+
+    @Bean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
     @ConditionalOnMissingBean
-    public RedisStatusCheck redisStartupCheckStrategy() {
-        return new RedisStatusCheck();
+    @ConditionalOnProperty(name = "embedded.redis.clustered", havingValue = "false", matchIfMissing = true)
+    public WaitStrategy redisStartupCheckStrategy(RedisProperties properties) {
+        return new RedisStatusCheck(properties);
+    }
+
+    @Bean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "embedded.redis.clustered", havingValue = "true")
+    public WaitStrategy redisClusterWaitStrategy(RedisProperties properties) {
+        return new DefaultRedisClusterWaitStrategy(properties);
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
     public GenericContainer redis(ConfigurableEnvironment environment,
                                   RedisProperties properties,
-                                  RedisStatusCheck redisStatusCheck) {
+                                  @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
 
-        log.info("Starting Redis server. Docker image: {}", properties.dockerImage);
+        log.info("Starting Redis cluster. Docker image: {}", properties.dockerImage);
 
+        prepareRedisConfFiles(properties);
+
+        // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
+        // container must be the same
+        Consumer<CreateContainerCmd> containerCmdModifier = cmd -> cmd.withCapAdd(Capability.NET_ADMIN);
         GenericContainer redis =
-                new GenericContainer<>(properties.dockerImage)
-                        .withLogConsumer(containerLogsConsumer(log))
+                new FixedHostPortGenericContainer(properties.dockerImage)
+                        .withFixedExposedPort(properties.port, properties.port)
                         .withExposedPorts(properties.port)
+                        .withLogConsumer(containerLogsConsumer(log))
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCommand("redis-server", "--requirepass", properties.getPassword())
-                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .waitingFor(redisStatusCheck)
+                        .withCreateContainerCmdModifier(containerCmdModifier)
+                        .withCopyFileToContainer(MountableFile.forClasspathResource("redis.conf"), "/data/redis.conf")
+                        .withCopyFileToContainer(MountableFile.forClasspathResource("nodes.conf"), "/data/nodes.conf")
+                        .withCommand("redis-server", "/data/redis.conf")
+                        .waitingFor(redisStartupCheckStrategy)
                         .withStartupTimeout(properties.getTimeoutDuration());
         redis.start();
-        Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, redis.getMappedPort(properties.port));
-        log.info("Started Redis server. Connection details: {}", redisEnv);
+        Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.port);
+        log.info("Started Redis cluster. Connection details: {}", redisEnv);
         return redis;
     }
 
-    static class EmbeddedRedisCondition extends AllNestedConditions {
-
-        public EmbeddedRedisCondition() {
-            super(ConfigurationPhase.REGISTER_BEAN);
-        }
-
-        @ConditionalOnProperty(name = "embedded.redis.enabled", matchIfMissing = true)
-        static class EmbeddedRedisEnabled {
-        }
-
-        @ConditionalOnProperty(name = "embedded.redis.clustered", havingValue = "false", matchIfMissing = true)
-        static class EmbeddedRedisNotClustered {
-        }
+    private void prepareRedisConfFiles(RedisProperties properties) throws Exception {
+        resolveTemplate("redis.conf", content -> content
+                .replace("{{requirepass}}", properties.isRequirepass() ? "yes" : "no")
+                .replace("{{password}}", properties.isRequirepass() ? "requirepass " + properties.getPassword() : "")
+                .replace("{{clustered}}", properties.isClustered() ? "yes" : "no")
+                .replace("{{port}}", String.valueOf(properties.getPort())));
+        resolveTemplate("nodes.conf", content -> content
+                .replace("{{port}}", String.valueOf(properties.getPort()))
+                .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
     }
 }

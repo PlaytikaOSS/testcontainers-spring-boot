@@ -50,16 +50,14 @@ public class RedisClusterStatusCheck extends AbstractRetryingWaitStrategy {
 
     @Override
     protected boolean isReady() {
-        try (Jedis jedis = new Jedis(properties.host, properties.port)) {
-            jedis.auth(properties.password);
+        try (Jedis jedis = createJedis()) {
             String clusterInfo = jedis.clusterInfo();
             return clusterInfo.contains("cluster_state:ok");
         }
     }
 
     private void logClusterInfo() {
-        try (Jedis jedis = new Jedis(properties.host, properties.port)) {
-            jedis.auth(properties.password);
+        try (Jedis jedis = createJedis()) {
             String clusterInfo = jedis.clusterInfo();
             String info = jedis.info();
             List<String> config = jedis.configGet("*");
@@ -71,5 +69,13 @@ public class RedisClusterStatusCheck extends AbstractRetryingWaitStrategy {
                             "-- config:\n{}" +
                             clusterInfo, clusterNodes, info, String.join("\n", config));
         }
+    }
+
+    private Jedis createJedis() {
+        Jedis jedis = new Jedis(properties.host, properties.port);
+        if (properties.requirepass) {
+            jedis.auth(properties.password);
+        }
+        return jedis;
     }
 }

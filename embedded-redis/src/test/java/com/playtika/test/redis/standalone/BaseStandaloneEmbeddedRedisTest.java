@@ -21,24 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.redis;
+package com.playtika.test.redis.standalone;
 
 import com.playtika.test.common.operations.NetworkTestOperations;
-import lombok.extern.slf4j.Slf4j;
+import com.playtika.test.redis.BaseEmbeddedRedisTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.Callable;
 
@@ -47,41 +41,14 @@ import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
-        classes = EmbeddedRedisBootstrapConfigurationTest.TestConfiguration.class,
+        classes = BaseStandaloneEmbeddedRedisTest.TestConfiguration.class,
         properties = "embedded.redis.install.enabled=true"
 )
-@ActiveProfiles("enabled")
-public class EmbeddedRedisBootstrapConfigurationTest {
-
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
-
-    @Autowired
-    private StringRedisTemplate template;
-
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
-
-    @Autowired
-    ConfigurableEnvironment environment;
+public abstract class BaseStandaloneEmbeddedRedisTest extends BaseEmbeddedRedisTest {
 
     @Autowired
     NetworkTestOperations redisNetworkTestOperations;
-
-    @Test
-    public void springDataRedisShouldWork() throws Exception {
-        ValueOperations<String, String> ops = this.template.opsForValue();
-        String key = "spring.boot.redis.test";
-        if (!this.template.hasKey(key)) {
-            ops.set(key, "foo");
-        }
-        assertThat(ops.get(key)).isEqualTo("foo");
-    }
 
     @Test
     public void shouldEmulateLatency() throws Exception {
@@ -120,17 +87,14 @@ public class EmbeddedRedisBootstrapConfigurationTest {
                 .contains(BEAN_NAME_EMBEDDED_REDIS);
     }
 
-    @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.redis.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.redis.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.redis.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.redis.password")).isNotEmpty();
-    }
-
     private static long durationOf(Callable<?> op) throws Exception {
         long start = System.currentTimeMillis();
         op.call();
         return System.currentTimeMillis() - start;
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }

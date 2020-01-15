@@ -1,6 +1,5 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.redis.EmbeddedRedisBootstrapConfiguration,\
-com.playtika.test.redis.EmbeddedRedisClusterBootstrapConfiguration
+com.playtika.test.redis.EmbeddedRedisBootstrapConfiguration
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.playtika.test.redis.EmbeddedRedisTestOperationsAutoConfiguration,\
