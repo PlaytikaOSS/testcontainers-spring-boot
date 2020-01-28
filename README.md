@@ -38,6 +38,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
       <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
+            <version>PICK LATEST VERSION</version>
             ...
         </dependency>
 ...
@@ -50,11 +51,13 @@ Usage of spring cloud in your production code is optional, but you will need it 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>PICK LATEST VERSION</version>
             ...
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
+            <version>PICK LATEST VERSION</version>          
             ...
             <scope>test</scope>
         </dependency>
