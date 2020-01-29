@@ -5,6 +5,7 @@ spring:
 
 logging:
   level:
+    com.playtika.test: info
     org.springframework.boot: info
     root: error
 
