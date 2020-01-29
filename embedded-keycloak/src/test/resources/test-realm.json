@@ -4,14 +4,14 @@
   "sslRequired": "external",
   "roles": {
     "client": {
-      "meter-data-management-service": [
+      "any-service": [
         {
           "id": "533c059c-f83f-44e4-9e75-022d2b5bc5a2",
           "name": "role_reader",
           "composite": true,
           "composites": {
             "client": {
-              "meter-data-management-service": [
+              "any-service": [
                 "right_read"
               ]
             }
@@ -34,7 +34,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "meter-data-management-service": [
+              "any-service": [
                 "right_write"
               ]
             }
@@ -84,7 +84,7 @@
         }
       ],
       "clientRoles": {
-        "meter-data-management-service": [
+        "any-service": [
           "role_reader",
           "role_writer"
         ]

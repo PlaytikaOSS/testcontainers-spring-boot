@@ -47,7 +47,6 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     private String dockerImage = "jboss/keycloak:8.0.1";
     private String[] command = DEFAULT_COMMAND;
-    private String realm = DEFAULT_REALM;
     private String adminUser = DEFAULT_ADMIN_USER;
     private String adminPassword = DEFAULT_ADMIN_PASSWORD;
     private String importFile;
