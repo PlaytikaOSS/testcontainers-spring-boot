@@ -65,6 +65,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                 .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
                 .withEnv("RABBITMQ_DEFAULT_USER", properties.getUser())
                 .withEnv("RABBITMQ_DEFAULT_PASS", properties.getPassword())
+                .waitingFor(rabbitMQStatusCheck)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.getPort())
                 .withStartupTimeout(properties.getTimeoutDuration());
