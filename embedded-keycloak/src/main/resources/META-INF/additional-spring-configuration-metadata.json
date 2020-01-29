@@ -44,7 +44,7 @@
     {
       "name": "embedded.keycloak.import-file",
       "type": "java.lang.String",
-      "description": "Classpath location of a JSON file to for importing resources into Keycloak."
+      "description": "Classpath location of a JSON file to for importing resources into Keycloak. No prefix is needed."
     }
   ],
   "hints": [

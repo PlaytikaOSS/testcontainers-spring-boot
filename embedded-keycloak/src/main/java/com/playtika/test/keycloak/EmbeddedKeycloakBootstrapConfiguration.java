@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.io.ResourceLoader;
 
 @Slf4j
 @Configuration
@@ -46,10 +47,11 @@ public class EmbeddedKeycloakBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_KEYCLOAK, destroyMethod = "stop")
     public KeycloakContainer keycloakContainer(
         ConfigurableEnvironment environment,
-        KeycloakProperties properties) {
+        KeycloakProperties properties,
+        ResourceLoader resourceLoader) {
         log.info("Starting Keycloak server. Docker image: {}", properties.getDockerImage());
 
-        KeycloakContainer keycloak = new KeycloakContainer(properties);
+        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
         keycloak.start();
 
         registerKeycloakEnvironment(keycloak, environment);
