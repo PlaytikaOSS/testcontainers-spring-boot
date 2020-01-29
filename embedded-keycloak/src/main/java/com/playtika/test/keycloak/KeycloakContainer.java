@@ -65,15 +65,15 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
             .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()));
     }
 
-    String getIp() {
+    public String getIp() {
         return getContainerIpAddress();
     }
 
-    Integer getHttpPort() {
+    public Integer getHttpPort() {
         return getMappedPort(DEFAULT_HTTP_PORT_INTERNAL);
     }
 
-    String getAuthServerUrl() {
+    public String getAuthServerUrl() {
         return format("http://%s:%d%s", getIp(), getHttpPort(), AUTH_BASE_PATH);
     }
 

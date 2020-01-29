@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.keycloak")
 public class KeycloakProperties extends CommonContainerProperties {
 
-    static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
+    public static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
 
     public static final String[] DEFAULT_COMMAND = {
         "-c",

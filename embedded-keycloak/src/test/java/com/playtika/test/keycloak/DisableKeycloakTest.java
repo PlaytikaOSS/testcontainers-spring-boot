@@ -43,7 +43,7 @@ import org.testcontainers.containers.GenericContainer;
 public class DisableKeycloakTest {
 
     @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private ConfigurableListableBeanFactory beanFactory;
 
     @Test
     public void contextLoads() {
