@@ -13,7 +13,7 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>3.0.0</camel.version>
+        <camel.version>3.0.1</camel.version>
         <kafka-clients.version>2.4.0</kafka-clients.version>
     </properties>
 
