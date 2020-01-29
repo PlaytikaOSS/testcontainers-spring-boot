@@ -57,12 +57,12 @@
   "clients": [
     {
       "id": "9b60057a-9bb1-44dd-8851-2794de9369ab",
-      "clientId": "meter-data-management-service",
+      "clientId": "any-service",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "08f64721-7fef-4d8b-a0fc-8f940a621451",
       "redirectUris": [
-        "http://mdm-local:8089"
+        "http://localhost:443"
       ],
       "bearerOnly": false,
       "directAccessGrantsEnabled": true,
@@ -75,12 +75,12 @@
   "users": [
     {
       "id": "835a36c5-d647-49a2-b794-2f128ebed7c0",
-      "username": "mdm-test",
+      "username": "keycloak-test",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "Lsw123Start!"
+          "value": "123Start!"
         }
       ],
       "clientRoles": {
