@@ -16,6 +16,8 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     public static final String KEYCLOAK_PASSWORD = "letmein";
     public static final int HTTP = 8080;
 
+    private static final String AUTH_BASE_PATH = "/auth";
+
     private final KeycloakProperties properties;
 
     public KeycloakContainer(KeycloakProperties properties) {
@@ -39,7 +41,8 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withExposedPorts(HTTP);
 
         setWaitStrategy(Wait
-            .forLogMessage("(.*)(Keycloak)(.*)(started)(.*)", 1)
+            .forHttp(AUTH_BASE_PATH)
+            .forPort(HTTP)
             .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()))
         );
 
@@ -61,6 +64,6 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     }
 
     String getAuthServerUrl() {
-        return format("http://%s:%d/auth", getIp(), getHttpPort());
+        return format("http://%s:%d%s", getIp(), getHttpPort(), AUTH_BASE_PATH);
     }
 }
