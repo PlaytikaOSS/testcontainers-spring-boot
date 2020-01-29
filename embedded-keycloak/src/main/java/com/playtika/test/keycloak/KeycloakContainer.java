@@ -1,6 +1,9 @@
 package com.playtika.test.keycloak;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_HTTP_PORT;
+import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_ADMIN_PASSWORD;
+import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_ADMIN_USER;
 import static java.lang.String.format;
 import static java.time.Duration.ofSeconds;
 
@@ -11,10 +14,6 @@ import org.testcontainers.utility.MountableFile;
 
 @Slf4j
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
-
-    public static final String KEYCLOAK_USER = "admin";
-    public static final String KEYCLOAK_PASSWORD = "letmein";
-    public static final int HTTP = 8080;
 
     private static final String AUTH_BASE_PATH = "/auth";
 
@@ -27,8 +26,9 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     @Override
     protected void configure() {
-        withEnv("KEYCLOAK_USER", KEYCLOAK_USER);
-        withEnv("KEYCLOAK_PASSWORD", KEYCLOAK_PASSWORD);
+        withEnv("KEYCLOAK_HTTP_PORT", String.valueOf(properties.getHttpPort()));
+        withEnv("KEYCLOAK_USER", properties.getAdminUser());
+        withEnv("KEYCLOAK_PASSWORD", properties.getAdminPassword());
 
         withCommand(
             "-c standalone.xml",
@@ -38,11 +38,11 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withStartupTimeout(properties.getTimeoutDuration());
         withLogConsumer(containerLogsConsumer(log));
 
-        withExposedPorts(HTTP);
+        withExposedPorts(properties.getHttpPort());
 
         setWaitStrategy(Wait
             .forHttp(AUTH_BASE_PATH)
-            .forPort(HTTP)
+            .forPort(DEFAULT_HTTP_PORT)
             .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()))
         );
 
