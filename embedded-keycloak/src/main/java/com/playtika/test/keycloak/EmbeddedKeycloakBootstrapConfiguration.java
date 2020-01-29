@@ -63,7 +63,7 @@ public class EmbeddedKeycloakBootstrapConfiguration {
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.keycloak.host", keycloak.getIp());
-        map.put("embedded.keycloak.port.http", keycloak.getHttpPort());
+        map.put("embedded.keycloak.http-port", keycloak.getHttpPort());
         map.put("embedded.keycloak.auth-server-url", keycloak.getAuthServerUrl());
 
         log.info("Started Keycloak server. Connection details: {}", map);

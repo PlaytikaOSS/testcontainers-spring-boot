@@ -72,7 +72,7 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.keycloak.host"))
             .isEqualTo(keycloakContainer.getIp());
 
-        assertThat(environment.getProperty("embedded.keycloak.port.http", Integer.class))
+        assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
             .isEqualTo(keycloakContainer.getHttpPort());
     }
 

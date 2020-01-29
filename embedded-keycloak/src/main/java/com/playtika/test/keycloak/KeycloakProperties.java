@@ -38,8 +38,9 @@ public class KeycloakProperties extends CommonContainerProperties {
     public static final String[] DEFAULT_COMMAND = {
         "-c",
         "standalone.xml",
-        "-Dkeycloak.profile.feature.upload_scripts=enabled"};
-    public static final int DEFAULT_HTTP_PORT = 8080;
+        "-Dkeycloak.profile.feature.upload_scripts=enabled"
+    };
+
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
@@ -49,6 +50,5 @@ public class KeycloakProperties extends CommonContainerProperties {
     private String realm = DEFAULT_REALM;
     private String adminUser = DEFAULT_ADMIN_USER;
     private String adminPassword = DEFAULT_ADMIN_PASSWORD;
-    private int httpPort = DEFAULT_HTTP_PORT;
     private String importFile;
 }

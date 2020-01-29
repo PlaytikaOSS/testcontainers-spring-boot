@@ -1,10 +1,6 @@
 package com.playtika.test.keycloak;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_COMMAND;
-import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_HTTP_PORT;
-import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_ADMIN_PASSWORD;
-import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_ADMIN_USER;
 import static java.lang.String.format;
 import static java.time.Duration.ofSeconds;
 
@@ -16,6 +12,7 @@ import org.testcontainers.utility.MountableFile;
 @Slf4j
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
+    private static final int DEFAULT_HTTP_PORT_INTERNAL = 8080;
     private static final String AUTH_BASE_PATH = "/auth";
 
     private final KeycloakProperties properties;
@@ -27,7 +24,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     @Override
     protected void configure() {
-        withEnv("KEYCLOAK_HTTP_PORT", String.valueOf(properties.getHttpPort()));
+        withEnv("KEYCLOAK_HTTP_PORT", String.valueOf(DEFAULT_HTTP_PORT_INTERNAL));
         withEnv("KEYCLOAK_USER", properties.getAdminUser());
         withEnv("KEYCLOAK_PASSWORD", properties.getAdminPassword());
 
@@ -38,19 +35,21 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withStartupTimeout(properties.getTimeoutDuration());
         withLogConsumer(containerLogsConsumer(log));
 
-        withExposedPorts(properties.getHttpPort());
+        withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
 
         setWaitStrategy(Wait
             .forHttp(AUTH_BASE_PATH)
-            .forPort(DEFAULT_HTTP_PORT)
+            .forPort(DEFAULT_HTTP_PORT_INTERNAL)
             .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()))
         );
 
         String importFile = properties.getImportFile();
         if (importFile != null) {
             String importFileInContainer = "/tmp/" + importFile;
-            withCopyFileToContainer(MountableFile.forClasspathResource(importFile),
-                importFileInContainer);
+            withCopyFileToContainer(
+                MountableFile.forClasspathResource(importFile),
+                importFileInContainer
+            );
             withEnv("KEYCLOAK_IMPORT", importFileInContainer);
         }
     }
@@ -60,7 +59,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     }
 
     Integer getHttpPort() {
-        return getMappedPort(8080);
+        return getMappedPort(DEFAULT_HTTP_PORT_INTERNAL);
     }
 
     String getAuthServerUrl() {
