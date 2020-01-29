@@ -24,6 +24,7 @@
 package com.playtika.test.keycloak;
 
 import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
+import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_REALM;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +39,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -93,5 +95,16 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
             .contains(BEAN_NAME_EMBEDDED_KEYCLOAK);
     }
 
-    // TODO test keycloak connection
+    @Test
+    public void shouldGetMasterRealmInfoFromKeycloak() {
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = environment.getProperty("embedded.keycloak.auth-server-url");
+
+        RealmInfo realmInfo = restTemplate.getForObject(
+            url + "/realms/" + DEFAULT_REALM,
+            RealmInfo.class);
+
+        assertThat(realmInfo.getRealm()).isEqualTo(DEFAULT_REALM);
+    }
 }

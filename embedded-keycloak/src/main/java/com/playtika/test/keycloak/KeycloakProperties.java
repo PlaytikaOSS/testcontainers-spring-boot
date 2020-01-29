@@ -35,6 +35,8 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
 
+    public static final String DEFAULT_REALM = "master";
+
     private String dockerImage = "jboss/keycloak:8.0.1";
     private String importFile;
 }
