@@ -35,12 +35,17 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
 
+    public static final String[] DEFAULT_COMMAND = {
+        "-c",
+        "standalone.xml",
+        "-Dkeycloak.profile.feature.upload_scripts=enabled"};
     public static final int DEFAULT_HTTP_PORT = 8080;
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
 
     private String dockerImage = "jboss/keycloak:8.0.1";
+    private String[] command = DEFAULT_COMMAND;
     private String realm = DEFAULT_REALM;
     private String adminUser = DEFAULT_ADMIN_USER;
     private String adminPassword = DEFAULT_ADMIN_PASSWORD;

@@ -1,6 +1,7 @@
 package com.playtika.test.keycloak;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_COMMAND;
 import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_HTTP_PORT;
 import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_ADMIN_PASSWORD;
 import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_ADMIN_USER;
@@ -31,8 +32,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withEnv("KEYCLOAK_PASSWORD", properties.getAdminPassword());
 
         withCommand(
-            "-c standalone.xml",
-            "-Dkeycloak.profile.feature.upload_scripts=enabled"
+            properties.getCommand()
         );
 
         withStartupTimeout(properties.getTimeoutDuration());
