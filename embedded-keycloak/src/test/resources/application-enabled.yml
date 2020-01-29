@@ -1,0 +1,12 @@
+spring:
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+    org.springframework.boot: info
+    root: error
+
+keycloak:
+  auth-server-url: ${embedded.keycloak.auth-server-url}

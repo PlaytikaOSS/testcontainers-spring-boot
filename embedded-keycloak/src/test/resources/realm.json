@@ -1,0 +1,95 @@
+{
+  "realm": "test-realm",
+  "enabled": true,
+  "sslRequired": "external",
+  "roles": {
+    "client": {
+      "meter-data-management-service": [
+        {
+          "id": "533c059c-f83f-44e4-9e75-022d2b5bc5a2",
+          "name": "role_reader",
+          "composite": true,
+          "composites": {
+            "client": {
+              "meter-data-management-service": [
+                "right_read"
+              ]
+            }
+          },
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
+          "attributes": {}
+        },
+        {
+          "id": "a80458eb-462c-4059-b274-39d33d9526dd",
+          "name": "right_write",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
+          "attributes": {}
+        },
+        {
+          "id": "48a4aed6-e19e-4059-94cb-f7c7aaf1a386",
+          "name": "role_writer",
+          "composite": true,
+          "composites": {
+            "client": {
+              "meter-data-management-service": [
+                "right_write"
+              ]
+            }
+          },
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
+          "attributes": {}
+        },
+        {
+          "id": "8cd4fbca-5ed4-431f-878d-4626923c739a",
+          "name": "right_read",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
+          "attributes": {}
+        }
+      ]
+    }
+  },
+  "clients": [
+    {
+      "id": "9b60057a-9bb1-44dd-8851-2794de9369ab",
+      "clientId": "meter-data-management-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "08f64721-7fef-4d8b-a0fc-8f940a621451",
+      "redirectUris": [
+        "http://mdm-local:8089"
+      ],
+      "bearerOnly": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "id": "835a36c5-d647-49a2-b794-2f128ebed7c0",
+      "username": "mdm-test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Lsw123Start!"
+        }
+      ],
+      "clientRoles": {
+        "meter-data-management-service": [
+          "role_reader",
+          "role_writer"
+        ]
+      }
+    }
+  ],
+  "keycloakVersion": "8.0.1"
+}

@@ -1,0 +1,40 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.keycloak.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.keycloak.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "jboss/keycloak:8.0.1"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.keycloak.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of Keycloak server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disables configuration of Keycloak server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.keycloak.docker-image",
+      "values": [
+        {
+          "value": "jboss/keycloak:8.0.1",
+          "description": "Default Keycloak image in version 8.0.1. Ref https://hub.docker.com/r/jboss/keycloak for further info."
+        }
+      ]
+    }
+  ]
+}

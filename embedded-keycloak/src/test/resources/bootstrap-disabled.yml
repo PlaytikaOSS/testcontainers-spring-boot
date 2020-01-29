@@ -1,0 +1,3 @@
+embedded:
+  keycloak:
+    enabled: false
