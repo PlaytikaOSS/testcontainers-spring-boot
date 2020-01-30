@@ -24,53 +24,38 @@
 package com.playtika.test.keycloak;
 
 import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
-import java.util.LinkedHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.io.ResourceLoader;
 
 @Slf4j
 @Configuration
+@ComponentScan
 @Order(HIGHEST_PRECEDENCE)
-@ConditionalOnProperty(name = "embedded.keycloak.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(KeycloakProperties.class)
 public class EmbeddedKeycloakBootstrapConfiguration {
 
+    /**
+     * Creates and starts a {@link KeycloakContainer} if property {@code embedded.keycloak.enabled}
+     * evaluates to {@code true}. The configuration makes no difference if just vanilla Keycloak is
+     * on the classpath or any Spring adapter. The container will always be needed. Also registers a
+     * shutdown hook to stop the container on context shutdown.
+     *
+     * @param factory The {@link KeycloakContainerFactory} to use, injected by Spring, must not be
+     * null
+     * @return The created {@link KeycloakContainer} instance to be registered as bean
+     */
     @Bean(name = BEAN_NAME_EMBEDDED_KEYCLOAK, destroyMethod = "stop")
-    public KeycloakContainer keycloakContainer(
-        ConfigurableEnvironment environment,
-        KeycloakProperties properties,
-        ResourceLoader resourceLoader) {
-        log.info("Starting Keycloak server. Docker image: {}", properties.getDockerImage());
-
-        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
-        keycloak.start();
-
-        registerKeycloakEnvironment(keycloak, environment);
-
-        return keycloak;
-    }
-
-    private void registerKeycloakEnvironment(
-        KeycloakContainer keycloak,
-        ConfigurableEnvironment environment) {
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.keycloak.host", keycloak.getIp());
-        map.put("embedded.keycloak.http-port", keycloak.getHttpPort());
-        map.put("embedded.keycloak.auth-server-url", keycloak.getAuthServerUrl());
-
-        log.info("Started Keycloak server. Connection details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedKeycloakInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @ConditionalOnProperty(name = "embedded.keycloak.enabled", matchIfMissing = true)
+    public KeycloakContainer keycloakContainer(KeycloakContainerFactory factory) {
+        log.info("Detected keycloak-spring-boot-adapter, ");
+        return requireNonNull(factory).newKeycloakContainer();
     }
 }

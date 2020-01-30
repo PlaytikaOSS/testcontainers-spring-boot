@@ -26,10 +26,10 @@ package com.playtika.test.keycloak;
 import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
 
 import com.playtika.test.common.spring.DependsOnPostProcessor;
-import org.keycloak.adapters.springboot.KeycloakAutoConfiguration;
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
+import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
+import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,14 +38,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AutoConfigureOrder
-@ConditionalOnClass(KeycloakAutoConfiguration.class)
 @ConditionalOnProperty(name = "embedded.keycloak.enabled", matchIfMissing = true)
-@AutoConfigureAfter(KeycloakAutoConfiguration.class)
+@ConditionalOnClass(KeycloakConfiguration.class)
+@AutoConfigureBefore(KeycloakConfiguration.class)
 public class EmbeddedKeycloakDependenciesAutoConfiguration {
 
     @Bean
-    public BeanFactoryPostProcessor keycloakSpringBootConfigResolverDependencyPostProcessor() {
-        return new DependsOnPostProcessor(KeycloakSpringBootConfigResolver.class,
+    @ConditionalOnClass(KeycloakClientRequestFactory.class)
+    public BeanFactoryPostProcessor keycloakClientRequestFactoryDependencyPostProcessor() {
+        return new DependsOnPostProcessor(KeycloakClientRequestFactory.class,
             new String[]{BEAN_NAME_EMBEDDED_KEYCLOAK});
     }
 }

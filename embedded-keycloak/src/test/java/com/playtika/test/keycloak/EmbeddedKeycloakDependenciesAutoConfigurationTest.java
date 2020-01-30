@@ -23,19 +23,19 @@
  */
 package com.playtika.test.keycloak;
 
-import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_REALM;
-import static java.lang.String.format;
+import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -43,10 +43,10 @@ import org.springframework.web.client.RestTemplate;
     classes = KeycloakTestApplication.class
 )
 @ActiveProfiles("enabled")
-public class EmbeddedKeycloakBootstrapConfigurationTest {
+public class EmbeddedKeycloakDependenciesAutoConfigurationTest {
 
     @Autowired
-    private ConfigurableEnvironment environment;
+    private ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
     private KeycloakContainer keycloakContainer;
@@ -57,28 +57,21 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     }
 
     @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
-            .isEqualTo(format("http://%s:%d/auth", keycloakContainer.getContainerIpAddress(),
-                keycloakContainer.getHttpPort()));
+    public void shouldSetupDependsOnForKeycloakSecurityContext() {
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(
+            KeycloakClientRequestFactory.class);
 
-        assertThat(environment.getProperty("embedded.keycloak.host"))
-            .isEqualTo(keycloakContainer.getIp());
+        assertThat(beanNamesForType)
+            .as("KeycloakClientRequestFactory should be present")
+            .hasSize(1);
 
-        assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
-            .isEqualTo(keycloakContainer.getHttpPort());
+        asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 
-    @Test
-    public void shouldGetMasterRealmInfoFromKeycloak() {
-        RestTemplate restTemplate = new RestTemplate();
-
-        String url = environment.getProperty("embedded.keycloak.auth-server-url");
-
-        RealmInfo realmInfo = restTemplate.getForObject(
-            url + "/realms/" + DEFAULT_REALM,
-            RealmInfo.class);
-
-        assertThat(realmInfo.getRealm()).isEqualTo(DEFAULT_REALM);
+    private void hasDependsOn(String beanName) {
+        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
+            .isNotNull()
+            .isNotEmpty()
+            .contains(BEAN_NAME_EMBEDDED_KEYCLOAK);
     }
 }
