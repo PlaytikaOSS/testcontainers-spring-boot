@@ -45,14 +45,11 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootTest(
     classes = KeycloakTestApplication.class
 )
-@ActiveProfiles("realm")
+@ActiveProfiles({"active", "realm"})
 public class EmbeddedKeycloakBootstrapConfigurationWithRealmTest {
 
     @Autowired
     private ConfigurableEnvironment environment;
-
-    @Autowired
-    private KeycloakContainer keycloakContainer;
 
     @Test
     public void shouldGetTestRealmInfoFromKeycloak() {

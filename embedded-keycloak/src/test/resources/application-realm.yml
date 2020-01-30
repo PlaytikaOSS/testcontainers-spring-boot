@@ -1,14 +1,3 @@
-spring:
-  output:
-    ansi:
-      enabled: always
-
-logging:
-  level:
-    com.playtika.test: info
-    org.springframework.boot: info
-    root: error
-
 keycloak:
   auth-server-url: ${embedded.keycloak.auth-server-url}
   realm: 'test-realm'
