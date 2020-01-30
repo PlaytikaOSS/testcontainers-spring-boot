@@ -31,16 +31,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ResourceLoader;
 
 @Slf4j
 @Configuration
-@ComponentScan
 @Order(HIGHEST_PRECEDENCE)
 @EnableConfigurationProperties(KeycloakProperties.class)
+@ConditionalOnProperty(name = "embedded.keycloak.enabled", matchIfMissing = true)
 public class EmbeddedKeycloakBootstrapConfiguration {
+
+    @Bean
+    public KeycloakContainerFactory keycloakContainerFactory(
+        ConfigurableEnvironment environment,
+        KeycloakProperties properties,
+        ResourceLoader resourceLoader) {
+        return new KeycloakContainerFactory(environment, properties, resourceLoader);
+    }
 
     /**
      * Creates and starts a {@link KeycloakContainer} if property {@code embedded.keycloak.enabled}
@@ -53,7 +62,6 @@ public class EmbeddedKeycloakBootstrapConfiguration {
      * @return The created {@link KeycloakContainer} instance to be registered as bean
      */
     @Bean(name = BEAN_NAME_EMBEDDED_KEYCLOAK, destroyMethod = "stop")
-    @ConditionalOnProperty(name = "embedded.keycloak.enabled", matchIfMissing = true)
     public KeycloakContainer keycloakContainer(KeycloakContainerFactory factory) {
         log.info("Detected keycloak-spring-boot-adapter, ");
         return requireNonNull(factory).newKeycloakContainer();

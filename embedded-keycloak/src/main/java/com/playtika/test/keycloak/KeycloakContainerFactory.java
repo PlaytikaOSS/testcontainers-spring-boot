@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 public class KeycloakContainerFactory {
 
     private final ConfigurableEnvironment environment;

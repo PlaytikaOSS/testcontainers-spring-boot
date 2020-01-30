@@ -24,12 +24,12 @@ public class KeycloakContainerTest {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    @Autowired
-    private KeycloakProperties keycloakProperties;
-
     @Test
     public void shouldThrownNonExistentRealmFileException() {
-        try (KeycloakContainer container = new KeycloakContainer(keycloakProperties,
+        KeycloakProperties properties = new KeycloakProperties();
+        properties.setImportFile("non-existent.json");
+
+        try (KeycloakContainer container = new KeycloakContainer(properties,
             resourceLoader)) {
             assertThatExceptionOfType(ImportFileNotFoundException.class)
                 .isThrownBy(container::configure);
