@@ -38,17 +38,15 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withLogConsumer(containerLogsConsumer(log));
         withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
         waitingFor(authBasePath());
+        withImportFile(properties.getImportFile());
+    }
 
-        String importFile = properties.getImportFile();
-
+    private void withImportFile(String importFile) {
         if (importFile == null) {
             return;
         }
 
-        Resource resource = resourceLoader.getResource("classpath:" + importFile);
-        if (!resource.exists()) {
-            throw new ImportFileNotFoundException(importFile);
-        }
+        checkExists(importFile);
 
         String importFileInContainer = "/tmp/" + importFile;
         withCopyFileToContainer(
@@ -56,6 +54,16 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
             importFileInContainer
         );
         withEnv("KEYCLOAK_IMPORT", importFileInContainer);
+    }
+
+    private void checkExists(String importFile) {
+        Resource resource = resourceLoader.getResource("classpath:" + importFile);
+        if (resource.exists()) {
+            return;
+        }
+
+        log.debug("Using import file: {}", resource.getFilename());
+        throw new ImportFileNotFoundException(importFile);
     }
 
     private WaitStrategy authBasePath() {
