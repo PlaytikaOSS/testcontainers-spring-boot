@@ -52,11 +52,6 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     private KeycloakContainer keycloakContainer;
 
     @Test
-    public void keycloakContainerAvailable() {
-        assertThat(keycloakContainer).isNotNull();
-    }
-
-    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
             .isEqualTo(format("http://%s:%d/auth", keycloakContainer.getContainerIpAddress(),

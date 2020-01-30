@@ -55,11 +55,6 @@ public class EmbeddedKeycloakBootstrapConfigurationWithRealmTest {
     private KeycloakContainer keycloakContainer;
 
     @Test
-    public void keycloakContainerAvailable() {
-        assertThat(keycloakContainer).isNotNull();
-    }
-
-    @Test
     public void shouldGetTestRealmInfoFromKeycloak() {
         RestTemplate restTemplate = new RestTemplate();
         String baseUrl = environment.getProperty("embedded.keycloak.auth-server-url");

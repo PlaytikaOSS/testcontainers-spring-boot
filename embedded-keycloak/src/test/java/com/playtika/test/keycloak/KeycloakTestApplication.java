@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Import;
 @KeycloakConfiguration
 @SpringBootApplication
 public class KeycloakTestApplication {
-    // nothing here so far
+
 }
