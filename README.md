@@ -78,7 +78,9 @@ Usage of spring cloud in your production code is optional, but you will need it 
 ```
 #### Use produced properties in your configuration
 #### Example:
+```properties
 /src/test/resources/application.properties
+```
 
 ```properties
 spring.kafka.bootstrap-servers=${embedded.kafka.brokerList}
@@ -421,7 +423,7 @@ VoltDB container has no security enabled, you can use any credentials.
 * embedded.mongodb.database
 
 ##### Example
-To auto-configure spring-data-mongodb use these properties in your test application.properties:
+To auto-configure spring-data-mongodb use these properties in your test `application.properties`:
 ```
 spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
 ```
@@ -456,10 +458,42 @@ spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.po
 * embedded.google.pubsub.project-id
 
 ##### Example
-To auto-configure spring-cloud-gcp-starter-pubsub use these properties in your test application.properties:
+To auto-configure spring-cloud-gcp-starter-pubsub use these properties in your test `application.properties`:
 ```
 spring.cloud.gcp.project-id=${embedded.google.pubsub.project-id}
 spring.cloud.gcp.pubsub.emulatorHost=${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+```
+
+### embedded-keycloak
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-keycloak</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.keycloak.enabled` (boolean, true|false, default is 'true')
+* `embedded.keycloak.dockerImage` (String, default is set to 'jboss/keycloak:8.0.1')
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/jboss/keycloak)
+* `embedded.keycloak.command` (String[], default is '["-c", "standalone.xml", "-Dkeycloak.profile.feature.upload_scripts=enabled"]')
+* `embedded.keycloak.admin-user` (String, default is 'admin')
+* `embedded.keycloak.admin-password` (String, default is 'letmein')
+* `embedded.keycloak.import-file` (String, default is '')
+
+##### Produces
+* `embedded.keycloak.host`
+* `embedded.keycloak.http-port` (mapped HTTP port)
+* `embedded.keycloak.auth-server-url`
+
+##### Example
+To configure for example the `keycloak-spring-boot-starter` use these properties in your test `application.yml`:
+```yaml
+keycloak:
+  auth-server-url: ${embedded.keycloak.auth-server-url}
 ```
 
 ## How to contribute
