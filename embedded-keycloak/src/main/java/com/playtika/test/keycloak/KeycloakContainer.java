@@ -59,10 +59,10 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     private void checkExists(String importFile) {
         Resource resource = resourceLoader.getResource("classpath:" + importFile);
         if (resource.exists()) {
+            log.debug("Using import file: {}", resource.getFilename());
             return;
         }
 
-        log.debug("Using import file: {}", resource.getFilename());
         throw new ImportFileNotFoundException(importFile);
     }
 
@@ -85,7 +85,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         return format("http://%s:%d%s", getIp(), getHttpPort(), AUTH_BASE_PATH);
     }
 
-    private static final class ImportFileNotFoundException extends IllegalArgumentException {
+    static final class ImportFileNotFoundException extends IllegalArgumentException {
 
         private static final long serialVersionUID = 6350884396691857560L;
 
