@@ -1,0 +1,14 @@
+embedded:
+  keycloak:
+    enabled: true
+    wait-timeout-in-seconds: 60
+    import-file: 'test-realm.json'
+
+# values here need to relate to data provided within realm import file
+testing:
+  keycloak:
+    realm: 'test-realm'
+    client: 'any-client'
+    client-secret: '08f64721-7fef-4d8b-a0fc-8f940a621451'
+    username: 'keycloak-test'
+    password: '123Start!'

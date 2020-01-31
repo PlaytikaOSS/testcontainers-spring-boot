@@ -1,0 +1,74 @@
+{
+  "groups": [
+    {
+      "name": "embedded.keycloak",
+      "description": "Configuration properties related to embedded Keycloak."
+    }
+  ],
+  "properties": [
+    {
+      "name": "embedded.keycloak.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "Whether embedded Keycloak should be enabled or not."
+    },
+    {
+      "name": "embedded.keycloak.wait-timeout-in-seconds",
+      "type": "java.lang.String",
+      "defaultValue": "60",
+      "description": "Maximum time in seconds to until embedded Keycloak should have come up."
+    },
+    {
+      "name": "embedded.keycloak.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "jboss/keycloak:8.0.1"
+    },
+    {
+      "name": "embedded.keycloak.command",
+      "type": "java.lang.String[]",
+      "description": "The default command string issued to the container.",
+      "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_COMMAND"
+    },
+    {
+      "name": "embedded.keycloak.admin-user",
+      "type": "java.lang.String",
+      "description": "The default admin username to use.",
+      "defaultValue": "admin"
+    },
+    {
+      "name": "embedded.keycloak.admin-password",
+      "type": "java.lang.String",
+      "description": "The default Keycloak admin password to use.",
+      "defaultValue": "letmein"
+    },
+    {
+      "name": "embedded.keycloak.import-file",
+      "type": "java.lang.String",
+      "description": "Classpath location of a JSON file to for importing resources into Keycloak. No prefix is needed."
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.keycloak.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of Keycloak server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disables configuration of Keycloak server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.keycloak.docker-image",
+      "values": [
+        {
+          "value": "jboss/keycloak:8.0.1",
+          "description": "Default Keycloak image in version 8.0.1. Ref https://hub.docker.com/r/jboss/keycloak for further info."
+        }
+      ]
+    }
+  ]
+}

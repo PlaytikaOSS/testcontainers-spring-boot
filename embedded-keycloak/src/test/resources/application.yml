@@ -1,0 +1,12 @@
+spring:
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+    com.playtika.test: info
+    org.springframework.boot: info
+    org.springframework.security: info
+    org.keycloak: info
+    root: error
