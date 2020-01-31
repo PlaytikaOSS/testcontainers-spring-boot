@@ -21,59 +21,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.keycloak;
+package com.playtika.test.keycloak.spring;
 
-import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_REALM;
+import static com.playtika.test.keycloak.util.KeycloakClient.newKeycloakClient;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpMethod.GET;
 
+import com.playtika.test.keycloak.util.KeyCloakToken;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-    classes = KeycloakTestApplication.class
-)
-@ActiveProfiles("enabled")
-public class EmbeddedKeycloakBootstrapConfigurationTest {
+    classes = SpringTestApplication.class,
+    webEnvironment = RANDOM_PORT)
+@ActiveProfiles({"enabled", "realm"})
+public class EmbeddedKeycloakSpringBootstrapAutoConfigurationTest {
 
     @Autowired
-    private ConfigurableEnvironment environment;
+    private Environment environment;
 
-    @Autowired
-    private KeycloakContainer keycloakContainer;
+    @LocalServerPort
+    private int httpPort;
 
     @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
-            .isEqualTo(format("http://%s:%d/auth", keycloakContainer.getContainerIpAddress(),
-                keycloakContainer.getHttpPort()));
-
-        assertThat(environment.getProperty("embedded.keycloak.host"))
-            .isEqualTo(keycloakContainer.getIp());
-
-        assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
-            .isEqualTo(keycloakContainer.getHttpPort());
+    public void shouldRunThroughSpringSecurity() {
+        assertThat(callSecuredPingEndpoint()).isEqualTo("pong");
     }
 
-    @Test
-    public void shouldGetMasterRealmInfoFromKeycloak() {
-        RestTemplate restTemplate = new RestTemplate();
+    private String callSecuredPingEndpoint() {
+        KeyCloakToken keyCloakToken = newKeycloakClient(environment).keycloakToken();
 
-        String url = environment.getProperty("embedded.keycloak.auth-server-url");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, format("Bearer %s", keyCloakToken.getAccessToken()));
 
-        RealmInfo realmInfo = restTemplate.getForObject(
-            url + "/realms/" + DEFAULT_REALM,
-            RealmInfo.class);
+        RestOperations restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(
+            "http://localhost:" + httpPort + "/api/echo",
+            GET,
+            new HttpEntity<>(headers),
+            String.class
+        );
 
-        assertThat(realmInfo.getRealm()).isEqualTo(DEFAULT_REALM);
+        return response.getBody();
     }
 }

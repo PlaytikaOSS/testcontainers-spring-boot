@@ -1,8 +1,10 @@
-package com.playtika.test.keycloak;
+package com.playtika.test.keycloak.vanilla;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.playtika.test.keycloak.KeycloakContainer;
 import com.playtika.test.keycloak.KeycloakContainer.ImportFileNotFoundException;
+import com.playtika.test.keycloak.KeycloakProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,11 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.containers.ContainerLaunchException;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-    classes = KeycloakTestApplication.class,
+    classes = VanillaTestApplication.class,
     properties = "embedded.keycloak.import-file=non-existent.json"
 )
 @ActiveProfiles("disabled")
@@ -25,14 +28,15 @@ public class KeycloakContainerTest {
     private ResourceLoader resourceLoader;
 
     @Test
-    public void shouldThrownNonExistentRealmFileException() {
+    public void shouldThrowImportFileNotFoundException() {
         KeycloakProperties properties = new KeycloakProperties();
         properties.setImportFile("non-existent.json");
 
         try (KeycloakContainer container = new KeycloakContainer(properties,
             resourceLoader)) {
-            assertThatExceptionOfType(ImportFileNotFoundException.class)
-                .isThrownBy(container::configure);
+            assertThatExceptionOfType(ContainerLaunchException.class)
+                .isThrownBy(container::start)
+                .withCauseInstanceOf(ImportFileNotFoundException.class);
         }
     }
 }

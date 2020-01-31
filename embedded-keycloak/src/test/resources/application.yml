@@ -7,7 +7,6 @@ logging:
   level:
     com.playtika.test: info
     org.springframework.boot: info
+    org.springframework.security: info
+    org.keycloak: info
     root: error
-
-keycloak:
-  auth-server-url: ${embedded.keycloak.auth-server-url}

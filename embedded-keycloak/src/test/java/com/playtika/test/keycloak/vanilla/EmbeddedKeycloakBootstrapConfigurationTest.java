@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2019 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,37 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.keycloak;
+package com.playtika.test.keycloak.vanilla;
 
+import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_REALM;
+import static com.playtika.test.keycloak.util.KeycloakClient.newKeycloakClient;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.playtika.test.keycloak.KeycloakContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.containers.GenericContainer;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@ActiveProfiles("disabled")
-@SpringBootTest(classes = KeycloakTestApplication.class)
-public class DisableKeycloakTest {
+@SpringBootTest(classes = VanillaTestApplication.class)
+@ActiveProfiles("enabled")
+public class EmbeddedKeycloakBootstrapConfigurationTest {
 
     @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    private ConfigurableEnvironment environment;
+
+    @Autowired
+    private KeycloakContainer keycloakContainer;
 
     @Test
-    public void contextLoads() {
-        String[] containers = beanFactory.getBeanNamesForType(GenericContainer.class);
-        String[] postProcessors = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class);
+    public void propertiesAreAvailable() {
+        assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
+            .isEqualTo(format("http://%s:%d/auth", keycloakContainer.getContainerIpAddress(),
+                keycloakContainer.getHttpPort()));
 
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors)
-            .doesNotContain("keycloakSpringBootConfigResolverDependencyPostProcessor");
+        assertThat(environment.getProperty("embedded.keycloak.host"))
+            .isEqualTo(keycloakContainer.getIp());
+
+        assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
+            .isEqualTo(keycloakContainer.getHttpPort());
+    }
+
+    @Test
+    public void shouldGetMasterRealmInfoFromKeycloak() {
+        String realmInfo = newKeycloakClient(environment).getRealmInfo(DEFAULT_REALM).getRealm();
+        assertThat(realmInfo).isEqualTo(DEFAULT_REALM);
     }
 }

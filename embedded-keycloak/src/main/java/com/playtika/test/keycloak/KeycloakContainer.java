@@ -85,7 +85,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         return format("http://%s:%d%s", getIp(), getHttpPort(), AUTH_BASE_PATH);
     }
 
-    static final class ImportFileNotFoundException extends IllegalArgumentException {
+    public static final class ImportFileNotFoundException extends IllegalArgumentException {
 
         private static final long serialVersionUID = 6350884396691857560L;
 

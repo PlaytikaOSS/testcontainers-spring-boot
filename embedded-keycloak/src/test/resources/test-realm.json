@@ -2,62 +2,10 @@
   "realm": "test-realm",
   "enabled": true,
   "sslRequired": "external",
-  "roles": {
-    "client": {
-      "any-service": [
-        {
-          "id": "533c059c-f83f-44e4-9e75-022d2b5bc5a2",
-          "name": "role_reader",
-          "composite": true,
-          "composites": {
-            "client": {
-              "any-service": [
-                "right_read"
-              ]
-            }
-          },
-          "clientRole": true,
-          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
-          "attributes": {}
-        },
-        {
-          "id": "a80458eb-462c-4059-b274-39d33d9526dd",
-          "name": "right_write",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
-          "attributes": {}
-        },
-        {
-          "id": "48a4aed6-e19e-4059-94cb-f7c7aaf1a386",
-          "name": "role_writer",
-          "composite": true,
-          "composites": {
-            "client": {
-              "any-service": [
-                "right_write"
-              ]
-            }
-          },
-          "clientRole": true,
-          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
-          "attributes": {}
-        },
-        {
-          "id": "8cd4fbca-5ed4-431f-878d-4626923c739a",
-          "name": "right_read",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab",
-          "attributes": {}
-        }
-      ]
-    }
-  },
   "clients": [
     {
       "id": "9b60057a-9bb1-44dd-8851-2794de9369ab",
-      "clientId": "any-service",
+      "clientId": "any-client",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "08f64721-7fef-4d8b-a0fc-8f940a621451",
@@ -72,6 +20,24 @@
       "fullScopeAllowed": true
     }
   ],
+  "roles": {
+    "client": {
+      "any-client": [
+        {
+          "id": "533c059c-f83f-44e4-9e75-022d2b5bc5a2",
+          "name": "role_reader",
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab"
+        },
+        {
+          "id": "48a4aed6-e19e-4059-94cb-f7c7aaf1a386",
+          "name": "role_writer",
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab"
+        }
+      ]
+    }
+  },
   "users": [
     {
       "id": "835a36c5-d647-49a2-b794-2f128ebed7c0",
@@ -84,7 +50,7 @@
         }
       ],
       "clientRoles": {
-        "any-service": [
+        "any-client": [
           "role_reader",
           "role_writer"
         ]

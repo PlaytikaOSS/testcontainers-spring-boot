@@ -1,9 +1,0 @@
-keycloak:
-  auth-server-url: ${embedded.keycloak.auth-server-url}
-  realm: 'test-realm'
-  resource: 'any-service'
-  principal-attribute: preferred_username
-  bearer-only: true
-  credentials:
-    secret: '08f64721-7fef-4d8b-a0fc-8f940a621451'
-  use-resource-role-mappings: true

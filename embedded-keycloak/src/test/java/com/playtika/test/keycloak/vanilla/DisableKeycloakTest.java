@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2018 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,57 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.keycloak;
+package com.playtika.test.keycloak.vanilla;
 
-import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.containers.GenericContainer;
 
-@Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-    classes = KeycloakTestApplication.class
-)
-@ActiveProfiles("enabled")
-public class EmbeddedKeycloakDependenciesAutoConfigurationTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = {VanillaTestApplication.class})
+@ActiveProfiles("disabled")
+public class DisableKeycloakTest {
 
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
 
-    @Autowired
-    private KeycloakContainer keycloakContainer;
-
     @Test
-    public void keycloakContainerAvailable() {
-        assertThat(keycloakContainer).isNotNull();
-    }
+    public void contextLoads() {
+        String[] containers = beanFactory.getBeanNamesForType(GenericContainer.class);
+        String[] postProcessors = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class);
 
-    @Test
-    public void shouldSetupDependsOnForKeycloakSecurityContext() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(
-            KeycloakClientRequestFactory.class);
-
-        assertThat(beanNamesForType)
-            .as("KeycloakClientRequestFactory should be present")
-            .hasSize(1);
-
-        asList(beanNamesForType).forEach(this::hasDependsOn);
-    }
-
-    private void hasDependsOn(String beanName) {
-        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-            .isNotNull()
-            .isNotEmpty()
-            .contains(BEAN_NAME_EMBEDDED_KEYCLOAK);
+        assertThat(containers).isEmpty();
+        assertThat(postProcessors)
+            .doesNotContain("keycloakSpringBootConfigResolverDependencyPostProcessor");
     }
 }

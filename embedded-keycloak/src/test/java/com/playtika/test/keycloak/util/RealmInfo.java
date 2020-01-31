@@ -1,4 +1,4 @@
-package com.playtika.test.keycloak;
+package com.playtika.test.keycloak.util;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.annotation.JsonProperty;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-class RealmInfo {
+public class RealmInfo {
 
     @JsonProperty
     private String realm;
