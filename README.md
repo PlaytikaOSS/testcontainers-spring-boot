@@ -27,7 +27,9 @@ Usage of spring cloud in your production code is optional, but you will need it 
    12. [embedded-dynamodb](#embedded-dynamodb)
    13. [embedded-minio](#embedded-minio)
    14. [embedded-mongodb](#embedded-mongodb)
-   14. [embedded-google-pubsub](#embedded-google-pubsub)
+   15. [embedded-google-pubsub](#embedded-google-pubsub)
+   16. [embedded-keycloak](#embedded-keycloak)
+
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -284,6 +286,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.neo4j.boltPort
 
 ### embedded-zookeeper
+##### Under construction...
 ##### Consumes (via bootstrap.properties)
 * 
 ##### Produces
