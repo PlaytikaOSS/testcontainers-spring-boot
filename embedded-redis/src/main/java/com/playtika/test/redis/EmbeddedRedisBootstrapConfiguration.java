@@ -27,6 +27,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
 import com.playtika.test.redis.wait.RedisStatusCheck;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -55,19 +57,22 @@ import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.redis.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(RedisProperties.class)
+@RequiredArgsConstructor
 public class EmbeddedRedisBootstrapConfiguration {
 
     public final static String REDIS_WAIT_STRATEGY_BEAN_NAME = "redisStartupCheckStrategy";
 
+    private final ResourceLoader resourceLoader;
+
     @Bean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
     @ConditionalOnProperty(name = "embedded.redis.clustered", havingValue = "false", matchIfMissing = true)
     public WaitStrategy redisStartupCheckStrategy(RedisProperties properties) {
         return new RedisStatusCheck(properties);
     }
 
     @Bean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
     @ConditionalOnProperty(name = "embedded.redis.clustered", havingValue = "true")
     public WaitStrategy redisClusterWaitStrategy(RedisProperties properties) {
         return new DefaultRedisClusterWaitStrategy(properties);
@@ -105,12 +110,12 @@ public class EmbeddedRedisBootstrapConfiguration {
     }
 
     private void prepareRedisConfFiles(RedisProperties properties) throws Exception {
-        resolveTemplate("redis.conf", content -> content
+        resolveTemplate(resourceLoader, "redis.conf", content -> content
                 .replace("{{requirepass}}", properties.isRequirepass() ? "yes" : "no")
                 .replace("{{password}}", properties.isRequirepass() ? "requirepass " + properties.getPassword() : "")
                 .replace("{{clustered}}", properties.isClustered() ? "yes" : "no")
                 .replace("{{port}}", String.valueOf(properties.getPort())));
-        resolveTemplate("nodes.conf", content -> content
+        resolveTemplate(resourceLoader, "nodes.conf", content -> content
                 .replace("{{port}}", String.valueOf(properties.getPort()))
                 .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
     }
