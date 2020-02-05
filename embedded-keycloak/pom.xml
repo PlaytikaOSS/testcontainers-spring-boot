@@ -12,7 +12,7 @@
     <artifactId>embedded-keycloak</artifactId>
 
     <properties>
-        <keycloak.version>8.0.1</keycloak.version>
+        <keycloak.version>8.0.2</keycloak.version>
     </properties>
 
     <dependencies>
