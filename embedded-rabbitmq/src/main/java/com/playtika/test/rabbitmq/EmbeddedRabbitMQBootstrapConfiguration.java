@@ -23,7 +23,6 @@
  */
 package com.playtika.test.rabbitmq;
 
-import java.util.LinkedHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,6 +33,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+
+import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_RABBITMQ;
@@ -48,8 +49,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RabbitMQStatusCheck rabbitMQStartupCheckStrategy(RabbitMQProperties properties) {
-        return new RabbitMQStatusCheck(properties);
+    public RabbitMQStatusCheck rabbitMQStatusCheck() {
+        return new RabbitMQStatusCheck();
     }
 
 
@@ -58,7 +59,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         ConfigurableEnvironment environment,
         RabbitMQProperties properties,
         RabbitMQStatusCheck rabbitMQStatusCheck) {
-        log.info("Starting rabbitMQ server. Docker image: {}", properties.getDockerImage());
+        log.info("Starting RabbitMQ server. Docker image: {}", properties.getDockerImage());
 
         GenericContainer rabbitMQ =
             new GenericContainer(properties.getDockerImage())
