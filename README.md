@@ -532,7 +532,7 @@ keycloak:
 * `embedded.influxdb.user`
 
 ##### Example
-There is currently no stater library for using InfluxDB server version 1.x because it uses basic HTTP protocol to communicate.
+There is currently no starter library for using InfluxDB server version 1.x because it uses basic HTTP protocol to communicate.
 You can anyway create your own properties using those values for example in your test `application.yml`:
 ```yaml
 influxdb:
