@@ -32,7 +32,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,9 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @RunWith(SpringRunner.class)
 @ActiveProfiles("enabled")
-@TestPropertySource(properties = {
-        "logging.level.org.testcontainers=debug",
-        "logging.level.com.playtika.test=debug"})
 public abstract class BaseEmbeddedRedisTest {
 
     @Autowired
