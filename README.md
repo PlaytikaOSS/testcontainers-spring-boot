@@ -29,6 +29,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    14. [embedded-mongodb](#embedded-mongodb)
    15. [embedded-google-pubsub](#embedded-google-pubsub)
    16. [embedded-keycloak](#embedded-keycloak)
+   17. [embedded-influxdb](#embedded-influxdb)
 
 3. [How to contribute](#how-to-contribute)
 
@@ -497,6 +498,48 @@ To configure for example the `keycloak-spring-boot-starter` use these properties
 ```yaml
 keycloak:
   auth-server-url: ${embedded.keycloak.auth-server-url}
+```
+
+### embedded-influxdb
+
+#### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-influxdb</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.influxdb.enabled` (boolean, true|false, default is 'true')
+* `embedded.influxdb.dockerImage` (String, default is set to 'influxdb:1.5-alpine')
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/_/influxdb)
+* `embedded.influxdb.admin-user` (String, default is 'admin')
+* `embedded.influxdb.admin-password` (String, default is 'admin')
+* `embedded.influxdb.user` (String, default is 'user')
+* `embedded.influxdb.password` (String, default is 'password')
+* `embedded.influxdb.enable-http-auth` (boolean true|false, default is 'true')
+* `embedded.influxdb.host` (String, default is 'localhost')
+* `embedded.influxdb.port` (int, default is '8086')
+* `embedded.influxdb.database` (String, default is 'db')
+
+##### Produces
+* `embedded.influxdb.database`
+* `embedded.influxdb.host`
+* `embedded.influxdb.password`
+* `embedded.influxdb.port` (mapped HTTP port)
+* `embedded.influxdb.user`
+
+##### Example
+There is currently no starter library for using InfluxDB server version 1.x because it uses basic HTTP protocol to communicate.
+You can anyway create your own properties using those values for example in your test `application.yml`:
+```yaml
+influxdb:
+  url: http://${embedded.influxdb.host}:${embedded.influxdb.port}
+  user: ${embedded.influxdb.user}
+  password: ${embedded.influxdb.password}
+  database: ${embedded.influxdb.database}
 ```
 
 ## How to contribute

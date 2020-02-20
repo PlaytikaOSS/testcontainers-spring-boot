@@ -1,0 +1,43 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.influxdb.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.influxdb.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of influxdb server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of influxdb server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.influxdb.docker-image",
+      "values": [
+        {
+          "value": "influxdb:1.5-alpine",
+          "description": "Latest 1.5.x alpine version. Ref https://hub.docker.com/_/influxdb for further info."
+        },
+        {
+          "value": "influxdb:1.6-alpine",
+          "description": "Latest 1.6.x alpine version. Ref https://hub.docker.com/_/influxdb for further info."
+        },
+        {
+          "value": "influxdb:1.7-alpine",
+          "description": "Latest 1.7.x alpine version. Ref https://hub.docker.com/_/influxdb for further info."
+        }
+      ]
+    }
+  ]
+}
