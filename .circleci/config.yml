@@ -3,11 +3,12 @@
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
 version: 2
+executorType: machine
+
 jobs:
   build:
     machine:
-      image: circleci/classic:201708-01
-
+      image: circleci/classic:latest
 #    working_directory: ~/repo
 
     environment:

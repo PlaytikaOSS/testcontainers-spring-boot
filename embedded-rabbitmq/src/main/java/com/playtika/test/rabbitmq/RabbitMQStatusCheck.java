@@ -24,13 +24,10 @@
 package com.playtika.test.rabbitmq;
 
 import com.playtika.test.common.checks.AbstractCommandWaitStrategy;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 public class RabbitMQStatusCheck extends AbstractCommandWaitStrategy {
-    private final RabbitMQProperties properties;
 
     @Override
     public String[] getCheckCommand() {
