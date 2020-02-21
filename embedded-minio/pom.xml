@@ -12,7 +12,7 @@
     <artifactId>embedded-minio</artifactId>
 
     <properties>
-        <minio.version>6.0.12</minio.version>
+        <minio.version>6.0.13</minio.version>
     </properties>
 
     <dependencies>
