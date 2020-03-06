@@ -184,7 +184,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.rabbitmq.user `(default : rabbitmq)`
 * embedded.rabbitmq.password `(default : rabbitmq)`
 * embedded.rabbitmq.vhost `(virtual host, default: '/')`
-* embedded.rabbitmq.dockerImage `(default: rabbitmq/3-management)`
+* embedded.rabbitmq.dockerImage `(default: rabbitmq:3-alpine)`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/rabbitmq/tags/)
 * embedded.rabbitmq.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
