@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package com.playtika.test.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 
 import java.util.LinkedHashMap;
 
@@ -47,39 +46,28 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @EnableConfigurationProperties(RabbitMQProperties.class)
 public class EmbeddedRabbitMQBootstrapConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RabbitMQStatusCheck rabbitMQStatusCheck() {
-        return new RabbitMQStatusCheck();
-    }
-
-
     @Bean(name = BEAN_NAME_EMBEDDED_RABBITMQ, destroyMethod = "stop")
-    public GenericContainer rabbitmq(
-        ConfigurableEnvironment environment,
-        RabbitMQProperties properties,
-        RabbitMQStatusCheck rabbitMQStatusCheck) {
+    public RabbitMQContainer rabbitmq(
+            ConfigurableEnvironment environment,
+            RabbitMQProperties properties) {
         log.info("Starting RabbitMQ server. Docker image: {}", properties.getDockerImage());
 
-        GenericContainer rabbitMQ =
-            new GenericContainer(properties.getDockerImage())
-                .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
-                .withEnv("RABBITMQ_DEFAULT_USER", properties.getUser())
-                .withEnv("RABBITMQ_DEFAULT_PASS", properties.getPassword())
-                .waitingFor(rabbitMQStatusCheck)
-                .withLogConsumer(containerLogsConsumer(log))
-                .withExposedPorts(properties.getPort())
-                .withStartupTimeout(properties.getTimeoutDuration());
+        RabbitMQContainer rabbitMQ =
+                new RabbitMQContainer(properties.getDockerImage())
+                        .withAdminPassword(properties.getPassword())
+                        .withVhost(properties.getVhost())
+                        .withLogConsumer(containerLogsConsumer(log))
+                        .withExposedPorts(properties.getPort())
+                        .withStartupTimeout(properties.getTimeoutDuration());
         rabbitMQ.start();
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
         return rabbitMQ;
     }
 
 
-    private void registerRabbitMQEnvironment(
-        GenericContainer rabbitMQ,
-        ConfigurableEnvironment environment,
-        RabbitMQProperties properties) {
+    private void registerRabbitMQEnvironment(RabbitMQContainer rabbitMQ,
+                                             ConfigurableEnvironment environment,
+                                             RabbitMQProperties properties) {
         Integer mappedPort = rabbitMQ.getMappedPort(properties.getPort());
         String host = rabbitMQ.getContainerIpAddress();
 
@@ -87,8 +75,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         map.put("embedded.rabbitmq.port", mappedPort);
         map.put("embedded.rabbitmq.host", host);
         map.put("embedded.rabbitmq.vhost", properties.getVhost());
-        map.put("embedded.rabbitmq.user", properties.getUser());
-        map.put("embedded.rabbitmq.password", properties.getPassword());
+        map.put("embedded.rabbitmq.user", rabbitMQ.getAdminUsername());
+        map.put("embedded.rabbitmq.password", rabbitMQ.getAdminPassword());
 
         log.info("Started RabbitMQ server. Connection details: {}", map);
 

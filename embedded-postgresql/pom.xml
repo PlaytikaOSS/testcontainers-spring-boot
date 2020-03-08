@@ -12,7 +12,6 @@
     <artifactId>embedded-postgresql</artifactId>
 
     <properties>
-        <postgresql-testcontainer.version>1.13.0</postgresql-testcontainer.version>
         <postgresql-driver.version>42.2.10</postgresql-driver.version>
     </properties>
 
@@ -24,7 +23,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql-testcontainer.version}</version>
+            <version>${testcontainers.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
