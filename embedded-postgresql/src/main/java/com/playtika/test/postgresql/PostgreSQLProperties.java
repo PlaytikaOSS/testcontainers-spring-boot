@@ -38,6 +38,4 @@ public class PostgreSQLProperties extends CommonContainerProperties {
     String user = "postgresql";
     String password = "letmein";
     String database = "test_db";
-    String host = "localhost";
-    int port = 5432;
 }
