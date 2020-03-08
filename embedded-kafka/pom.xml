@@ -13,7 +13,7 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>3.0.1</camel.version>
+        <camel.version>3.1.0</camel.version>
         <kafka-clients.version>2.4.0</kafka-clients.version>
     </properties>
 
@@ -41,8 +41,15 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-spring-boot</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-boot-starter</artifactId>
+            <version>${camel.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
             <optional>true</optional>
         </dependency>
         <dependency>

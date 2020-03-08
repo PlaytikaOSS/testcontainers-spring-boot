@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2020 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
     int socketTimeoutMs = 5_000;
     String dataFileSystemBind = "target/embedded-zk-data";
     String txnLogsFileSystemBind = "target/embedded-zk-txn-logs";
-    String dockerImage = "confluentinc/cp-zookeeper:4.1.2";
+    String dockerImage = "confluentinc/cp-zookeeper:5.4.1";
 
     /**
      * Zookeeper container port will be assigned automatically if free port is available.
