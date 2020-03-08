@@ -181,7 +181,6 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes (via bootstrap.properties)
 * embedded.rabbitmq.enabled `(true|false, default is 'true')`
-* embedded.rabbitmq.user `(default : rabbitmq)`
 * embedded.rabbitmq.password `(default : rabbitmq)`
 * embedded.rabbitmq.vhost `(virtual host, default: '/')`
 * embedded.rabbitmq.dockerImage `(default: rabbitmq:3-alpine)`
@@ -190,6 +189,9 @@ embedded.kafka.topicsToCreate=some_topic
 ##### Produces
 * embedded.rabbitmq.host
 * embedded.rabbitmq.port
+* embedded.rabbitmq.user
+* embedded.rabbitmq.password
+* embedded.rabbitmq.vhost
 
 ### embedded-aerospike
 ##### Maven dependency
