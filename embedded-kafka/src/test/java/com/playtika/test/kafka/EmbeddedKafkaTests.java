@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,7 +119,7 @@ public class EmbeddedKafkaTests {
         );
 
         assertThat(durationOf(() -> sendMessage(TOPIC, "abc1")))
-                .isLessThan(100L);
+                .isLessThan(200L);
 
         assertThat(consumeMessages(TOPIC)).containsExactly("abc0", "abc1");
     }

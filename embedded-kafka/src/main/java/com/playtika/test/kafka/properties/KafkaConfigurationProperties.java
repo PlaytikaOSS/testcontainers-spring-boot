@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2020 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     int socketTimeoutMs = 5_000;
     int bufferSize = 64 * 1024;
     String dataFileSystemBind = "target/embedded-kafka-data";
-    String dockerImage = "confluentinc/cp-kafka:4.1.2";
+    String dockerImage = "confluentinc/cp-kafka:5.4.1";
     Collection<String> topicsToCreate = Collections.emptyList();
     transient final int replicationFactor = 1;
     //https://github.com/kafka-dev/kafka/blob/0.6.1/core/src/test/scala/unit/kafka/utils/TestUtils.scala#L114

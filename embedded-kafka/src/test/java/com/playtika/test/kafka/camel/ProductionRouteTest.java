@@ -79,8 +79,8 @@ public class ProductionRouteTest {
         String message = "this is a test!";
         producerTemplate.sendBodyAndHeader(routeConfiguration.helloTopicEndpoint(), message, KafkaConstants.KEY, "12345678");
 
+        routeMonitor.getResultEndpoint().setResultWaitTime(15000);
         routeMonitor.getResultEndpoint().expectedBodiesReceived(message);
-        routeMonitor.getResultEndpoint().setResultWaitTime(3000);
         routeMonitor.getResultEndpoint().assertIsSatisfied();
     }
 
