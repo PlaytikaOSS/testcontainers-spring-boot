@@ -24,7 +24,6 @@
 package com.playtika.test.postgresql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.LinkedHashMap;
 
@@ -47,35 +46,24 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @EnableConfigurationProperties(PostgreSQLProperties.class)
 public class EmbeddedPostgreSQLBootstrapConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public PostgreSQLStatusCheck postgresSQLStartupCheckStrategy(PostgreSQLProperties properties) {
-        return new PostgreSQLStatusCheck(properties);
-    }
-
     @Bean(name = BEAN_NAME_EMBEDDED_POSTGRESQL, destroyMethod = "stop")
-    public GenericContainer postgresql(ConfigurableEnvironment environment,
-                                       PostgreSQLProperties properties,
-                                       PostgreSQLStatusCheck postgreSQLStatusCheck) {
+    public ConcretePostgreSQLContainer postgresql(ConfigurableEnvironment environment,
+                                                  PostgreSQLProperties properties) {
         log.info("Starting postgresql server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer postgresql =
-                new GenericContainer(properties.dockerImage)
-                        .withEnv("POSTGRES_USER", properties.getUser())
-                        .withEnv("POSTGRES_PASSWORD", properties.getPassword())
-                        .withEnv("PGPASSWORD", properties.password) // for health check
-                        .withEnv("POSTGRES_DB", properties.getDatabase())
-                        .withCommand("postgres")
+        ConcretePostgreSQLContainer postgresql =
+                new ConcretePostgreSQLContainer(properties.dockerImage)
+                        .withUsername(properties.getUser())
+                        .withPassword(properties.getPassword())
+                        .withDatabaseName(properties.getDatabase())
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port)
-                        .waitingFor(postgreSQLStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
         postgresql.start();
         registerPostgresqlEnvironment(postgresql, environment, properties);
         return postgresql;
     }
 
-    private void registerPostgresqlEnvironment(GenericContainer postgresql,
+    private void registerPostgresqlEnvironment(ConcretePostgreSQLContainer postgresql,
                                                ConfigurableEnvironment environment,
                                                PostgreSQLProperties properties) {
         Integer mappedPort = postgresql.getMappedPort(properties.port);
@@ -94,5 +82,11 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedPostgreInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+    }
+
+    private static class ConcretePostgreSQLContainer extends PostgreSQLContainer<ConcretePostgreSQLContainer> {
+        public ConcretePostgreSQLContainer(String dockerImageName) {
+            super(dockerImageName);
+        }
     }
 }

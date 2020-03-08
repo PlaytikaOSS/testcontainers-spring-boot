@@ -95,5 +95,13 @@ class AutoConfiguredDatasourceDependsOnTest {
     @DisplayName("AutoConfigured Datasource with postgres:12-alpine")
     class Alpine12Image extends TestDefaults {
     }
+
+    @TestPropertySource(properties = {
+            "embedded.postgresql.docker-image=timescale/timescaledb:latest-pg11"
+    })
+    @Nested
+    @DisplayName("AutoConfigured Datasource with timescaledb:latest-pg11")
+    class Timescale12Image extends TestDefaults {
+    }
 }
 

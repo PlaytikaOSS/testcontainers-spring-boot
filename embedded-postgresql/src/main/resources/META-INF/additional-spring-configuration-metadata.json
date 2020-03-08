@@ -41,6 +41,18 @@
         {
           "value": "postgres:12-alpine",
           "description": "Latest 12.x alpine version. Ref https://hub.docker.com/_/postgres for further info."
+        },
+        {
+          "value": "timescale/timescaledb:latest-pg9.6",
+          "description": "Latest 9.6 alpine timescaledb version. Ref https://hub.docker.com/r/timescale/timescaledb for further info."
+        },
+        {
+          "value": "timescale/timescaledb:latest-pg10",
+          "description": "Latest 10.x alpine timescaledb version. Ref https://hub.docker.com/r/timescale/timescaledb for further info."
+        },
+        {
+          "value": "timescale/timescaledb:latest-pg11",
+          "description": "Latest 11.x alpine timescaledb version. Ref https://hub.docker.com/r/timescale/timescaledb for further info."
         }
       ]
     }
