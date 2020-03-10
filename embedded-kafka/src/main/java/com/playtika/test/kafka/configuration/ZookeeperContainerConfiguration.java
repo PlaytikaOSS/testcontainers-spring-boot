@@ -38,7 +38,6 @@ import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -74,26 +73,36 @@ public class ZookeeperContainerConfiguration {
                                       ZookeeperConfigurationProperties zookeeperProperties,
                                       ConfigurableEnvironment environment,
                                       Network network) {
-        String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
-        String zkData = Paths.get(zookeeperProperties.getDataFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
-        log.info("Writing zookeeper data to: {}", zkData);
-        String zkTransactionLogs = Paths.get(zookeeperProperties.getTxnLogsFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
-        log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
-
         log.info("Starting zookeeper server. Docker image: {}", zookeeperProperties.getDockerImage());
 
         int mappingPort = zookeeperProperties.getZookeeperPort();
         GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("ZOOKEEPER_CLIENT_PORT", String.valueOf(mappingPort))
-                .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
-                .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE)
                 .withExposedPorts(mappingPort)
                 .withFixedExposedPort(mappingPort, mappingPort)
                 .withNetwork(network)
                 .withNetworkAliases(ZOOKEEPER_HOST_NAME)
                 .waitingFor(zookeeperStatusCheck)
                 .withStartupTimeout(zookeeperProperties.getTimeoutDuration());
+
+        ZookeeperConfigurationProperties.FileSystemBind fileSystemBind = zookeeperProperties.getFileSystemBind();
+        if (fileSystemBind.isEnabled()) {
+            String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
+
+            String dataFolder = fileSystemBind.getDataFolder();
+            String zkData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing zookeeper data to: {}", zkData);
+
+            String txnLogsFolder = fileSystemBind.getTxnLogsFolder();
+            String zkTransactionLogs = Paths.get(txnLogsFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
+
+            zookeeper = zookeeper
+                    .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
+                    .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
+        }
+
         zookeeper.start();
         registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;

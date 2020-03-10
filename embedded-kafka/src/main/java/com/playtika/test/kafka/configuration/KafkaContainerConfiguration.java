@@ -83,10 +83,6 @@ public class KafkaContainerConfiguration {
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
         // https://docs.confluent.io/current/installation/docker/docs/configuration.html search by KAFKA_ADVERTISED_LISTENERS
 
-        String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
-        String kafkaData = Paths.get(kafkaProperties.getDataFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
-        log.info("Writing kafka data to: {}", kafkaData);
-
         log.info("Starting kafka broker. Docker image: {}", kafkaProperties.getDockerImage());
 
         GenericContainer kafka = new FixedHostPortGenericContainer<>(kafkaProperties.getDockerImage())
@@ -107,7 +103,6 @@ public class KafkaContainerConfiguration {
                 .withEnv("KAFKA_LOG_FLUSH_INTERVAL_MS", String.valueOf(kafkaProperties.getLogFlushIntervalMs()))
                 .withEnv("KAFKA_REPLICA_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getReplicaSocketTimeoutMs()))
                 .withEnv("KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getControllerSocketTimeoutMs()))
-                .withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE)
                 .withExposedPorts(kafkaInternalPort, kafkaExternalPort)
                 .withFixedExposedPort(kafkaInternalPort, kafkaInternalPort)
                 .withFixedExposedPort(kafkaExternalPort, kafkaExternalPort)
@@ -116,6 +111,17 @@ public class KafkaContainerConfiguration {
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
                 .waitingFor(kafkaStatusCheck)
                 .withStartupTimeout(kafkaProperties.getTimeoutDuration());
+
+        KafkaConfigurationProperties.FileSystemBind fileSystemBind = kafkaProperties.getFileSystemBind();
+        if (fileSystemBind.isEnabled()) {
+            String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
+            String dataFolder = fileSystemBind.getDataFolder();
+            String kafkaData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing kafka data to: {}", kafkaData);
+
+            kafka = kafka
+                    .withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE);
+        }
 
         kafka.start();
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
