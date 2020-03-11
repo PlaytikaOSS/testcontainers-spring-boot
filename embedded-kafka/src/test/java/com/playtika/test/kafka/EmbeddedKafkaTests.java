@@ -23,190 +23,56 @@
  */
 package com.playtika.test.kafka;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
-import com.playtika.test.common.utils.ThrowingRunnable;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.nio.file.Path;
 
-import static java.time.Duration.ofMillis;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(
-        classes = EmbeddedKafkaTests.TestConfiguration.class,
         properties = {
+                "embedded.zookeeper.fileSystemBind.enabled=true",
+                "embedded.zookeeper.fileSystemBind.dataFolder=target/embedded-zk-data-with-binding",
+                "embedded.zookeeper.fileSystemBind.txnLogsFolder=target/embedded-zk-txn-logs-with-binding",
+
                 "embedded.kafka.topicsToCreate=autoCreatedTopic",
-                "embedded.kafka.install.enabled=true"
-        }
+                "embedded.kafka.fileSystemBind.enabled=true",
+                "embedded.kafka.fileSystemBind.dataFolder=target/embedded-kafka-data-with-binding"
+        },
+        classes = BaseEmbeddedKafkaTest.TestConfiguration.class
 )
-public class EmbeddedKafkaTests {
+@TestInstance(Lifecycle.PER_CLASS)
+@DisplayName("Test that embedded-kafka with filesystem binding")
+public class EmbeddedKafkaTests extends BaseEmbeddedKafkaTest {
 
-    private static final String TOPIC = "topic1";
-    private static final String MESSAGE = "test message";
-
-    @Value("${embedded.kafka.brokerList}")
-    String kafkaBrokerList;
     @Autowired
-    private AdminClient adminClient;
+    private ZookeeperConfigurationProperties zookeeperProperties;
+
     @Autowired
-    private KafkaTopicsConfigurer kafkaTopicsConfigurer;
-    @Autowired
-    private NetworkTestOperations kafkaNetworkTestOperations;
+    private KafkaConfigurationProperties kafkaProperties;
 
-    @Test
-    public void shouldAutoCreateTopic() throws Exception {
-        assertThatTopicExists("autoCreatedTopic");
+    @AfterAll
+    public void shouldBindToFileSystem() {
+        Path projectDir = projectDir();
+        Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
+        Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());
+        Path kafkaDataFolder = projectDir.resolve(kafkaProperties.getFileSystemBind().getDataFolder());
+
+        assertThat(zookeeperDataFolder.toFile())
+                .isDirectory()
+                .isNotEmptyDirectory();
+        assertThat(zookeeperTxnLogsFolder.toFile())
+                .isDirectory()
+                .isNotEmptyDirectory();
+        assertThat(kafkaDataFolder.toFile())
+                .isDirectory()
+                .isNotEmptyDirectory();
     }
-
-    @Test
-    public void shouldCreateTopic() throws Exception {
-        String topicToCreate = "topicToCreate";
-        this.kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate));
-
-        assertThatTopicExists(topicToCreate);
-    }
-
-    @Test
-    public void should_sendAndConsumeMessage() throws Exception {
-        sendMessage(TOPIC, MESSAGE);
-
-        String consumedMessage = consumeMessage(TOPIC);
-
-        assertThat(consumedMessage).isEqualTo(MESSAGE);
-    }
-
-    @Test
-    public void shouldEmulateLatencyOnSend() throws Exception {
-        kafkaNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> sendMessage(TOPIC, "abc0")))
-                        .isGreaterThan(1000L)
-        );
-
-        assertThat(durationOf(() -> sendMessage(TOPIC, "abc1")))
-                .isLessThan(200L);
-
-        assertThat(consumeMessages(TOPIC)).containsExactly("abc0", "abc1");
-    }
-
-    private void assertThatTopicExists(String topicName) throws Exception {
-        ListTopicsResult result = adminClient.listTopics();
-        Set<String> topics = result.names().get(10, TimeUnit.SECONDS);
-        assertThat(topics).contains(topicName);
-    }
-
-    private void sendMessage(String topic, String message) throws Exception {
-        try (KafkaProducer<String, String> kafkaProducer = createProducer()) {
-
-            kafkaProducer.send(new ProducerRecord<>(topic, message)).get();
-        }
-    }
-
-    private String consumeMessage(String topic) {
-        return consumeMessages(topic).stream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("no message received"));
-    }
-
-    private List<String> consumeMessages(String topic) {
-        try (KafkaConsumer<String, String> consumer = createConsumer(topic)) {
-            return pollForRecords(consumer).stream()
-                    .map(ConsumerRecord::value)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    private KafkaProducer<String, String> createProducer() {
-        Map<String, Object> producerConfiguration = getKafkaProducerConfiguration();
-        return new KafkaProducer<>(producerConfiguration);
-    }
-
-    private KafkaConsumer<String, String> createConsumer(String topic) {
-        Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration();
-        Properties properties = new Properties();
-        properties.putAll(consumerConfiguration);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
-        consumer.subscribe(singleton(topic));
-        return consumer;
-    }
-
-    private static <K, V> List<ConsumerRecord<K, V>> pollForRecords(KafkaConsumer<K, V> consumer) {
-        ConsumerRecords<K, V> received = consumer.poll(Duration.ofSeconds(10));
-        return received == null ? emptyList() : Lists.newArrayList(received);
-    }
-
-    private Map<String, Object> getKafkaProducerConfiguration() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
-        configs.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        configs.put(VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        configs.put(RETRIES_CONFIG, 0);
-        configs.put(BATCH_SIZE_CONFIG, 0);
-
-        return configs;
-    }
-
-    private Map<String, Object> getKafkaConsumerConfiguration() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put("bootstrap.servers", kafkaBrokerList);
-        configs.put(GROUP_ID_CONFIG, "testGroup");
-        configs.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
-        configs.put(KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        configs.put(VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        return configs;
-    }
-
-    private static long durationOf(ThrowingRunnable op) throws Exception {
-        long start = System.currentTimeMillis();
-        op.run();
-        return System.currentTimeMillis() - start;
-    }
-
-    @Configuration
-    @EnableAutoConfiguration
-    static class TestConfiguration {
-
-        @Bean
-        AdminClient adminClient(@Value("${embedded.kafka.brokerList}") String brokers) {
-            Properties config = new Properties();
-            config.put("bootstrap.servers", brokers);
-            return AdminClient.create(config);
-        }
-    }
-
 }
