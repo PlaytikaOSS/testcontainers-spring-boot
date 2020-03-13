@@ -55,7 +55,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         RabbitMQContainer rabbitMQ =
                 new RabbitMQContainer(properties.getDockerImage())
                         .withAdminPassword(properties.getPassword())
-                        .withVhost(properties.getVhost())
+                        .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.getPort())
                         .withStartupTimeout(properties.getTimeoutDuration());
