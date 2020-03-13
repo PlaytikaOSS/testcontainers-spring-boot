@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2020 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,6 @@ public class Neo4jProperties extends CommonContainerProperties {
     String dockerImage = "neo4j:3.2.7";
     String user = "neo4j";
     String password = "letmein";
-    String host = "localhost";
     int httpsPort = 7473;
     int httpPort = 7474;
     int boltPort = 7687;
