@@ -28,11 +28,9 @@ import com.playtika.test.kafka.camel.samples.SampleRouteConfiguration;
 import com.playtika.test.kafka.camel.samples.SampleTestRouteMonitor;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.test.spring.CamelSpringRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -40,38 +38,40 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(
-        classes = {
-                ProductionRouteTest.TestConfiguration.class,
-                SampleProductionRouteContext.class
-        },
-        properties = "embedded.kafka.topicsToCreate=helloTopic"
-)
-@RunWith(CamelSpringRunner.class)
+@SpringBootTest
+@TestPropertySource(properties = "embedded.kafka.topicsToCreate=helloTopic")
+@ContextConfiguration(classes = {
+        ProductionRouteTest.TestConfiguration.class,
+        SampleProductionRouteContext.class
+})
+@EnableAutoConfiguration
 public class ProductionRouteTest {
 
     @Autowired
-    ConfigurableListableBeanFactory beanFactory;
-    @Autowired
-    private CamelContext camelContext;
+    private ConfigurableListableBeanFactory beanFactory;
+
     @Autowired
     private ProducerTemplate producerTemplate;
+
     @Autowired
     private SampleRouteConfiguration routeConfiguration;
 
+    private CamelContext camelContext;
     private SampleTestRouteMonitor routeMonitor;
 
-    @Before
-    public void setUp() throws Exception {
-        if (routeMonitor == null) {
-            routeMonitor = new SampleTestRouteMonitor(camelContext);
-        }
+    @Autowired
+    public void setCamelContext(CamelContext camelContext) throws Exception {
+        this.camelContext = camelContext;
+        this.routeMonitor = new SampleTestRouteMonitor(camelContext);
     }
 
     @Test
@@ -91,6 +91,7 @@ public class ProductionRouteTest {
                 .as("CamelContext should be present")
                 .hasSize(1);
         asList(beanNamesForType).forEach(this::hasDependsOn);
+        assertEquals(ServiceStatus.Started, camelContext.getStatus());
     }
 
     private void hasDependsOn(String beanName) {
