@@ -38,14 +38,13 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
 
     public static final String ZOOKEEPER_BEAN_NAME = "zookeeper";
 
-    String zookeeperConnect;
+    protected String zookeeperConnect;
     protected String containerZookeeperConnect;
-    int zookeeperPort = 0;
-    int sessionTimeoutMs = 5_000;
-    int socketTimeoutMs = 5_000;
-    String dataFileSystemBind = "target/embedded-zk-data";
-    String txnLogsFileSystemBind = "target/embedded-zk-txn-logs";
-    String dockerImage = "confluentinc/cp-zookeeper:5.4.1";
+    protected int zookeeperPort = 0;
+    protected int sessionTimeoutMs = 5_000;
+    protected int socketTimeoutMs = 5_000;
+    protected String dockerImage = "confluentinc/cp-zookeeper:5.4.1";
+    protected FileSystemBind fileSystemBind = new FileSystemBind();
 
     /**
      * Zookeeper container port will be assigned automatically if free port is available.
@@ -56,5 +55,12 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
         if (this.zookeeperPort == 0) {
             this.zookeeperPort = ContainerUtils.getAvailableMappingPort();
         }
+    }
+
+    @Data
+    public static final class FileSystemBind {
+        private boolean enabled = true;
+        private String dataFolder = "target/embedded-zk-data";
+        private String txnLogsFolder = "target/embedded-zk-txn-logs";
     }
 }

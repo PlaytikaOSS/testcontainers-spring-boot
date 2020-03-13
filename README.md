@@ -168,6 +168,15 @@ embedded.kafka.topicsToCreate=some_topic
   * To use another kafka version pick corresponding docker image on  [dockerhub](https://hub.docker.com/r/confluentinc/cp-kafka/tags)
   * [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
 * embedded.kafka.waitTimeoutInSeconds `(default is 60 seconds)`
+
+##### Filesystem bindings
+Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to host filesystem. By default, to your projects `target` folder. You can configure binding using properties:
+* embedded.zookeeper.fileSystemBind.enabled `(true|false, default is 'true')`
+* embedded.zookeeper.fileSystemBind.dataFolder `(default : target/embedded-zk-data)`
+* embedded.zookeeper.fileSystemBind.txnLogsFolder `(default : target/embedded-zk-txn-logs)`
+* embedded.kafka.enabled `(true|false, default is 'true')`
+* embedded.kafka.fileSystemBind.dataFolder `(default : target/embedded-kafka-data)`
+
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
