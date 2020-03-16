@@ -26,14 +26,15 @@ package com.playtika.test.kafka;
 import com.playtika.test.kafka.configuration.EmbeddedKafkaBootstrapConfiguration;
 import com.playtika.test.kafka.configuration.EmbeddedKafkaTestOperationsAutoConfiguration;
 import com.playtika.test.kafka.configuration.camel.EmbeddedKafkaCamelAutoConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("Test that application")
 public class DisableKafkaTest {
-
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     EmbeddedKafkaBootstrapConfiguration.class,
@@ -41,8 +42,9 @@ public class DisableKafkaTest {
                     EmbeddedKafkaCamelAutoConfiguration.class));
 
     @Test
+    @DisplayName("run with zookeeper & kafka disabled")
     public void contextLoads() {
-        this.contextRunner
+        contextRunner
                 .withPropertyValues(
                         "embedded.kafka.enabled=false",
                         "embedded.zookeeper.enabled=false")
@@ -52,5 +54,4 @@ public class DisableKafkaTest {
                         .doesNotHaveBean("zookeeper")
                         .doesNotHaveBean("kafka"));
     }
-
 }
