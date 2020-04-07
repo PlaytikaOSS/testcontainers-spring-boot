@@ -35,6 +35,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
             MongodbStatusCheck mongodbStatusCheck) {
         GenericContainer mongodb =
                 new GenericContainer<>(properties.getDockerImage())
+                        .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
+                        .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.getPort())
@@ -60,6 +62,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.mongodb.port", mappedPort);
         map.put("embedded.mongodb.host", host);
+        map.compute("embedded.mongodb.username", (k, v) -> properties.getUsername());
+        map.compute("embedded.mongodb.password", (k, v) -> properties.getPassword());
         map.put("embedded.mongodb.database", properties.getDatabase());
 
         log.info("Started mongodb. Connection Details: {}, Connection URI: mongodb://{}:{}/{}", map, host, mappedPort, properties.getDatabase());
