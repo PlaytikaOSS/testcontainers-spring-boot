@@ -435,11 +435,15 @@ VoltDB container has no security enabled, you can use any credentials.
   * You can pick wanted version on [dockerhub](https://hub.docker.com/_/mongo?tab=tags)
 * embedded.mongodb.host `(default is localhost)`
 * embedded.mongodb.port `(default is 27017)`
+* embedded.mongodb.username
+* embedded.mongodb.password
 * embedded.mongodb.database `(default is test)`
 
 ##### Produces
 * embedded.mongodb.host
 * embedded.mongodb.port `(mapped port)`
+* embedded.mongodb.username
+* embedded.mongodb.password
 * embedded.mongodb.database
 
 ##### Example

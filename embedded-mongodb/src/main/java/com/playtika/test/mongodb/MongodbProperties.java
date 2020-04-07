@@ -15,6 +15,8 @@ public class MongodbProperties extends CommonContainerProperties {
     private String dockerImage = "mongo:4.2.0-bionic";
     private String host = "localhost";
     private int port = 27017;
+    private String username;
+    private String password;
     private String database = "test";
 
 }
