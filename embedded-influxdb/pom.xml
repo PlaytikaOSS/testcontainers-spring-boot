@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.4.1</version> <!-- fixed version mandatory for influxdb-java -->
+            <version>4.5.0</version> <!-- fixed version mandatory for influxdb-java -->
             <scope>provided</scope>
         </dependency>
         <dependency>
