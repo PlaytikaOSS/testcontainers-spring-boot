@@ -3,10 +3,12 @@ package com.playtika.test.kafka;
 import com.playtika.test.common.utils.ThrowingRunnable;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -25,15 +27,8 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
+import static org.apache.kafka.clients.producer.ProducerConfig.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 abstract class AbstractEmbeddedKafkaTest {
@@ -127,19 +122,19 @@ abstract class AbstractEmbeddedKafkaTest {
 
     protected Map<String, Object> getKafkaProducerConfiguration(boolean transactional) {
         Map<String, Object> configs = new HashMap<>();
-        configs.put(BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
         configs.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(RETRIES_CONFIG, 0);
         configs.put(BATCH_SIZE_CONFIG, 0);
         if (transactional) {
-            configs.put("transactional.id", "tx-0");
-            configs.put("max.in.flight.requests.per.connection", 1);
-            configs.put("enable.idempotence", true);
-            configs.put("acks", "all");
-            configs.put("retries", 10);
-            configs.put("delivery.timeout.ms", 300000);
-            configs.put("retry.backoff.ms", 1000);
+            configs.put(TRANSACTIONAL_ID_CONFIG, "tx-0");
+            configs.put(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
+            configs.put(ENABLE_IDEMPOTENCE_CONFIG, true);
+            configs.put(ACKS_CONFIG, "all");
+            configs.put(RETRIES_CONFIG, 10);
+            configs.put(DELIVERY_TIMEOUT_MS_CONFIG, 300000);
+            configs.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
         }
         return configs;
     }
@@ -150,15 +145,14 @@ abstract class AbstractEmbeddedKafkaTest {
 
     protected Map<String, Object> getKafkaConsumerConfiguration(boolean transactional) {
         Map<String, Object> configs = new HashMap<>();
-        configs.put(BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
+        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
         configs.put(GROUP_ID_CONFIG, "testGroup");
         configs.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
         configs.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         configs.put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         if (transactional) {
-            configs.put("isolation.level", "read_committed");
-            configs.put("enable.auto.commit", false);
-
+            configs.put(ISOLATION_LEVEL_CONFIG, "read_committed");
+            configs.put(ENABLE_AUTO_COMMIT_CONFIG, false);
         }
         return configs;
     }
