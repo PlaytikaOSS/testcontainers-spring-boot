@@ -75,6 +75,17 @@ abstract class BaseEmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
+    @DisplayName("allows send and consume transactional messages")
+    public void shouldSendAndConsumeTransactionalMessage() throws Exception {
+        sendTransactionalMessage(TOPIC, MESSAGE);
+
+        String consumedMessage = consumeTransactionalMessage(TOPIC);
+
+        assertThat(consumedMessage)
+                .isEqualTo(MESSAGE);
+    }
+
+    @Test
     @DisplayName("allows to emulate latency on send")
     public void shouldEmulateLatencyOnSend() throws Exception {
         kafkaNetworkTestOperations
