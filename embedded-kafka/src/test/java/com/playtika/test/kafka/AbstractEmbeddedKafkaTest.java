@@ -71,18 +71,23 @@ abstract class AbstractEmbeddedKafkaTest {
     }
 
     protected String consumeTransactionalMessage(String topic) {
-        return consumeMessages(topic, true)
+        return consumeMessagesTransactional(topic)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no message received"));
     }
 
     protected List<String> consumeMessages(String topic) {
-        return consumeMessages(topic, false);
+        try (KafkaConsumer<String, String> consumer = createConsumer(topic)) {
+            return pollForRecords(consumer)
+                    .stream()
+                    .map(ConsumerRecord::value)
+                    .collect(Collectors.toList());
+        }
     }
 
-    protected List<String> consumeMessages(String topic, boolean transactional) {
-        try (KafkaConsumer<String, String> consumer = createConsumer(topic, transactional)) {
+    protected List<String> consumeMessagesTransactional(String topic) {
+        try (KafkaConsumer<String, String> consumer = createTransactionalConsumer(topic)) {
             return pollForRecords(consumer)
                     .stream()
                     .map(ConsumerRecord::value)
@@ -96,14 +101,23 @@ abstract class AbstractEmbeddedKafkaTest {
     }
 
     protected KafkaProducer<String, String> createTransactionalProducer() {
-        Map<String, Object> producerConfiguration = getKafkaProducerConfiguration(true);
+        Map<String, Object> producerConfiguration = getKafkaTransactionalProducerConfiguration();
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerConfiguration);
         kafkaProducer.initTransactions();
         return kafkaProducer;
     }
 
-    protected KafkaConsumer<String, String> createConsumer(String topic, boolean transactional) {
-        Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration(transactional);
+    protected KafkaConsumer<String, String> createConsumer(String topic) {
+        Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration();
+        Properties properties = new Properties();
+        properties.putAll(consumerConfiguration);
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+        consumer.subscribe(singleton(topic));
+        return consumer;
+    }
+
+    protected KafkaConsumer<String, String> createTransactionalConsumer(String topic) {
+        Map<String, Object> consumerConfiguration = getKafkaTransactionalConsumerConfiguration();
         Properties properties = new Properties();
         properties.putAll(consumerConfiguration);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
@@ -117,43 +131,50 @@ abstract class AbstractEmbeddedKafkaTest {
     }
 
     protected Map<String, Object> getKafkaProducerConfiguration() {
-        return getKafkaProducerConfiguration(false);
-    }
-
-    protected Map<String, Object> getKafkaProducerConfiguration(boolean transactional) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
         configs.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(RETRIES_CONFIG, 0);
         configs.put(BATCH_SIZE_CONFIG, 0);
-        if (transactional) {
-            configs.put(TRANSACTIONAL_ID_CONFIG, "tx-0");
-            configs.put(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
-            configs.put(ENABLE_IDEMPOTENCE_CONFIG, true);
-            configs.put(ACKS_CONFIG, "all");
-            configs.put(RETRIES_CONFIG, 10);
-            configs.put(DELIVERY_TIMEOUT_MS_CONFIG, 300000);
-            configs.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
-        }
+        return configs;
+    }
+
+    protected Map<String, Object> getKafkaTransactionalProducerConfiguration() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
+        configs.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        configs.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        configs.put(BATCH_SIZE_CONFIG, 0);
+        configs.put(TRANSACTIONAL_ID_CONFIG, "tx-0");
+        configs.put(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
+        configs.put(ENABLE_IDEMPOTENCE_CONFIG, true);
+        configs.put(ACKS_CONFIG, "all");
+        configs.put(RETRIES_CONFIG, 10);
+        configs.put(DELIVERY_TIMEOUT_MS_CONFIG, 300000);
+        configs.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
         return configs;
     }
 
     protected Map<String, Object> getKafkaConsumerConfiguration() {
-        return getKafkaConsumerConfiguration(false);
-    }
-
-    protected Map<String, Object> getKafkaConsumerConfiguration(boolean transactional) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
         configs.put(GROUP_ID_CONFIG, "testGroup");
         configs.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
         configs.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         configs.put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        if (transactional) {
-            configs.put(ISOLATION_LEVEL_CONFIG, "read_committed");
-            configs.put(ENABLE_AUTO_COMMIT_CONFIG, false);
-        }
+        return configs;
+    }
+
+    protected Map<String, Object> getKafkaTransactionalConsumerConfiguration() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
+        configs.put(GROUP_ID_CONFIG, "testGroup");
+        configs.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
+        configs.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        configs.put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        configs.put(ISOLATION_LEVEL_CONFIG, "read_committed");
+        configs.put(ENABLE_AUTO_COMMIT_CONFIG, false);
         return configs;
     }
 
