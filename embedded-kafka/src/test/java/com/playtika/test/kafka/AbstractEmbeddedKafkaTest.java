@@ -60,8 +60,23 @@ abstract class AbstractEmbeddedKafkaTest {
         }
     }
 
+    protected void sendTransactionalMessage(String topic, String message) throws Exception {
+        try (KafkaProducer<String, String> kafkaProducer = createTransactionalProducer()) {
+            kafkaProducer.beginTransaction();
+            kafkaProducer.send(new ProducerRecord<>(topic, message)).get();
+            kafkaProducer.commitTransaction();
+        }
+    }
+
     protected String consumeMessage(String topic) {
         return consumeMessages(topic)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("no message received"));
+    }
+
+    protected String consumeTransactionalMessage(String topic) {
+        return consumeTransactionalMessages(topic)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no message received"));
@@ -76,13 +91,38 @@ abstract class AbstractEmbeddedKafkaTest {
         }
     }
 
+    protected List<String> consumeTransactionalMessages(String topic) {
+        try (KafkaConsumer<String, String> consumer = createConsumer(topic, true)) {
+            return pollForRecords(consumer)
+                    .stream()
+                    .map(ConsumerRecord::value)
+                    .collect(Collectors.toList());
+        }
+    }
+
     protected KafkaProducer<String, String> createProducer() {
         Map<String, Object> producerConfiguration = getKafkaProducerConfiguration();
         return new KafkaProducer<>(producerConfiguration);
     }
 
+    protected KafkaProducer<String, String> createTransactionalProducer() {
+        Map<String, Object> producerConfiguration = getKafkaProducerConfiguration(true);
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerConfiguration);
+        kafkaProducer.initTransactions();
+        return kafkaProducer;
+    }
+
     protected KafkaConsumer<String, String> createConsumer(String topic) {
         Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration();
+        Properties properties = new Properties();
+        properties.putAll(consumerConfiguration);
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+        consumer.subscribe(singleton(topic));
+        return consumer;
+    }
+
+    protected KafkaConsumer<String, String> createConsumer(String topic, boolean transactional) {
+        Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration(transactional);
         Properties properties = new Properties();
         properties.putAll(consumerConfiguration);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
@@ -96,22 +136,44 @@ abstract class AbstractEmbeddedKafkaTest {
     }
 
     protected Map<String, Object> getKafkaProducerConfiguration() {
+        return getKafkaProducerConfiguration(false);
+    }
+
+    protected Map<String, Object> getKafkaProducerConfiguration(boolean transactional) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
         configs.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         configs.put(RETRIES_CONFIG, 0);
         configs.put(BATCH_SIZE_CONFIG, 0);
+        if (transactional) {
+            configs.put("transactional.id", "tx-0");
+            configs.put("max.in.flight.requests.per.connection", 1);
+            configs.put("enable.idempotence", true);
+            configs.put("acks", "all");
+            configs.put("retries", 10);
+            configs.put("delivery.timeout.ms", 300000);
+            configs.put("retry.backoff.ms", 1000);
+        }
         return configs;
     }
 
     protected Map<String, Object> getKafkaConsumerConfiguration() {
+        return getKafkaConsumerConfiguration(false);
+    }
+
+    protected Map<String, Object> getKafkaConsumerConfiguration(boolean transactional) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(BOOTSTRAP_SERVERS_CONFIG, kafkaBrokerList);
         configs.put(GROUP_ID_CONFIG, "testGroup");
         configs.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
         configs.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         configs.put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        if (transactional) {
+            configs.put("isolation.level", "read_committed");
+            configs.put("enable.auto.commit", false);
+
+        }
         return configs;
     }
 
