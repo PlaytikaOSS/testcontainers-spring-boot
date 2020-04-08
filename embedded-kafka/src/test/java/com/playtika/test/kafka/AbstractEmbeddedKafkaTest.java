@@ -76,23 +76,18 @@ abstract class AbstractEmbeddedKafkaTest {
     }
 
     protected String consumeTransactionalMessage(String topic) {
-        return consumeTransactionalMessages(topic)
+        return consumeMessages(topic, true)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no message received"));
     }
 
     protected List<String> consumeMessages(String topic) {
-        try (KafkaConsumer<String, String> consumer = createConsumer(topic)) {
-            return pollForRecords(consumer)
-                    .stream()
-                    .map(ConsumerRecord::value)
-                    .collect(Collectors.toList());
-        }
+        return consumeMessages(topic, false);
     }
 
-    protected List<String> consumeTransactionalMessages(String topic) {
-        try (KafkaConsumer<String, String> consumer = createConsumer(topic, true)) {
+    protected List<String> consumeMessages(String topic, boolean transactional) {
+        try (KafkaConsumer<String, String> consumer = createConsumer(topic, transactional)) {
             return pollForRecords(consumer)
                     .stream()
                     .map(ConsumerRecord::value)
@@ -110,15 +105,6 @@ abstract class AbstractEmbeddedKafkaTest {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerConfiguration);
         kafkaProducer.initTransactions();
         return kafkaProducer;
-    }
-
-    protected KafkaConsumer<String, String> createConsumer(String topic) {
-        Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration();
-        Properties properties = new Properties();
-        properties.putAll(consumerConfiguration);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
-        consumer.subscribe(singleton(topic));
-        return consumer;
     }
 
     protected KafkaConsumer<String, String> createConsumer(String topic, boolean transactional) {
