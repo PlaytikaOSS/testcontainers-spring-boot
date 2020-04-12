@@ -29,8 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.vault.core.VaultOperations;
+import org.springframework.vault.support.Versioned;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {
@@ -41,11 +46,23 @@ public class EmbeddedVaultBootstrapConfigurationTest {
     @Autowired
     private ConfigurableEnvironment environment;
 
+    @Autowired
+    private VaultOperations valueOperations;
+
     @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.vault.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.vault.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.vault.token")).isNotEmpty();
         assertThat(environment.getProperty("secret_one")).isNotEmpty();
+    }
+
+    @Test
+    public void shouldReadASecret() {
+        Versioned<Map<String, Object>> secrets = valueOperations.opsForVersionedKeyValue("secret").get("application");
+
+        assertThat(secrets.getData())
+                .as("check secret")
+                .containsExactly(entry("secret_one", "password1"));
     }
 }
