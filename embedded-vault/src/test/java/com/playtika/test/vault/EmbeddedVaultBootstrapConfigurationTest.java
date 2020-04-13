@@ -47,7 +47,7 @@ public class EmbeddedVaultBootstrapConfigurationTest {
     private ConfigurableEnvironment environment;
 
     @Autowired
-    private VaultOperations valueOperations;
+    private VaultOperations vaultOperations;
 
     @Test
     public void propertiesAreAvailable() {
@@ -59,7 +59,7 @@ public class EmbeddedVaultBootstrapConfigurationTest {
 
     @Test
     public void shouldReadASecret() {
-        Versioned<Map<String, Object>> secrets = valueOperations.opsForVersionedKeyValue("secret").get("application");
+        Versioned<Map<String, Object>> secrets = vaultOperations.opsForVersionedKeyValue("secret").get("application");
 
         assertThat(secrets.getData())
                 .as("check secret")
