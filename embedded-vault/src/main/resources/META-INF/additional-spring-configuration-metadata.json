@@ -1,0 +1,39 @@
+{
+  "properties": [
+    {
+      "name": "embedded.vault.enabled",
+      "type": "java.lang.String",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.vault.dockerImage",
+      "type": "java.lang.String",
+      "defaultValue": "vault:1.4.0"
+    },
+    {
+      "name": "embedded.vault.host",
+      "type": "java.lang.String",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "embedded.vault.port",
+      "type": "java.lang.Integer",
+      "description": "The container internal port. Will be overwritten with mapped port.",
+      "defaultValue": "8200"
+    },
+    {
+      "name": "embedded.vault.token",
+      "type": "java.lang.String",
+      "defaultValue": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "embedded.vault.path",
+      "type": "java.lang.String",
+      "defaultValue": "secret/application"
+    },
+    {
+      "name": "embedded.vault.secrets",
+      "type": "java.util.Map"
+    }
+  ]
+}

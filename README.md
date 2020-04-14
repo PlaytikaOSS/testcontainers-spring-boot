@@ -30,6 +30,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    15. [embedded-google-pubsub](#embedded-google-pubsub)
    16. [embedded-keycloak](#embedded-keycloak)
    17. [embedded-influxdb](#embedded-influxdb)
+   18. [embedded-vault](#embedded-vault)
 
 3. [How to contribute](#how-to-contribute)
 
@@ -560,6 +561,44 @@ influxdb:
   user: ${embedded.influxdb.user}
   password: ${embedded.influxdb.password}
   database: ${embedded.influxdb.database}
+```
+
+### embedded-vault
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-vault</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.vault.enabled` (boolean, true|false, default is 'true')
+* `embedded.vault.dockerImage` (String, default is set to 'vault:1.4.0')
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/_/vault)
+* `embedded.vault.host` (String, default is 'localhost')
+* `embedded.vault.port` (int, default is 8200)
+* `embedded.vault.token` (String, default is '00000000-0000-0000-0000-000000000000')
+* `embedded.vault.path` (String, default is 'secret/application')
+* `embedded.vault.secrets` (Map, default is empty)
+
+##### Produces
+* `embedded.vault.host`
+* `embedded.vault.port` (mapped HTTP port)
+* `embedded.vault.token`
+
+##### Example
+To auto-configure spring-cloud-vault-config use these properties in your test `bootstrap.properties`:
+```yaml
+spring.cloud.vault:
+  scheme: http
+  host: ${embedded.vault.host}
+  port: ${embedded.vault.port}
+  token: ${embedded.vault.token}
+  kv:
+   enabled: true
 ```
 
 ## How to contribute
