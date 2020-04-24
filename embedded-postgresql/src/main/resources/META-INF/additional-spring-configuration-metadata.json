@@ -11,6 +11,11 @@
       "name": "embedded.postgresql.docker-image",
       "type": "java.lang.String",
       "defaultValue": "postgres:10-alpine"
+    },
+    {
+      "name": "embedded.postgresql.expose-props-as-sys-props",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
     }
   ],
   "hints": [
@@ -53,6 +58,19 @@
         {
           "value": "timescale/timescaledb:latest-pg11",
           "description": "Latest 11.x alpine timescaledb version. Ref https://hub.docker.com/r/timescale/timescaledb for further info."
+        }
+      ]
+    },
+    {
+      "name": "embedded.postgresql.expose-props-as-sys-props",
+      "values": [
+        {
+          "value": "true",
+          "description": "Exposes the embedded.postgresql.* properties as system properties. Each property name will be transformed to upper case and the '.' replaced with '_'."
+        },
+        {
+          "value": "false",
+          "description": "Will not Exposed the properties (embedded.postgresql.*) as system properties."
         }
       ]
     }

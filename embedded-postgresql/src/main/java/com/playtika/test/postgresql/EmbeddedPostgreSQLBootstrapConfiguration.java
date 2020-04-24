@@ -82,6 +82,20 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedPostgreInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+
+        if(properties.getExposePropsAsSysProps()) {
+            log.info("Exposing properties (additionally) as system properties");
+            map.entrySet().forEach( p -> {
+                String key = p.getKey().toUpperCase().replace(".","_");
+                String value = p.getValue() != null ? p.getValue().toString(): null;
+                if(System.getProperty(key) != null) {
+                    if(!System.getProperty(key).equals(value)) {
+                        log.info("The property {} value will be changed from {} to {}", key, System.getProperty(key), value);
+                    }
+                }
+                System.setProperty(key, value);
+            });
+        }
     }
 
     private static class ConcretePostgreSQLContainer extends PostgreSQLContainer<ConcretePostgreSQLContainer> {

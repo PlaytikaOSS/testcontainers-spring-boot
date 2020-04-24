@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class PostgreSQLProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_POSTGRESQL = "embeddedPostgreSql";
     String dockerImage = "postgres:10-alpine";
+    Boolean exposePropsAsSysProps = Boolean.FALSE;
 
     String user = "postgresql";
     String password = "letmein";
