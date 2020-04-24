@@ -56,7 +56,7 @@
         <java.version>1.8</java.version>
 
         <testcontainers.version>1.14.0</testcontainers.version>
-        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <spring.cloud.version>Hoxton.SR4</spring.cloud.version>
 
         <equalsverifier.version>3.1.13</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>
