@@ -7,13 +7,13 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.37-SNAPSHOT</version>
+        <version>1.49-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-mariadb</artifactId>
 
     <properties>
-        <mariadb-driver.version>2.5.2</mariadb-driver.version>
+        <mariadb-driver.version>2.6.0</mariadb-driver.version>
     </properties>
 
     <dependencies>

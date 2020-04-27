@@ -7,13 +7,13 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.37-SNAPSHOT</version>
+        <version>1.49-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-google-pubsub</artifactId>
 
     <properties>
-        <google-cloud-pubsub.version>1.102.0</google-cloud-pubsub.version>
+        <google-cloud-pubsub.version>1.105.0</google-cloud-pubsub.version>
     </properties>
 
     <dependencies>

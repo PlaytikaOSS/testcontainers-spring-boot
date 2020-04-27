@@ -3,6 +3,7 @@ package com.playtika.test.minio;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.utils.ThrowingRunnable;
 import io.minio.MinioClient;
+import io.minio.PutObjectOptions;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
 import org.assertj.core.data.Offset;
@@ -57,7 +58,7 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     public void shouldEmulateLatency() throws Exception {
         minioNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))
-                        .isCloseTo(1000L, Offset.offset(300L))
+                        .isGreaterThan(1000L)
         );
 
         assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))
@@ -65,7 +66,7 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     }
 
     private void writeFileToMinio(String fileName, String path) throws Exception {
-        minioClient.putObject(BUCKET, fileName, path, null, null, null, null);
+        minioClient.putObject(BUCKET, fileName, path, new PutObjectOptions(12,PutObjectOptions.MIN_MULTIPART_SIZE));
     }
 
     private String readFileFromMinio(String fileName) throws Exception {
@@ -100,7 +101,7 @@ public class EmbeddedMinioBootstrapConfigurationTest {
                 @Value("${embedded.minio.accessKey}") String accessKey,
                 @Value("${embedded.minio.secretKey}") String secretKey,
                 @Value("${embedded.minio.region}") String region) throws InvalidPortException, InvalidEndpointException {
-            return new MinioClient("http://localhost:" + port, accessKey, secretKey, region);
+            return new MinioClient("http://localhost:" + port, accessKey, secretKey,  false);
         }
     }
 }

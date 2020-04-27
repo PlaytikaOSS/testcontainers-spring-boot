@@ -25,6 +25,14 @@
       "name": "embedded.mongodb.database",
       "type": "java.lang.String",
       "defaultValue": "test"
+    },
+    {
+      "name": "embedded.mongodb.username",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "embedded.mongodb.password",
+      "type": "java.lang.String"
     }
   ]
 }

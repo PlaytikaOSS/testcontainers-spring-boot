@@ -27,7 +27,11 @@ Usage of spring cloud in your production code is optional, but you will need it 
    12. [embedded-dynamodb](#embedded-dynamodb)
    13. [embedded-minio](#embedded-minio)
    14. [embedded-mongodb](#embedded-mongodb)
-   14. [embedded-google-pubsub](#embedded-google-pubsub)
+   15. [embedded-google-pubsub](#embedded-google-pubsub)
+   16. [embedded-keycloak](#embedded-keycloak)
+   17. [embedded-influxdb](#embedded-influxdb)
+   18. [embedded-vault](#embedded-vault)
+
 3. [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -38,6 +42,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
       <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
+            <version>PICK LATEST VERSION</version>
             ...
         </dependency>
 ...
@@ -50,11 +55,13 @@ Usage of spring cloud in your production code is optional, but you will need it 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>PICK LATEST VERSION</version>
             ...
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
+            <version>PICK LATEST VERSION</version>          
             ...
             <scope>test</scope>
         </dependency>
@@ -75,7 +82,9 @@ Usage of spring cloud in your production code is optional, but you will need it 
 ```
 #### Use produced properties in your configuration
 #### Example:
+```properties
 /src/test/resources/application.properties
+```
 
 ```properties
 spring.kafka.bootstrap-servers=${embedded.kafka.brokerList}
@@ -153,11 +162,22 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.zookeeper.enabled `(true|false, default is 'true')`
 * embedded.zookeeper.waitTimeoutInSeconds `(default is 60 seconds)`
 * embedded.zookeeper.dockerImage `(default : confluentinc/cp-zookeeper:4.1.2)`
+  * To use another zookeper version pick corresponding docker image on [dockerhub](https://hub.docker.com/r/confluentinc/cp-zookeeper/tags)
 * embedded.kafka.enabled `(true|false, default is 'true')`
 * embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
 * embedded.kafka.dockerImage `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
-  * To use another kafka version pick corresponding docker image from [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
+  * To use another kafka version pick corresponding docker image on  [dockerhub](https://hub.docker.com/r/confluentinc/cp-kafka/tags)
+  * [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
 * embedded.kafka.waitTimeoutInSeconds `(default is 60 seconds)`
+
+##### Filesystem bindings
+Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to host filesystem. By default, to your projects `target` folder. You can configure binding using properties:
+* embedded.zookeeper.fileSystemBind.enabled `(true|false, default is 'true')`
+* embedded.zookeeper.fileSystemBind.dataFolder `(default : target/embedded-zk-data)`
+* embedded.zookeeper.fileSystemBind.txnLogsFolder `(default : target/embedded-zk-txn-logs)`
+* embedded.kafka.enabled `(true|false, default is 'true')`
+* embedded.kafka.fileSystemBind.dataFolder `(default : target/embedded-kafka-data)`
+
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
@@ -173,15 +193,17 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes (via bootstrap.properties)
 * embedded.rabbitmq.enabled `(true|false, default is 'true')`
-* embedded.rabbitmq.user `(default : rabbitmq)`
 * embedded.rabbitmq.password `(default : rabbitmq)`
 * embedded.rabbitmq.vhost `(virtual host, default: '/')`
-* embedded.rabbitmq.dockerImage `(default: rabbitmq/3-management)`
+* embedded.rabbitmq.dockerImage `(default: rabbitmq:3-alpine)`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/rabbitmq/tags/)
 * embedded.rabbitmq.waitTimeoutInSeconds `(default is 60 seconds)`
 ##### Produces
 * embedded.rabbitmq.host
 * embedded.rabbitmq.port
+* embedded.rabbitmq.user
+* embedded.rabbitmq.password
+* embedded.rabbitmq.vhost
 
 ### embedded-aerospike
 ##### Maven dependency
@@ -250,6 +272,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.redis.waitTimeoutInSeconds `(default is 60 seconds)`  
 * embedded.redis.clustered `(default is 'false')`
   * If 'true' Redis is started in cluster mode
+* embedded.redis.requirepass `(default is 'true')`
 ##### Produces
 * embedded.redis.host
 * embedded.redis.port
@@ -278,6 +301,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.neo4j.boltPort
 
 ### embedded-zookeeper
+##### Under construction...
 ##### Consumes (via bootstrap.properties)
 * 
 ##### Produces
@@ -294,9 +318,12 @@ embedded.kafka.topicsToCreate=some_topic
 ```
 ##### Consumes (via bootstrap.properties)
 * embedded.postgresql.enabled `(true|false, default is 'true')`
-* embedded.postgresql.dockerImage `(default is set to 'postgres:9.6.8')`
+* embedded.postgresql.dockerImage `(default is set to 'postgres:10-alpine')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/postgres/tags/)
 * embedded.postgresql.waitTimeoutInSeconds `(default is 60 seconds)`
+* embedded.postgresql.schema
+* embedded.postgresql.user
+* embedded.postgresql.password
 ##### Produces
 * embedded.postgresql.port
 * embedded.postgresql.host
@@ -409,15 +436,19 @@ VoltDB container has no security enabled, you can use any credentials.
   * You can pick wanted version on [dockerhub](https://hub.docker.com/_/mongo?tab=tags)
 * embedded.mongodb.host `(default is localhost)`
 * embedded.mongodb.port `(default is 27017)`
+* embedded.mongodb.username
+* embedded.mongodb.password
 * embedded.mongodb.database `(default is test)`
 
 ##### Produces
 * embedded.mongodb.host
 * embedded.mongodb.port `(mapped port)`
+* embedded.mongodb.username
+* embedded.mongodb.password
 * embedded.mongodb.database
 
 ##### Example
-To auto-configure spring-data-mongodb use these properties in your test application.properties:
+To auto-configure spring-data-mongodb use these properties in your test `application.properties`:
 ```
 spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
 ```
@@ -452,10 +483,122 @@ spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.po
 * embedded.google.pubsub.project-id
 
 ##### Example
-To auto-configure spring-cloud-gcp-starter-pubsub use these properties in your test application.properties:
+To auto-configure spring-cloud-gcp-starter-pubsub use these properties in your test `application.properties`:
 ```
 spring.cloud.gcp.project-id=${embedded.google.pubsub.project-id}
 spring.cloud.gcp.pubsub.emulatorHost=${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+```
+
+### embedded-keycloak
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-keycloak</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.keycloak.enabled` (boolean, true|false, default is 'true')
+* `embedded.keycloak.dockerImage` (String, default is set to 'jboss/keycloak:8.0.1')
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/jboss/keycloak)
+* `embedded.keycloak.command` (String[], default is '["-c", "standalone.xml", "-Dkeycloak.profile.feature.upload_scripts=enabled"]')
+* `embedded.keycloak.admin-user` (String, default is 'admin')
+* `embedded.keycloak.admin-password` (String, default is 'letmein')
+* `embedded.keycloak.import-file` (String, default is '')
+
+##### Produces
+* `embedded.keycloak.host`
+* `embedded.keycloak.http-port` (mapped HTTP port)
+* `embedded.keycloak.auth-server-url`
+
+##### Example
+To configure for example the `keycloak-spring-boot-starter` use these properties in your test `application.yml`:
+```yaml
+keycloak:
+  auth-server-url: ${embedded.keycloak.auth-server-url}
+```
+
+### embedded-influxdb
+
+#### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-influxdb</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.influxdb.enabled` (boolean, true|false, default is 'true')
+* `embedded.influxdb.dockerImage` (String, default is set to 'influxdb:1.5-alpine')
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/_/influxdb)
+* `embedded.influxdb.admin-user` (String, default is 'admin')
+* `embedded.influxdb.admin-password` (String, default is 'admin')
+* `embedded.influxdb.user` (String, default is 'user')
+* `embedded.influxdb.password` (String, default is 'password')
+* `embedded.influxdb.enable-http-auth` (boolean true|false, default is 'true')
+* `embedded.influxdb.host` (String, default is 'localhost')
+* `embedded.influxdb.port` (int, default is '8086')
+* `embedded.influxdb.database` (String, default is 'db')
+
+##### Produces
+* `embedded.influxdb.database`
+* `embedded.influxdb.host`
+* `embedded.influxdb.password`
+* `embedded.influxdb.port` (mapped HTTP port)
+* `embedded.influxdb.user`
+
+##### Example
+There is currently no starter library for using InfluxDB server version 1.x because it uses basic HTTP protocol to communicate.
+You can anyway create your own properties using those values for example in your test `application.yml`:
+```yaml
+influxdb:
+  url: http://${embedded.influxdb.host}:${embedded.influxdb.port}
+  user: ${embedded.influxdb.user}
+  password: ${embedded.influxdb.password}
+  database: ${embedded.influxdb.database}
+```
+
+### embedded-vault
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-vault</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.vault.enabled` (boolean, true|false, default is 'true')
+* `embedded.vault.dockerImage` (String, default is set to 'vault:1.4.0')
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/_/vault)
+* `embedded.vault.host` (String, default is 'localhost')
+* `embedded.vault.port` (int, default is 8200)
+* `embedded.vault.token` (String, default is '00000000-0000-0000-0000-000000000000')
+* `embedded.vault.path` (String, default is 'secret/application')
+* `embedded.vault.secrets` (Map, default is empty)
+
+##### Produces
+* `embedded.vault.host`
+* `embedded.vault.port` (mapped HTTP port)
+* `embedded.vault.token`
+
+##### Example
+To auto-configure spring-cloud-vault-config use these properties in your test `bootstrap.properties`:
+```yaml
+spring.cloud.vault:
+  scheme: http
+  host: ${embedded.vault.host}
+  port: ${embedded.vault.port}
+  token: ${embedded.vault.token}
+  kv:
+   enabled: true
 ```
 
 ## How to contribute

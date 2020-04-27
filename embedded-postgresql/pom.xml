@@ -5,20 +5,25 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.37-SNAPSHOT</version>
+        <version>1.49-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>embedded-postgresql</artifactId>
 
     <properties>
-        <postgresql-driver.version>42.2.9</postgresql-driver.version>
+        <postgresql-driver.version>42.2.12</postgresql-driver.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${testcontainers.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

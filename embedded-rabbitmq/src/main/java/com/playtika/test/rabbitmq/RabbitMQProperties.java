@@ -35,7 +35,6 @@ public class RabbitMQProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_RABBITMQ = "embeddedRabbitMq";
     private String dockerImage = "rabbitmq:3-alpine";
 
-    private String user = "rabbitmq";
     private String password = "rabbitmq";
     private String host = "localhost";
     private String vhost = "/";

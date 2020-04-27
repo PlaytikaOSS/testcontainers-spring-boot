@@ -7,14 +7,14 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.37-SNAPSHOT</version>
+        <version>1.49-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>3.0.0</camel.version>
-        <kafka-clients.version>2.4.0</kafka-clients.version>
+        <camel.version>3.2.0</camel.version>
+        <kafka-clients.version>2.5.0</kafka-clients.version>
     </properties>
 
     <dependencyManagement>
@@ -41,8 +41,15 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-spring-boot</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-boot-starter</artifactId>
+            <version>${camel.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -53,11 +60,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-kafka</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test-spring</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
