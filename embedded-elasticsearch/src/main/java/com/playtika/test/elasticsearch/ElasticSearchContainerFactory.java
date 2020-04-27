@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,18 +28,18 @@ import com.playtika.test.elasticsearch.rest.CreateIndex;
 import com.playtika.test.elasticsearch.rest.WaitForGreenStatus;
 import org.slf4j.Logger;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 
 class ElasticSearchContainerFactory {
 
-    static GenericContainer create(ElasticSearchProperties properties, Logger containerLogger) {
-        return new FixedHostPortGenericContainer<>(properties.dockerImage)
+    static ElasticsearchContainer create(ElasticSearchProperties properties, Logger containerLogger) {
+        return new ElasticsearchContainer(properties.dockerImage)
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.elasticsearch")
 public class ElasticSearchProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
-    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:6.2.4";
+    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:6.4.1";
 
     String clusterName = "test_cluster";
     String host = "localhost";
