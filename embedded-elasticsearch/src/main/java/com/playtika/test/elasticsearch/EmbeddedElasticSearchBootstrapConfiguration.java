@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
@@ -48,17 +49,17 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH)
     @Bean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH, destroyMethod = "stop")
-    public GenericContainer elasticSearch(ConfigurableEnvironment environment,
-                                          ElasticSearchProperties properties) {
+    public ElasticsearchContainer elasticSearch(ConfigurableEnvironment environment,
+                                                ElasticSearchProperties properties) {
         log.info("Starting ElasticSearch server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer elasticSearch = ElasticSearchContainerFactory.create(properties, log);
+        ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties, log);
         elasticSearch.start();
         registerElasticSearchEnvironment(elasticSearch, environment, properties);
         return elasticSearch;
     }
 
-    private void registerElasticSearchEnvironment(GenericContainer elasticSearch,
+    private void registerElasticSearchEnvironment(ElasticsearchContainer elasticSearch,
                                                   ConfigurableEnvironment environment,
                                                   ElasticSearchProperties properties) {
         Integer httpPort = elasticSearch.getMappedPort(properties.httpPort);
