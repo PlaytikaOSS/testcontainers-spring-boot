@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2020 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  */
 package com.playtika.test.mariadb;
 
+import java.util.LinkedHashMap;
+
 import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,9 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
-
-import java.util.LinkedHashMap;
+import org.testcontainers.containers.MariaDBContainer;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
@@ -47,22 +47,14 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ConditionalOnProperty(name = "embedded.mariadb.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MariaDBProperties.class)
 public class EmbeddedMariaDBBootstrapConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean
-    MariaDBStatusCheck mariaDBStartupCheckStrategy(MariaDBProperties properties) {
-        return new MariaDBStatusCheck();
-    }
-
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
-    public GenericContainer mariadb(ConfigurableEnvironment environment,
-                                    MariaDBProperties properties,
-                                    MariaDBStatusCheck mariaDBStatusCheck) throws Exception {
+    public MariaDBContainer mariadb(ConfigurableEnvironment environment,
+                                    MariaDBProperties properties) throws Exception {
         log.info("Starting mariadb server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer mariadb =
-                new GenericContainer<>(properties.dockerImage)
-                        .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "true")
+        MariaDBContainer mariadb =
+                new MariaDBContainer<>(properties.dockerImage)
+                        .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
                         .withEnv("MYSQL_USER", properties.getUser())
                         .withEnv("MYSQL_PASSWORD", properties.getPassword())
                         .withEnv("MYSQL_DATABASE", properties.getDatabase())
@@ -72,14 +64,13 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .waitingFor(mariaDBStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
         mariadb.start();
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;
     }
 
-    private void registerMariadbEnvironment(GenericContainer mariadb,
+    private void registerMariadbEnvironment(MariaDBContainer mariadb,
                                             ConfigurableEnvironment environment,
                                             MariaDBProperties properties) {
         Integer mappedPort = mariadb.getMappedPort(properties.port);

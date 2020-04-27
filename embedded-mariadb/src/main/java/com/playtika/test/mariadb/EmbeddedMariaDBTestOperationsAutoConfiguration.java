@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,8 @@
  */
 package com.playtika.test.mariadb;
 
-import com.playtika.test.common.operations.DefaultNetworkTestOperations;
-import com.playtika.test.common.operations.NetworkTestOperations;
-import com.playtika.test.common.properties.InstallPackageProperties;
-import com.playtika.test.common.utils.AptGetPackageInstaller;
-import com.playtika.test.common.utils.PackageInstaller;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,7 +34,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
-import java.util.Collections;
+import com.playtika.test.common.operations.DefaultNetworkTestOperations;
+import com.playtika.test.common.operations.NetworkTestOperations;
+import com.playtika.test.common.properties.InstallPackageProperties;
+import com.playtika.test.common.utils.AptGetPackageInstaller;
+import com.playtika.test.common.utils.PackageInstaller;
 
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
 
