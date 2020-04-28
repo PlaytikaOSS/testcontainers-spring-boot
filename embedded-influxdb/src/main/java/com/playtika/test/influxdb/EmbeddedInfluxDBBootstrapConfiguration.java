@@ -11,6 +11,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.InfluxDBContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
@@ -38,6 +40,8 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                 .withExposedPorts(properties.getPort())
                 .withLogConsumer(containerLogsConsumer(log))
                 .withStartupTimeout(properties.getTimeoutDuration());
+
+        influxDBContainer.waitingFor(getInfluxWaitStrategy(properties.getUser(), properties.getPassword()));
 
         influxDBContainer.start();
         registerInfluxEnvironment(influxDBContainer, environment, properties);
@@ -68,6 +72,15 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     private static class ConcreteInfluxDbContainer extends InfluxDBContainer<ConcreteInfluxDbContainer> {
         ConcreteInfluxDbContainer(final String dockerImageName) {
             setDockerImageName(dockerImageName);
+            addExposedPort(INFLUXDB_PORT);
         }
+    }
+
+    private WaitAllStrategy getInfluxWaitStrategy(String user, String password) {
+        return new WaitAllStrategy()
+                .withStrategy(Wait.forHttp("/ping")
+                                  .withBasicCredentials(user, password)
+                                  .forStatusCode(204))
+                .withStrategy(Wait.forListeningPort());
     }
 }
