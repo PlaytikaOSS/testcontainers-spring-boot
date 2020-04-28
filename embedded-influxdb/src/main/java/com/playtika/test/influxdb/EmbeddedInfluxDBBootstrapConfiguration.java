@@ -1,7 +1,8 @@
 package com.playtika.test.influxdb;
 
+import java.util.LinkedHashMap;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -9,11 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
-
-import java.util.LinkedHashMap;
+import org.testcontainers.containers.InfluxDBContainer;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
@@ -24,42 +21,30 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ConditionalOnProperty(name = "embedded.influxdb.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(InfluxDBProperties.class)
 public class EmbeddedInfluxDBBootstrapConfiguration {
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InfluxDBStatusCheck postgresSQLStartupCheckStrategy(InfluxDBProperties properties) {
-        return new InfluxDBStatusCheck(properties);
-    }
-
     @Bean(name = InfluxDBProperties.EMBEDDED_INFLUX_DB, destroyMethod = "stop")
-    public GenericContainer influxdb(ConfigurableEnvironment environment,
-                                     InfluxDBProperties properties,
-                                     InfluxDBStatusCheck influxDBStatusCheck) {
-        log.info("Starting influxDB server. Docker image: {}", properties.dockerImage);
+    public ConcreteInfluxDbContainer influxdb(ConfigurableEnvironment environment,
+                                              InfluxDBProperties properties) {
+        log.info("Starting influxDB server. Docker image: {}",
+                 properties.dockerImage);
 
-        GenericContainer influxdb =
-                new GenericContainer(properties.dockerImage)
-                        .withEnv("INFLUXDB_ADMIN_USER", properties.getAdminUser())
-                        .withEnv("INFLUXDB_ADMIN_PASSWORD", properties.getAdminPassword())
-                        .withEnv("INFLUXDB_HTTP_AUTH_ENABLED", String.valueOf(properties.isEnableHttpAuth()))
-                        .withEnv("INFLUXDB_USER", properties.getUser())
-                        .withEnv("INFLUXDB_USER_PASSWORD", properties.getPassword())
-                        .withEnv("INFLUXDB_DB", properties.getDatabase())
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.getPort())
-                        .waitingFor(influxDBStatusCheck)
-                        .withStartupTimeout(properties.getTimeoutDuration());
+        ConcreteInfluxDbContainer influxDBContainer = new ConcreteInfluxDbContainer(properties.dockerImage);
+        influxDBContainer
+                .withAdmin(properties.getAdminUser())
+                .withAdminPassword(properties.getAdminPassword())
+                .withAuthEnabled(properties.isEnableHttpAuth())
+                .withUsername(properties.getUser())
+                .withPassword(properties.getPassword())
+                .withDatabase(properties.getDatabase())
+                .withExposedPorts(properties.getPort())
+                .withLogConsumer(containerLogsConsumer(log))
+                .withStartupTimeout(properties.getTimeoutDuration());
 
-        influxdb.setWaitStrategy((new WaitAllStrategy())
-                .withStrategy(Wait.forHttp("/ping").withBasicCredentials(properties.getUser(), properties.getPassword()).forStatusCode(204))
-                .withStrategy(Wait.forListeningPort()));
-
-        influxdb.start();
-        registerInfluxEnvironment(influxdb, environment, properties);
-        return influxdb;
+        influxDBContainer.start();
+        registerInfluxEnvironment(influxDBContainer, environment, properties);
+        return influxDBContainer;
     }
 
-    private void registerInfluxEnvironment(GenericContainer influx,
+    private void registerInfluxEnvironment(ConcreteInfluxDbContainer influx,
                                            ConfigurableEnvironment environment,
                                            InfluxDBProperties properties) {
         Integer mappedPort = influx.getMappedPort(properties.getPort());
@@ -74,10 +59,15 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
 
         String influxDBURL = "http://{}:{}";
         log.info("Started InfluxDB server. Connection details: {}, " +
-                "HTTP connection url: " + influxDBURL, map, host, mappedPort);
+                         "HTTP connection url: " + influxDBURL, map, host, mappedPort);
 
         MapPropertySource propertySource = new MapPropertySource("embeddedInfluxDBInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }
 
+    private static class ConcreteInfluxDbContainer extends InfluxDBContainer<ConcreteInfluxDbContainer> {
+        ConcreteInfluxDbContainer(final String dockerImageName) {
+            setDockerImageName(dockerImageName);
+        }
+    }
 }
