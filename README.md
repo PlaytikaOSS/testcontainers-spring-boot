@@ -321,7 +321,7 @@ Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to ho
 * embedded.postgresql.dockerImage `(default is set to 'postgres:10-alpine')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/postgres/tags/)
 * embedded.postgresql.waitTimeoutInSeconds `(default is 60 seconds)`
-* embedded.postgresql.schema
+* embedded.postgresql.database
 * embedded.postgresql.user
 * embedded.postgresql.password
 ##### Produces
