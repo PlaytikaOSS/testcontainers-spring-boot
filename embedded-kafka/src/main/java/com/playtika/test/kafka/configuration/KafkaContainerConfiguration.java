@@ -41,6 +41,7 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.utility.MountableFile;
 
 import java.net.URI;
 import java.nio.file.Paths;
@@ -81,6 +82,7 @@ public class KafkaContainerConfiguration {
 
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
+        int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
         // https://docs.confluent.io/current/installation/docker/docs/configuration.html search by KAFKA_ADVERTISED_LISTENERS
 
         log.info("Starting kafka broker. Docker image: {}", kafkaProperties.getDockerImage());
@@ -94,9 +96,21 @@ public class KafkaContainerConfiguration {
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
                 //see: https://github.com/wurstmeister/kafka-docker/blob/master/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
-                .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "EXTERNAL_PLAINTEXT:PLAINTEXT,INTERNAL_PLAINTEXT:PLAINTEXT")
-                .withEnv("KAFKA_ADVERTISED_LISTENERS", "EXTERNAL_PLAINTEXT://" + kafkaHost() + ":" + kafkaExternalPort + ",INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort)
-                .withEnv("KAFKA_LISTENERS", "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + ",INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort)
+                .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
+                        "EXTERNAL_PLAINTEXT:PLAINTEXT," +
+                        "EXTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
+                        "INTERNAL_PLAINTEXT:PLAINTEXT"
+                )
+                .withEnv("KAFKA_ADVERTISED_LISTENERS",
+                        "EXTERNAL_PLAINTEXT://" + kafkaHost() + ":" + kafkaExternalPort + "," +
+                        "EXTERNAL_SASL_PLAINTEXT://" + kafkaHost() + ":" + saslPlaintextKafkaExternalPort + "," +
+                        "INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort
+                )
+                .withEnv("KAFKA_LISTENERS",
+                        "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + "," +
+                        "EXTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaExternalPort + "," +
+                        "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort
+                )
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
                 .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getReplicationFactor()))
@@ -105,9 +119,14 @@ public class KafkaContainerConfiguration {
                 .withEnv("KAFKA_LOG_FLUSH_INTERVAL_MS", String.valueOf(kafkaProperties.getLogFlushIntervalMs()))
                 .withEnv("KAFKA_REPLICA_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getReplicaSocketTimeoutMs()))
                 .withEnv("KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getControllerSocketTimeoutMs()))
-                .withExposedPorts(kafkaInternalPort, kafkaExternalPort)
+                .withEnv("KAFKA_SASL_ENABLED_MECHANISMS", "PLAIN")
+                .withEnv("ZOOKEEPER_SASL_ENABLED", "false")
+                .withCopyFileToContainer(MountableFile.forClasspathResource("kafka_server_jaas.conf"), "/etc/kafka/kafka_server_jaas.conf")
+                .withEnv("KAFKA_OPTS", "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf")
+                .withExposedPorts(kafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort)
                 .withFixedExposedPort(kafkaInternalPort, kafkaInternalPort)
                 .withFixedExposedPort(kafkaExternalPort, kafkaExternalPort)
+                .withFixedExposedPort(saslPlaintextKafkaExternalPort, saslPlaintextKafkaExternalPort)
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
@@ -159,6 +178,11 @@ public class KafkaContainerConfiguration {
         String host = kafka.getContainerIpAddress();
         String kafkaBrokerList = format("%s:%d", host, kafkaProperties.getBrokerPort());
         map.put("embedded.kafka.brokerList", kafkaBrokerList);
+
+        String saslPlaintextKafkaBrokerList = format("%s:%d", host, kafkaProperties.getSaslPlaintextBrokerPort());
+        map.put("embedded.kafka.saslPlaintext.brokerList", saslPlaintextKafkaBrokerList);
+        map.put("embedded.kafka.saslPlaintext.user", KafkaConfigurationProperties.KAFKA_USER);
+        map.put("embedded.kafka.saslPlaintext.password", KafkaConfigurationProperties.KAFKA_PASSWORD);
 
         Integer mappedPort = kafka.getMappedPort(kafkaProperties.getContainerBrokerPort());
         String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, mappedPort);

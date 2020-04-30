@@ -63,8 +63,21 @@ abstract class AbstractEmbeddedKafkaTest {
         }
     }
 
+    protected void sendMessage(String topic, String message, Map<String, Object> producerConfiguration) throws Exception {
+        try (KafkaProducer<String, String> kafkaProducer = createProducer(producerConfiguration)) {
+            kafkaProducer.send(new ProducerRecord<>(topic, message)).get();
+        }
+    }
+
     protected String consumeMessage(String topic) {
         return consumeMessages(topic)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("no message received"));
+    }
+
+    protected String consumeMessage(String topic, Map<String, Object> consumerConfiguration) {
+        return consumeMessages(topic, consumerConfiguration)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no message received"));
@@ -95,29 +108,38 @@ abstract class AbstractEmbeddedKafkaTest {
         }
     }
 
+    protected List<String> consumeMessages(String topic, Map<String, Object> consumerConfiguration) {
+        try (KafkaConsumer<String, String> consumer = createConsumer(topic, consumerConfiguration)) {
+            return pollForRecords(consumer)
+                    .stream()
+                    .map(ConsumerRecord::value)
+                    .collect(Collectors.toList());
+        }
+    }
+
     protected KafkaProducer<String, String> createProducer() {
-        Map<String, Object> producerConfiguration = getKafkaProducerConfiguration();
-        return new KafkaProducer<>(producerConfiguration);
+        return createProducer(getKafkaProducerConfiguration());
     }
 
     protected KafkaProducer<String, String> createTransactionalProducer() {
-        Map<String, Object> producerConfiguration = getKafkaTransactionalProducerConfiguration();
-        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(producerConfiguration);
+        KafkaProducer<String, String> kafkaProducer = createProducer(getKafkaTransactionalProducerConfiguration());
         kafkaProducer.initTransactions();
         return kafkaProducer;
     }
 
+    protected KafkaProducer<String, String> createProducer(Map<String, Object> producerConfiguration) {
+        return new KafkaProducer<>(producerConfiguration);
+    }
+
     protected KafkaConsumer<String, String> createConsumer(String topic) {
-        Map<String, Object> consumerConfiguration = getKafkaConsumerConfiguration();
-        Properties properties = new Properties();
-        properties.putAll(consumerConfiguration);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
-        consumer.subscribe(singleton(topic));
-        return consumer;
+        return createConsumer(topic, getKafkaConsumerConfiguration());
     }
 
     protected KafkaConsumer<String, String> createTransactionalConsumer(String topic) {
-        Map<String, Object> consumerConfiguration = getKafkaTransactionalConsumerConfiguration();
+        return createConsumer(topic, getKafkaTransactionalConsumerConfiguration());
+    }
+
+    protected KafkaConsumer<String, String> createConsumer(String topic, Map<String, Object> consumerConfiguration) {
         Properties properties = new Properties();
         properties.putAll(consumerConfiguration);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);

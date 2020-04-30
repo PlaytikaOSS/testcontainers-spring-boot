@@ -45,6 +45,7 @@ public class KafkaTopicsConfigurer {
     @PostConstruct
     void configure() {
         createTopics(this.properties.getTopicsToCreate());
+        restrictTopics(KafkaConfigurationProperties.KAFKA_USER, this.properties.getSecureTopics());
     }
 
     public void createTopics(Collection<String> topics) {
@@ -59,6 +60,21 @@ public class KafkaTopicsConfigurer {
         }
     }
 
+    private void restrictTopics(String username, Collection<String> topics) {
+        if (!topics.isEmpty()) {
+            log.info("Creating ACLs for Kafka topics: {}", topics);
+            for (String topic : topics) {
+                String[] topicConsumerACLsCmd = getTopicConsumerACLCmd(username, topic, kafkaZookeeperConnect);
+                String[] topicProducerACLsCmd = getTopicProducerACLCmd(username, topic, kafkaZookeeperConnect);
+                ContainerUtils.ExecCmdResult topicConsumerACLsOutput = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), topicConsumerACLsCmd);
+                ContainerUtils.ExecCmdResult topicProducerACLsOutput = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), topicProducerACLsCmd);
+                log.debug("Topic={} consumer ACLs cmd='{}' exitCode={} : {}, producer ACLs cmd='{}' exitCode={} : {}",
+                        topic, topicConsumerACLsCmd, topicConsumerACLsOutput.getExitCode(), topicConsumerACLsOutput.getOutput(),
+                        topicProducerACLsCmd, topicProducerACLsOutput.getExitCode(), topicProducerACLsOutput.getOutput());
+            }
+        }
+    }
+
     private String[] getCreateTopicCmd(String topicName, String kafkaZookeeperConnect) {
         return new String[]{
                 "kafka-topics",
@@ -69,4 +85,27 @@ public class KafkaTopicsConfigurer {
                 "--zookeeper", kafkaZookeeperConnect
         };
     }
+
+    private String[] getTopicConsumerACLCmd(String username, String topicName, String kafkaZookeeperConnect) {
+        return new String[]{
+                "kafka-acls",
+                "--authorizer-properties",
+                "zookeeper.connect=" + kafkaZookeeperConnect,
+                "--add", "--allow-principal", "User:" + username,
+                "--consumer", "--topic", topicName,
+                "--group", "*"
+        };
+    }
+
+    private String[] getTopicProducerACLCmd(String username, String topicName, String kafkaZookeeperConnect) {
+        return new String[]{
+                "kafka-acls",
+                "--authorizer-properties",
+                "zookeeper.connect=" + kafkaZookeeperConnect,
+                "--add", "--allow-principal", "User:" + username,
+                "--producer", "--topic", topicName
+        };
+    }
+
+
 }
