@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.53-SNAPSHOT</version>
+        <version>1.53</version>
     </parent>
 
     <artifactId>embedded-rabbitmq</artifactId>
