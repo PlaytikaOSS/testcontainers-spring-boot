@@ -30,6 +30,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.AssertTrue;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -39,15 +40,19 @@ import java.util.Collections;
 public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     public static final String KAFKA_BEAN_NAME = "kafka";
+    public static final String KAFKA_USER = "alice";
+    public static final String KAFKA_PASSWORD = "alice-secret";
 
     protected String brokerList;
     protected String containerBrokerList;
     protected int brokerPort = 0;
     protected int containerBrokerPort = 0;
+    protected int saslPlaintextBrokerPort = 0;
     protected int socketTimeoutMs = 5_000;
     protected int bufferSize = 64 * 1024;
     protected String dockerImage = "confluentinc/cp-kafka:5.4.1";
     protected Collection<String> topicsToCreate = Collections.emptyList();
+    Collection<String> secureTopics = Collections.emptyList();
     protected transient final int replicationFactor = 1;
     //https://github.com/kafka-dev/kafka/blob/0.6.1/core/src/test/scala/unit/kafka/utils/TestUtils.scala#L114
     protected transient final int logFlushIntervalMs = 1;
@@ -70,11 +75,21 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
         if (this.containerBrokerPort == 0) {
             this.containerBrokerPort = ContainerUtils.getAvailableMappingPort();
         }
+
+        if (this.saslPlaintextBrokerPort == 0) {
+            this.saslPlaintextBrokerPort = ContainerUtils.getAvailableMappingPort();
+        }
     }
 
     @Data
     public static final class FileSystemBind {
         private boolean enabled = true;
         private String dataFolder = "target/embedded-kafka-data";
+    }
+
+    @SuppressWarnings("unused")
+    @AssertTrue(message = "embedded.kafka.secureTopics must be listed in embedded.kafka.topicsToCreate")
+    private boolean isSecureTopicsConfigurationValid() {
+        return topicsToCreate.containsAll(secureTopics);
     }
 }

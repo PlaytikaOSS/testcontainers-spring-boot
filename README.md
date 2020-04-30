@@ -165,6 +165,7 @@ embedded.kafka.topicsToCreate=some_topic
   * To use another zookeper version pick corresponding docker image on [dockerhub](https://hub.docker.com/r/confluentinc/cp-zookeeper/tags)
 * embedded.kafka.enabled `(true|false, default is 'true')`
 * embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
+* embedded.kafka.secureTopics `(subset of embedded.kafka.topicsToCreate that should be secured with ACLs)`
 * embedded.kafka.dockerImage `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
   * To use another kafka version pick corresponding docker image on  [dockerhub](https://hub.docker.com/r/confluentinc/cp-kafka/tags)
   * [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
@@ -181,6 +182,30 @@ Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to ho
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
+* embedded.kafka.saslPlaintext.brokerList
+* embedded.kafka.saslPlaintext.user
+* embedded.kafka.saslPlaintext.password
+
+##### Using SASL_PLAINTEXT
+Note that only `SASL_PLAINTEXT` protocol supported, meaning TLS is not used.  
+embedded-kafka configuration (via bootstrap.properties):
+```properties
+embedded.kafka.topicsToCreate=nonSecureTopic,secureTopic
+embedded.kafka.secureTopics=secureTopic
+```
+Application configuration:
+```properties
+# Common for Producer and Consumer 
+bootstrap.servers=${embedded.kafka.saslPlaintext.brokerList}
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+  username="${embedded.kafka.saslPlaintext.user}" \
+  password="${embedded.kafka.saslPlaintext.password}";
+
+# Consumer group.id could be any as ACLs are applied to wildcard group
+```
+
 
 ### embedded-rabbitmq
 ##### Maven dependency
