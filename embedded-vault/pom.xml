@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.52</version>
+        <version>1.53-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-vault</artifactId>
