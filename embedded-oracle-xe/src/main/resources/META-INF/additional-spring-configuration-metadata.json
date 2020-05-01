@@ -1,0 +1,40 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.oracle.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.oracle.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "oracleinanutshell/oracle-xe-11g"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.oracle.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of oracle server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disables configuration of oracle server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.oracle.docker-image",
+      "values": [
+        {
+          "value": "oracleinanutshell/oracle-xe-11ge",
+          "description": "Ref https://hub.docker.com/r/oracleinanutshell/oracle-xe-11g for further info."
+        }
+      ]
+    }
+  ]
+}

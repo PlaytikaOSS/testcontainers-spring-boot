@@ -31,6 +31,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    16. [embedded-keycloak](#embedded-keycloak)
    17. [embedded-influxdb](#embedded-influxdb)
    18. [embedded-vault](#embedded-vault)
+   19. [embedded-oracle-xe](#embedded-oracle-xe)
 
 3. [How to contribute](#how-to-contribute)
 
@@ -625,6 +626,31 @@ spring.cloud.vault:
   kv:
    enabled: true
 ```
+
+### embedded-oracle-xe
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-oracle-xe</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.oracle.enabled` (boolean, true|false, default is 'true')
+* `embedded.oracle.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.oracle.dockerImage` (String, default is set to 'oracleinanutshell/oracle-xe-11g')
+  * You can pick wanted image on [dockerhub](https://hub.docker.com/search?q=oracle-xe&type=image)
+  * You can [build image by yourself](https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
+* `embedded.oracle.user` (String, default is 'system')
+* `embedded.oracle.password` (String, default is 'oracle')
+
+##### Produces
+* `embedded.oracle.host`
+* `embedded.oracle.port` (mapped TCP port)
+* `embedded.oracle.db` (set to 'xe')
 
 ## How to contribute
 ### Flow
