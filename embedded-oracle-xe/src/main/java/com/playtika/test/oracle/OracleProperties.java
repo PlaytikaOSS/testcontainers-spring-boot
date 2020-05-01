@@ -39,5 +39,5 @@ public class OracleProperties extends CommonContainerProperties {
     String dockerImage = "oracleinanutshell/oracle-xe-11g";
 
     String user = "system";
-    String password = "syspass";
+    String password = "oracle";
 }
