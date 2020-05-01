@@ -42,8 +42,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@Disabled("oracle-xe is not public image to be pulled from Docker Hub. " +
-        "See https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance")
 class AutoConfiguredDatasourceDependsOnTest {
 
     @ExtendWith(SpringExtension.class)
@@ -83,11 +81,11 @@ class AutoConfiguredDatasourceDependsOnTest {
     }
 
     @TestPropertySource(properties = {
-            "embedded.oracle.docker-image=your-oracle-xe-image:latest"
+            "embedded.oracle.docker-image=oracleinanutshell/oracle-xe-11g"
     })
     @Nested
-    @DisplayName("AutoConfigured Datasource with your-oracle-xe-image:latest")
-    class Oracle12 extends TestDefaults {
+    @DisplayName("AutoConfigured Datasource with oracleinanutshell/oracle-xe-11g")
+    class Oracle11 extends TestDefaults {
     }
 }
 

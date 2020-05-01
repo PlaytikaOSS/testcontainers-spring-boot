@@ -31,7 +31,6 @@ import javax.sql.DataSource;
 
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +44,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@Disabled("oracle-xe is not public image to be pulled from Docker Hub. " +
-        "See https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance")
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
