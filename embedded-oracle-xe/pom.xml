@@ -11,6 +11,10 @@
 
     <artifactId>embedded-oracle</artifactId>
 
+    <properties>
+        <ojdbc8.version>19.3.0.0</ojdbc8.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
@@ -38,8 +42,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <properties>
-        <ojdbc8.version>19.3.0.0</ojdbc8.version>
-    </properties>
-
 </project>

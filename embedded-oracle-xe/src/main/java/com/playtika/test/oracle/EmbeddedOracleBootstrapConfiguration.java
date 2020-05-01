@@ -73,7 +73,7 @@ public class EmbeddedOracleBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.oracle.port", mappedPort);
         map.put("embedded.oracle.host", host);
-        map.put("embedded.oracle.schema", ORACLE_DB);
+        map.put("embedded.oracle.database", properties.getDatabase());
         map.put("embedded.oracle.user", properties.getUser());
         map.put("embedded.oracle.password", properties.getPassword());
 

@@ -40,4 +40,5 @@ public class OracleProperties extends CommonContainerProperties {
 
     String user = "system";
     String password = "oracle";
+    String database = ORACLE_DB;
 }

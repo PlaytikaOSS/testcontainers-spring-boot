@@ -76,7 +76,7 @@ class EmbeddedOracleBootstrapConfigurationTest {
     void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.oracle.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.oracle.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.oracle.schema")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.database")).isNotEmpty();
         assertThat(environment.getProperty("embedded.oracle.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.oracle.password")).isNotEmpty();
     }
