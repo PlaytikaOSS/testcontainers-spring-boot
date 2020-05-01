@@ -31,12 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("disabled")
 @SpringBootTest(properties = {
         "embedded.oracle.enabled=false",
         // need to configure datasource
