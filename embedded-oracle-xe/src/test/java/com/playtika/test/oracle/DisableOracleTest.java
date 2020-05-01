@@ -37,7 +37,12 @@ import org.testcontainers.containers.GenericContainer;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("disabled")
-@SpringBootTest(properties = "embedded.oracle.enabled=false")
+@SpringBootTest(properties = {
+        "embedded.oracle.enabled=false",
+        // need to configure datasource
+        "spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver",
+        "spring.datasource.url=jdbc:oracle:thin:@some-real-oracle:1521/not-embedded-db"
+})
 class DisableOracleTest {
 
     @Autowired
