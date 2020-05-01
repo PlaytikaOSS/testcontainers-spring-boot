@@ -36,7 +36,7 @@ public class OracleProperties extends CommonContainerProperties {
     static final int ORACLE_PORT = 1521;
     static final String ORACLE_DB = "xe";
 
-    String dockerImage = "your-oracle-xe-image:latest";
+    String dockerImage = "oracleinanutshell/oracle-xe-11g";
 
     String user = "system";
     String password = "syspass";
