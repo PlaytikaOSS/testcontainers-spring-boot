@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>embedded-oracle</artifactId>
+    <artifactId>embedded-oracle-xe</artifactId>
 
     <properties>
         <ojdbc8.version>19.3.0.0</ojdbc8.version>
