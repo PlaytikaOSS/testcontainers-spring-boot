@@ -9,6 +9,7 @@ jobs:
   build:
     machine:
       image: circleci/classic:latest
+      docker_layer_caching: true
 #    working_directory: ~/repo
 
     environment:
@@ -22,7 +23,7 @@ jobs:
       - checkout
       - run:
           name: Run build with tests
-          command:  if [[ -z "$GIT_USER_EMAIL" ]]; then  mvn -T 1C clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dsurefire.rerunFailingTestsCount=2 --fail-at-end -U -P sonar -nsu --batch-mode -Dmaven.test.redirectTestOutputToFile=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ;fi
+          command:  if [[ -z "$GIT_USER_EMAIL" ]]; then  mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dsurefire.rerunFailingTestsCount=2 --fail-at-end -U -P sonar -nsu --batch-mode -Dmaven.test.redirectTestOutputToFile=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ;fi
       - run:
            name: Save test results
            command: |
