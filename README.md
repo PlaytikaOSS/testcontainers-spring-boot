@@ -648,8 +648,8 @@ spring.cloud.vault:
 * `embedded.oracle.password` (String, default is 'oracle')
 
 ##### Produces
-* `embedded.vault.host`
-* `embedded.vault.port` (mapped HTTP port)
+* `embedded.oracle.host`
+* `embedded.oracle.port` (mapped TCP port)
 * `embedded.oracle.db` (set to 'xe')
 
 ## How to contribute
