@@ -639,6 +639,17 @@ spring.cloud.vault:
 </dependency>
 ```
 
+### embedded-mysql
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mysql</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
 ##### Consumes (via bootstrap.properties)
 * `embedded.oracle.enabled` (boolean, true|false, default is 'true')
 * `embedded.oracle.waitTimeoutInSeconds` (default is 60 seconds)
