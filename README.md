@@ -114,6 +114,7 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.mariadb.dockerImage `(default is set to 'mariadb:10.3.2')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mariadb/tags/)
 * embedded.mariadb.waitTimeoutInSeconds `(default is 60 seconds)`
+* embedded.mariadb.initScriptPath `(default is null)`
 ##### Produces
 * embedded.mariadb.port
 * embedded.mariadb.host
@@ -351,6 +352,7 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 * embedded.postgresql.database
 * embedded.postgresql.user
 * embedded.postgresql.password
+* embedded.postgresql.initScriptPath `(default is null)`
 ##### Produces
 * embedded.postgresql.port
 * embedded.postgresql.host
@@ -647,6 +649,7 @@ spring.cloud.vault:
   * You can [build image by yourself](https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 * `embedded.oracle.user` (String, default is 'system')
 * `embedded.oracle.password` (String, default is 'oracle')
+* `embedded.oracle.initScriptPath` `(default is null)`
 
 ##### Produces
 * `embedded.oracle.host`
@@ -670,6 +673,7 @@ spring.cloud.vault:
 * embedded.mysql.dockerImage `(default is set to 'mysql:5.7.22')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mysql/tags/)
 * embedded.mysql.waitTimeoutInSeconds `(default is 60 seconds)`
+* embedded.mysql.initScriptPath `(default is null)`
 ##### Produces
 * embedded.mysql.port
 * embedded.mysql.host

@@ -55,7 +55,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         classes = EmbeddedMySQLBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
                 "spring.profiles.active=enabled",
-                "embedded.mysql.install.enabled=true"
+                "embedded.mysql.install.enabled=true",
+                "embedded.mysql.init-script-path=initScript.sql"
         })
 public class EmbeddedMySQLBootstrapConfigurationTest {
 
@@ -99,12 +100,18 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
     }
 
     @Test
+    public void shouldInitDBForMySQL() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select count(first_name) from users where first_name = 'Sam' ", Integer.class)).isEqualTo(1);
+    }
+
+    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.mysql.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mysql.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mysql.schema")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mysql.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mysql.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mysql.init-script-path")).isNotEmpty();
     }
 
     @Test
