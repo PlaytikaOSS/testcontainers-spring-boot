@@ -639,17 +639,6 @@ spring.cloud.vault:
 </dependency>
 ```
 
-### embedded-mysql
-
-##### Maven dependency
-```xml
-<dependency>
-    <groupId>com.playtika.testcontainers</groupId>
-    <artifactId>embedded-mysql</artifactId>
-    <scope>test</scope>
-</dependency>
-```
-
 ##### Consumes (via bootstrap.properties)
 * `embedded.oracle.enabled` (boolean, true|false, default is 'true')
 * `embedded.oracle.waitTimeoutInSeconds` (default is 60 seconds)
@@ -663,6 +652,30 @@ spring.cloud.vault:
 * `embedded.oracle.host`
 * `embedded.oracle.port` (mapped TCP port)
 * `embedded.oracle.db` (set to 'xe')
+
+
+### embedded-mysql
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mysql</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.mysql.enabled `(true|false, default is 'true')`
+* embedded.mysql.encoding `(default is 'utf8mb4')`
+* embedded.mysql.collation `(default is 'utf8mb4_unicode_ci')`
+* embedded.mysql.dockerImage `(default is set to 'mysql:5.7.22')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mysql/tags/)
+* embedded.mysql.waitTimeoutInSeconds `(default is 60 seconds)`
+##### Produces
+* embedded.mysql.port
+* embedded.mysql.host
+* embedded.mysql.schema
+* embedded.mysql.user
+* embedded.mysql.password
 
 ## How to contribute
 ### Flow
