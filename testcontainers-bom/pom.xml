@@ -12,101 +12,97 @@
         <version>1.55-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <revison>1.55-SNAPSHOT</revison>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-aerospike</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-couchbase</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-dynamodb</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-elasticsearch</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-google-pubsub</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-influxdb</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-kafka</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-keycloak</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-mariadb</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-memsql</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-mongodb</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-neo4j</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-oracle-xe</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-postgresql</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-rabbitmq</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-redis</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-vault</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-voltdb</artifactId>
-                <version>${revison}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
