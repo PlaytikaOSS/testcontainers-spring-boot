@@ -39,6 +39,7 @@ import org.testcontainers.containers.MySQLContainer;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 
 @Slf4j
 @Configuration
@@ -64,7 +65,7 @@ public class EmbeddedMySQLBootstrapConfiguration {
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .withStartupTimeout(properties.getTimeoutDuration());
-        mysql.start();
+        startAndLogTime(mysql);
         registerMySQLEnvironment(mysql, environment, properties);
         return mysql;
     }

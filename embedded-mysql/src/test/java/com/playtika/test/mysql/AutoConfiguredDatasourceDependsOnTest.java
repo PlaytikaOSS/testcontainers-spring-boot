@@ -56,7 +56,7 @@ public class AutoConfiguredDatasourceDependsOnTest {
 
     @Test
     public void shouldConnectToMySQL() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("MySQL");
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("5.7.22");
     }
 
     @Test
