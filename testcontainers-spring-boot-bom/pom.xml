@@ -17,6 +17,11 @@
         <dependencies>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>testcontainers-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-aerospike</artifactId>
                 <version>${project.version}</version>
             </dependency>
