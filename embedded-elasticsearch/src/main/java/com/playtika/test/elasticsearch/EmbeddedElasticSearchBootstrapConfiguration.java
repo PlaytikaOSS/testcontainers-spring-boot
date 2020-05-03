@@ -34,9 +34,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -54,7 +54,7 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
         log.info("Starting ElasticSearch server. Docker image: {}", properties.dockerImage);
 
         ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties, log);
-        elasticSearch.start();
+        startAndLogTime(elasticSearch);
         registerElasticSearchEnvironment(elasticSearch, environment, properties);
         return elasticSearch;
     }

@@ -57,6 +57,7 @@ public class KafkaTopicsConfigurer {
                 log.debug("Topic={} creation cmd='{}' exitCode={} : {}",
                         topic, createTopicCmd, output.getExitCode(), output.getOutput());
             }
+            log.info("Created Kafka topics: {}", topics);
         }
     }
 
@@ -72,6 +73,7 @@ public class KafkaTopicsConfigurer {
                         topic, topicConsumerACLsCmd, topicConsumerACLsOutput.getExitCode(), topicConsumerACLsOutput.getOutput(),
                         topicProducerACLsCmd, topicProducerACLsOutput.getExitCode(), topicProducerACLsOutput.getOutput());
             }
+            log.info("Created ACLs for Kafka topics: {}", topics);
         }
     }
 

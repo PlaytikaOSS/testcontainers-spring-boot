@@ -44,6 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
 
 @Slf4j
@@ -98,12 +99,10 @@ public class ZookeeperContainerConfiguration {
             String zkTransactionLogs = Paths.get(txnLogsFolder, currentTimestamp).toAbsolutePath().toString();
             log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
 
-            zookeeper = zookeeper
-                    .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
-                    .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
+            zookeeper.withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
+                     .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
         }
-
-        zookeeper.start();
+        startAndLogTime(zookeeper);
         registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;
     }

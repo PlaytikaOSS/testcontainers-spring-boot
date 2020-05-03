@@ -38,6 +38,7 @@ import org.testcontainers.containers.GenericContainer;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.minio.MinioProperties.MINIO_BEAN_NAME;
 
 @Slf4j
@@ -79,7 +80,7 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .waitingFor(minioWaitStrategy)
                         .withStartupTimeout(properties.getTimeoutDuration());
 
-        minio.start();
+        startAndLogTime(minio);
         registerEnvironment(minio, environment, properties);
         return minio;
     }

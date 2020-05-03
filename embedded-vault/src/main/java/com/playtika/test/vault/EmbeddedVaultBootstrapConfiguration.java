@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.vault.VaultProperties.BEAN_NAME_EMBEDDED_VAULT;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -67,7 +68,7 @@ public class EmbeddedVaultBootstrapConfiguration {
             vault.withSecretInVault(properties.getPath(), secrets[0], Arrays.copyOfRange(secrets, 1, secrets.length));
         }
 
-        vault.start();
+        startAndLogTime(vault);
         registerVaultEnvironment(vault, environment, properties);
         return vault;
     }

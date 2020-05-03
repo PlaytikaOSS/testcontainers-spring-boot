@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
 import static com.playtika.test.redis.FileUtils.resolveTemplate;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
@@ -103,7 +104,7 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy)
                         .withStartupTimeout(properties.getTimeoutDuration());
-        redis.start();
+        startAndLogTime(redis);
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.port);
         log.info("Started Redis cluster. Connection details: {}", redisEnv);
         return redis;

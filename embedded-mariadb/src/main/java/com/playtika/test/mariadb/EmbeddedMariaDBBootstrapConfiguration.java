@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 
 import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +37,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.MariaDBContainer;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -65,7 +65,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .withStartupTimeout(properties.getTimeoutDuration());
-        mariadb.start();
+        startAndLogTime(mariadb);
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;
     }
