@@ -50,6 +50,7 @@
         <module>embedded-influxdb</module>
         <module>embedded-vault</module>
         <module>embedded-oracle-xe</module>
+        <module>embedded-mysql</module>
     </modules>
 
     <properties>
