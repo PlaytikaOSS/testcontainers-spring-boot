@@ -29,6 +29,7 @@
     </scm>
 
     <modules>
+        <module>testcontainers-bom</module>
         <module>testcontainers-common</module>
         <module>embedded-kafka</module>
         <module>embedded-keycloak</module>
