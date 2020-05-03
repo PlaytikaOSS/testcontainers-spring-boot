@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 
 @Slf4j
 @Configuration
@@ -83,7 +84,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .waitingFor(waitStrategy)
                         .withStartupTimeout(properties.getTimeoutDuration());
 
-        aerospike.start();
+        startAndLogTime(aerospike);
         registerAerospikeEnvironment(aerospike, environment, properties);
         return aerospike;
     }

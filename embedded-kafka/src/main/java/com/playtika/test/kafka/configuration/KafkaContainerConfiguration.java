@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
@@ -50,6 +51,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static java.lang.String.format;
 
@@ -71,14 +73,13 @@ public class KafkaContainerConfiguration {
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
+    @DependsOn("zookeeper")
     public GenericContainer kafka(
-            GenericContainer zookeeper,
             KafkaStatusCheck kafkaStatusCheck,
             KafkaConfigurationProperties kafkaProperties,
             @Value("${embedded.zookeeper.containerZookeeperConnect}") String containerZookeeperConnect,
             ConfigurableEnvironment environment,
-            Network network
-    ) {
+            Network network) {
 
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
@@ -140,11 +141,10 @@ public class KafkaContainerConfiguration {
             String kafkaData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
             log.info("Writing kafka data to: {}", kafkaData);
 
-            kafka = kafka
-                    .withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE);
+            kafka.withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE);
         }
 
-        kafka.start();
+        startAndLogTime(kafka);
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;
     }

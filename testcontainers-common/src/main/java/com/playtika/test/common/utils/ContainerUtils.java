@@ -25,10 +25,10 @@ package com.playtika.test.common.utils;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
-import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
@@ -38,13 +38,34 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
 @UtilityClass
+@Slf4j
 public class ContainerUtils {
 
     public static final Duration DEFAULT_CONTAINER_WAIT_DURATION = Duration.ofSeconds(60);
+
+    @SuppressWarnings("rawtypes")
+    public long startAndLogTime(GenericContainer container) {
+        Instant startTime = Instant.now();
+        container.start();
+        Instant endTime = Instant.now();
+
+        long startupTime = Duration.between(startTime, endTime).toMillis() / 1000;
+
+        if (startupTime < 10L) {
+            log.info("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+        } else
+        if (startupTime < 20L) {
+            log.warn("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+        } else {
+            log.error("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+        }
+        return startupTime;
+    }
 
     public static int getAvailableMappingPort() {
         try (ServerSocket socket = new ServerSocket(0)) {
@@ -69,15 +90,6 @@ public class ContainerUtils {
                     break;
             }
         };
-    }
-
-    public static String getContainerHostname(GenericContainer container) {
-        InspectContainerResponse containerInfo = container.getContainerInfo();
-        if (containerInfo == null) {
-            containerInfo = container.getDockerClient().inspectContainerCmd(container.getContainerId()).exec();
-        }
-
-        return containerInfo.getConfig().getHostName();
     }
 
     public static ExecCmdResult execCmd(DockerClient dockerClient, String containerId, String[] command) {
