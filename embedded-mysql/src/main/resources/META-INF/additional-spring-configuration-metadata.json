@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.mysql.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.mysql.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of mysql server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of mysql server on startup."
+        }
+      ]
+    }
+  ]
+}
