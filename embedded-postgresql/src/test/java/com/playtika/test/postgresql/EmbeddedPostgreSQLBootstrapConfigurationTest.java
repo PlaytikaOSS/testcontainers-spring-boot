@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
         EmbeddedPostgreSQLBootstrapConfigurationTest.TestConfiguration.class},
-        properties = "embedded.mariadb.init-script-path=initScript.sql"
+        properties = "embedded.postgresql.init-script-path=initScript.sql"
 )
 class EmbeddedPostgreSQLBootstrapConfigurationTest {
 

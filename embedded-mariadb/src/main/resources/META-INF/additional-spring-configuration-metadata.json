@@ -6,6 +6,12 @@
       "name": "embedded.mariadb.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.mariadb.init-script-path",
+      "type": "java.lang.String",
+      "defaultValue": "null",
+      "description": "The SQL file path to execute after the container starts to initialize the database."
     }
   ],
   "hints": [

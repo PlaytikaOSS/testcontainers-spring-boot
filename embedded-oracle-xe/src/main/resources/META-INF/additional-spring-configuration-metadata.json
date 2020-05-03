@@ -11,6 +11,12 @@
       "name": "embedded.oracle.docker-image",
       "type": "java.lang.String",
       "defaultValue": "oracleinanutshell/oracle-xe-11g"
+    },
+    {
+      "name": "embedded.oracle.init-script-path",
+      "type": "java.lang.String",
+      "defaultValue": "null",
+      "description": "The SQL file path to execute after the container starts to initialize the database."
     }
   ],
   "hints": [

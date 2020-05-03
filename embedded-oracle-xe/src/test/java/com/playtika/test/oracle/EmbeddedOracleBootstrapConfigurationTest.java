@@ -48,7 +48,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
         EmbeddedOracleBootstrapConfigurationTest.TestConfiguration.class},
-        properties = "embedded.mysql.init-script-path=initScript.sql"
+        properties = "embedded.oracle.init-script-path=initScript.sql"
 )
 class EmbeddedOracleBootstrapConfigurationTest {
 
