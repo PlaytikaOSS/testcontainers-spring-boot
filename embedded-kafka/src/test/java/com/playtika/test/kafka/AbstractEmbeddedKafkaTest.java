@@ -1,8 +1,8 @@
 package com.playtika.test.kafka;
 
 import com.playtika.test.common.utils.ThrowingRunnable;
+import com.playtika.test.kafka.camel.samples.SampleProductionRouteContext;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -13,7 +13,14 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.util.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -21,33 +28,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
+import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
-abstract class AbstractEmbeddedKafkaTest {
+@SpringBootTest(
+        properties = {
+                "embedded.kafka.topicsToCreate=autoCreatedTopic,secureTopic,helloTopic",
+                "embedded.kafka.secureTopics=secureTopic",
+        },
+        classes = {EmbeddedKafkaTest.TestConfiguration.class, SampleProductionRouteContext.class}
+)
+public abstract class AbstractEmbeddedKafkaTest {
+    @Autowired
     protected AdminClient adminClient;
+    @Value("${embedded.kafka.brokerList}")
     protected List<String> kafkaBrokerList;
-
-    public void setAdminClient(AdminClient adminClient) {
-        this.adminClient = adminClient;
-    }
-
-    public void setKafkaBrokerList(List<String> kafkaBrokerList) {
-        this.kafkaBrokerList = kafkaBrokerList;
-    }
-
-    protected void assertThatTopicExists(String topicName) throws Exception {
-        ListTopicsResult result = adminClient.listTopics();
-        Set<String> topics = result.names().get(10, TimeUnit.SECONDS);
-        assertThat(topics).contains(topicName);
-    }
 
     protected void sendMessage(String topic, String message) throws Exception {
         try (KafkaProducer<String, String> kafkaProducer = createProducer()) {
@@ -206,12 +206,24 @@ abstract class AbstractEmbeddedKafkaTest {
         return System.currentTimeMillis() - startTimestamp;
     }
 
-    protected static Path projectDir() {
-        String classesPath = AbstractEmbeddedKafkaTest.class
+    protected static Path projectDir() throws Exception {
+        URI classesPath = AbstractEmbeddedKafkaTest.class
                 .getProtectionDomain()
                 .getCodeSource()
                 .getLocation()
-                .getPath();
+                .toURI();
         return Paths.get(classesPath).getParent().getParent();
+    }
+
+    @Configuration
+    @EnableAutoConfiguration
+    static class TestConfiguration {
+
+        @Bean
+        AdminClient adminClient(@Value("${embedded.kafka.brokerList}") String brokers) {
+            Properties config = new Properties();
+            config.put(BOOTSTRAP_SERVERS_CONFIG, brokers);
+            return AdminClient.create(config);
+        }
     }
 }
