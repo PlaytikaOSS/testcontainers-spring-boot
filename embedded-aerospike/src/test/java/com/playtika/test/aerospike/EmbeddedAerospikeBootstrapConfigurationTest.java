@@ -23,11 +23,6 @@
  */
 package com.playtika.test.aerospike;
 
-import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
@@ -35,6 +30,12 @@ import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
+
+
+import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTest {
