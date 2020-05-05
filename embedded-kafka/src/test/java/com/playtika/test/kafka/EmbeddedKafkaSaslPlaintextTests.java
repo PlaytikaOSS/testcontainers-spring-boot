@@ -28,30 +28,18 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.errors.SaslAuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
 
 import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 import static org.apache.kafka.common.config.SaslConfigs.SASL_JAAS_CONFIG;
 import static org.apache.kafka.common.config.SaslConfigs.SASL_MECHANISM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(
-        properties = {
-                "embedded.kafka.topicsToCreate=autoCreatedTopic,secureTopic",
-                "embedded.kafka.secureTopics=secureTopic",
-        },
-        classes = BaseEmbeddedKafkaTest.TestConfiguration.class
-)
-@TestInstance(Lifecycle.PER_CLASS)
 @DisplayName("Test that embedded-kafka supports SASL_PLAINTEXT")
-public class EmbeddedKafkaSaslPlaintextTests extends BaseEmbeddedKafkaTest {
+public class EmbeddedKafkaSaslPlaintextTests extends AbstractEmbeddedKafkaTest {
 
     private static final String SECURE_TOPIC = "secureTopic";
     private static final String SECURE_MESSAGE = "test secure message";

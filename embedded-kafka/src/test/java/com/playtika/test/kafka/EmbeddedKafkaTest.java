@@ -1,51 +1,38 @@
 package com.playtika.test.kafka;
 
 import com.playtika.test.common.operations.NetworkTestOperations;
-import org.apache.kafka.clients.admin.AdminClient;
+import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
+import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
+import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static java.time.Duration.ofMillis;
-import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
-abstract class BaseEmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
+@TestInstance(PER_CLASS)
+@DisplayName("Default embedded-kafka setup test")
+public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     private static final String TOPIC = "topic1";
     private static final String MESSAGE = "test message";
 
+    @Autowired
     protected KafkaTopicsConfigurer kafkaTopicsConfigurer;
+    @Autowired
     protected NetworkTestOperations kafkaNetworkTestOperations;
-
     @Autowired
-    @Override
-    public void setAdminClient(AdminClient adminClient) {
-        super.setAdminClient(adminClient);
-    }
-
+    private ZookeeperConfigurationProperties zookeeperProperties;
     @Autowired
-    @Override
-    public void setKafkaBrokerList(@Value("${embedded.kafka.brokerList}") List<String> kafkaBrokerList) {
-        super.setKafkaBrokerList(kafkaBrokerList);
-    }
-
-    @Autowired
-    public void setKafkaTopicsConfigurer(KafkaTopicsConfigurer kafkaTopicsConfigurer) {
-        this.kafkaTopicsConfigurer = kafkaTopicsConfigurer;
-    }
-
-    @Autowired
-    public void setKafkaNetworkTestOperations(NetworkTestOperations kafkaNetworkTestOperations) {
-        this.kafkaNetworkTestOperations = kafkaNetworkTestOperations;
-    }
+    private KafkaConfigurationProperties kafkaProperties;
 
     @Test
     @DisplayName("creates topics on startup")
@@ -101,15 +88,27 @@ abstract class BaseEmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
                 .containsExactly("abc0", "abc1");
     }
 
-    @Configuration
-    @EnableAutoConfiguration
-    static class TestConfiguration {
+    @AfterAll
+    public void shouldBindToFileSystem() throws Exception {
+        Path projectDir = projectDir();
+        Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
+        Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());
+        Path kafkaDataFolder = projectDir.resolve(kafkaProperties.getFileSystemBind().getDataFolder());
 
-        @Bean
-        AdminClient adminClient(@Value("${embedded.kafka.brokerList}") String brokers) {
-            Properties config = new Properties();
-            config.put(BOOTSTRAP_SERVERS_CONFIG, brokers);
-            return AdminClient.create(config);
-        }
+        assertThat(zookeeperDataFolder.toFile())
+                .isDirectory()
+                .isNotEmptyDirectory();
+        assertThat(zookeeperTxnLogsFolder.toFile())
+                .isDirectory()
+                .isNotEmptyDirectory();
+        assertThat(kafkaDataFolder.toFile())
+                .isDirectory()
+                .isNotEmptyDirectory();
+    }
+
+    protected void assertThatTopicExists(String topicName) throws Exception {
+        ListTopicsResult result = adminClient.listTopics();
+        Set<String> topics = result.names().get(10, TimeUnit.SECONDS);
+        assertThat(topics).contains(topicName);
     }
 }
