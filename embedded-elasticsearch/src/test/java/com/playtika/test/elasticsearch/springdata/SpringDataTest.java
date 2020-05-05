@@ -23,21 +23,21 @@
  */
 package com.playtika.test.elasticsearch.springdata;
 
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.elasticsearch.ElasticSearchProperties;
 import com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
 import org.assertj.core.data.Offset;
 import org.elasticsearch.client.Client;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationTest {
 

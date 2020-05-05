@@ -23,22 +23,22 @@
  */
 package com.playtika.test.couchbase.springdata;
 
+import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
 import org.assertj.core.data.Offset;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 

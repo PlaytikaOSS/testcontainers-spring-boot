@@ -23,18 +23,15 @@
  */
 package com.playtika.test.couchbase;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.playtika.test.couchbase.legacy.LegacyClientConfiguration;
 import com.playtika.test.couchbase.springdata.CouchbaseConfiguration;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = {CouchbaseConfiguration.class, LegacyClientConfiguration.class},
         properties = {

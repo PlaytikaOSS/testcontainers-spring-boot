@@ -28,15 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.playtika.test.keycloak.util.KeycloakClient;
 import com.playtika.test.keycloak.util.RealmInfo;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = VanillaTestApplication.class)
 @ActiveProfiles({"active", "realm"})
 public class EmbeddedKeycloakBootstrapConfigurationWithRealmTest {

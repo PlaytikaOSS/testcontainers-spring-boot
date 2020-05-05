@@ -23,21 +23,22 @@
  */
 package com.playtika.test.aerospike;
 
-import com.aerospike.client.Bin;
-import com.aerospike.client.Key;
-import com.aerospike.client.policy.WritePolicy;
-import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.joda.time.Duration.standardDays;
+import static org.joda.time.Duration.standardHours;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.joda.time.Duration.standardDays;
-import static org.joda.time.Duration.standardHours;
+import com.aerospike.client.Bin;
+import com.aerospike.client.Key;
+import com.aerospike.client.policy.WritePolicy;
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AerospikeTimeTravelTest extends BaseAerospikeTest {
 
@@ -47,7 +48,7 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
     @Autowired
     private AerospikeTestOperations testOperations;
 
-    @After
+    @AfterEach
     public void tearDown() {
         testOperations.rollbackTime();
     }
@@ -113,10 +114,10 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         assertThat(client.get(null, key)).isNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotSetFutureTime() {
         DateTime minusDay = DateTime.now().minusDays(1);
-        testOperations.timeTravelTo(minusDay);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> testOperations.timeTravelTo(minusDay));
     }
 
     @Test

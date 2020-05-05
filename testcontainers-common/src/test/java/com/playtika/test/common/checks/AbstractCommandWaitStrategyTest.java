@@ -23,12 +23,13 @@
  */
 package com.playtika.test.common.checks;
 
-import org.junit.Test;
+import java.time.Duration;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-
-import java.time.Duration;
 
 public class AbstractCommandWaitStrategyTest {
 
@@ -37,9 +38,12 @@ public class AbstractCommandWaitStrategyTest {
         startContainerWithWaitStrategy(new PositiveCommandWaitStrategy());
     }
 
-    @Test(expected = ContainerLaunchException.class)
+    @Test
     public void should_failStartupChecks_ifHealthCheckCmdIsFailed() {
-        startContainerWithWaitStrategy(new NegativeCommandWaitStrategy());
+        Assertions.assertThrows(
+                ContainerLaunchException.class,
+                () -> startContainerWithWaitStrategy(new NegativeCommandWaitStrategy())
+        );
     }
 
     private void startContainerWithWaitStrategy(WaitStrategy waitStrategy) {

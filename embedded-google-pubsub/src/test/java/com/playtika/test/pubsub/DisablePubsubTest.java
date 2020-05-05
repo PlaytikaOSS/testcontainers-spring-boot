@@ -1,8 +1,9 @@
 package com.playtika.test.pubsub;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -10,13 +11,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.GenericContainer;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = DisablePubsubTest.TestConfiguration.class,
         properties = {"embedded.google.pubsub.enabled=false", "spring.cloud.gcp.pubsub.enabled=false"})

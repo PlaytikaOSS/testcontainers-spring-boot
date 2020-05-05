@@ -1,18 +1,18 @@
 package com.playtika.test.common.spring;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+@ExtendWith(MockitoExtension.class)
 public class DependsOnPostProcessorTest {
 
     private static final String TEST_BEAN_NAME_3 = "testBean3";
@@ -28,7 +28,7 @@ public class DependsOnPostProcessorTest {
     @Mock
     private BeanDefinition beanDefinition;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         dependsOnPostProcessor = new DependsOnPostProcessor(TestProcessor.class, new String[]{TEST_BEAN_NAME_3, TEST_BEAN_NAME_4});
     }

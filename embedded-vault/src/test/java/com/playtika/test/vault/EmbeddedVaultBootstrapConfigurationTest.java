@@ -23,21 +23,18 @@
  */
 package com.playtika.test.vault;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.vault.core.VaultOperations;
-import org.springframework.vault.support.Versioned;
-
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-@RunWith(SpringRunner.class)
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.vault.core.VaultOperations;
+import org.springframework.vault.support.Versioned;
+
 @SpringBootTest(properties = {
         "embedded.vault.secrets.secret_one=password1"
 })

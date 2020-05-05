@@ -1,9 +1,10 @@
 package com.playtika.test.couchbase;
 
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import org.junit.jupiter.api.Test;
 
 public class CouchbasePropertiesTest {
 

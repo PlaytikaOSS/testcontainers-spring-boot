@@ -32,8 +32,7 @@ import static org.springframework.http.HttpMethod.GET;
 
 import com.playtika.test.keycloak.util.KeyCloakToken;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -42,12 +41,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
     classes = SpringTestApplication.class,
     webEnvironment = RANDOM_PORT)
