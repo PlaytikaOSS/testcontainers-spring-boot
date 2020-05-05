@@ -23,15 +23,15 @@
  */
 package com.playtika.test.couchbase.legacy;
 
-import com.couchbase.client.CouchbaseClient;
-import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.couchbase.client.CouchbaseClient;
+import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 public class LegacyClientTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 

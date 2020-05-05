@@ -6,17 +6,14 @@ import com.playtika.test.keycloak.KeycloakContainer;
 import com.playtika.test.keycloak.KeycloakContainer.ImportFileNotFoundException;
 import com.playtika.test.keycloak.KeycloakProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.ContainerLaunchException;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
     classes = VanillaTestApplication.class,
     properties = "embedded.keycloak.import-file=non-existent.json"

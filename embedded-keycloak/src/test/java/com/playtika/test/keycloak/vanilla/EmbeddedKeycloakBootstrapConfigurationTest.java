@@ -30,16 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.playtika.test.keycloak.KeycloakContainer;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = VanillaTestApplication.class)
 @ActiveProfiles("enabled")
 public class EmbeddedKeycloakBootstrapConfigurationTest {

@@ -23,13 +23,20 @@
  */
 package com.playtika.test.mysql;
 
+import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.sql.DataSource;
+import java.util.concurrent.Callable;
+
 import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.assertj.core.data.Offset;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -39,18 +46,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.sql.DataSource;
-import java.util.concurrent.Callable;
-
-import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = EmbeddedMySQLBootstrapConfigurationTest.TestConfiguration.class,
         properties = {

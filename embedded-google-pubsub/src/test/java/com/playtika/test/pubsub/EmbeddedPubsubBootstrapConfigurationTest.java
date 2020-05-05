@@ -1,9 +1,14 @@
 package com.playtika.test.pubsub;
 
+import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -14,16 +19,8 @@ import org.springframework.cloud.gcp.pubsub.support.AcknowledgeablePubsubMessage
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.List;
-
-import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = EmbeddedPubsubBootstrapConfigurationTest.TestConfiguration.class)
 @ActiveProfiles("enabled")
 public class EmbeddedPubsubBootstrapConfigurationTest {

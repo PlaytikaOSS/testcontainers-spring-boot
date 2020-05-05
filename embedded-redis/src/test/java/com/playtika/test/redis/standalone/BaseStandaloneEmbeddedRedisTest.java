@@ -23,9 +23,16 @@
  */
 package com.playtika.test.redis.standalone;
 
+import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.concurrent.Callable;
+
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.redis.BaseEmbeddedRedisTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,13 +40,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-
-import java.util.concurrent.Callable;
-
-import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         classes = BaseStandaloneEmbeddedRedisTest.TestConfiguration.class,

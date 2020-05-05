@@ -23,28 +23,25 @@
  */
 package com.playtika.test.mongodb;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.data.Offset;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
+import static java.time.Duration.ofMillis;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import static java.time.Duration.ofMillis;
-import static org.assertj.core.api.Assertions.assertThat;
+import com.playtika.test.common.operations.NetworkTestOperations;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.data.Offset;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         properties = {
                 "embedded.mongodb.install.enabled=true",

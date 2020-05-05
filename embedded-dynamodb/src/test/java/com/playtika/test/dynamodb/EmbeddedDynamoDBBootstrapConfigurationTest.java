@@ -23,6 +23,13 @@
  */
 package com.playtika.test.dynamodb;
 
+import static com.playtika.test.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -32,28 +39,16 @@ import com.playtika.test.dynamodb.springdata.DynamoDBConfig;
 import com.playtika.test.dynamodb.springdata.User;
 import com.playtika.test.dynamodb.springdata.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
-
-import static com.playtika.test.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = EmbeddedDynamoDBBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
@@ -77,8 +72,8 @@ public class EmbeddedDynamoDBBootstrapConfigurationTest {
         repository.save(hoeller);
 
         List<User> result = repository.findByLastName("Gosling");
-        Assert.assertThat(result.size(), is(1));
-        Assert.assertThat(result, hasItem(gosling));
+        Assertions.assertThat(result.size()).isOne();
+        Assertions.assertThat(result).contains(gosling);
         log.info("Found in table: {}", result.get(0));
     }
 

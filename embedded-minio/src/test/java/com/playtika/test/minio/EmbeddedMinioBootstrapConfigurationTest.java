@@ -1,29 +1,25 @@
 package com.playtika.test.minio;
 
+import static java.time.Duration.ofMillis;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.utils.ThrowingRunnable;
 import io.minio.MinioClient;
 import io.minio.PutObjectOptions;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
-import org.assertj.core.data.Offset;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-
-import static java.time.Duration.ofMillis;
-import static org.assertj.core.api.Assertions.assertThat;
-
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = EmbeddedMinioBootstrapConfigurationTest.MinioTestConfiguration.class,
         properties = "embedded.minio.install.enabled=true"
@@ -38,7 +34,7 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     @Autowired
     NetworkTestOperations minioNetworkTestOperations;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         if (!minioClient.bucketExists(BUCKET)) {
             minioClient.makeBucket(BUCKET);
