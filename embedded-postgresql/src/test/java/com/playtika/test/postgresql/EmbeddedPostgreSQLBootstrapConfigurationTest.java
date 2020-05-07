@@ -74,7 +74,7 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
         assertThat(jdbcTemplate.queryForObject("select name from employee where id = 1", String.class)).isEqualTo("some data \uD83D\uDE22");
     }
 
-    @org.junit.Test
+    @Test
     public void shouldInitDBForPostgreSQL() throws Exception {
         assertThat(jdbcTemplate.queryForObject("select count(first_name) from users where first_name = 'Sam' ", Integer.class)).isEqualTo(1);
     }
