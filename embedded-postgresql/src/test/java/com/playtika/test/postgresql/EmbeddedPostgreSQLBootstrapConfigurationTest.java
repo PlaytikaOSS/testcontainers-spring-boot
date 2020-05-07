@@ -47,7 +47,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
-        EmbeddedPostgreSQLBootstrapConfigurationTest.TestConfiguration.class})
+        EmbeddedPostgreSQLBootstrapConfigurationTest.TestConfiguration.class},
+        properties = "embedded.postgresql.init-script-path=initScript.sql"
+)
 class EmbeddedPostgreSQLBootstrapConfigurationTest {
 
     @Autowired
@@ -72,6 +74,11 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
         assertThat(jdbcTemplate.queryForObject("select name from employee where id = 1", String.class)).isEqualTo("some data \uD83D\uDE22");
     }
 
+    @org.junit.Test
+    public void shouldInitDBForPostgreSQL() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select count(first_name) from users where first_name = 'Sam' ", Integer.class)).isEqualTo(1);
+    }
+
     @Test
     void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.postgresql.port")).isNotEmpty();
@@ -79,6 +86,7 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.postgresql.schema")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.postgresql.init-script-path")).isNotEmpty();
     }
 
     @Test

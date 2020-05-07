@@ -57,7 +57,8 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withInitScript(properties.initScriptPath);
         postgresql.start();
         registerPostgresqlEnvironment(postgresql, environment, properties);
         return postgresql;

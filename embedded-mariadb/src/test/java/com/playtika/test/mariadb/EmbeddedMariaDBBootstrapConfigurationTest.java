@@ -52,7 +52,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
         classes = EmbeddedMariaDBBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
                 "spring.profiles.active=enabled",
-                "embedded.mariadb.install.enabled=true"
+                "embedded.mariadb.install.enabled=true",
+                "embedded.mariadb.init-script-path=initScript.sql"
         })
 public class EmbeddedMariaDBBootstrapConfigurationTest {
 
@@ -96,12 +97,18 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
     }
 
     @Test
+    public void shouldInitDBForMariaDB() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select count(first_name) from users where first_name = 'Sam' ", Integer.class)).isEqualTo(1);
+    }
+
+    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.mariadb.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.schema")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.init-script-path")).isNotEmpty();
     }
 
     @Test

@@ -64,7 +64,8 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withInitScript(properties.initScriptPath);
         startAndLogTime(mariadb);
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;

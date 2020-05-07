@@ -47,7 +47,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
-        EmbeddedOracleBootstrapConfigurationTest.TestConfiguration.class})
+        EmbeddedOracleBootstrapConfigurationTest.TestConfiguration.class},
+        properties = "embedded.oracle.init-script-path=initScript.sql"
+)
 class EmbeddedOracleBootstrapConfigurationTest {
 
     @Autowired
@@ -72,6 +74,11 @@ class EmbeddedOracleBootstrapConfigurationTest {
         assertThat(jdbcTemplate.queryForObject("select name from employee where id = 1", String.class)).isEqualTo("some data \uD83D\uDE22");
     }
 
+    @org.junit.Test
+    public void shouldInitDBForOracle() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select count(first_name) from users where first_name = 'Sam' ", Integer.class)).isEqualTo(1);
+    }
+
     @Test
     void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.oracle.port")).isNotEmpty();
@@ -79,6 +86,7 @@ class EmbeddedOracleBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.oracle.database")).isNotEmpty();
         assertThat(environment.getProperty("embedded.oracle.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.oracle.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.init-script-path")).isNotEmpty();
     }
 
     @Test
