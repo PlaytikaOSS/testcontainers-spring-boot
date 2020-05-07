@@ -23,20 +23,18 @@
  */
 package com.playtika.test.postgresql;
 
-import javax.sql.DataSource;
-
-
+import com.playtika.test.postgresql.dummyapp.TestApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import javax.sql.DataSource;
 
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
 import static java.util.Arrays.asList;
@@ -44,9 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AutoConfiguredDatasourceDependsOnTest {
 
-    @ExtendWith(SpringExtension.class)
     @ActiveProfiles("enabled")
-    @SpringBootTest
+    @SpringBootTest(classes = TestApplication.class)
     @DisplayName("Default AutoConfigured Datasource")
     @Nested
     class TestDefaults {
@@ -78,22 +75,6 @@ class AutoConfiguredDatasourceDependsOnTest {
                     .isNotEmpty()
                     .contains(BEAN_NAME_EMBEDDED_POSTGRESQL);
         }
-    }
-
-    @TestPropertySource(properties = {
-            "embedded.postgresql.docker-image=postgres:11-alpine"
-    })
-    @Nested
-    @DisplayName("AutoConfigured Datasource with postgres:11-alpine")
-    class Alpine11Image extends TestDefaults {
-    }
-
-    @TestPropertySource(properties = {
-            "embedded.postgresql.docker-image=postgres:12-alpine"
-    })
-    @Nested
-    @DisplayName("AutoConfigured Datasource with postgres:12-alpine")
-    class Alpine12Image extends TestDefaults {
     }
 
     @TestPropertySource(properties = {
