@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.sql.DataSource;
 
+import com.playtika.test.oracle.dummy.TestApplication;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.jupiter.api.Test;
