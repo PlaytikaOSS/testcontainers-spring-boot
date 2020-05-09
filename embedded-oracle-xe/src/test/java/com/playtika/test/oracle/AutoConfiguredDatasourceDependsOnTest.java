@@ -29,23 +29,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.sql.DataSource;
 
+import com.playtika.test.oracle.dummy.TestApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 class AutoConfiguredDatasourceDependsOnTest {
 
-    @ExtendWith(SpringExtension.class)
     @ActiveProfiles("enabled")
-    @SpringBootTest
+    @SpringBootTest(classes = {TestApplication.class})
     @DisplayName("Default AutoConfigured Datasource")
     @Nested
     class TestDefaults {
