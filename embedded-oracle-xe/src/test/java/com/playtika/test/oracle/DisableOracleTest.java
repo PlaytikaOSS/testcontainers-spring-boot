@@ -25,17 +25,17 @@ package com.playtika.test.oracle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.playtika.test.oracle.dummy.TestApplication;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {
+@SpringBootTest(
+        classes = {TestApplication.class},
+        properties = {
         "embedded.oracle.enabled=false",
         // need to configure datasource
         "spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver",
