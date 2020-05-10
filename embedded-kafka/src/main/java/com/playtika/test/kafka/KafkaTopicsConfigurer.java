@@ -51,14 +51,17 @@ public class KafkaTopicsConfigurer {
     public void createTopics(Collection<String> topics) {
         if (!topics.isEmpty()) {
             log.info("Creating Kafka topics: {}", topics);
-            for (String topic : topics) {
-                String[] createTopicCmd = getCreateTopicCmd(topic, kafkaZookeeperConnect);
-                ContainerUtils.ExecCmdResult output = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), createTopicCmd);
-                log.debug("Topic={} creation cmd='{}' exitCode={} : {}",
-                        topic, createTopicCmd, output.getExitCode(), output.getOutput());
-            }
+            topics.parallelStream()
+                    .forEach(this::createTopic);
             log.info("Created Kafka topics: {}", topics);
         }
+    }
+
+    private void createTopic(String topic) {
+        String[] createTopicCmd = getCreateTopicCmd(topic, kafkaZookeeperConnect);
+        ContainerUtils.ExecCmdResult output = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), createTopicCmd);
+        log.debug("Topic={} creation cmd='{}' exitCode={} : {}",
+                topic, createTopicCmd, output.getExitCode(), output.getOutput());
     }
 
     private void restrictTopics(String username, Collection<String> topics) {
