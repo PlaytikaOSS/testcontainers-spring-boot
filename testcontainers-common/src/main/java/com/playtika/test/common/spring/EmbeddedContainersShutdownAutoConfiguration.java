@@ -24,7 +24,6 @@
 package com.playtika.test.common.spring;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +31,18 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.Arrays;
 
+//TODO: Drop this workaround after proper fix available https://github.com/spring-cloud/spring-cloud-commons/issues/752
+
 @Slf4j
 @Configuration
 @AutoConfigureOrder
 public class EmbeddedContainersShutdownAutoConfiguration {
 
-    @Bean
-    public DisposableBean allContainers(GenericContainer... allContainers) {
-        return () -> Arrays.asList(allContainers)
-                .parallelStream()
-                .forEach(GenericContainer::stop);
+    public static final String ALL_CONTAINERS = "allContainers";
+
+    @Bean(name = ALL_CONTAINERS)
+    public AllContainers allContainers(GenericContainer... allContainers) {
+        return new AllContainers(Arrays.asList(allContainers));
     }
 
 }

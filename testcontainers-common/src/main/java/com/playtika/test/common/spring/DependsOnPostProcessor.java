@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2020 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration.ALL_CONTAINERS;
+
 @AllArgsConstructor
 public class DependsOnPostProcessor implements BeanFactoryPostProcessor {
 
@@ -43,17 +45,18 @@ public class DependsOnPostProcessor implements BeanFactoryPostProcessor {
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         List<String> beanNamesForType = asList(getBeanNamesForType(beanFactory));
         beanNamesForType.forEach(
-                dataSourceBeanName -> {
-                    setupDependsOn(beanFactory, dataSourceBeanName);
+                datastoreClientBeanName -> {
+                    setupDependsOn(beanFactory, datastoreClientBeanName);
                 }
         );
     }
 
     private void setupDependsOn(ConfigurableListableBeanFactory beanFactory, String dataSourceBeanName) {
-        BeanDefinition dataSourceBeanDefinition = beanFactory.getBeanDefinition(dataSourceBeanName);
-        List<String> dependsOnExisting = asList(dataSourceBeanDefinition.getDependsOn());
+        BeanDefinition dataStoreClientBeanDefinition = beanFactory.getBeanDefinition(dataSourceBeanName);
+        List<String> dependsOnExisting = asList(dataStoreClientBeanDefinition.getDependsOn());
         dependsOnExisting.addAll(asList(dependsOn));
-        dataSourceBeanDefinition.setDependsOn(dependsOnExisting.toArray(new String[]{}));
+        dependsOnExisting.add(ALL_CONTAINERS);
+        dataStoreClientBeanDefinition.setDependsOn(dependsOnExisting.toArray(new String[]{}));
     }
 
     private String[] getBeanNamesForType(ConfigurableListableBeanFactory beanFactory) {
