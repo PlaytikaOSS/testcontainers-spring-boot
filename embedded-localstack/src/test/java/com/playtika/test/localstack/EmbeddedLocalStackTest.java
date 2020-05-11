@@ -18,20 +18,17 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = EmbeddedLocalStackTest.TestConfiguration.class,
         properties = "embedded.localstack.services=S3,SQS")
 public class EmbeddedLocalStackTest {
@@ -57,7 +54,7 @@ public class EmbeddedLocalStackTest {
     private ConfigurableEnvironment environment;
 
     @Test
-    public void s3TestOverBridgeNetwork() throws IOException {
+    public void shouldStartS3() throws IOException {
         AmazonS3 s3 = AmazonS3ClientBuilder
                 .standard()
                 .withEndpointConfiguration(getEndpointConfiguration(s3Endpoint))
@@ -83,7 +80,7 @@ public class EmbeddedLocalStackTest {
     }
 
     @Test
-    public void sqsTestOverBridgeNetwork() {
+    public void shouldStartSQS() {
         AmazonSQS sqs = AmazonSQSClientBuilder.standard()
                                               .withEndpointConfiguration(getEndpointConfiguration(sqsEndpoint))
                                               .withCredentials(getAwsCredentialsProvider())

@@ -24,28 +24,28 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 public class EmbeddedLocalStackBootstrapConfiguration {
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
-    public ConcreteLocalStackContainer localStack(ConfigurableEnvironment environment,
+    public EmbeddedLocalStackContainer localStack(ConfigurableEnvironment environment,
                                                   LocalStackProperties properties) {
         log.info("Starting Localstack server. Docker image: {}", properties.dockerImage);
 
-        ConcreteLocalStackContainer localStackContainer = new ConcreteLocalStackContainer(properties.dockerImage);
+        EmbeddedLocalStackContainer localStackContainer = new EmbeddedLocalStackContainer(properties.dockerImage);
         localStackContainer.withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
                            .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
                            .withEnv("HOSTNAME", properties.getHostname())
                            .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
                            .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
 
-        for (String service : properties.services){
-            localStackContainer.withServices(LocalStackContainer.Service.valueOf(service));
+        for (LocalStackContainer.Service service : properties.services) {
+            localStackContainer.withServices(service);
         }
         localStackContainer.start();
-        registerElasticSearchEnvironment(localStackContainer, environment, properties);
+        registerLocalStackEnvironment(localStackContainer, environment, properties);
         return localStackContainer;
     }
 
-    private void registerElasticSearchEnvironment(ConcreteLocalStackContainer localStack,
-                                                  ConfigurableEnvironment environment,
-                                                  LocalStackProperties properties) {
+    private void registerLocalStackEnvironment(EmbeddedLocalStackContainer localStack,
+                                               ConfigurableEnvironment environment,
+                                               LocalStackProperties properties) {
         String host = localStack.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -54,10 +54,10 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         map.put("embedded.localstack.secretKey", localStack.getSecretKey());
         map.put("embedded.localstack.region", localStack.getRegion());
         String prefix = "embedded.localstack.";
-        for (String service : properties.services){
-            map.put(prefix + service, localStack.getEndpointConfiguration(LocalStackContainer.Service.valueOf(service))
+        for (LocalStackContainer.Service service : properties.services) {
+            map.put(prefix + service, localStack.getEndpointConfiguration(service)
                                                 .getServiceEndpoint());
-            map.put(prefix + service + ".port", localStack.getMappedPort(LocalStackContainer.Service.valueOf(service).getPort()));
+            map.put(prefix + service + ".port", localStack.getMappedPort(service.getPort()));
         }
         log.info("Started Localstack. Connection details: {}", map);
 
@@ -65,8 +65,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         environment.getPropertySources().addFirst(propertySource);
     }
 
-    private static class ConcreteLocalStackContainer extends LocalStackContainer {
-        ConcreteLocalStackContainer(final String dockerImageName){
+    private static class EmbeddedLocalStackContainer extends LocalStackContainer {
+        EmbeddedLocalStackContainer(final String dockerImageName) {
             setDockerImageName(dockerImageName);
         }
     }
