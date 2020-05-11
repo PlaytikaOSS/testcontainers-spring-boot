@@ -51,6 +51,7 @@
         <module>embedded-vault</module>
         <module>embedded-oracle-xe</module>
         <module>embedded-mysql</module>
+        <module>embedded-localstack</module>
     </modules>
 
     <properties>
