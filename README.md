@@ -33,6 +33,7 @@ Usage of spring cloud in your production code is optional, but you will need it 
    18. [embedded-vault](#embedded-vault)
    19. [embedded-oracle-xe](#embedded-oracle-xe)
    20. [embedded-mysql](#embedded-mysql)
+   21. [embedded-localstack](#embedded-localstack)
 
 3. [How to contribute](#how-to-contribute)
 
