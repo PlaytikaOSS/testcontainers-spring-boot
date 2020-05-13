@@ -174,6 +174,13 @@ embedded.kafka.topicsToCreate=some_topic
   * To use another kafka version pick corresponding docker image on  [dockerhub](https://hub.docker.com/r/confluentinc/cp-kafka/tags)
   * [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
 * `embedded.kafka.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.schema-registry.enabled` (true|false, default is 'true')
+* `embedded.schema-registry.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.schema-registry.dockerImage` (default : confluentinc/cp-schema-registry:5.4.1)
+  * To use another schema registry version pick corresponding docker image on [dockerhub](https://hub.docker.com/r/confluentinc/cp-schema-registry/tags)
+* `embedded.schema-registry.port` (default is 8081)
+* `embedded.schema-registry.avroCompatibilityLevel` (NONE|BACKWARD|BACKWARD_TRANSITIVE|FORWARD|FORWARD_TRANSITIVE|FULL|FULL_TRANSITIVE, default is BACKWARD)
+* `embedded.schema-registry.authentication` (NONE|BASIC, default is NONE)
 
 ##### Filesystem bindings
 Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to host filesystem. By default, to your projects `target` folder. You can configure binding using properties:
@@ -189,6 +196,10 @@ Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to ho
 * `embedded.kafka.saslPlaintext.brokerList`
 * `embedded.kafka.saslPlaintext.user`
 * `embedded.kafka.saslPlaintext.password`
+* `embedded.schema-registry.host`
+* `embedded.schema-registry.port`
+* `embedded.schema-registry.username`
+* `embedded.schema-registry.password`
 
 ##### Using SASL_PLAINTEXT
 Note that only `SASL_PLAINTEXT` protocol supported, meaning TLS is not used.  
