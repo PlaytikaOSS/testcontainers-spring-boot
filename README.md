@@ -133,25 +133,25 @@ embedded.kafka.topicsToCreate=some_topic
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.couchbase.enabled `(true|false, default is 'true')`
-* embedded.couchbase.services `(comma separated list, default is 'kv,index,n1ql,fts')`
-* embedded.couchbase.clusterRamMb `(default is set to '256')`
-* embedded.couchbase.bucketRamMb `(default is set to '100')`
-* embedded.couchbase.dockerImage `(default is set to 'couchbase:community-4.5.1')`
+* `embedded.couchbase.enabled` (true|false, default is 'true')
+* `embedded.couchbase.services` (comma separated list, default is 'kv,index,n1ql,fts')
+* `embedded.couchbase.clusterRamMb` (default is set to '256')
+* `embedded.couchbase.bucketRamMb` (default is set to '100')
+* `embedded.couchbase.dockerImage` (default is set to 'couchbase:community-4.5.1')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/couchbase/tags/)
   * NOTE: Versions of couchbase 2.x/3.x are not functional via docker, consider use of [CouchbaseMock](https://github.com/couchbase/CouchbaseMock)
-* embedded.couchbase.bucketType `(default is set to 'couchbase')`
+* `embedded.couchbase.bucketType` (default is set to 'couchbase')
   * Used for test [bucket creation](https://developer.couchbase.com/documentation/server/3.x/admin/REST/rest-bucket-create.html)
-* embedded.couchbase.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.couchbase.waitTimeoutInSeconds` (default is 60 seconds)
 ##### Produces
-* embedded.couchbase.bootstrapHttpDirectPort
+* `embedded.couchbase.bootstrapHttpDirectPort`
   * Please note that this also produced as System property for [couchbase java client](https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java)
-* embedded.couchbase.bootstrapCarrierDirectPort
+* `embedded.couchbase.bootstrapCarrierDirectPort`
   * Please note that this also produced as System property for [couchbase java client](https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java)
-* embedded.couchbase.host
-* embedded.couchbase.bucket
-* embedded.couchbase.user
-* embedded.couchbase.password
+* `embedded.couchbase.host`
+* `embedded.couchbase.bucket`
+* `embedded.couchbase.user`
+* `embedded.couchbase.password`
 
 ### embedded-kafka
 ##### Maven dependency
@@ -163,32 +163,32 @@ embedded.kafka.topicsToCreate=some_topic
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.zookeeper.enabled `(true|false, default is 'true')`
-* embedded.zookeeper.waitTimeoutInSeconds `(default is 60 seconds)`
-* embedded.zookeeper.dockerImage `(default : confluentinc/cp-zookeeper:4.1.2)`
+* `embedded.zookeeper.enabled` (true|false, default is 'true')
+* `embedded.zookeeper.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.zookeeper.dockerImage` (default : confluentinc/cp-zookeeper:4.1.2)
   * To use another zookeper version pick corresponding docker image on [dockerhub](https://hub.docker.com/r/confluentinc/cp-zookeeper/tags)
-* embedded.kafka.enabled `(true|false, default is 'true')`
-* embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
-* embedded.kafka.secureTopics `(subset of embedded.kafka.topicsToCreate that should be secured with ACLs)`
-* embedded.kafka.dockerImage `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
+* `embedded.kafka.enabled` (true|false, default is 'true')
+* `embedded.kafka.topicsToCreate` (comma separated list of topic names, default is empty)
+* `embedded.kafka.secureTopics` (subset of embedded.kafka.topicsToCreate that should be secured with ACLs)
+* `embedded.kafka.dockerImage` (default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)
   * To use another kafka version pick corresponding docker image on  [dockerhub](https://hub.docker.com/r/confluentinc/cp-kafka/tags)
   * [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
-* embedded.kafka.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.kafka.waitTimeoutInSeconds` (default is 60 seconds)
 
 ##### Filesystem bindings
 Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to host filesystem. By default, to your projects `target` folder. You can configure binding using properties:
-* embedded.zookeeper.fileSystemBind.enabled `(true|false, default is 'true')`
-* embedded.zookeeper.fileSystemBind.dataFolder `(default : target/embedded-zk-data)`
-* embedded.zookeeper.fileSystemBind.txnLogsFolder `(default : target/embedded-zk-txn-logs)`
-* embedded.kafka.enabled `(true|false, default is 'true')`
-* embedded.kafka.fileSystemBind.dataFolder `(default : target/embedded-kafka-data)`
+* `embedded.zookeeper.fileSystemBind.enabled` (true|false, default is 'true')
+* `embedded.zookeeper.fileSystemBind.dataFolder` (default : target/embedded-zk-data)
+* `embedded.zookeeper.fileSystemBind.txnLogsFolder` (default : target/embedded-zk-txn-logs)
+* `embedded.kafka.enabled (true|false, default is 'true')
+* `embedded.kafka.fileSystemBind.dataFolder` (default : target/embedded-kafka-data)
 
 ##### Produces
-* embedded.zookeeper.zookeeperConnect
-* embedded.kafka.brokerList
-* embedded.kafka.saslPlaintext.brokerList
-* embedded.kafka.saslPlaintext.user
-* embedded.kafka.saslPlaintext.password
+* `embedded.zookeeper.zookeeperConnect`
+* `embedded.kafka.brokerList`
+* `embedded.kafka.saslPlaintext.brokerList`
+* `embedded.kafka.saslPlaintext.user`
+* `embedded.kafka.saslPlaintext.password`
 
 ##### Using SASL_PLAINTEXT
 Note that only `SASL_PLAINTEXT` protocol supported, meaning TLS is not used.  
@@ -221,18 +221,18 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.rabbitmq.enabled `(true|false, default is 'true')`
-* embedded.rabbitmq.password `(default : rabbitmq)`
-* embedded.rabbitmq.vhost `(virtual host, default: '/')`
-* embedded.rabbitmq.dockerImage `(default: rabbitmq:3-alpine)`
+* `embedded.rabbitmq.enabled` (true|false, default is 'true')
+* `embedded.rabbitmq.password` (default : rabbitmq)
+* `embedded.rabbitmq.vhost` (virtual host, default: '/')
+* `embedded.rabbitmq.dockerImage` (default: rabbitmq:3-alpine)
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/rabbitmq/tags/)
-* embedded.rabbitmq.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.rabbitmq.waitTimeoutInSeconds` (default is 60 seconds)
 ##### Produces
-* embedded.rabbitmq.host
-* embedded.rabbitmq.port
-* embedded.rabbitmq.user
-* embedded.rabbitmq.password
-* embedded.rabbitmq.vhost
+* `embedded.rabbitmq.host`
+* `embedded.rabbitmq.port`
+* `embedded.rabbitmq.user`
+* `embedded.rabbitmq.password`
+* `embedded.rabbitmq.vhost`
 
 ### embedded-aerospike
 ##### Maven dependency
@@ -245,14 +245,14 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 ```
 ##### Consumes (via bootstrap.properties)
 * aerospike [client library](https://mvnrepository.com/artifact/com.aerospike/aerospike-client) 
-* embedded.aerospike.enabled `(true|false, default is 'true')`
-* embedded.aerospike.dockerImage `(default is set to 'aerospike/aerospike-server:4.3.0.8')`
+* `embedded.aerospike.enabled` (true|false, default is 'true')
+* `embedded.aerospike.dockerImage` (default is set to 'aerospike/aerospike-server:4.3.0.8')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/aerospike/tags/)
-* embedded.aerospike.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.aerospike.waitTimeoutInSeconds` (default is 60 seconds)
 ##### Produces
-* embedded.aerospike.host
-* embedded.aerospike.port
-* embedded.aerospike.namespace
+* `embedded.aerospike.host`
+* `embedded.aerospike.port`
+* `embedded.aerospike.namespace`
 * AerospikeTimeTravelService
   * timeTravelTo
   * nextDay
@@ -270,16 +270,16 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.memsql.enabled `(true|false, default is 'true')`
-* embedded.memsql.dockerImage `(default is set to 'memsql/quickstart:minimal-6.0.8')`
+* `embedded.memsql.enabled` (true|false, default is 'true')
+* `embedded.memsql.dockerImage` (default is set to 'memsql/quickstart:minimal-6.0.8')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/memsql/quickstart/tags/)
-* embedded.memsql.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.memsql.waitTimeoutInSeconds` (default is 60 seconds)
 ##### Produces
-* embedded.memsql.port
-* embedded.memsql.host
-* embedded.memsql.schema
-* embedded.memsql.user
-* embedded.memsql.password
+* `embedded.memsql.port`
+* `embedded.memsql.host`
+* `embedded.memsql.schema`
+* `embedded.memsql.user`
+* `embedded.memsql.password`
 ##### Notes
 * Images without "minimal" tag do no start withing 30 secs, so they are unusable
 * There should be at least 1.5 GB of RAM available for memsql to start
@@ -295,18 +295,18 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.redis.enabled `(true|false, default is 'true')`
-* embedded.redis.dockerImage `(default is set to 'redis:4.0.12')`
+* `embedded.redis.enabled` (true|false, default is 'true')
+* `embedded.redis.dockerImage` (default is set to 'redis:4.0.12')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/redis/tags/)
-* embedded.redis.waitTimeoutInSeconds `(default is 60 seconds)`  
-* embedded.redis.clustered `(default is 'false')`
+* `embedded.redis.waitTimeoutInSeconds` (default is 60 seconds)  
+* `embedded.redis.clustered` (default is 'false')
   * If 'true' Redis is started in cluster mode
-* embedded.redis.requirepass `(default is 'true')`
+* `embedded.redis.requirepass` (default is 'true')
 ##### Produces
-* embedded.redis.host
-* embedded.redis.port
-* embedded.redis.user
-* embedded.redis.password 
+* `embedded.redis.host`
+* `embedded.redis.port`
+* `embedded.redis.user`
+* `embedded.redis.password` 
 
 ### embedded-neo4j
 ##### Maven dependency
@@ -318,16 +318,16 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.neo4j.enabled `(true|false, default is 'true')`
-* embedded.neo4j.dockerImage `(default is set to 'neo4j:3.2.7')`
+* `embedded.neo4j.enabled` (true|false, default is 'true')
+* `embedded.neo4j.dockerImage` (default is set to 'neo4j:3.2.7')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/neo4j/tags/)
-* embedded.neo4j.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.neo4j.waitTimeoutInSeconds` (default is 60 seconds)
 ##### Produces
-* embedded.neo4j.user
-* embedded.neo4j.password
-* embedded.neo4j.httpsPort
-* embedded.neo4j.httpPort
-* embedded.neo4j.boltPort
+* `embedded.neo4j.user`
+* `embedded.neo4j.password`
+* `embedded.neo4j.httpsPort`
+* `embedded.neo4j.httpPort`
+* `embedded.neo4j.boltPort`
 
 ### embedded-zookeeper
 ##### Under construction...
@@ -346,20 +346,20 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.postgresql.enabled `(true|false, default is 'true')`
-* embedded.postgresql.dockerImage `(default is set to 'postgres:10-alpine')`
+* `embedded.postgresql.enabled` (true|false, default is 'true')
+* `embedded.postgresql.dockerImage` (default is set to 'postgres:10-alpine')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/postgres/tags/)
-* embedded.postgresql.waitTimeoutInSeconds `(default is 60 seconds)`
-* embedded.postgresql.database
-* embedded.postgresql.user
-* embedded.postgresql.password
-* embedded.postgresql.initScriptPath `(default is null)`
+* `embedded.postgresql.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.postgresql.database`
+* `embedded.postgresql.user`
+* `embedded.postgresql.password`
+* `embedded.postgresql.initScriptPath` (default is null)
 ##### Produces
-* embedded.postgresql.port
-* embedded.postgresql.host
-* embedded.postgresql.schema
-* embedded.postgresql.user
-* embedded.postgresql.password
+* `embedded.postgresql.port`
+* `embedded.postgresql.host`
+* `embedded.postgresql.schema`
+* `embedded.postgresql.user`
+* `embedded.postgresql.password`
 
 ### embedded-elasticsearch
 ##### Maven dependency
@@ -371,16 +371,16 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.elasticsearch.enabled `(true|false, default is 'true')`
-* embedded.elasticsearch.dockerImage `(default is set to 'docker.elastic.co/elasticsearch/elasticsearch:6.2.4')`
-* embedded.elasticsearch.indices `(indices to create, no indices are created by default)`
+* `embedded.elasticsearch.enabled` (true|false, default is 'true')
+* `embedded.elasticsearch.dockerImage` (default is set to 'docker.elastic.co/elasticsearch/elasticsearch:6.2.4')
+* `embedded.elasticsearch.indices` (indices to create, no indices are created by default)
   * You can pick wanted version on [docker.elastic.co](https://www.docker.elastic.co)
-* embedded.elasticsearch.waitTimeoutInSeconds `(default is 60 seconds)`
+* `embedded.elasticsearch.waitTimeoutInSeconds` (default is 60 seconds)
 ##### Produces
-* embedded.elasticsearch.clusterName
-* embedded.elasticsearch.host
-* embedded.elasticsearch.httpPort
-* embedded.elasticsearch.transportPort
+* `embedded.elasticsearch.clusterName`
+* `embedded.elasticsearch.host`
+* `embedded.elasticsearch.httpPort`
+* `embedded.elasticsearch.transportPort`
 
 ### embedded-dynamodb
 ##### Maven dependency
@@ -392,14 +392,14 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.dynamodb.enabled `(true|false, default is 'true')`
-* embedded.dynamodb.dockerImage `(default is set to 'amazon/dynamodb-local:latest')`
+* `embedded.dynamodb.enabled` (true|false, default is 'true')
+* `embedded.dynamodb.dockerImage` (default is set to 'amazon/dynamodb-local:latest')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/amazon/dynamodb-local/)
 ##### Produces
-* embedded.dynamodb.host
-* embedded.dynamodb.port
-* embedded.dynamodb.accessKey
-* embedded.dynamodb.secretKey
+* `embedded.dynamodb.host`
+* `embedded.dynamodb.port`
+* `embedded.dynamodb.accessKey`
+* `embedded.dynamodb.secretKey`
 
 ### embedded-voltdb
 ##### Maven dependency
@@ -411,12 +411,12 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.voltdb.enabled `(true|false, default is 'true')`
-* embedded.voltdb.dockerImage `(default is set to 'voltdb/voltdb-community:8.3.3')`
+* `embedded.voltdb.enabled` (true|false, default is 'true')
+* `embedded.voltdb.dockerImage` (default is set to 'voltdb/voltdb-community:8.3.3')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/voltdb/voltdb-community/tags/)
 ##### Produces
-* embedded.voltdb.host
-* embedded.voltdb.port
+* `embedded.voltdb.host`
+* `embedded.voltdb.port`
 
 VoltDB container has no security enabled, you can use any credentials.
 
@@ -430,24 +430,24 @@ VoltDB container has no security enabled, you can use any credentials.
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.minio.enabled `(true|false, default is 'true')`
-* embedded.minio.dockerImage `(default is set to 'minio/minio')`
+* `embedded.minio.enabled` (true|false, default is 'true')
+* `embedded.minio.dockerImage` (default is set to 'minio/minio')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/minio/minio/tags)
-* embedded.minio.accessKey `(default is set to 'AKIAIOSFODNN7EXAMPLE")`
-* embedded.minio.secretKey `(default is set to 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
-* embedded.minio.userName `(default is set to 'minio')`
-* embedded.minio.groupName  `(default is set to 'minio')` 
-* embedded.minio.region  `(default is set to '')`
-* embedded.minio.worm  `(on|off, default is set to 'off')` 
-* embedded.minio.browser  `(on|off, default is set to 'on')` 
-* embedded.minio.directory  `(default is set to '/data')` 
+* `embedded.minio.accessKey` (default is set to 'AKIAIOSFODNN7EXAMPLE")
+* `embedded.minio.secretKey` (default is set to 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')
+* `embedded.minio.userName` (default is set to 'minio')
+* `embedded.minio.groupName` (default is set to 'minio') 
+* `embedded.minio.region` (default is set to '')
+* `embedded.minio.worm` (on|off, default is set to 'off') 
+* `embedded.minio.browser` (on|off, default is set to 'on') 
+* `embedded.minio.directory` (default is set to '/data') 
 
 ##### Produces
-* embedded.minio.host
-* embedded.minio.port
-* embedded.minio.accessKey
-* embedded.minio.secretKey
-* embedded.minio.region
+* `embedded.minio.host`
+* `embedded.minio.port`
+* `embedded.minio.accessKey`
+* `embedded.minio.secretKey`
+* `embedded.minio.region`
   
 ### embedded-mongodb
 
@@ -461,21 +461,21 @@ VoltDB container has no security enabled, you can use any credentials.
 ```
 
 ##### Consumes (via bootstrap.properties)
-* embedded.mongodb.enabled `(true|false, default is 'true')`
-* embedded.mongodb.dockerImage `(default is set to 'mongo:4.2.0-bionic')`
+* `embedded.mongodb.enabled` (true|false, default is 'true')
+* `embedded.mongodb.dockerImage` (default is set to 'mongo:4.2.0-bionic')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/_/mongo?tab=tags)
-* embedded.mongodb.host `(default is localhost)`
-* embedded.mongodb.port `(default is 27017)`
-* embedded.mongodb.username
-* embedded.mongodb.password
-* embedded.mongodb.database `(default is test)`
+* `embedded.mongodb.host` (default is localhost)
+* `embedded.mongodb.port` (default is 27017)
+* `embedded.mongodb.username`
+* `embedded.mongodb.password`
+* `embedded.mongodb.database` (default is test)
 
 ##### Produces
-* embedded.mongodb.host
-* embedded.mongodb.port `(mapped port)`
-* embedded.mongodb.username
-* embedded.mongodb.password
-* embedded.mongodb.database
+* `embedded.mongodb.host`
+* `embedded.mongodb.port` (mapped port)
+* `embedded.mongodb.username`
+* `embedded.mongodb.password`
+* `embedded.mongodb.database`
 
 ##### Example
 To auto-configure spring-data-mongodb use these properties in your test `application.properties`:
@@ -495,22 +495,22 @@ spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.po
 ```
 
 ##### Consumes (via bootstrap.properties)
-* embedded.google.pubsub.enabled `(true|false, default is 'true')`
-* embedded.google.pubsub.dockerImage `(default is set to 'google/cloud-sdk:257.0.0')`
+* `embedded.google.pubsub.enabled` (true|false, default is 'true')
+* `embedded.google.pubsub.dockerImage` (default is set to 'google/cloud-sdk:257.0.0')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/google/cloud-sdk/)
-* embedded.google.pubsub.host `(default is 0.0.0.0)`
-* embedded.google.pubsub.port `(default is 8089)`
-* embedded.google.pubsub.project-id `(default is my-project-id)`
+* `embedded.google.pubsub.host` (default is 0.0.0.0)
+* `embedded.google.pubsub.port` (default is 8089)
+* `embedded.google.pubsub.project-id` (default is my-project-id)
 * Topics and Subscriptions:
-  * embedded.google.pubsub.topics-and-subscriptions[0].topic=topic0_name
-  * embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name
-  * embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name
-  * embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name
+  * `embedded.google.pubsub.topics-and-subscriptions[0].topic=topic0_name`
+  * `embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name`
+  * `embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name`
+  * `embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name`
 
 ##### Produces
-* embedded.google.pubsub.host
-* embedded.google.pubsub.port `(mapped port)`
-* embedded.google.pubsub.project-id
+* `embedded.google.pubsub.host`
+* `embedded.google.pubsub.port` (mapped port)
+* `embedded.google.pubsub.project-id`
 
 ##### Example
 To auto-configure spring-cloud-gcp-starter-pubsub use these properties in your test `application.properties`:
@@ -650,7 +650,7 @@ spring.cloud.vault:
   * You can [build image by yourself](https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 * `embedded.oracle.user` (String, default is 'system')
 * `embedded.oracle.password` (String, default is 'oracle')
-* `embedded.oracle.initScriptPath` `(default is null)`
+* `embedded.oracle.initScriptPath` (default is null)
 
 ##### Produces
 * `embedded.oracle.host`
@@ -668,19 +668,19 @@ spring.cloud.vault:
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.mysql.enabled `(true|false, default is 'true')`
-* embedded.mysql.encoding `(default is 'utf8mb4')`
-* embedded.mysql.collation `(default is 'utf8mb4_unicode_ci')`
-* embedded.mysql.dockerImage `(default is set to 'mysql:5.7.22')`
+* `embedded.mysql.enabled` (true|false, default is 'true')
+* `embedded.mysql.encoding` (default is 'utf8mb4')
+* `embedded.mysql.collation` (default is 'utf8mb4_unicode_ci')
+* `embedded.mysql.dockerImage` (default is set to 'mysql:5.7.22')
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mysql/tags/)
-* embedded.mysql.waitTimeoutInSeconds `(default is 60 seconds)`
-* embedded.mysql.initScriptPath `(default is null)`
+* `embedded.mysql.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.mysql.initScriptPath` (default is null)
 ##### Produces
-* embedded.mysql.port
-* embedded.mysql.host
-* embedded.mysql.schema
-* embedded.mysql.user
-* embedded.mysql.password
+* `embedded.mysql.port`
+* `embedded.mysql.host`
+* `embedded.mysql.schema`
+* `embedded.mysql.user`
+* `embedded.mysql.password`
 
 ### embedded-localstack
 ##### Maven dependency
@@ -692,23 +692,23 @@ spring.cloud.vault:
 </dependency>
 ```
 ##### Consumes (via bootstrap.properties)
-* embedded.localstack.enabled `(true|false, default is 'true')`
-* embedded.localstack.services `(comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)`
+* `embedded.localstack.enabled` (true|false, default is 'true')
+* `embedded.localstack.services` (comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)
     * You can choose available services on [localstack](https://github.com/localstack/localstack)
-* embedded.localstack.defaultRegion `(default is 'us-east-1')`
-* embedded.localstack.dockerImage `(default is set to 'localstack/localstack:0.10.8')`
+* `embedded.localstack.defaultRegion` (default is 'us-east-1')
+* `embedded.localstack.dockerImage` (default is set to 'localstack/localstack:0.10.8')
     * You can pick a desired version on [dockerhub](https://hub.docker.com/r/localstack/localstack/tags)
-* embedded.localstack.useSsl `(default is 'false')`
-* embedded.localstack.hostname `(default is 'localhost')`
-* embedded.localstack.hostnameExternal `(default is 'localhost')`
-* embedded.localstack.edgePort `(default is '4566')`
+* `embedded.localstack.useSsl` (default is 'false')
+* `embedded.localstack.hostname` (default is 'localhost')
+* `embedded.localstack.hostnameExternal` (default is 'localhost')
+* `embedded.localstack.edgePort` (default is '4566')
 ##### Produces
-* embedded.localstack.host
-* embedded.localstack.accessKey
-* embedded.localstack.secretKey
-* embedded.localstack.region
-* embedded.localstack.{service} `(service endpoint for connection)`
-* embedded.localstack.{service}.port `(mapped port for connection)`
+* `embedded.localstack.host`
+* `embedded.localstack.accessKey`
+* `embedded.localstack.secretKey`
+* `embedded.localstack.region`
+* `embedded.localstack.{service}` (service endpoint for connection)
+* `embedded.localstack.{service}.port` (mapped port for connection)
 
 ## How to contribute
 ### Flow
