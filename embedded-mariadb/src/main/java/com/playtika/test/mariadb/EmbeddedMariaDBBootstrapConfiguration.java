@@ -60,7 +60,8 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                         .withEnv("MYSQL_DATABASE", properties.getDatabase())
                         .withCommand(
                                 "--character-set-server=" + properties.getEncoding(),
-                                "--collation-server=" + properties.getCollation())
+                                "--collation-server=" + properties.getCollation(),
+                                "--max_allowed_packet=" + properties.getMaxAllowedPacket())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))

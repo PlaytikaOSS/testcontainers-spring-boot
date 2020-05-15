@@ -44,5 +44,6 @@ public class MariaDBProperties extends CommonContainerProperties {
     String schema = "test_db";
     String host = "localhost";
     int port = 3306;
+    long maxAllowedPacket = 16777216;
     String initScriptPath;
 }
