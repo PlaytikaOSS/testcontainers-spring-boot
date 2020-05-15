@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.65</version>
+        <version>1.66-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-google-pubsub</artifactId>
