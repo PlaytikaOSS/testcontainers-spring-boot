@@ -112,9 +112,10 @@ embedded.kafka.topicsToCreate=some_topic
 * embedded.mariadb.enabled `(true|false, default is 'true')`
 * embedded.mariadb.encoding `(default is 'utf8mb4')`
 * embedded.mariadb.collation `(default is 'utf8mb4_unicode_ci')`
-* embedded.mariadb.dockerImage `(default is set to 'mariadb:10.3.2')`
+* embedded.mariadb.dockerImage `(default is set to 'mariadb:10.3.6')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mariadb/tags/)
 * embedded.mariadb.waitTimeoutInSeconds `(default is 60 seconds)`
+* embedded.mariadb.maxAllowedPacket `(default is '16777216')`
 * embedded.mariadb.initScriptPath `(default is null)`
 ##### Produces
 * embedded.mariadb.port
