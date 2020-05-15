@@ -32,7 +32,8 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @Import(value = {
         ZookeeperContainerConfiguration.class,
-        KafkaContainerConfiguration.class
+        KafkaContainerConfiguration.class,
+        SchemaRegistryContainerConfiguration.class,
 })
 public class EmbeddedKafkaBootstrapConfiguration {
 }

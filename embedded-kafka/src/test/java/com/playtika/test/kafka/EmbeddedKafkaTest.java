@@ -3,7 +3,6 @@ package com.playtika.test.kafka;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,11 +101,5 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
         assertThat(kafkaDataFolder.toFile())
                 .isDirectory()
                 .isNotEmptyDirectory();
-    }
-
-    protected void assertThatTopicExists(String topicName) throws Exception {
-        ListTopicsResult result = adminClient.listTopics();
-        Set<String> topics = result.names().get(10, TimeUnit.SECONDS);
-        assertThat(topics).contains(topicName);
     }
 }

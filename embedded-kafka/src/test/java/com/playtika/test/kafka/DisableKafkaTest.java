@@ -42,7 +42,7 @@ public class DisableKafkaTest {
                     EmbeddedKafkaCamelAutoConfiguration.class));
 
     @Test
-    @DisplayName("run with zookeeper & kafka disabled")
+    @DisplayName("run with zookeeper & kafka & schema registry disabled")
     public void contextLoads() {
         contextRunner
                 .withPropertyValues(
@@ -52,6 +52,7 @@ public class DisableKafkaTest {
                         .hasNotFailed()
                         .doesNotHaveBean("kafkaNetworkTestOperations")
                         .doesNotHaveBean("zookeeper")
-                        .doesNotHaveBean("kafka"));
+                        .doesNotHaveBean("kafka")
+                        .doesNotHaveBean("schema-registry"));
     }
 }
