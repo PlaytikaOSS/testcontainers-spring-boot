@@ -34,7 +34,7 @@ import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProp
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.schema-registry")
+@ConfigurationProperties("embedded.kafka.schema-registry")
 public class SchemaRegistryConfigurationProperties extends CommonContainerProperties {
 
     public static final String SCHEMA_REGISTRY_BEAN_NAME = "schema-registry";

@@ -46,7 +46,7 @@ import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
 @Slf4j
 @Configuration
-@ConditionalOnProperty(value = "embedded.schema-registry.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "embedded.kafka.schema-registry.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(SchemaRegistryConfigurationProperties.class)
 public class SchemaRegistryContainerConfiguration {
 
@@ -96,11 +96,11 @@ public class SchemaRegistryContainerConfiguration {
         Integer port = schemaRegistry.getMappedPort(properties.getPort());
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.schema-registry.host", host);
-        map.put("embedded.schema-registry.port", port);
+        map.put("embedded.kafka.schema-registry.host", host);
+        map.put("embedded.kafka.schema-registry.port", port);
         if (properties.isBasicAuthenticationEnabled()) {
-            map.put("embedded.schema-registry.username", SchemaRegistryConfigurationProperties.USERNAME);
-            map.put("embedded.schema-registry.password", SchemaRegistryConfigurationProperties.PASSWORD);
+            map.put("embedded.kafka.schema-registry.username", SchemaRegistryConfigurationProperties.USERNAME);
+            map.put("embedded.kafka.schema-registry.password", SchemaRegistryConfigurationProperties.PASSWORD);
         }
 
         log.info("Started Schema Registry. Connection Details: {}, Connection URI: http://{}:{}", map, host, port);

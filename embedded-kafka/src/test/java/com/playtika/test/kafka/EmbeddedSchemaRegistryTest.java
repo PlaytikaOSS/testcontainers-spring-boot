@@ -37,10 +37,10 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 class EmbeddedSchemaRegistryTest extends AbstractEmbeddedKafkaTest {
 
-    @Value("${embedded.schema-registry.host}")
+    @Value("${embedded.kafka.schema-registry.host}")
     private String host;
 
-    @Value("${embedded.schema-registry.port}")
+    @Value("${embedded.kafka.schema-registry.port}")
     private Integer port;
 
     @Test

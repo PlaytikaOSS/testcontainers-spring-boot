@@ -13,33 +13,33 @@
       "defaultValue": "true"
     },
     {
-      "name": "embedded.schema-registry.enabled",
+      "name": "embedded.kafka.schema-registry.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
     },
     {
-      "name": "embedded.schema-registry.waitTimeoutInSeconds",
+      "name": "embedded.kafka.schema-registry.waitTimeoutInSeconds",
       "type": "java.lang.Integer",
       "defaultValue": "60"
     },
     {
-      "name": "embedded.schema-registry.dockerImage",
+      "name": "embedded.kafka.schema-registry.dockerImage",
       "type": "java.lang.String",
       "defaultValue": "confluentinc/cp-schema-registry:5.4.1"
     },
     {
-      "name": "embedded.schema-registry.port",
+      "name": "embedded.kafka.schema-registry.port",
       "type": "java.lang.Integer",
       "description": "The container internal port. Will be overwritten with mapped port.",
       "defaultValue": "8081"
     },
     {
-      "name": "embedded.schema-registry.avroCompatibilityLevel",
+      "name": "embedded.kafka.schema-registry.avroCompatibilityLevel",
       "type": "java.lang.Enum",
       "defaultValue": "BACKWARD"
     },
     {
-      "name": "embedded.schema-registry.authentication",
+      "name": "embedded.kafka.schema-registry.authentication",
       "type": "java.lang.Enum",
       "defaultValue": "NONE"
     }
@@ -59,7 +59,7 @@
       ]
     },
     {
-      "name": "embedded.schema-registry.avro-compatibility-level",
+      "name": "embedded.kafka.schema-registry.avro-compatibility-level",
       "values": [
         {
           "value": "NONE",
@@ -92,7 +92,7 @@
       ]
     },
     {
-      "name": "embedded.schema-registry.authentication",
+      "name": "embedded.kafka.schema-registry.authentication",
       "values": [
         {
           "value": "NONE",
