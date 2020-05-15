@@ -46,7 +46,7 @@ import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
 @Slf4j
 @Configuration
-@ConditionalOnProperty(value = "embedded.kafka.schema-registry.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "embedded.kafka.schema-registry.enabled", havingValue = "true")
 @EnableConfigurationProperties(SchemaRegistryConfigurationProperties.class)
 public class SchemaRegistryContainerConfiguration {
 

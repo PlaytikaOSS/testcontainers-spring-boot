@@ -33,7 +33,10 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestPropertySource(properties = "embedded.kafka.schema-registry.authentication=BASIC")
+@TestPropertySource(properties = {
+        "embedded.kafka.schema-registry.enabled=true",
+        "embedded.kafka.schema-registry.authentication=BASIC"
+})
 class EmbeddedSchemaRegistryAuthTest extends AbstractEmbeddedKafkaTest {
 
     @Value("${embedded.kafka.schema-registry.host}")
