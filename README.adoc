@@ -88,6 +88,11 @@ spring.kafka.bootstrap-servers=${embedded.kafka.brokerList}
 embedded.kafka.topicsToCreate=some_topic
 ----
 
+== In-depth guides, how-tos and samples
+
+- https://dzone.com/articles/advanced-functional-testing-in-spring-boot-by-usin[Advanced Functional Testing in Spring Boot Using Docker in Tests]
+- https://github.com/tdanylchuk/functional-tests-best-practices[Functional tests best practices sample repo]
+
 == Supported services
 
 === link:embedded-mariadb/README.adoc[embedded-mariadb]
