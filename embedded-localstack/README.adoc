@@ -1,0 +1,36 @@
+=== embedded-localstack
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-localstack</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+* `embedded.localstack.enabled` `(true|false, default is 'true')`
+* `embedded.localstack.services` `(comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)`
+** You can choose available services on localstack
+* `embedded.localstack.defaultRegion` `(default is 'us-east-1')`
+* `embedded.localstack.dockerImage` `(default is set to 'localstack/localstack:0.10.8')`
+** You can pick a desired version on dockerhub.
+* `embedded.localstack.useSsl` `(default is 'false')`
+* `embedded.localstack.hostname` `(default is 'localhost')`
+* `embedded.localstack.hostnameExternal` `(default is 'localhost')`
+* `embedded.localstack.edgePort` `(default is '4566')`
+
+==== Produces
+
+* `embedded.localstack.host`
+* `embedded.localstack.accessKey`
+* `embedded.localstack.secretKey`
+* `embedded.localstack.region`
+* `embedded.localstack.{service}` (service endpoint for connection)
+* `embedded.localstack.{service}.port` (mapped port for connection)
+
+// TODO: missing example

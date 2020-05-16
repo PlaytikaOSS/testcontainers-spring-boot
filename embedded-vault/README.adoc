@@ -1,0 +1,46 @@
+=== embedded-vault
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-vault</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.vault.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.vault.dockerImage` `(String, default is set to 'vault:1.4.0')`
+** You can pick wanted version on dockerhub
+* `embedded.vault.host` `(String, default is 'localhost')`
+* `embedded.vault.port` `(int, default is 8200)`
+* `embedded.vault.token` `(String, default is '00000000-0000-0000-0000-000000000000')`
+* `embedded.vault.path` `(String, default is 'secret/application')`
+* `embedded.vault.secrets` `(Map, default is empty)`
+
+==== Produces
+
+* `embedded.vault.host`
+* `embedded.vault.port` (mapped HTTP port)
+* `embedded.vault.token`
+
+==== Example
+
+To auto-configure `spring-cloud-vault-config` use these properties in your test `application.yaml`:
+
+./src/test/resources/application.yaml
+[source,yaml]
+----
+spring.cloud.vault:
+  scheme: http
+  host: ${embedded.vault.host}
+  port: ${embedded.vault.port}
+  token: ${embedded.vault.token}
+  kv:
+    enabled: true
+----

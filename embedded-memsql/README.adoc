@@ -1,0 +1,36 @@
+=== embedded-memsql
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-memsql</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.memsql.enabled` `(true|false, default is 'true')`
+* `embedded.memsql.dockerImage` `(default is set to 'memsql/quickstart:minimal-6.0.8')`
+** You can pick wanted version on https://hub.docker.com/r/memsql/quickstart/tags/[dockerhub]
+* `embedded.memsql.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+
+* `embedded.memsql.port`
+* `embedded.memsql.host`
+* `embedded.memsql.schema`
+* `embedded.memsql.user`
+* `embedded.memsql.password`
+
+==== Notes
+
+* Images without "minimal" tag do no start within 30 secs, so they are unusable
+* There should be at least 1.5 GB of RAM available for memsql to start
+* You can enable debug logs for `com.playtika.test` category to troubleshoot issues
+
+//TODO: example missing

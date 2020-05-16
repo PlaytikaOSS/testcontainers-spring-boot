@@ -1,0 +1,30 @@
+=== embedded-voltdb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-voltdb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.voltdb.enabled` `(true|false, default is 'true')`
+* `embedded.voltdb.dockerImage` `(default is set to 'voltdb/voltdb-community:8.3.3')`
+** You can pick wanted version on https://hub.docker.com/r/voltdb/voltdb-community/tags/[dockerhub]
+
+==== Produces
+
+* `embedded.voltdb.host`
+* `embedded.voltdb.port`
+
+==== Notes
+
+VoltDB container has no security enabled, you can use any credentials.
+
+//TODO: example missing

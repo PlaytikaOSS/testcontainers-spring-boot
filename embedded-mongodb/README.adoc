@@ -1,0 +1,38 @@
+=== embedded-mongodb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mongodb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.mongodb.enabled` `(true|false, default is 'true')`
+* `embedded.mongodb.dockerImage` `(default is set to 'mongo:4.2.0-bionic')`
+** You can pick wanted version on https://hub.docker.com/_/mongo?tab=tags[dockerhub]
+* `embedded.mongodb.host` `(default is localhost)`
+* `embedded.mongodb.port` `(default is 27017)`
+* `embedded.mongodb.database` `(default is test)`
+
+==== Produces
+
+* `embedded.mongodb.host`
+* `embedded.mongodb.port`
+* `embedded.mongodb.database`
+
+==== Example
+
+To auto-configure `spring-data-mongodb` use these properties in your test `application.properties`:
+
+./src/test/resources/application.properties
+[source,properties]
+----
+spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
+----

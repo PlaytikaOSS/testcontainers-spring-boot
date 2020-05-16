@@ -1,0 +1,36 @@
+=== embedded-minio
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-minio</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+* `embedded.minio.enabled` `(true|false, default is 'true')`
+* `embedded.minio.dockerImage` `(default is set to 'minio/minio')`
+** You can pick wanted version on https://hub.docker.com/r/minio/minio/tags[dockerhub]
+* `embedded.minio.accessKey` `(default is set to 'AKIAIOSFODNN7EXAMPLE")`
+* `embedded.minio.secretKey` `(default is set to 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
+* `embedded.minio.userName` `(default is set to 'minio')`
+* `embedded.minio.groupName`  `(default is set to 'minio')`
+* `embedded.minio.region`  `(default is set to '')`
+* `embedded.minio.worm`  `(on|off, default is set to 'off')`
+* `embedded.minio.browser`  `(on|off, default is set to 'on')`
+* `embedded.minio.directory`  `(default is set to '/data')`
+
+==== Produces
+
+* `embedded.minio.host`
+* `embedded.minio.port`
+* `embedded.minio.accessKey`
+* `embedded.minio.secretKey`
+* `embedded.minio.region`
+
+//TODO: example missing

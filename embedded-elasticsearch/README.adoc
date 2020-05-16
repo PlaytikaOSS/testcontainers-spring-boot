@@ -1,0 +1,32 @@
+=== embedded-elasticsearch
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-elasticsearch</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.elasticsearch.enabled` `(true|false, default is 'true')`
+* `embedded.elasticsearch.dockerImage` `(default is set to 'docker.elastic.co/elasticsearch/elasticsearch:6.2.4')`
+* `embedded.elasticsearch.indices` `(indices to create, no indices are created by default)`
+** You can pick wanted version on https://www.docker.elastic.co[docker.elastic.co]
+* `embedded.elasticsearch.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+==== Produces
+
+* `embedded.elasticsearch.clusterName`
+* `embedded.elasticsearch.host`
+* `embedded.elasticsearch.httpPort`
+* `embedded.elasticsearch.transportPort`
+
+
+//TODO: example missing
+

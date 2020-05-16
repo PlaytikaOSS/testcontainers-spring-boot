@@ -1,0 +1,39 @@
+=== embedded-keycloak
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-keycloak</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.keycloak.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.keycloak.dockerImage` `(String, default is set to 'jboss/keycloak:8.0.1')`
+** You can pick wanted version on dockerhub.
+* `embedded.keycloak.command` `(String[], default is '["-c", "standalone.xml", "-Dkeycloak.profile.feature.upload_scripts=enabled"]')`
+* `embedded.keycloak.admin-user` `(String, default is 'admin')`
+* `embedded.keycloak.admin-password` `(String, default is 'letmein')`
+* `embedded.keycloak.import-file` `(String, default is '')`
+
+==== Produces
+
+* `embedded.keycloak.host`
+* `embedded.keycloak.http-port` (mapped HTTP port)
+* `embedded.keycloak.auth-server-url`
+
+==== Example
+To configure for example the `keycloak-spring-boot-starter` use these properties in your test `application.yaml`:
+
+./src/test/resources/application.yaml
+[source,yaml]
+----
+keycloak:
+  auth-server-url: ${embedded.keycloak.auth-server-url}
+----

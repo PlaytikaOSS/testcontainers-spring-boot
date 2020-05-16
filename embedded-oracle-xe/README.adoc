@@ -1,0 +1,31 @@
+=== embedded-oracle-xe
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-oracle-xe</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.oracle.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.oracle.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.oracle.dockerImage` `(String, default is set to 'oracleinanutshell/oracle-xe-11g')`
+** You can pick wanted image on dockerhub.
+* `embedded.oracle.user` `(String, default is 'system')`
+* `embedded.oracle.password` `(String, default is 'oracle')`
+* `embedded.oracle.initScriptPath` `(default is null)`
+
+==== Produces
+
+* `embedded.oracle.host`
+* `embedded.oracle.port` (mapped TCP port)
+* `embedded.oracle.db` (set to 'xe')
+
+// TODO: missing example

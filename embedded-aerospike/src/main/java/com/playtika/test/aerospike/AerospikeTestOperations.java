@@ -35,10 +35,20 @@ public class AerospikeTestOperations {
     private final ExpiredDocumentsCleaner expiredDocumentsCleaner;
     private final NetworkTestOperations networkTestOperations;
 
+    /**
+     *
+     * @deprecated instead use {@link NetworkTestOperations} directly.
+     */
+    @Deprecated
     public void addNetworkLatencyForResponses(java.time.Duration millis) {
         networkTestOperations.addNetworkLatencyForResponses(millis);
     }
 
+    /**
+     *
+     * @deprecated instead use {@link NetworkTestOperations} directly.
+     */
+    @Deprecated
     public void removeNetworkLatencyForResponses() {
         networkTestOperations.removeNetworkLatencyForResponses();
     }
