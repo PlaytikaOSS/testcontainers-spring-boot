@@ -16,7 +16,7 @@ Usage of Spring Cloud in your production code is optional, but __you will need i
 [[how-to-use]]
 == How to use
 
-. https://docs.docker.com/install/[Install Docker] on your machine if it is not yet here ;)
+. https://docs.docker.com/install/[Install Docker] on your machine
 . Make sure you have http://projects.spring.io/spring-cloud/#quick-start[Spring Boot and Spring Cloud] in classpath of your tests.
 In case if you need to https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter[pick version].
 +
