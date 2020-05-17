@@ -90,6 +90,7 @@ embedded.kafka.topicsToCreate=some_topic
 
 == In-depth guides, how-tos and samples
 
+- https://martinfowler.com/articles/microservice-testing/[Testing Strategies in a Microservice Architecture]
 - https://dzone.com/articles/advanced-functional-testing-in-spring-boot-by-usin[Advanced Functional Testing in Spring Boot Using Docker in Tests]
 - https://github.com/tdanylchuk/functional-tests-best-practices[Functional tests best practices sample repo]
 
