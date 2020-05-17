@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "test_index", type = "test")
+@Document(indexName = "test_index")
 public class TestDocument {
     @Id
     private String key;

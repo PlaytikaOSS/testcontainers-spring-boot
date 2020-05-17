@@ -29,12 +29,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 
 @ActiveProfiles("disabled")
-@SpringBootTest
+@SpringBootTest(classes = DisabledElasticSearchTest.Config.class)
 public class DisabledElasticSearchTest {
 
     @Autowired
@@ -48,4 +50,8 @@ public class DisabledElasticSearchTest {
         assertThat(containers).isEmpty();
         assertThat(postProcessors).doesNotContain("elasticClientDependencyPostProcessor");
     }
+
+    @Configuration
+    @EnableAutoConfiguration
+    public static class Config {}
 }

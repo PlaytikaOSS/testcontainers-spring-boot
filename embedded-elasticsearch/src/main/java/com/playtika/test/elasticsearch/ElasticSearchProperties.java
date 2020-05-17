@@ -36,7 +36,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.elasticsearch")
 public class ElasticSearchProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
-    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:6.4.1";
+    String dockerImage = "elasticsearch:7.7.0";
 
     String clusterName = "test_cluster";
     String host = "localhost";
