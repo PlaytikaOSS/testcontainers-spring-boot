@@ -29,7 +29,6 @@ import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.PackageInstaller;
 import com.playtika.test.common.utils.YumPackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;

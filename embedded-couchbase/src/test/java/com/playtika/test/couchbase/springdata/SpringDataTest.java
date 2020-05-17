@@ -33,12 +33,14 @@ import java.util.concurrent.Callable;
 
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.data.couchbase.core.CouchbaseOperations;
 
 public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 
@@ -52,7 +54,10 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     NetworkTestOperations couchbaseNetworkTestOperations;
 
     @Autowired
-    Bucket bucket;
+    CouchbaseOperations couchbaseOperations;
+
+    @Autowired
+    CouchbaseConfigurationProperties couchbaseConfigurationProperties;
 
     @Test
     public void springDataShouldWork() throws Exception {
@@ -79,7 +84,6 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
 
     @Test
     public void n1q1ShouldWork() throws Exception {
-        bucket.bucketManager().createN1qlPrimaryIndex(true, false);
 
         String title = "some query title";
         saveDocument("test::2", "custom value");
@@ -94,18 +98,32 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     @Test
     public void shouldSetupDependsOnForNewClient() throws Exception {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(Bucket.class);
-        assertThat(beanNamesForType)
-                .as("New sync client should be present")
-                .hasSize(1)
-                .contains("couchbaseBucket");
-        asList(beanNamesForType).forEach(this::hasDependsOn);
+        if(beanNamesForType.length > 0) {
+            assertThat(beanNamesForType)
+                    .as("New sync client should be present")
+                    .hasSize(1)
+                    .contains("couchbaseBucket");
+            asList(beanNamesForType).forEach(this::hasDependsOn);
+        }
 
         beanNamesForType = beanFactory.getBeanNamesForType(AsyncBucket.class);
-        assertThat(beanNamesForType)
-                .as("New async client should be present")
-                .hasSize(1)
-                .contains("asyncCouchbaseBucket");
-        asList(beanNamesForType).forEach(this::hasDependsOn);
+        if(beanNamesForType.length > 0) {
+            assertThat(beanNamesForType)
+                    .as("New async client should be present")
+                    .hasSize(1)
+                    .contains("asyncCouchbaseBucket");
+            asList(beanNamesForType).forEach(this::hasDependsOn);
+        }
+
+        beanNamesForType = beanFactory.getBeanNamesForType(Cluster.class);
+
+        if(beanNamesForType.length > 0) {
+            assertThat(beanNamesForType)
+                    .as("New async client should be present")
+                    .hasSize(1)
+                    .contains("couchbaseCluster");
+            asList(beanNamesForType).forEach(this::hasDependsOn);
+        }
     }
 
     private void hasDependsOn(String beanName) {
