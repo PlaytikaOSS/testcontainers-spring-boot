@@ -48,7 +48,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
     private ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    private NetworkTestOperations elasticSearchNetworkTestOperations;
+    private NetworkTestOperations elasticsearchNetworkTestOperations;
 
     @Test
     public void springDataShouldWork() {
@@ -64,7 +64,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
 
     @Test
     public void shouldEmulateNetworkLatency() throws Exception {
-        elasticSearchNetworkTestOperations.withNetworkLatency(ofMillis(1000),
+        elasticsearchNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> documentRepository.findById("abc")))
                         .isCloseTo(1000L, Offset.offset(100L))
         );
