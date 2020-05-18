@@ -1,6 +1,5 @@
 package com.playtika.test.couchbase;
 
-import com.couchbase.client.core.env.SeedNode;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.Collection;

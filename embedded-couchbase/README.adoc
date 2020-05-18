@@ -18,7 +18,7 @@
 * `embedded.couchbase.services` `(comma separated list, default is 'kv,index,n1ql,fts')`
 * `embedded.couchbase.clusterRamMb` `(default is set to '256')`
 * `embedded.couchbase.bucketRamMb` `(default is set to '100')`
-* `embedded.couchbase.dockerImage` `(default is set to 'couchbase:community-4.5.1')`
+* `embedded.couchbase.dockerImage` `(default is set to 'couchbase:community-5.1.1')`
 ** You can pick wanted version on https://hub.docker.com/r/library/couchbase/tags/[dockerhub]
 * `embedded.couchbase.bucketType` `(default is set to 'couchbase')`
 ** Used for test https://developer.couchbase.com/documentation/server/3.x/admin/REST/rest-bucket-create.html[bucket creation]

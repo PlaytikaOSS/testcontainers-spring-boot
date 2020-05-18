@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,6 @@
  */
 package com.playtika.test.couchbase.springdata;
 
-import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
@@ -41,6 +33,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
+import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 
@@ -60,7 +62,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     CouchbaseConfigurationProperties couchbaseConfigurationProperties;
 
     @Test
-    public void springDataShouldWork() throws Exception {
+    public void springDataShouldWork() {
         String key = "test::1";
         String value = "myvalue";
         assertThat(documentRepository).isNotNull();
@@ -74,31 +76,32 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     @Test
     public void shouldEmulateNetworkLatency() throws Exception {
         couchbaseNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> documentRepository.findById("abc")))
+                () -> assertThat(durationOf(() -> documentRepository.existsById("abc")))
                         .isCloseTo(1000L, Offset.offset(100L))
         );
 
-        assertThat(durationOf(() -> documentRepository.findById("abc")))
+        assertThat(durationOf(() -> documentRepository.existsById("abc")))
                 .isLessThan(100L);
     }
 
     @Test
-    public void n1q1ShouldWork() throws Exception {
-
+    public void n1q1ShouldWork() {
         String title = "some query title";
         saveDocument("test::2", "custom value");
         saveDocument("test::3", title);
         saveDocument("test::4", title);
 
-        List<TestDocument> resultList = documentRepository.findByTitle(title);
-
-        assertThat(resultList.size()).isEqualTo(2);
+        await().atMost(30, TimeUnit.SECONDS).until(() -> {
+            List<TestDocument> resultList = documentRepository.findByTitle(title);
+            assertThat(resultList.size()).isEqualTo(2);
+            return true;
+        });
     }
 
     @Test
-    public void shouldSetupDependsOnForNewClient() throws Exception {
+    public void shouldSetupDependsOnForNewClient() {
         String[] beanNamesForType = beanFactory.getBeanNamesForType(Bucket.class);
-        if(beanNamesForType.length > 0) {
+        if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
                     .as("New sync client should be present")
                     .hasSize(1)
@@ -107,7 +110,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
         }
 
         beanNamesForType = beanFactory.getBeanNamesForType(AsyncBucket.class);
-        if(beanNamesForType.length > 0) {
+        if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
                     .as("New async client should be present")
                     .hasSize(1)
@@ -117,7 +120,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
 
         beanNamesForType = beanFactory.getBeanNamesForType(Cluster.class);
 
-        if(beanNamesForType.length > 0) {
+        if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
                     .as("New async client should be present")
                     .hasSize(1)
