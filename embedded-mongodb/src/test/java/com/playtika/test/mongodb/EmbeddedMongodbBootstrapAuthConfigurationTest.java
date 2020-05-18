@@ -33,7 +33,9 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -50,7 +52,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
                 "spring.data.mongodb.password=${embedded.mongodb.password}",
                 "spring.data.mongodb.database=${embedded.mongodb.database}",
                 "spring.data.mongodb.authentication-database=admin"
-        })
+        }
+        ,classes = EmbeddedMongodbBootstrapAuthConfigurationTest.TestConfiguration.class
+)
 public class EmbeddedMongodbBootstrapAuthConfigurationTest {
 
     @Autowired
@@ -84,5 +88,10 @@ public class EmbeddedMongodbBootstrapAuthConfigurationTest {
         String someString;
         Instant someTimestamp;
         Long someNumber;
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }

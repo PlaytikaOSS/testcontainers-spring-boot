@@ -13,9 +13,6 @@
 
     <artifactId>embedded-mongodb</artifactId>
 
-    <properties>
-        <mongo-java-driver.version>3.12.4</mongo-java-driver.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -29,8 +26,8 @@
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>${mongo-java-driver.version}</version>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
