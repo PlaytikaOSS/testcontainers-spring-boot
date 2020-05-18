@@ -26,6 +26,7 @@ package com.playtika.test.couchbase;
 import com.couchbase.client.CouchbaseClient;
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
+import com.couchbase.client.java.Cluster;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -72,6 +73,17 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
         @Bean
         public BeanFactoryPostProcessor couchbaseClientDependencyPostProcessor() {
             return new DependsOnPostProcessor(CouchbaseClient.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
+        }
+    }
+
+
+    @Configuration
+    @ConditionalOnClass(Cluster.class)
+    public static class CouchbaseClusterDependencyContext {
+
+        @Bean
+        public BeanFactoryPostProcessor couchbaseClusterDependencyPostProcessor() {
+            return new DependsOnPostProcessor(Cluster.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
         }
     }
 

@@ -39,7 +39,7 @@ import static java.lang.String.format;
 public class CouchbaseProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
     String services = "kv,index,n1ql,fts";
-    String dockerImage = "couchbase:community-4.5.1";
+    String dockerImage = "couchbase:community-5.1.1";
     int clusterRamMb = 256;
     int bucketRamMb = 100;
     String bucketType = "couchbase";

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package com.playtika.test.mongodb;
 
-import com.mongodb.MongoClient;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -45,6 +44,6 @@ public class EmbeddedMongodbDependenciesAutoConfiguration {
 
     @Bean
     public BeanFactoryPostProcessor mongoClientDependencyPostProcessor() {
-        return new DependsOnPostProcessor(MongoClient.class, new String[]{BEAN_NAME_EMBEDDED_MONGODB});
+        return new DependsOnPostProcessor(MongoTemplate.class, new String[]{BEAN_NAME_EMBEDDED_MONGODB});
     }
 }

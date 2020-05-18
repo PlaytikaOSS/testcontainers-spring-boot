@@ -15,7 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.elasticsearch.enabled` `(true|false, default is 'true')`
-* `embedded.elasticsearch.dockerImage` `(default is set to 'docker.elastic.co/elasticsearch/elasticsearch:6.2.4')`
+* `embedded.elasticsearch.dockerImage` `(default is set to 'elasticsearch:7.7.0')`
 * `embedded.elasticsearch.indices` `(indices to create, no indices are created by default)`
 ** You can pick wanted version on https://www.docker.elastic.co[docker.elastic.co]
 * `embedded.elasticsearch.waitTimeoutInSeconds` `(default is 60 seconds)`
@@ -28,5 +28,15 @@
 * `embedded.elasticsearch.transportPort`
 
 
-//TODO: example missing
+==== Example
+
+To use auto-configured elastic client use these properties in your test `application.properties`:
+
+./src/test/resources/application.properties
+[source,properties]
+----
+spring.data.elasticsearch.client.reactive.endpoints=${embedded.elasticsearch.host}:${embedded.elasticsearch.httpPort}
+spring.elasticsearch.rest.uris=http://${embedded.elasticsearch.host}:${embedded.elasticsearch.httpPort}
+----
+
 

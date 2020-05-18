@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,12 @@
  */
 package com.playtika.test.elasticsearch.springdata;
 
-import java.util.List;
-
-import org.springframework.data.elasticsearch.repository.ElasticsearchCrudRepository;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
-public interface TestDocumentRepository extends ElasticsearchCrudRepository<TestDocument, String> {
+public interface TestDocumentRepository extends ElasticsearchRepository<TestDocument, String> {
     List<TestDocument> findByTitle(String title);
 }

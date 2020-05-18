@@ -28,23 +28,19 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.PackageInstaller;
 import com.playtika.test.common.utils.YumPackageInstaller;
-import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.util.Collections;
 
 import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 
 @Configuration
-@ConditionalOnBean({Client.class})
-@ConditionalOnProperty(value = "embedded.elasticsearch.enabled", matchIfMissing = true)
+@ConditionalOnProperty(value = "embedded.elasticsearch.install.enabled")
 public class EmbeddedElasticSearchTestOperationsAutoConfiguration {
 
     @Bean
@@ -58,16 +54,13 @@ public class EmbeddedElasticSearchTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller elasticSearchPackageInstaller(
             InstallPackageProperties elasticSearchPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) GenericContainer elasticSearch
-    ) {
+            @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) ElasticsearchContainer elasticSearch) {
         return new YumPackageInstaller(elasticSearchPackageProperties, elasticSearch);
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "elasticsearchNetworkTestOperations")
-    public NetworkTestOperations elasticSearchNetworkTestOperations(
-            @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) GenericContainer elasticSearch
-    ) {
+    public NetworkTestOperations elasticSearchNetworkTestOperations(@Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH)
+                                                                                ElasticsearchContainer elasticSearch) {
         return new DefaultNetworkTestOperations(elasticSearch);
     }
 }

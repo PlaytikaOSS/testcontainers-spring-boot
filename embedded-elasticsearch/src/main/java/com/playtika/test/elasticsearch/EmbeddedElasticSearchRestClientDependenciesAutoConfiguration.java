@@ -23,35 +23,28 @@
  */
 package com.playtika.test.elasticsearch;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.ActiveProfiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.playtika.test.common.spring.DependsOnPostProcessor;
 
-@ActiveProfiles("enabled")
-@SpringBootTest(properties = "embedded.elasticsearch.install.enabled=true"
-        , classes = EmbeddedElasticSearchBootstrapConfigurationTest.Config.class)
-public abstract class EmbeddedElasticSearchBootstrapConfigurationTest {
+import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+@Configuration
+@AutoConfigureOrder
+@ConditionalOnClass(RestClient.class)
+@ConditionalOnProperty(name = "embedded.elasticsearch.enabled", matchIfMissing = true)
+@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration")
+public class EmbeddedElasticSearchRestClientDependenciesAutoConfiguration {
 
-    @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.elasticsearch.clusterName")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.elasticsearch.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.elasticsearch.httpPort")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.elasticsearch.transportPort")).isNotEmpty();
+    @Bean
+    public BeanFactoryPostProcessor elasticRestClientDependencyPostProcessor() {
+        return new DependsOnPostProcessor(RestClient.class, new String[]{BEAN_NAME_EMBEDDED_ELASTIC_SEARCH});
     }
-
-    @Configuration
-    @EnableAutoConfiguration
-    public static class Config {
-    }
-
 }

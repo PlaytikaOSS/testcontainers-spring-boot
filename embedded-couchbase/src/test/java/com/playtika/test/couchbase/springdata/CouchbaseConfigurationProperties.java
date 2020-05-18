@@ -33,6 +33,7 @@ public class CouchbaseConfigurationProperties {
 
     private String hosts;
     private String bucket;
+    private String user;
     private String password;
 
     private int bootstrapHttpDirectPort;
