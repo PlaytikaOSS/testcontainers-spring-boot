@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>1.67</version>
+    <version>1.68-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
