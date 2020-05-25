@@ -20,6 +20,8 @@
 * `embedded.mariadb.dockerImage` `(default is set to 'mariadb:10.3.2')`
 ** You can pick wanted version on https://hub.docker.com/r/library/mariadb/tags/[dockerhub]
 * `embedded.mariadb.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.mariadb.maxAllowedPacket` `(default is '16777216')`
+* `embedded.mariadb.initScriptPath` `(default is null)`
 
 ==== Produces
 

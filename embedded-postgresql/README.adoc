@@ -18,6 +18,10 @@
 * `embedded.postgresql.dockerImage` `(default is set to 'postgres:9.6.8')`
 ** You can pick wanted version on https://hub.docker.com/r/library/postgres/tags/[dockerhub]
 * `embedded.postgresql.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.postgresql.database`
+* `embedded.postgresql.user`
+* `embedded.postgresql.password`
+* `embedded.postgresql.initScriptPath` `(default is null)`
 
 ==== Produces
 

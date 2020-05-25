@@ -19,12 +19,16 @@
 ** You can pick wanted version on https://hub.docker.com/_/mongo?tab=tags[dockerhub]
 * `embedded.mongodb.host` `(default is localhost)`
 * `embedded.mongodb.port` `(default is 27017)`
+* `embedded.mongodb.username`
+* `embedded.mongodb.password`
 * `embedded.mongodb.database` `(default is test)`
 
 ==== Produces
 
 * `embedded.mongodb.host`
 * `embedded.mongodb.port`
+* `embedded.mongodb.username`
+* `embedded.mongodb.password`
 * `embedded.mongodb.database`
 
 ==== Example

@@ -16,16 +16,67 @@
 * `embedded.zookeeper.enabled` `(true|false, default is 'true')`
 * `embedded.zookeeper.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.zookeeper.dockerImage` `(default : confluentinc/cp-zookeeper:4.1.2)`
+** To use another zookeper version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-zookeeper/tags[dockerhub]
 * `embedded.kafka.enabled` `(true|false, default is 'true')`
 * `embedded.kafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
+* `embedded.kafka.secureTopics` (subset of `embedded.kafka.topicsToCreate` that should be secured with ACLs)
 * `embedded.kafka.dockerImage` `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
-** To use another kafka version pick corresponding docker image from https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility[Confluent Platform and Apache Kafka Compatibility]
+** To use another kafka version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-kafka/tags[dockerhub]
+** https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility[Confluent Platform and Apache Kafka Compatibility]
 * `embedded.kafka.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.kafka.schema-registry.enabled` `(true|false, default is 'false')`
+* `embedded.kafka.schema-registry.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.kafka.schema-registry.dockerImage` `(default : confluentinc/cp-schema-registry:5.4.1)`
+** To use another schema registry version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-schema-registry/tags[dockerhub]
+* `embedded.kafka.schema-registry.port` `(default is 8081)`
+* `embedded.kafka.schema-registry.avroCompatibilityLevel` `(NONE|BACKWARD|BACKWARD_TRANSITIVE|FORWARD|FORWARD_TRANSITIVE|FULL|FULL_TRANSITIVE, default is BACKWARD)`
+* `embedded.kafka.schema-registry.authentication` `(NONE|BASIC, default is NONE)`
+
+==== Filesystem bindings
+
+Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to host filesystem.
+By default, to your projects `target` folder. You can configure binding using properties:
+
+* `embedded.zookeeper.fileSystemBind.enabled` `(true|false, default is 'true')`
+* `embedded.zookeeper.fileSystemBind.dataFolder` `(default : target/embedded-zk-data)`
+* `embedded.zookeeper.fileSystemBind.txnLogsFolder` `(default : target/embedded-zk-txn-logs)`
+* `embedded.kafka.fileSystemBind.dataFolder` `(default : target/embedded-kafka-data)`
 
 ==== Produces
 
 * `embedded.zookeeper.zookeeperConnect`
 * `embedded.kafka.brokerList`
+* `embedded.kafka.saslPlaintext.brokerList`
+* `embedded.kafka.saslPlaintext.user`
+* `embedded.kafka.saslPlaintext.password`
+* `embedded.kafka.schema-registry.host`
+* `embedded.kafka.schema-registry.port`
+* `embedded.kafka.schema-registry.username`
+* `embedded.kafka.schema-registry.password`
 
+==== Using `SASL_PLAINTEXT`
+
+Note that only `SASL_PLAINTEXT` protocol supported, meaning TLS is not used.
+
+.`embedded-kafka` configuration (via `bootstrap.properties`)
+[source,properties]
+----
+embedded.kafka.topicsToCreate=nonSecureTopic,secureTopic
+embedded.kafka.secureTopics=secureTopic
+----
+
+.Application configuration
+[source,properties]
+----
+# Common for Producer and Consumer
+bootstrap.servers=${embedded.kafka.saslPlaintext.brokerList}
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+username="${embedded.kafka.saslPlaintext.user}" \
+password="${embedded.kafka.saslPlaintext.password}";
+
+# Consumer group.id could be any as ACLs are applied to wildcard group
+----
 
 //TODO: example missing

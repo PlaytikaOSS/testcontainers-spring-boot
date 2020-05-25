@@ -17,7 +17,7 @@
 * `embedded.oracle.enabled` `(boolean, true|false, default is 'true')`
 * `embedded.oracle.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.oracle.dockerImage` `(String, default is set to 'oracleinanutshell/oracle-xe-11g')`
-** You can pick wanted image on dockerhub.
+** You can pick wanted image on https://hub.docker.com/search?q=oracle-xe&type=image[dockerhub]
 * `embedded.oracle.user` `(String, default is 'system')`
 * `embedded.oracle.password` `(String, default is 'oracle')`
 * `embedded.oracle.initScriptPath` `(default is null)`
