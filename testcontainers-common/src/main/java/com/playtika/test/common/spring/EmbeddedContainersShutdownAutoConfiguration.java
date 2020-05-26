@@ -23,6 +23,7 @@
  */
 package com.playtika.test.common.spring;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +43,14 @@ public class EmbeddedContainersShutdownAutoConfiguration {
     public static final String ALL_CONTAINERS = "allContainers";
 
     @Bean(name = ALL_CONTAINERS)
-    public AllContainers allContainers(GenericContainer... allContainers) {
-        return new AllContainers(Arrays.asList(allContainers));
+    public AllContainers allContainers(GenericContainer [] allContainers, CommonContainerProperties[] properties) {
+        if (properties == null)
+            return new AllContainers();
+        for (CommonContainerProperties p : properties) {
+            if (p.isEnabled()) {
+                return new AllContainers(Arrays.asList(allContainers));
+            }
+        }
+        return new AllContainers();
     }
 }

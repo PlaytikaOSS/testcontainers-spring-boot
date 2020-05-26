@@ -27,12 +27,17 @@ import lombok.Value;
 import org.springframework.beans.factory.DisposableBean;
 import org.testcontainers.containers.GenericContainer;
 
+import java.util.Collections;
 import java.util.List;
 
 @Value
 public class AllContainers implements DisposableBean {
 
     List<GenericContainer> genericContainers;
+
+    public AllContainers() {
+        genericContainers = Collections.emptyList();
+    }
 
     public AllContainers(List<GenericContainer> genericContainers) {
         if(genericContainers.isEmpty()){

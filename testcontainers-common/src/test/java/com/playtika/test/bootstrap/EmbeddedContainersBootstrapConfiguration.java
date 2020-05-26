@@ -24,6 +24,7 @@
 package com.playtika.test.bootstrap;
 
 import com.playtika.test.common.checks.PositiveCommandWaitStrategy;
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Bean;
@@ -54,5 +55,12 @@ public class EmbeddedContainersBootstrapConfiguration {
                 .withStartupTimeout(Duration.ofSeconds(15));
         echoContainer.start();
         return echoContainer;
+    }
+
+    @Bean
+    CommonContainerProperties properties(){
+        CommonContainerProperties props = new CommonContainerProperties();
+        props.setEnabled(true);
+        return props;
     }
 }
