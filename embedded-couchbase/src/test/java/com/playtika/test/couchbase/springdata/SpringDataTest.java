@@ -91,7 +91,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
         saveDocument("test::3", title);
         saveDocument("test::4", title);
 
-        await().atMost(30, TimeUnit.SECONDS).until(() -> {
+        await().atMost(60, TimeUnit.SECONDS).until(() -> {
             List<TestDocument> resultList = documentRepository.findByTitle(title);
             assertThat(resultList.size()).isEqualTo(2);
             return true;
