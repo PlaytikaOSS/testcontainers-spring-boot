@@ -21,36 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.spring;
+package com.playtika.test.bootstrap;
 
+import com.playtika.test.common.checks.PositiveCommandWaitStrategy;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.testcontainers.containers.GenericContainer;
 
-import java.util.Arrays;
-
-//TODO: Drop this workaround after proper fix available https://github.com/spring-cloud/spring-cloud-commons/issues/752
+import java.time.Duration;
 
 @Slf4j
 @Configuration
-@AutoConfigureOrder(value = Ordered.LOWEST_PRECEDENCE)
-public class EmbeddedContainersShutdownAutoConfiguration {
+@AutoConfigureOrder
+public class EmbeddedContainersBootstrapConfiguration {
 
-    public static final String ALL_CONTAINERS = "allContainers";
+    @Bean
+    EchoContainer echoContainer1() {
+        EchoContainer echoContainer = new EchoContainer()
+                .withCommand("/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done")
+                .waitingFor(new PositiveCommandWaitStrategy())
+                .withStartupTimeout(Duration.ofSeconds(15));
+        echoContainer.start();
+        return echoContainer;
+    }
 
-    @Bean(name = ALL_CONTAINERS)
-    public AllContainers allContainers(GenericContainer [] allContainers, CommonContainerProperties[] properties) {
-        if (properties == null)
-            return new AllContainers();
-        for (CommonContainerProperties p : properties) {
-            if (p.isEnabled()) {
-                return new AllContainers(Arrays.asList(allContainers));
-            }
-        }
-        return new AllContainers();
+    @Bean
+    EchoContainer echoContainer2() {
+        EchoContainer echoContainer = new EchoContainer()
+                .withCommand("/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done")
+                .waitingFor(new PositiveCommandWaitStrategy())
+                .withStartupTimeout(Duration.ofSeconds(15));
+        echoContainer.start();
+        return echoContainer;
+    }
+
+    @Bean
+    CommonContainerProperties properties(){
+        CommonContainerProperties props = new CommonContainerProperties();
+        props.setEnabled(true);
+        return props;
     }
 }

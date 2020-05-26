@@ -21,17 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.checks;
+package com.playtika.test.common.spring;
 
-public class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
+import lombok.Value;
 
-    @Override
-    public String getContainerType() {
-        return "Positive Test";
-    }
+@Value
+public class DockerPresenceMarker {
 
-    @Override
-    public String[] getCheckCommand() {
-        return new String[]{"echo", "health check passed"};
+    boolean dockerPresent;
+
+    public DockerPresenceMarker(boolean dockerPresent) {
+        if(!dockerPresent){
+            throw new DockerNotPresentException("Docker must be present in order for testcontainers to work properly!");
+        }
+        this.dockerPresent = dockerPresent;
     }
 }
