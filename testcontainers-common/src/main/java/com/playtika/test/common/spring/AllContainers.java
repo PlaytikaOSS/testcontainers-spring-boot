@@ -18,4 +18,8 @@ public class AllContainers implements DisposableBean {
         genericContainers.parallelStream()
                 .forEach(GenericContainer::stop);
     }
+
+    public boolean isEmpty(){
+        return genericContainers.size() == 0;
+    }
 }
