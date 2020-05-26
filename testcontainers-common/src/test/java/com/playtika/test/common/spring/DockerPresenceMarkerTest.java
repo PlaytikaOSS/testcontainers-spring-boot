@@ -21,17 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.checks;
+package com.playtika.test.common.spring;
 
-public class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
+import org.junit.jupiter.api.Test;
 
-    @Override
-    public String getContainerType() {
-        return "Positive Test";
-    }
+import static org.junit.Assert.assertThrows;
 
-    @Override
-    public String[] getCheckCommand() {
-        return new String[]{"echo", "health check passed"};
+class DockerPresenceMarkerTest {
+
+    @Test
+    void markerShouldBlockContextIfDockerIsAbsent() {
+        assertThrows(DockerNotPresentException.class, () -> new DockerPresenceMarker(false));
     }
 }

@@ -21,17 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.checks;
+package com.playtika.test.common.spring;
 
-public class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+
+public class DockerNotPresentFailureAnalyser extends AbstractFailureAnalyzer<DockerNotPresentException> {
+
+    public static final String description = "No docker daemon available. Forgot to install/start docker?";
+    public static final String action = "Follow the guide: https://docs.docker.com/get-docker/";
 
     @Override
-    public String getContainerType() {
-        return "Positive Test";
-    }
-
-    @Override
-    public String[] getCheckCommand() {
-        return new String[]{"echo", "health check passed"};
+    protected FailureAnalysis analyze(Throwable rootFailure, DockerNotPresentException cause) {
+        return new FailureAnalysis(description, action, cause);
     }
 }

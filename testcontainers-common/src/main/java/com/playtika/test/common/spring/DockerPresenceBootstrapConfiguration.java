@@ -21,17 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.checks;
+package com.playtika.test.common.spring;
 
-public class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.testcontainers.DockerClientFactory;
 
-    @Override
-    public String getContainerType() {
-        return "Positive Test";
+@Configuration
+@AutoConfigureOrder(value = Ordered.HIGHEST_PRECEDENCE)
+public class DockerPresenceBootstrapConfiguration {
+
+    public static final String DOCKER_IS_AVAILABLE = "dockerPresenceMarker";
+
+    @Bean(name = DOCKER_IS_AVAILABLE)
+    public DockerPresenceMarker dockerPresenceMarker() {
+        return new DockerPresenceMarker(DockerClientFactory.instance().isDockerAvailable());
     }
 
-    @Override
-    public String[] getCheckCommand() {
-        return new String[]{"echo", "health check passed"};
+    @Bean
+    public DependsOnDockerPostProcessor dependsOnDockerPostProcessor(){
+        return new DependsOnDockerPostProcessor();
     }
 }

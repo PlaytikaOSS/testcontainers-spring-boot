@@ -21,17 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.checks;
+package com.playtika.test.common.spring;
 
-public class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+
+public class NoContainersStartedFailureAnalyser extends AbstractFailureAnalyzer<NoContainersStartedException> {
+
+    public static final String description = "No containers found in application context. Missing spring-cloud-starter?";
+    public static final String action = "Follow the guide: https://github.com/testcontainers/testcontainers-spring-boot#how-to-use";
 
     @Override
-    public String getContainerType() {
-        return "Positive Test";
-    }
-
-    @Override
-    public String[] getCheckCommand() {
-        return new String[]{"echo", "health check passed"};
+    protected FailureAnalysis analyze(Throwable rootFailure, NoContainersStartedException cause) {
+        return new FailureAnalysis(description, action, cause);
     }
 }
