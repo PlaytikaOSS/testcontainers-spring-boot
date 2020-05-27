@@ -78,7 +78,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     public void shouldEmulateNetworkLatency() throws Exception {
         couchbaseNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> documentRepository.existsById("abc")))
-                        .isCloseTo(1000L, Offset.offset(100L))
+                        .isCloseTo(1000L, Offset.offset(200L))
         );
 
         assertThat(durationOf(() -> documentRepository.existsById("abc")))
