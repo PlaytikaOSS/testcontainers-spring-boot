@@ -23,6 +23,7 @@
  */
 package com.playtika.test.common.spring;
 
+import com.playtika.test.common.properties.ContainersShutdownProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -30,9 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.Arrays;
-import java.util.Collections;
 
-import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -47,15 +46,12 @@ class AllContainersTest {
     @Test
     void testContainersStoppedOnDestroy() {
 
-        AllContainers containers = new AllContainers(Arrays.asList(c1, c2));
+        ContainersShutdownProperties containersShutdownProperties = new ContainersShutdownProperties();
+        containersShutdownProperties.setForceShutdown(true);
+        AllContainers containers = new AllContainers(Arrays.asList(c1, c2), containersShutdownProperties);
         containers.destroy();
 
         verify(c1, times(1)).stop();
         verify(c2, times(1)).stop();
-    }
-
-    @Test
-    void noTestcontainersStarted() {
-        assertThrows(NoContainersStartedException.class, () -> new AllContainers(Collections.emptyList()));
     }
 }

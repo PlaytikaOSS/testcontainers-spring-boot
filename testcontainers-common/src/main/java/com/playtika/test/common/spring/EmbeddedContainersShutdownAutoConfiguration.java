@@ -23,9 +23,11 @@
  */
 package com.playtika.test.common.spring;
 
-import com.playtika.test.common.properties.CommonContainerProperties;
+import com.playtika.test.common.properties.ContainersShutdownProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -43,14 +45,22 @@ public class EmbeddedContainersShutdownAutoConfiguration {
     public static final String ALL_CONTAINERS = "allContainers";
 
     @Bean(name = ALL_CONTAINERS)
-    public AllContainers allContainers(GenericContainer [] allContainers, CommonContainerProperties[] properties) {
-        if (properties == null)
-            return new AllContainers();
-        for (CommonContainerProperties p : properties) {
-            if (p.isEnabled()) {
-                return new AllContainers(Arrays.asList(allContainers));
-            }
-        }
-        return new AllContainers();
+    public AllContainers allContainers(@Autowired(required = false) DockerPresenceMarker dockerAvailable,
+                                       GenericContainer[] allContainers,
+                                       ContainersShutdownProperties containersShutdownProperties) {
+        //Docker presence marker is not available == no spring cloud
+        if (dockerAvailable == null)
+            throw new NoDockerPresenceMarkerException("No docker presence marker available. " +
+                    "Did you add spring cloud starter into classpath?");
+
+        return new AllContainers(Arrays.asList(allContainers), containersShutdownProperties);
+    }
+
+    @Bean
+    @ConfigurationProperties("embedded.containers")
+    public ContainersShutdownProperties containersShutdownProperties() {
+        ContainersShutdownProperties properties = new ContainersShutdownProperties();
+        properties.setForceShutdown(false);
+        return properties;
     }
 }

@@ -23,8 +23,8 @@
  */
 package com.playtika.test.common.spring;
 
-public class NoContainersStartedException extends IllegalStateException {
-    public NoContainersStartedException(String s) {
+public class NoDockerPresenceMarkerException extends IllegalStateException {
+    public NoDockerPresenceMarkerException(String s) {
         super(s);
     }
 }
