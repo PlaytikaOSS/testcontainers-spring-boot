@@ -10,12 +10,17 @@ on:
     branches: [ dev ]
 
 jobs:
-  build:
-
+  build-jdk8:
     runs-on: ubuntu-latest
-
+    name: Build Java 8 projects
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-jdk8-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-jdk8-
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
