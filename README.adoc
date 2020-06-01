@@ -94,6 +94,8 @@ embedded.kafka.topicsToCreate=some_topic
 - https://dzone.com/articles/advanced-functional-testing-in-spring-boot-by-usin[Functional Testing in Spring Boot Using Docker in Tests]
 - https://github.com/tdanylchuk/functional-tests-best-practices[Functional tests best practices sample repo]
 - https://medium.com/@isadounikau/microservices-integration-testing-spring-boot-404b6f8617d1[Spring Boot Microservices Integration Testing]
+- https://mydeveloperplanet.com/2020/05/05/easy-integration-testing-with-testcontainers[Easy Integration Testing With Testcontainers]
+- https://dev.to/sivalabs/springboot-integration-testing-using-testcontainers-starter-13h2[SpringBoot Integration Testing using TestContainers Starter]
 
 == Supported services
 
