@@ -13,7 +13,7 @@
     <version>1.71-SNAPSHOT</version>
 
     <properties>
-        <aws-java-sdk.version>1.11.792</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.793</aws-java-sdk.version>
     </properties>
 
     <dependencies>
