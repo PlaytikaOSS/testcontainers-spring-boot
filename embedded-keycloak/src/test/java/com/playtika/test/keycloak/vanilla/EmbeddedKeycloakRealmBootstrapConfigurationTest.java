@@ -21,44 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.keycloak.spring;
+package com.playtika.test.keycloak.vanilla;
 
-import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
-import static java.util.Arrays.asList;
+import static com.playtika.test.keycloak.util.KeycloakClient.newKeycloakClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import lombok.extern.slf4j.Slf4j;
+import com.playtika.test.keycloak.util.KeycloakClient;
+import com.playtika.test.keycloak.util.RealmInfo;
 import org.junit.jupiter.api.Test;
-import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 
-@Slf4j
-@SpringBootTest(classes = SpringTestApplication.class)
-@ActiveProfiles({"enabled", "realm"})
-public class EmbeddedKeycloakDependenciesAutoConfigurationTest {
+@SpringBootTest(classes = VanillaTestApplication.class)
+@ActiveProfiles({"active", "realm"})
+public class EmbeddedKeycloakRealmBootstrapConfigurationTest {
 
     @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    private Environment environment;
 
     @Test
-    public void shouldSetupDependsOnForKeycloakSecurityContext() {
-        String[] beanNamesForType = beanFactory
-            .getBeanNamesForType(KeycloakClientRequestFactory.class);
+    public void shouldGetTestRealmInfoFromKeycloak() {
+        KeycloakClient client = newKeycloakClient(environment);
+        String realm = client.realm();
+        RealmInfo realmInfo = client.getRealmInfo(realm);
 
-        assertThat(beanNamesForType)
-            .as("KeycloakClientRequestFactory should be present")
-            .hasSize(1);
-
-        asList(beanNamesForType).forEach(this::hasDependsOn);
+        assertThat(realmInfo.getRealm()).isEqualTo(realm);
     }
 
-    private void hasDependsOn(String beanName) {
-        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-            .isNotNull()
-            .isNotEmpty()
-            .contains(BEAN_NAME_EMBEDDED_KEYCLOAK);
+    @Test
+    public void shouldGetAccessTokenFromKeycloak() {
+        String token = newKeycloakClient(environment).keycloakToken().getAccessToken();
+        assertThat(token).isNotEmpty();
     }
 }

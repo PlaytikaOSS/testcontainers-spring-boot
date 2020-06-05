@@ -57,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         properties = {
                 "embedded.kafka.topicsToCreate=autoCreatedTopic,secureTopic,helloTopic",
                 "embedded.kafka.secureTopics=secureTopic",
+                "embedded.kafka.schema-registry.enabled=true"
         },
         classes = {EmbeddedKafkaTest.TestConfiguration.class, SampleProductionRouteContext.class}
 )
