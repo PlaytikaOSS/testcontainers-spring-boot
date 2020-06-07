@@ -55,7 +55,7 @@ class AutoConfiguredDatasourceDependsOnTest {
         protected JdbcTemplate jdbcTemplate;
 
         @Test
-        void shouldConnectToPostgreSQL() {
+        void shouldConnectToOracle() {
             assertThat(jdbcTemplate.queryForObject("select 1 from dual", String.class)).contains("1");
         }
 
