@@ -15,6 +15,8 @@ jobs:
     name: Build Java 8 projects
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: develop
     - uses: actions/cache@v2
       with:
         path: ~/.m2/repository
