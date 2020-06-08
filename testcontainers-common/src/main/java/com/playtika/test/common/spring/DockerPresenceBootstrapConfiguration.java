@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 
 @Configuration
 @AutoConfigureOrder(value = Ordered.HIGHEST_PRECEDENCE)
@@ -41,7 +43,12 @@ public class DockerPresenceBootstrapConfiguration {
     }
 
     @Bean
-    public DependsOnDockerPostProcessor dependsOnDockerPostProcessor(){
-        return new DependsOnDockerPostProcessor();
+    public static DependsOnDockerPostProcessor containerDependsOnDockerPostProcessor(){
+        return new DependsOnDockerPostProcessor(GenericContainer.class);
+    }
+
+    @Bean
+    public static DependsOnDockerPostProcessor networkDependsOnDockerPostProcessor(){
+        return new DependsOnDockerPostProcessor(Network.class);
     }
 }

@@ -21,18 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.common.spring;
+package com.playtika.test.common.properties;
 
-import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
-import org.springframework.boot.diagnostics.FailureAnalysis;
+import lombok.Data;
 
-public class NoContainersStartedFailureAnalyser extends AbstractFailureAnalyzer<NoContainersStartedException> {
+@Data
+public class ContainersShutdownProperties {
 
-    public static final String description = "No containers found in application context. Missing spring-cloud-starter?";
-    public static final String action = "Follow the guide: https://github.com/testcontainers/testcontainers-spring-boot#how-to-use";
-
-    @Override
-    protected FailureAnalysis analyze(Throwable rootFailure, NoContainersStartedException cause) {
-        return new FailureAnalysis(description, action, cause);
-    }
+    boolean forceShutdown = false;
 }

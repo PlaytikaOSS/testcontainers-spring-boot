@@ -23,31 +23,16 @@
  */
 package com.playtika.test.common.spring;
 
-import com.playtika.test.common.properties.ContainersShutdownProperties;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
 
-import java.util.List;
+public class NoDockerPresenceMarkerFailureAnalyser extends AbstractFailureAnalyzer<NoDockerPresenceMarkerException> {
 
-@Value
-@Slf4j
-public class AllContainers implements DisposableBean {
-
-    List<GenericContainer> genericContainers;
-    ContainersShutdownProperties containersShutdownProperties;
-
-    public AllContainers(List<GenericContainer> genericContainers, ContainersShutdownProperties containersShutdownProperties) {
-        this.genericContainers = genericContainers;
-        this.containersShutdownProperties = containersShutdownProperties;
-    }
+    public static final String description = "No docker presence marker found in application context. Missing spring-cloud-starter?";
+    public static final String action = "Follow the guide: https://github.com/testcontainers/testcontainers-spring-boot#how-to-use";
 
     @Override
-    public void destroy() {
-        if(containersShutdownProperties.isForceShutdown()) {
-            genericContainers.parallelStream()
-                    .forEach(GenericContainer::stop);
-        }
+    protected FailureAnalysis analyze(Throwable rootFailure, NoDockerPresenceMarkerException cause) {
+        return new FailureAnalysis(description, action, cause);
     }
 }

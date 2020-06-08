@@ -23,12 +23,6 @@
  */
 package com.playtika.test.oracle;
 
-import static com.playtika.test.oracle.OracleProperties.BEAN_NAME_EMBEDDED_ORACLE;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.sql.DataSource;
-
 import com.playtika.test.oracle.dummy.TestApplication;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -42,6 +36,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+
+import javax.sql.DataSource;
+
+import static com.playtika.test.oracle.OracleProperties.BEAN_NAME_EMBEDDED_ORACLE;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("enabled")
 @SpringBootTest(classes = {TestApplication.class,
@@ -58,6 +58,7 @@ class EmbeddedOracleBootstrapConfigurationTest {
 
     @Autowired
     private ConfigurableEnvironment environment;
+
 
     @Test
     void shouldConnectToOracle() {
@@ -95,6 +96,11 @@ class EmbeddedOracleBootstrapConfigurationTest {
                 .hasSize(1)
                 .contains("customDatasource");
         asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    @Test
+    void shouldConnectDB() {
+        assertThat(jdbcTemplate.queryForObject("select 1 from dual", String.class)).contains("1");
     }
 
     private void hasDependsOn(String beanName) {

@@ -31,12 +31,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-@TestPropertySource(properties = "embedded.kafka.schema-registry.enabled=true")
 class EmbeddedSchemaRegistryTest extends AbstractEmbeddedKafkaTest {
 
     @Value("${embedded.kafka.schema-registry.host}")

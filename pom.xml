@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>1.69-SNAPSHOT</version>
+    <version>1.72-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -59,8 +59,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.14.2</testcontainers.version>
-        <spring.cloud.version>Hoxton.SR4</spring.cloud.version>
+        <testcontainers.version>1.14.3</testcontainers.version>
+        <spring.cloud.version>Hoxton.SR5</spring.cloud.version>
 
         <equalsverifier.version>3.3</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>

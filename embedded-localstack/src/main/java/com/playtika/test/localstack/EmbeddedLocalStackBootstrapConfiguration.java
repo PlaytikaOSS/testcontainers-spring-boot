@@ -63,6 +63,12 @@ public class EmbeddedLocalStackBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedLocalstackInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+        setSystemProperties(localStack);
+    }
+
+    private static void setSystemProperties(EmbeddedLocalStackContainer localStack) {
+        System.setProperty("aws.accessKeyId",localStack.getAccessKey());
+        System.setProperty("aws.secretKey",localStack.getAccessKey());
     }
 
     private static class EmbeddedLocalStackContainer extends LocalStackContainer {

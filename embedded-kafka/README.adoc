@@ -40,6 +40,7 @@ By default, to your projects `target` folder. You can configure binding using pr
 * `embedded.zookeeper.fileSystemBind.enabled` `(true|false, default is 'true')`
 * `embedded.zookeeper.fileSystemBind.dataFolder` `(default : target/embedded-zk-data)`
 * `embedded.zookeeper.fileSystemBind.txnLogsFolder` `(default : target/embedded-zk-txn-logs)`
+* `embedded.kafka.fileSystemBind.enabled` `(true|false, default is 'true')`
 * `embedded.kafka.fileSystemBind.dataFolder` `(default : target/embedded-kafka-data)`
 
 ==== Produces

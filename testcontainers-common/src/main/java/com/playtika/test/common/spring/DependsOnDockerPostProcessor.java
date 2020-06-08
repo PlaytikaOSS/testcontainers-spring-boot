@@ -32,8 +32,8 @@ import static com.playtika.test.common.spring.DockerPresenceBootstrapConfigurati
 
 public class DependsOnDockerPostProcessor extends AbstractDependsOnPostProcessor {
 
-    public DependsOnDockerPostProcessor() {
-        super(GenericContainer.class, DOCKER_IS_AVAILABLE);
+    public DependsOnDockerPostProcessor(Class<?> beansOfType) {
+        super(beansOfType, DOCKER_IS_AVAILABLE);
     }
 
     @Override
