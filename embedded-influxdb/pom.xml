@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.72</version>
+        <version>1.73-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-influxdb</artifactId>
