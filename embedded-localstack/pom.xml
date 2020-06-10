@@ -5,12 +5,12 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.73-SNAPSHOT</version>
+        <version>1.73</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>embedded-localstack</artifactId>
-    <version>1.73-SNAPSHOT</version>
+    <version>1.73</version>
 
     <properties>
         <aws-java-sdk.version>1.11.798</aws-java-sdk.version>
