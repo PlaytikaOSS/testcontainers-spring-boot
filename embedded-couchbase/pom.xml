@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.73</version>
+        <version>1.74-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-couchbase</artifactId>
