@@ -2,6 +2,8 @@ package com.playtika.test.mongodb;
 
 import com.github.dockerjava.api.model.Capability;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,7 +13,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.MountableFile;
+
+import static java.lang.String.format;
 
 import java.util.LinkedHashMap;
 
@@ -28,6 +35,13 @@ import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MON
 @EnableConfigurationProperties(MongodbProperties.class)
 public class EmbeddedMongodbBootstrapConfiguration {
 
+	private final ResourceLoader resourceLoader;
+
+	@Autowired
+	public EmbeddedMongodbBootstrapConfiguration(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
     @Bean(value = BEAN_NAME_EMBEDDED_MONGODB, destroyMethod = "stop")
     public GenericContainer mongodb(
             ConfigurableEnvironment environment,
@@ -43,7 +57,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(mongodbStatusCheck)
                         .withStartupTimeout(properties.getTimeoutDuration());
-
+        withConfigFile(mongodb, properties.getConfigFile());
+        
         mongodb.start();
         registerMongodbEnvironment(mongodb, environment, properties);
         return mongodb;
@@ -70,5 +85,41 @@ public class EmbeddedMongodbBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMongoInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+    }
+
+    private void withConfigFile(GenericContainer container, String importFile) {
+        if (importFile == null) {
+            return;
+        }
+
+        checkExists(importFile);
+
+        String importFileInContainer = "/tmp/" + importFile;
+        container.withCopyFileToContainer(
+        			MountableFile.forClasspathResource(importFile),
+        			importFileInContainer
+        )
+        .withCommand("--config", importFileInContainer);
+    }
+
+    private void checkExists(String importFile) {
+        Resource resource = resourceLoader.getResource("classpath:" + importFile);
+        if (resource.exists()) {
+            log.debug("Using config file: {}", resource.getFilename());
+            return;
+        }
+
+        throw new ConfigFileNotFoundException(importFile);
+    }
+
+    public static final class ConfigFileNotFoundException extends IllegalArgumentException {
+
+        private static final long serialVersionUID = 6350884245669857560L;
+
+        ConfigFileNotFoundException(String configFile) {
+            super(format(
+                "Classpath resource '%s' defined through 'embedded.mongodb.config-file' does not exist.",
+                configFile));
+        }
     }
 }

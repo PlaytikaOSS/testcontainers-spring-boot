@@ -18,5 +18,5 @@ public class MongodbProperties extends CommonContainerProperties {
     private String username;
     private String password;
     private String database = "test";
-
+    private String configFile;
 }

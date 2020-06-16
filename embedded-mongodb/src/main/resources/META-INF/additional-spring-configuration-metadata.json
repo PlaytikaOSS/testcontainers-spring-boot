@@ -33,6 +33,11 @@
     {
       "name": "embedded.mongodb.password",
       "type": "java.lang.String"
+    },
+        {
+      "name": "embedded.mongodb.config-file",
+      "type": "java.lang.String",
+      "description": "Classpath location of a YAML file to configure the MongoDB instance. No prefix is needed."
     }
   ]
 }

@@ -22,6 +22,8 @@
 * `embedded.mongodb.username`
 * `embedded.mongodb.password`
 * `embedded.mongodb.database` `(default is test)`
+* `embedded.mongodb.config-file`
+** Config file is mounted in container and passed to mongod with `--config`
 
 ==== Produces
 
