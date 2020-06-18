@@ -1,24 +1,26 @@
 package com.playtika.test.localstack;
 
-import java.util.LinkedHashMap;
-
+import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
+import java.util.LinkedHashMap;
+
 import static com.playtika.test.localstack.LocalStackProperties.BEAN_NAME_EMBEDDED_LOCALSTACK;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
 @Configuration
-@Order(HIGHEST_PRECEDENCE)
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
+@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.localstack.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(LocalStackProperties.class)
 public class EmbeddedLocalStackBootstrapConfiguration {
@@ -30,10 +32,10 @@ public class EmbeddedLocalStackBootstrapConfiguration {
 
         EmbeddedLocalStackContainer localStackContainer = new EmbeddedLocalStackContainer(properties.dockerImage);
         localStackContainer.withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
-                           .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
-                           .withEnv("HOSTNAME", properties.getHostname())
-                           .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
-                           .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
+                .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
+                .withEnv("HOSTNAME", properties.getHostname())
+                .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
+                .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
 
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);
@@ -56,7 +58,7 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         String prefix = "embedded.localstack.";
         for (LocalStackContainer.Service service : properties.services) {
             map.put(prefix + service, localStack.getEndpointConfiguration(service)
-                                                .getServiceEndpoint());
+                    .getServiceEndpoint());
             map.put(prefix + service + ".port", localStack.getMappedPort(service.getPort()));
         }
         log.info("Started Localstack. Connection details: {}", map);
@@ -67,8 +69,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
     }
 
     private static void setSystemProperties(EmbeddedLocalStackContainer localStack) {
-        System.setProperty("aws.accessKeyId",localStack.getAccessKey());
-        System.setProperty("aws.secretKey",localStack.getAccessKey());
+        System.setProperty("aws.accessKeyId", localStack.getAccessKey());
+        System.setProperty("aws.secretKey", localStack.getAccessKey());
     }
 
     private static class EmbeddedLocalStackContainer extends LocalStackContainer {

@@ -30,6 +30,7 @@ import com.playtika.test.common.utils.ApkPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Configuration
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnBean({Neo4jProperties.class})
 @ConditionalOnProperty(value = "embedded.neo4j.enabled", matchIfMissing = true)
 public class EmbeddedNeo4jTestOperationsAutoConfiguration {

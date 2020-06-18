@@ -24,6 +24,7 @@
 package com.playtika.test.common.spring;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -33,6 +34,7 @@ import org.testcontainers.containers.Network;
 
 @Configuration
 @AutoConfigureOrder(value = Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnProperty(prefix = "embedded.containers", name = "enabled", matchIfMissing = true)
 public class DockerPresenceBootstrapConfiguration {
 
     public static final String DOCKER_IS_AVAILABLE = "dockerPresenceMarker";
@@ -43,12 +45,12 @@ public class DockerPresenceBootstrapConfiguration {
     }
 
     @Bean
-    public static DependsOnDockerPostProcessor containerDependsOnDockerPostProcessor(){
+    public static DependsOnDockerPostProcessor containerDependsOnDockerPostProcessor() {
         return new DependsOnDockerPostProcessor(GenericContainer.class);
     }
 
     @Bean
-    public static DependsOnDockerPostProcessor networkDependsOnDockerPostProcessor(){
+    public static DependsOnDockerPostProcessor networkDependsOnDockerPostProcessor() {
         return new DependsOnDockerPostProcessor(Network.class);
     }
 }

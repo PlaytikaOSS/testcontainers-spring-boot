@@ -57,8 +57,8 @@ import static java.lang.String.format;
 
 @Slf4j
 @Configuration
+@ConditionalOnBean({ZookeeperContainerConfiguration.class})
 @ConditionalOnProperty(value = "embedded.kafka.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnBean(ZookeeperContainerConfiguration.class)
 @EnableConfigurationProperties(KafkaConfigurationProperties.class)
 public class KafkaContainerConfiguration {
 

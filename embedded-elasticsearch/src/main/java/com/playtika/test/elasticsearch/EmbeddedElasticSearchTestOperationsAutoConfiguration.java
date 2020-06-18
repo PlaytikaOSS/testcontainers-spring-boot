@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,11 @@ package com.playtika.test.elasticsearch;
 import com.playtika.test.common.operations.DefaultNetworkTestOperations;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
+import com.playtika.test.common.spring.DockerPresenceMarker;
 import com.playtika.test.common.utils.PackageInstaller;
 import com.playtika.test.common.utils.YumPackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +42,7 @@ import java.util.Collections;
 import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 
 @Configuration
+@ConditionalOnBean({DockerPresenceMarker.class})
 @ConditionalOnProperty(value = "embedded.elasticsearch.install.enabled")
 public class EmbeddedElasticSearchTestOperationsAutoConfiguration {
 

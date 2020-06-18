@@ -31,6 +31,7 @@ import com.playtika.test.common.utils.PackageInstaller;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,7 +44,8 @@ import java.util.Collections;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 
 @Configuration
-@ConditionalOnBean(KafkaConfigurationProperties.class)
+@ConditionalOnBean({KafkaConfigurationProperties.class})
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(value = {"embedded.kafka.enabled", "embedded.zookeeper.enabled"}, havingValue = "true", matchIfMissing = true)
 public class EmbeddedKafkaTestOperationsAutoConfiguration {
 

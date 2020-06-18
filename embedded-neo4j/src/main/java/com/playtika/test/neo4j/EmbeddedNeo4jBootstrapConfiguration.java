@@ -24,26 +24,27 @@
 package com.playtika.test.neo4j;
 
 import com.github.dockerjava.api.model.Capability;
+import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Slf4j
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
+@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.neo4j.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class EmbeddedNeo4jBootstrapConfiguration {

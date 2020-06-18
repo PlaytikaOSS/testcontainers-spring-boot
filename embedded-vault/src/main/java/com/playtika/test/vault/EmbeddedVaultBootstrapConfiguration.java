@@ -23,7 +23,10 @@
  */
 package com.playtika.test.vault;
 
+import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -42,8 +45,10 @@ import static com.playtika.test.vault.VaultProperties.BEAN_NAME_EMBEDDED_VAULT;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
-@Configuration
 @Order(HIGHEST_PRECEDENCE)
+@Configuration
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
+@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.vault.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(VaultProperties.class)
 public class EmbeddedVaultBootstrapConfiguration {
