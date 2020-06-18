@@ -39,7 +39,8 @@ import org.springframework.vault.support.Versioned;
 
 @SpringBootTest(properties = {
         "embedded.vault.secrets.secret_one=password1"
-},classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
+}
+,classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
 public class EmbeddedVaultBootstrapConfigurationTest {
 
     @Autowired
