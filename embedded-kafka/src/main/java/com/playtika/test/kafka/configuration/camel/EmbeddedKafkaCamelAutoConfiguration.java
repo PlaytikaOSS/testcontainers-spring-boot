@@ -46,7 +46,7 @@ import static com.playtika.test.kafka.properties.ZookeeperConfigurationPropertie
 public class EmbeddedKafkaCamelAutoConfiguration {
 
     @Bean
-    public BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
         return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME});
     }
 }

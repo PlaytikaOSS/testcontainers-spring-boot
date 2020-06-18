@@ -45,7 +45,7 @@ import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MON
 public class EmbeddedMongodbDependenciesAutoConfiguration {
 
     @Bean
-    public BeanFactoryPostProcessor mongoClientDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor mongoClientDependencyPostProcessor() {
         return new DependsOnPostProcessor(MongoTemplate.class, new String[]{BEAN_NAME_EMBEDDED_MONGODB});
     }
 }

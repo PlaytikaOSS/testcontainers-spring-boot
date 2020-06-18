@@ -45,7 +45,7 @@ import static com.playtika.test.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_R
 public class EmbeddedRabbitMQDependenciesAutoConfiguration {
 
     @Bean
-    public BeanFactoryPostProcessor rabbitMessagingTemplateDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor rabbitMessagingTemplateDependencyPostProcessor() {
         return new DependsOnPostProcessor(RabbitTemplate.class, new String[]{BEAN_NAME_EMBEDDED_RABBITMQ});
     }
 }

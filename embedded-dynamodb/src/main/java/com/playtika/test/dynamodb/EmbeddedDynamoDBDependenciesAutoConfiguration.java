@@ -45,7 +45,7 @@ public class EmbeddedDynamoDBDependenciesAutoConfiguration {
     @Configuration
     public static class EmbeddedMariaDbDataSourceDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor dynamodbDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor dynamodbDependencyPostProcessor() {
             return new DependsOnPostProcessor(AmazonDynamoDB.class, new String[]{BEAN_NAME_EMBEDDED_DYNAMODB});
         }
     }

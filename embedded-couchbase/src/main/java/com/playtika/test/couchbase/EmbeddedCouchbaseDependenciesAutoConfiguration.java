@@ -53,7 +53,7 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     public static class CouchbaseBucketDependencyContext {
 
         @Bean
-        public BeanFactoryPostProcessor bucketDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor bucketDependencyPostProcessor() {
             return new DependsOnPostProcessor(Bucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
         }
     }
@@ -63,7 +63,7 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     public static class CouchbaseAsyncBucketDependencyContext {
 
         @Bean
-        public BeanFactoryPostProcessor asyncBucketDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor asyncBucketDependencyPostProcessor() {
             return new DependsOnPostProcessor(AsyncBucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
         }
     }
@@ -73,7 +73,7 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     public static class CouchbaseClientDependencyContext {
 
         @Bean
-        public BeanFactoryPostProcessor couchbaseClientDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor couchbaseClientDependencyPostProcessor() {
             return new DependsOnPostProcessor(CouchbaseClient.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
         }
     }
@@ -84,7 +84,7 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     public static class CouchbaseClusterDependencyContext {
 
         @Bean
-        public BeanFactoryPostProcessor couchbaseClusterDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor couchbaseClusterDependencyPostProcessor() {
             return new DependsOnPostProcessor(Cluster.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
         }
     }

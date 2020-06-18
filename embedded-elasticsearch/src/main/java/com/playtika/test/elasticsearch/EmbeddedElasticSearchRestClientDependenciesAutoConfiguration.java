@@ -45,7 +45,7 @@ import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_
 public class EmbeddedElasticSearchRestClientDependenciesAutoConfiguration {
 
     @Bean
-    public BeanFactoryPostProcessor elasticRestClientDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor elasticRestClientDependencyPostProcessor() {
         return new DependsOnPostProcessor(RestClient.class, new String[]{BEAN_NAME_EMBEDDED_ELASTIC_SEARCH});
     }
 }

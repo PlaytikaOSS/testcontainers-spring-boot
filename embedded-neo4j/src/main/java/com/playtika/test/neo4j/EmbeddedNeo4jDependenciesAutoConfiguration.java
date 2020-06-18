@@ -50,7 +50,7 @@ public class EmbeddedNeo4jDependenciesAutoConfiguration {
     @ConditionalOnClass(Session.class)
     public static class Neo4jSessionDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor neo4jSessionDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor neo4jSessionDependencyPostProcessor() {
             return new DependsOnPostProcessor(Session.class, new String[]{BEAN_NAME_EMBEDDED_NEO4J});
         }
     }
@@ -59,7 +59,7 @@ public class EmbeddedNeo4jDependenciesAutoConfiguration {
     @ConditionalOnClass(SessionFactory.class)
     public static class Neo4jSessionFactoryDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor neo4jSessionFactoryDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor neo4jSessionFactoryDependencyPostProcessor() {
             return new DependsOnPostProcessor(SessionFactory.class, new String[]{BEAN_NAME_EMBEDDED_NEO4J});
         }
     }
