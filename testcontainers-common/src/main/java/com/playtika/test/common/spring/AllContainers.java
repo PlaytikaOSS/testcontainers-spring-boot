@@ -23,7 +23,7 @@
  */
 package com.playtika.test.common.spring;
 
-import com.playtika.test.common.properties.ContainersShutdownProperties;
+import com.playtika.test.common.properties.TestcontainersProperties;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -36,16 +36,16 @@ import java.util.List;
 public class AllContainers implements DisposableBean {
 
     List<GenericContainer> genericContainers;
-    ContainersShutdownProperties containersShutdownProperties;
+    TestcontainersProperties testcontainersProperties;
 
-    public AllContainers(List<GenericContainer> genericContainers, ContainersShutdownProperties containersShutdownProperties) {
+    public AllContainers(List<GenericContainer> genericContainers, TestcontainersProperties testcontainersProperties) {
         this.genericContainers = genericContainers;
-        this.containersShutdownProperties = containersShutdownProperties;
+        this.testcontainersProperties = testcontainersProperties;
     }
 
     @Override
     public void destroy() {
-        if(containersShutdownProperties.isForceShutdown()) {
+        if(testcontainersProperties.isForceShutdown()) {
             genericContainers.parallelStream()
                     .forEach(GenericContainer::stop);
         }

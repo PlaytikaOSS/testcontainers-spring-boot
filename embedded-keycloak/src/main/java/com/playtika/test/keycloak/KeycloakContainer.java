@@ -70,7 +70,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         return Wait
             .forHttp(AUTH_BASE_PATH)
             .forPort(DEFAULT_HTTP_PORT_INTERNAL)
-            .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()));
+            .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds() * 2));
     }
 
     public String getIp() {

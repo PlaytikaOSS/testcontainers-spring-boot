@@ -1,0 +1,44 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.containers.forceShutdown",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
+    },
+    {
+      "name": "embedded.containers.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.containers.forceShutdown",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables shutdown of testcontainers by spring context."
+        },
+        {
+          "value": "false",
+          "description": "Disables shutdown of testcontainers by spring context."
+        }
+      ]
+    },
+    {
+      "name": "embedded.containers.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables all testcontainers."
+        },
+        {
+          "value": "false",
+          "description": "Disables all testcontainers."
+        }
+      ]
+    }
+  ]
+}

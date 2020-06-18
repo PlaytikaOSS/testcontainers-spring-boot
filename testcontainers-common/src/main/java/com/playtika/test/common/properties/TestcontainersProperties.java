@@ -21,10 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.playtika.test.vault;
+package com.playtika.test.common.properties;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@SpringBootApplication
-public class TestApplication {
+@Data
+@ConfigurationProperties("embedded.containers")
+public class TestcontainersProperties {
+
+    boolean forceShutdown = false;
 }

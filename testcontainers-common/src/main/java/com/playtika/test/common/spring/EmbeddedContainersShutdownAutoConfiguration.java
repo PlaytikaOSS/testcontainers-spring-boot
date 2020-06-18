@@ -23,11 +23,12 @@
  */
 package com.playtika.test.common.spring;
 
-import com.playtika.test.common.properties.ContainersShutdownProperties;
+import com.playtika.test.common.properties.TestcontainersProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -40,6 +41,8 @@ import java.util.Arrays;
 @Slf4j
 @Configuration
 @AutoConfigureOrder(value = Ordered.LOWEST_PRECEDENCE)
+@ConditionalOnProperty(prefix = "embedded.containers", name = "enabled", matchIfMissing = true)
+@EnableConfigurationProperties(TestcontainersProperties.class)
 public class EmbeddedContainersShutdownAutoConfiguration {
 
     public static final String ALL_CONTAINERS = "allContainers";
@@ -47,20 +50,12 @@ public class EmbeddedContainersShutdownAutoConfiguration {
     @Bean(name = ALL_CONTAINERS)
     public AllContainers allContainers(@Autowired(required = false) DockerPresenceMarker dockerAvailable,
                                        GenericContainer[] allContainers,
-                                       ContainersShutdownProperties containersShutdownProperties) {
+                                       TestcontainersProperties testcontainersProperties) {
         //Docker presence marker is not available == no spring cloud
         if (dockerAvailable == null)
             throw new NoDockerPresenceMarkerException("No docker presence marker available. " +
                     "Did you add spring cloud starter into classpath?");
 
-        return new AllContainers(Arrays.asList(allContainers), containersShutdownProperties);
-    }
-
-    @Bean
-    @ConfigurationProperties("embedded.containers")
-    public ContainersShutdownProperties containersShutdownProperties() {
-        ContainersShutdownProperties properties = new ContainersShutdownProperties();
-        properties.setForceShutdown(false);
-        return properties;
+        return new AllContainers(Arrays.asList(allContainers), testcontainersProperties);
     }
 }

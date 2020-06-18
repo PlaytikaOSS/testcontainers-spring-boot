@@ -97,6 +97,45 @@ embedded.kafka.topicsToCreate=some_topic
 - https://dev.to/sivalabs/springboot-integration-testing-using-testcontainers-starter-13h2[SpringBoot Integration Testing using TestContainers Starter]
 - https://alexromanov.github.io/2019/04/02/spring-boot-docker-containers/[Easy way to test Spring Boot microservices]
 
+== Common configuration options
+=== Shutdown of embedded containers on spring application shutdown immediately
+./src/test/resources/application.properties
+[source,properties]
+----
+embedded.containers.forceShutdown=true //default is false
+----
+NOTE: Otherwise it will be shutdown with delay, see https://github.com/testcontainers/moby-ryuk
+
+=== Disables all embedded containers
+
+./src/test/resources/bootstrap.properties
+[source,properties]
+----
+embedded.containers.enabled=true //default is true
+----
+NOTE: If you setup, for example  embedded.kafka.enabled + embedded.containers.enabled, result will be same as using AND between two booleans.
+
+|===
+|Setting1 |Setting2 |Outcome
+
+|embedded.containers.enabled=false
+|embedded.memsql.enabled=true
+|Memsql will not start
+
+|embedded.containers.enabled=true
+|embedded.memsql.enabled=false
+|Memsql will not start
+
+|embedded.containers.enabled=true
+|embedded.memsql.enabled=true
+|Memsql will start
+
+|embedded.containers.enabled is missing
+|embedded.memsql.enabled is missing
+|Memsql will start
+|===
+
+
 == Supported services
 
 === link:embedded-mariadb/README.adoc[embedded-mariadb]

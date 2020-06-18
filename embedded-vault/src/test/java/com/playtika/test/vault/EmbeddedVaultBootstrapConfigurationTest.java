@@ -30,14 +30,17 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.support.Versioned;
 
 @SpringBootTest(properties = {
         "embedded.vault.secrets.secret_one=password1"
-})
+}
+,classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
 public class EmbeddedVaultBootstrapConfigurationTest {
 
     @Autowired
@@ -61,5 +64,10 @@ public class EmbeddedVaultBootstrapConfigurationTest {
         assertThat(secrets.getData())
                 .as("check secret")
                 .containsExactly(entry("secret_one", "password1"));
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }
