@@ -51,7 +51,7 @@ public class EmbeddedRedisDependenciesAutoConfiguration {
     @ConditionalOnClass(RedisConnectionFactory.class)
     public static class RedisConnectionFactoryDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor redisConnectionFactoryDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor redisConnectionFactoryDependencyPostProcessor() {
             return new DependsOnPostProcessor(RedisConnectionFactory.class, new String[]{BEAN_NAME_EMBEDDED_REDIS});
         }
     }
@@ -60,7 +60,7 @@ public class EmbeddedRedisDependenciesAutoConfiguration {
     @ConditionalOnClass(RedisTemplate.class)
     public static class RedisTemplateDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor redisTemplateDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor redisTemplateDependencyPostProcessor() {
             return new DependsOnPostProcessor(RedisTemplate.class, new String[]{BEAN_NAME_EMBEDDED_REDIS});
         }
     }
@@ -69,7 +69,7 @@ public class EmbeddedRedisDependenciesAutoConfiguration {
     @ConditionalOnClass(Jedis.class)
     public static class JedisDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor jedisDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor jedisDependencyPostProcessor() {
             return new DependsOnPostProcessor(Jedis.class, new String[]{BEAN_NAME_EMBEDDED_REDIS});
         }
     }

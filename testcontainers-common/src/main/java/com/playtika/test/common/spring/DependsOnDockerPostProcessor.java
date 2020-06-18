@@ -23,8 +23,6 @@
  */
 package com.playtika.test.common.spring;
 
-import org.testcontainers.containers.GenericContainer;
-
 import java.util.Collections;
 import java.util.List;
 

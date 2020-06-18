@@ -48,7 +48,7 @@ public class EmbeddedMemSqlDependenciesAutoConfiguration {
     @Configuration
     public static class EmbeddedMemSqlSourceDependencyContext {
         @Bean
-        public BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
             return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_MEMSQL});
         }
     }

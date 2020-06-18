@@ -50,7 +50,7 @@ public class EmbeddedKeycloakDependenciesAutoConfiguration {
 
     @Bean
     @ConditionalOnClass(KeycloakClientRequestFactory.class)
-    public BeanFactoryPostProcessor keycloakClientRequestFactoryDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor keycloakClientRequestFactoryDependencyPostProcessor() {
         return new DependsOnPostProcessor(KeycloakClientRequestFactory.class,
                 new String[]{BEAN_NAME_EMBEDDED_KEYCLOAK});
     }

@@ -47,7 +47,7 @@ public class EmbeddedAerospikeDependenciesAutoConfiguration {
     @Configuration
     protected static class AerospikeClientPostProcessorConfiguration {
         @Bean
-        public BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
             return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
         }
     }
