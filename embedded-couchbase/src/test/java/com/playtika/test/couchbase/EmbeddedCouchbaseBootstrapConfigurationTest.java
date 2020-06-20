@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,16 @@
  */
 package com.playtika.test.couchbase;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.playtika.test.couchbase.legacy.LegacyClientConfiguration;
 import com.playtika.test.couchbase.springdata.CouchbaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest(
-        classes = {CouchbaseConfiguration.class, LegacyClientConfiguration.class},
+        classes = {CouchbaseConfiguration.class},
         properties = {
                 "spring.profiles.active=enabled",
                 "embedded.couchbase.install.enabled=true"

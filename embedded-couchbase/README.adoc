@@ -15,15 +15,10 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.couchbase.enabled` `(true|false, default is 'true')`
-* `embedded.couchbase.services` `(comma separated list, default is 'kv,index,n1ql,fts')`
-* `embedded.couchbase.clusterRamMb` `(default is set to '256')`
+* `embedded.couchbase.services` `(comma separated list, default is 'INDEX,KV,QUERY,SEARCH')`
 * `embedded.couchbase.bucketRamMb` `(default is set to '100')`
-* `embedded.couchbase.dockerImage` `(default is set to 'couchbase:community-5.1.1')`
+* `embedded.couchbase.dockerImage` `(default is set to 'couchbase/server:6.5.1')`
 ** You can pick wanted version on https://hub.docker.com/r/library/couchbase/tags/[dockerhub]
-** Versions of Couchbase 2.x/3.x are not functional via docker, consider use of https://github.com/couchbase/CouchbaseMock[CouchbaseMock]
-* `embedded.couchbase.bucketType` `(default is set to 'couchbase')`
-** Used for test https://developer.couchbase.com/documentation/server/3.x/admin/REST/rest-bucket-create.html[bucket creation]
-* `embedded.couchbase.waitTimeoutInSeconds` `(default is 60 seconds)`
 
 ==== Produces
 * `embedded.couchbase.bootstrapHttpDirectPort`
@@ -37,6 +32,5 @@
 
 ==== Notes
 
-Versions of Couchbase 2.x/3.x are not functional via docker, consider use of https://github.com/couchbase/CouchbaseMock[CouchbaseMock].
-
-//TODO: example missing
+* Versions of Couchbase 2.x/3.x are not functional via docker, consider use of https://github.com/couchbase/CouchbaseMock[CouchbaseMock].
+* Spring data couchbase do not allow customization of ports for couchbase client, see SpringDataTest in this repo for reference
