@@ -86,8 +86,6 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     }
 
     @Test
-    //TODO: investigate why test fail on circleci and uncomment
-    @Disabled(value = "com.couchbase.client.core.error.PlanningFailureException: The server failed planning the query")
     public void n1q1ShouldWork() {
         String title = "some query title";
         saveDocument("test::2", "custom value");
