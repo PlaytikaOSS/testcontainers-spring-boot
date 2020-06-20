@@ -25,7 +25,8 @@ public class KeycloakContainerFactory {
     public KeycloakContainer newKeycloakContainer() {
         log.info("Starting Keycloak server. Docker image: {}", properties.getDockerImage());
 
-        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
+        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader)
+                .withReuse(properties.isReuseContainer());
         keycloak.start();
 
         registerKeycloakEnvironment(keycloak);

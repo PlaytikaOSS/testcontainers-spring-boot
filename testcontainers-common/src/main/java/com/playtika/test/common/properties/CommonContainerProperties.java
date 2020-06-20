@@ -32,6 +32,7 @@ public class CommonContainerProperties {
 
     private long waitTimeoutInSeconds = 60;
     private boolean enabled = true;
+    private boolean reuseContainer = false;
 
     public Duration getTimeoutDuration() {
         return Duration.ofSeconds(waitTimeoutInSeconds);

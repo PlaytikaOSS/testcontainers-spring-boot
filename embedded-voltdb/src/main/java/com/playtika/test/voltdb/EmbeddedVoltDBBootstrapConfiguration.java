@@ -67,7 +67,8 @@ public class EmbeddedVoltDBBootstrapConfiguration {
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .waitingFor(voltDbStatusCheck)
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withReuse(properties.isReuseContainer());
         voltDB.start();
         registerVoltDBEnvironment(voltDB, environment, properties);
         return voltDB;

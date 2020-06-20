@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.vault.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.vault.reuseContainer` `(boolean, true|false, default is 'false')`
 * `embedded.vault.dockerImage` `(String, default is set to 'vault:1.4.0')`
 ** You can pick wanted version on dockerhub
 * `embedded.vault.host` `(String, default is 'localhost')`

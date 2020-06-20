@@ -83,7 +83,8 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withCommand("server", properties.directory)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(minioWaitStrategy)
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withReuse(properties.isReuseContainer());
 
         startAndLogTime(minio);
         registerEnvironment(minio, environment, properties);

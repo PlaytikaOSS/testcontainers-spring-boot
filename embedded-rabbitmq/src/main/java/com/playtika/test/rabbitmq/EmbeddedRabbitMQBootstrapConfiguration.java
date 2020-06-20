@@ -60,7 +60,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                         .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.getPort())
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withReuse(properties.isReuseContainer());
         rabbitMQ.start();
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
         return rabbitMQ;

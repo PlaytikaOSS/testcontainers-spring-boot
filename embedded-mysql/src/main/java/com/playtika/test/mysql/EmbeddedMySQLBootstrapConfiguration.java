@@ -67,7 +67,8 @@ public class EmbeddedMySQLBootstrapConfiguration {
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .withStartupTimeout(properties.getTimeoutDuration())
-                        .withInitScript(properties.initScriptPath);
+                        .withInitScript(properties.initScriptPath)
+                        .withReuse(properties.isReuseContainer());
         startAndLogTime(mysql);
         registerMySQLEnvironment(mysql, environment, properties);
         return mysql;

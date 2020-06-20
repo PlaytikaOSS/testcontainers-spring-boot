@@ -84,6 +84,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("STORAGE_GB", String.valueOf(1))
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(waitStrategy)
+                        .withReuse(properties.isReuseContainer())
                         .withStartupTimeout(properties.getTimeoutDuration());
 
         startAndLogTime(aerospike);

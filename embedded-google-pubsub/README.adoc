@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.google.pubsub.enabled` `(true|false, default is 'true')`
+* `embedded.google.pubsub.reuseContainer` `(true|false, default is 'false')`
 * `embedded.google.pubsub.dockerImage` `(default is set to 'google/cloud-sdk:257.0.0')`
 ** You can pick wanted version on https://hub.docker.com/r/google/cloud-sdk/[dockerhub]
 * `embedded.google.pubsub.host` `(default is 0.0.0.0)`

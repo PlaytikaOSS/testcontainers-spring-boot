@@ -60,7 +60,8 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withDatabaseName(properties.getDatabase())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withStartupTimeout(properties.getTimeoutDuration())
-                        .withInitScript(properties.initScriptPath);
+                        .withInitScript(properties.initScriptPath)
+                        .withReuse(properties.isReuseContainer());
         postgresql.start();
         registerPostgresqlEnvironment(postgresql, environment, properties);
         return postgresql;

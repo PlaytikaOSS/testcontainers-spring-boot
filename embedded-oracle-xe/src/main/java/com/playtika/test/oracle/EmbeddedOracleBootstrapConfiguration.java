@@ -61,7 +61,8 @@ public class EmbeddedOracleBootstrapConfiguration {
                         .withPassword(properties.getPassword())
                         .withLogConsumer(containerLogsConsumer(log))
                         .withStartupTimeout(properties.getTimeoutDuration())
-                        .withInitScript(properties.initScriptPath);
+                        .withInitScript(properties.initScriptPath)
+                        .withReuse(properties.isReuseContainer());
         oracle.start();
         registerOracleEnvironment(oracle, environment, properties);
         return oracle;

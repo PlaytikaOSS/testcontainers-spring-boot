@@ -64,6 +64,7 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                 .withDatabase(properties.getDatabase())
                 .withExposedPorts(properties.getPort())
                 .withLogConsumer(containerLogsConsumer(log))
+                .withReuse(properties.isReuseContainer())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
         influxDBContainer.waitingFor(getInfluxWaitStrategy(properties.getUser(), properties.getPassword()));

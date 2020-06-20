@@ -14,6 +14,7 @@
 
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.localstack.enabled` `(true|false, default is 'true')`
+* `embedded.localstack.reuseContainer` `(true|false, default is 'false')`
 * `embedded.localstack.services` `(comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)`
 ** You can choose available services on localstack
 * `embedded.localstack.defaultRegion` `(default is 'us-east-1')`
