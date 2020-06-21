@@ -57,9 +57,9 @@ public class EmbeddedMySQLBootstrapConfiguration {
         MySQLContainer mysql =
                 new MySQLContainer<>(properties.dockerImage)
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
-                        .withEnv("MYSQL_USER", properties.getUser())
-                        .withEnv("MYSQL_PASSWORD", properties.getPassword())
-                        .withEnv("MYSQL_DATABASE", properties.getDatabase())
+                        .withUsername(properties.getUser())
+                        .withDatabaseName(properties.getDatabase())
+                        .withPassword(properties.getPassword())
                         .withCommand(
                                 "--character-set-server=" + properties.getEncoding(),
                                 "--collation-server=" + properties.getCollation())
