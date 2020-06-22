@@ -23,6 +23,11 @@
  */
 package com.playtika.test.common.spring;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+
+import java.util.List;
+
 import com.playtika.test.common.properties.TestcontainersProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.testcontainers.containers.GenericContainer;
-
-import java.util.Arrays;
 
 //TODO: Drop this workaround after proper fix available https://github.com/spring-cloud/spring-cloud-commons/issues/752
 
@@ -49,13 +52,14 @@ public class EmbeddedContainersShutdownAutoConfiguration {
 
     @Bean(name = ALL_CONTAINERS)
     public AllContainers allContainers(@Autowired(required = false) DockerPresenceMarker dockerAvailable,
-                                       GenericContainer[] allContainers,
+                                       @Autowired(required = false) GenericContainer[] allContainers,
                                        TestcontainersProperties testcontainersProperties) {
         //Docker presence marker is not available == no spring cloud
         if (dockerAvailable == null)
             throw new NoDockerPresenceMarkerException("No docker presence marker available. " +
                     "Did you add spring cloud starter into classpath?");
 
-        return new AllContainers(Arrays.asList(allContainers), testcontainersProperties);
+        List<GenericContainer> containers = allContainers != null ? asList(allContainers) : emptyList();
+        return new AllContainers(containers, testcontainersProperties);
     }
 }
