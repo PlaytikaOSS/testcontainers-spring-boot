@@ -8,7 +8,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.75-SNAPSHOT</version>
+        <version>1.75</version>
     </parent>
 
     <artifactId>embedded-mongodb</artifactId>
