@@ -1,4 +1,4 @@
-package com.playtika.test.redis;
+package com.playtika.test.common.utils;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.core.io.Resource;

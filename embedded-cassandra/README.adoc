@@ -1,0 +1,27 @@
+=== embedded-cassandra
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-cassandra</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.cassandra.enabled` `(true|false, default is 'true')`
+* `embedded.cassandra.keyspace-name` `(default is set to 'embedded')`
+* `embedded.cassandra.dockerImage` `(default is set to 'cassandra:3.11.6')`
+** You can pick the desired version on https://hub.docker.com/r/library/cassandra/tags/[dockerhub]
+
+==== Produces
+
+* `embedded.cassandra.host`
+* `embedded.cassandra.port`
+* `embedded.cassandra.datacenter`
+* `embedded.cassandra.keyspace-name`

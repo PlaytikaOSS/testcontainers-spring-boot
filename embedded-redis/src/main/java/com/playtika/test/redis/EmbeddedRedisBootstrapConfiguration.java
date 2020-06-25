@@ -51,7 +51,7 @@ import java.util.function.Consumer;
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
-import static com.playtika.test.redis.FileUtils.resolveTemplate;
+import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
 @Slf4j
