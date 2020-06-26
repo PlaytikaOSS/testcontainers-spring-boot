@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.keycloak.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.keycloak.reuseContainer` `(boolean, true|false, default is 'false')`
 * `embedded.keycloak.dockerImage` `(String, default is set to 'jboss/keycloak:8.0.1')`
 ** You can pick wanted version on dockerhub.
 * `embedded.keycloak.command` `(String[], default is '["-c", "standalone.xml", "-Dkeycloak.profile.feature.upload_scripts=enabled"]')`

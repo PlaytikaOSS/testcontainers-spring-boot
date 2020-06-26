@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.mongodb.enabled` `(true|false, default is 'true')`
+* `embedded.mongodb.reuseContainer` `(true|false, default is 'false')`
 * `embedded.mongodb.dockerImage` `(default is set to 'mongo:4.2.0-bionic')`
 ** You can pick wanted version on https://hub.docker.com/_/mongo?tab=tags[dockerhub]
 * `embedded.mongodb.host` `(default is localhost)`

@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.influxdb.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.influxdb.reuseContainer` `(boolean, true|false, default is 'false')`
 * `embedded.influxdb.dockerImage` `(String, default is set to 'influxdb:1.5-alpine')`
 ** You can pick wanted version on dockerhub
 * `embedded.influxdb.admin-user` `(String, default is 'admin')`

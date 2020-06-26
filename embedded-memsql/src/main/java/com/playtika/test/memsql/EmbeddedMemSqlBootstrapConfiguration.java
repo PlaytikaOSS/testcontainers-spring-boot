@@ -70,7 +70,8 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(memSqlStatusCheck)
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .withStartupTimeout(properties.getTimeoutDuration())
+                .withReuse(properties.isReuseContainer());
         memsql.start();
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;

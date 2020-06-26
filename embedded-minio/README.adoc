@@ -14,6 +14,7 @@
 
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.minio.enabled` `(true|false, default is 'true')`
+* `embedded.minio.reuseContainer` `(true|false, default is 'false')`
 * `embedded.minio.dockerImage` `(default is set to 'minio/minio')`
 ** You can pick wanted version on https://hub.docker.com/r/minio/minio/tags[dockerhub]
 * `embedded.minio.accessKey` `(default is set to 'AKIAIOSFODNN7EXAMPLE")`

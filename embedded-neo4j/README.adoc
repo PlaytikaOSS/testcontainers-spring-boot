@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.neo4j.enabled` `(true|false, default is 'true')`
+* `embedded.neo4j.reuseContainer` `(true|false, default is 'false')`
 * `embedded.neo4j.dockerImage` `(default is set to 'neo4j:3.2.7')`
 ** You can pick wanted version on https://hub.docker.com/r/library/neo4j/tags/[dockerhub]
 * `embedded.neo4j.waitTimeoutInSeconds` `(default is 60 seconds)`

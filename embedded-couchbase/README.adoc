@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.couchbase.enabled` `(true|false, default is 'true')`
+* `embedded.couchbase.reuseContainer` `(true|false, default is 'false')`
 * `embedded.couchbase.services` `(comma separated list, default is 'INDEX,KV,QUERY,SEARCH')`
 * `embedded.couchbase.bucketRamMb` `(default is set to '100')`
 * `embedded.couchbase.dockerImage` `(default is set to 'couchbase/server:6.5.1')`

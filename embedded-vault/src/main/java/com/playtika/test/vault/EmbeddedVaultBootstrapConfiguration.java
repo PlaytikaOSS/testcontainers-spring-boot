@@ -63,7 +63,8 @@ public class EmbeddedVaultBootstrapConfiguration {
                 .withVaultToken(properties.getToken())
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.getPort())
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .withStartupTimeout(properties.getTimeoutDuration())
+                .withReuse(properties.isReuseContainer());
 
         String[] secrets = properties.getSecrets().entrySet().stream()
                 .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))

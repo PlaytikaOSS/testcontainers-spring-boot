@@ -67,7 +67,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
                         .withExposedPorts(properties.getPort())
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(mongodbStatusCheck)
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withReuse(properties.isReuseContainer());
 
         mongodb.start();
         registerMongodbEnvironment(mongodb, environment, properties);

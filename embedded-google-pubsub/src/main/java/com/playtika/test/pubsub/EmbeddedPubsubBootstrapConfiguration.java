@@ -75,6 +75,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
                         )
                 )
                 .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
+                .withReuse(properties.isReuseContainer())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
         container.start();

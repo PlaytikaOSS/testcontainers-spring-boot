@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.mysql.enabled` `(true|false, default is 'true')`
+* `embedded.mysql.reuseContainer` `(true|false, default is 'false')`
 * `embedded.mysql.encoding` `(default is 'utf8mb4')`
 * `embedded.mysql.collation` `(default is 'utf8mb4_unicode_ci')`
 * `embedded.mysql.dockerImage` `(default is set to 'mysql:5.7.22')`
