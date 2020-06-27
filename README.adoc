@@ -180,6 +180,8 @@ NOTE: If you setup, for example  embedded.kafka.enabled + embedded.containers.en
 
 === link:embedded-localstack/README.adoc[embedded-localstack]
 
+=== link:embedded-cassandra/README.adoc[embedded-cassandra]
+
 == How to contribute
 
 === Flow

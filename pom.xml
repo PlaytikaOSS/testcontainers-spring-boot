@@ -52,6 +52,7 @@
         <module>embedded-oracle-xe</module>
         <module>embedded-mysql</module>
         <module>embedded-localstack</module>
+        <module>embedded-cassandra</module>
     </modules>
 
     <properties>
