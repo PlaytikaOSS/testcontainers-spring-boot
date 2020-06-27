@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.postgresql.enabled` `(true|false, default is 'true')`
+* `embedded.postgresql.reuseContainer` `(true|false, default is 'false')`
 * `embedded.postgresql.dockerImage` `(default is set to 'postgres:9.6.8')`
 ** You can pick wanted version on https://hub.docker.com/r/library/postgres/tags/[dockerhub]
 * `embedded.postgresql.waitTimeoutInSeconds` `(default is 60 seconds)`

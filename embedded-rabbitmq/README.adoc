@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.rabbitmq.enabled` `(true|false, default is 'true')`
+* `embedded.rabbitmq.reuseContainer` `(true|false, default is 'false')`
 * `embedded.rabbitmq.password` `(default : rabbitmq)`
 * `embedded.rabbitmq.vhost` `(virtual host, default: '/')`
 * `embedded.rabbitmq.dockerImage` `(default: rabbitmq/3-management)`

@@ -59,6 +59,7 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .waitingFor(new HostPortWaitStrategy())
+                        .withReuse(properties.isReuseContainer())
                         .withStartupTimeout(properties.getTimeoutDuration());
 
         container.start();

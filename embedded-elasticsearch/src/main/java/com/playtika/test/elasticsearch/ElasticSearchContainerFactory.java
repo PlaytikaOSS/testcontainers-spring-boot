@@ -47,6 +47,7 @@ class ElasticSearchContainerFactory {
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .withLogConsumer(containerLogsConsumer(containerLogger))
                 .waitingFor(getCompositeWaitStrategy(properties))
+                .withReuse(properties.isReuseContainer())
                 .withStartupTimeout(properties.getTimeoutDuration());
     }
 

@@ -105,7 +105,8 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withCopyFileToContainer(MountableFile.forClasspathResource("nodes.conf"), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy)
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .withStartupTimeout(properties.getTimeoutDuration())
+                        .withReuse(properties.isReuseContainer());
         startAndLogTime(redis);
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.port);
         log.info("Started Redis cluster. Connection details: {}", redisEnv);

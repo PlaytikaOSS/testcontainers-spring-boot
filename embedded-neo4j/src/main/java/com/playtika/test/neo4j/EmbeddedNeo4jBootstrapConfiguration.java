@@ -60,7 +60,8 @@ public class EmbeddedNeo4jBootstrapConfiguration {
                 .withAdminPassword(properties.password)
                 .withLogConsumer(containerLogsConsumer(log))
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .withStartupTimeout(properties.getTimeoutDuration())
+                .withReuse(properties.isReuseContainer());
         neo4j.start();
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;

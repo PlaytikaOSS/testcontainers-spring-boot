@@ -35,7 +35,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
                 .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
                 .withEnv("HOSTNAME", properties.getHostname())
                 .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
-                .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
+                .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()))
+                .withReuse(properties.isReuseContainer());
 
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);

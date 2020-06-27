@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.memsql.enabled` `(true|false, default is 'true')`
+* `embedded.memsql.reuseContainer` `(true|false, default is 'false')`
 * `embedded.memsql.dockerImage` `(default is set to 'memsql/quickstart:minimal-6.0.8')`
 ** You can pick wanted version on https://hub.docker.com/r/memsql/quickstart/tags/[dockerhub]
 * `embedded.memsql.waitTimeoutInSeconds` `(default is 60 seconds)`

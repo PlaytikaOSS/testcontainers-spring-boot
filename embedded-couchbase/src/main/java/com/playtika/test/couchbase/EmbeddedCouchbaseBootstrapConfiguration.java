@@ -62,6 +62,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
                 .withBucket(bucketDefinition)
                 .withEnabledServices(properties.getServices())
                 .withCredentials(properties.getUser(), properties.getPassword())
+                .withReuse(properties.isReuseContainer())
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN));
         couchbase.start();
 
