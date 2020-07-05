@@ -20,7 +20,7 @@
 * `embedded.kafka.enabled` `(true|false, default is 'true')`
 * `embedded.kafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
 * `embedded.kafka.secureTopics` (subset of `embedded.kafka.topicsToCreate` that should be secured with ACLs)
-* `embedded.kafka.dockerImage` `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
+* `embedded.kafka.dockerImageVersion` `(default: 5.4.1. Kafka version is 1.1.x.)`
 ** To use another kafka version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-kafka/tags[dockerhub]
 ** https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility[Confluent Platform and Apache Kafka Compatibility]
 * `embedded.kafka.waitTimeoutInSeconds` `(default is 60 seconds)`
