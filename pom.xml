@@ -53,6 +53,7 @@
         <module>embedded-mysql</module>
         <module>embedded-localstack</module>
         <module>embedded-cassandra</module>
+        <module>embedded-clickhouse</module>
     </modules>
 
     <properties>

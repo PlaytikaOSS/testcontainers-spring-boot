@@ -182,6 +182,8 @@ NOTE: If you setup, for example  embedded.kafka.enabled + embedded.containers.en
 
 === link:embedded-cassandra/README.adoc[embedded-cassandra]
 
+=== link:embedded-clickhouse/README.adoc[embedded-clickhouse]
+
 == How to contribute
 
 === Flow
