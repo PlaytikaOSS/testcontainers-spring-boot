@@ -51,20 +51,6 @@ public abstract class BaseEmbeddedClickHouseTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    @Test
-    public void shouldConnectToClickHouse() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("20.5");
-    }
-
-    @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.clickhouse.schema")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.password")).isNotNull();
-    }
-
     protected void hasDependsOn(String beanName) {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
                 .isNotNull()

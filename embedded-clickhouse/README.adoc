@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.clickhouse.enabled` `(true|false, default is 'true')`
+* `embedded.clickhouse.reuseContainer` `(true|false, default is 'false')`
 * `embedded.clickhouse.dockerImage` `(default is set to 'yandex/clickhouse-server:20.5')`
 
 ==== Produces
@@ -32,5 +33,8 @@ To auto-configure `spring-jdbc` use these properties in your test `application.p
 [source,properties]
 ./src/test/resources/application.properties
 ----
-include::src/test/resources/application-enabled.properties[]
+spring.datasource.driver-class-name=ru.yandex.clickhouse.ClickHouseDriver
+spring.datasource.url=jdbc:clickhouse://${embedded.clickhouse.host}:${embedded.clickhouse.port}/${embedded.clickhouse.schema}
+spring.datasource.username=${embedded.clickhouse.user}
+spring.datasource.password=${embedded.clickhouse.password}
 ----

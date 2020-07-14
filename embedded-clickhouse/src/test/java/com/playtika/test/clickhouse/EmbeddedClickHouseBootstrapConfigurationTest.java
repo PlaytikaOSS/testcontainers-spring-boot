@@ -23,6 +23,23 @@
  */
 package com.playtika.test.clickhouse;
 
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class EmbeddedClickHouseBootstrapConfigurationTest extends BaseEmbeddedClickHouseTest {
 
+    @Test
+    public void shouldConnectToClickHouse() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).contains("20.5");
+    }
+
+    @Test
+    public void propertiesAreAvailable() {
+        assertThat(environment.getProperty("embedded.clickhouse.schema")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.clickhouse.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.clickhouse.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.clickhouse.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.clickhouse.password")).isNotNull();
+    }
 }
