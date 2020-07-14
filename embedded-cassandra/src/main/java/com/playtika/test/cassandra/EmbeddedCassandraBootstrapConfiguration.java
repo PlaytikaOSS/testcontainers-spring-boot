@@ -58,14 +58,15 @@ public class EmbeddedCassandraBootstrapConfiguration {
     private final ResourceLoader resourceLoader;
 
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")
-    public GenericContainer cassandra(ConfigurableEnvironment environment,
+    public CassandraContainer cassandra(ConfigurableEnvironment environment,
                                   CassandraProperties properties) throws Exception {
 
         log.info("Starting Cassandra cluster. Docker image: {}", properties.dockerImage);
 
         prepareCassandraInitScript(properties);
 
-        GenericContainer cassandra = new CassandraContainer(properties.dockerImage)
+        CassandraContainer cassandra = new CassandraContainer<>(properties.dockerImage)
+                .withReuse(properties.isReuseContainer())
                 .withInitScript("cassandra-init.sql")
                 .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.getPort());
@@ -77,7 +78,7 @@ public class EmbeddedCassandraBootstrapConfiguration {
     }
 
     static Map<String, Object> registerCassandraEnvironment(ConfigurableEnvironment environment,
-                                                            GenericContainer cassandra,
+                                                            CassandraContainer cassandra,
                                                             CassandraProperties properties) {
         String host = cassandra.getContainerIpAddress();
         Integer mappedPort = cassandra.getMappedPort(properties.getPort());

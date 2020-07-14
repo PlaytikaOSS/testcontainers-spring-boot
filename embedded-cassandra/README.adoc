@@ -15,6 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.cassandra.enabled` `(true|false, default is 'true')`
+* `embedded.cassandra.reuseContainer` `(true|false, default is 'false')`
 * `embedded.cassandra.keyspace-name` `(default is set to 'embedded')`
 * `embedded.cassandra.dockerImage` `(default is set to 'cassandra:3.11.6')`
 ** You can pick the desired version on https://hub.docker.com/r/library/cassandra/tags/[dockerhub]
@@ -25,3 +26,17 @@
 * `embedded.cassandra.port`
 * `embedded.cassandra.datacenter`
 * `embedded.cassandra.keyspace-name`
+
+==== Example
+
+To configure `spring-data-cassandra` use these properties in your test `application.properties`:
+
+[source,properties]
+./src/test/resources/application.properties
+----
+spring.data.cassandra.keyspace-name=${embedded.cassandra.keyspace-name}
+spring.data.cassandra.local-datacenter=${embedded.cassandra.datacenter}
+spring.data.cassandra.contact-points=${embedded.cassandra.host}
+spring.data.cassandra.port=${embedded.cassandra.port}
+spring.data.cassandra.schema-action=CREATE_IF_NOT_EXISTS
+----
