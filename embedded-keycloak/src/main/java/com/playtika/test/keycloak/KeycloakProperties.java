@@ -50,4 +50,13 @@ public class KeycloakProperties extends CommonContainerProperties {
     private String adminUser = DEFAULT_ADMIN_USER;
     private String adminPassword = DEFAULT_ADMIN_PASSWORD;
     private String importFile;
+    private String dbVendor;
+    private String dbAddr;
+    private String dbPort;
+    private String dbDatabase;
+    private String dbSchema;
+    private String dbUser;
+    private String dbUserFile;
+    private String dbPassword;
+    private String dbPasswordFile;
 }

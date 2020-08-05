@@ -45,6 +45,51 @@
       "name": "embedded.keycloak.import-file",
       "type": "java.lang.String",
       "description": "Classpath location of a JSON file to for importing resources into Keycloak. No prefix is needed."
+    },
+    {
+      "name": "embedded.keycloak.db-vendor",
+      "type": "java.lang.String",
+      "description": "If this is empty then it tries to autodetected. Else it should be one of: h2, postgres, mysql, mariadb, oracle, mssql."
+    },
+    {
+      "name": "embedded.keycloak.db-addr",
+      "type": "java.lang.String",
+      "description": "Specify hostname of the database (optional)."
+    },
+    {
+      "name": "embedded.keycloak.db-port",
+      "type": "java.lang.String",
+      "description": "Specify port of the database (optional, default is DB vendor default port)."
+    },
+    {
+      "name": "embedded.keycloak.db-database",
+      "type": "java.lang.String",
+      "description": "Specify name of the database to use (optional, default is keycloak)."
+    },
+    {
+      "name": "embedded.keycloak.db-schema",
+      "type": "java.lang.String",
+      "description": "Specify name of the schema to use for DB that support schemas (optional, default is public on Postgres)."
+    },
+    {
+      "name": "embedded.keycloak.db-user",
+      "type": "java.lang.String",
+      "description": "Specify user to use to authenticate to the database (optional, default is ``)."
+    },
+    {
+      "name": "embedded.keycloak.db-user-file",
+      "type": "java.lang.String",
+      "description": "Specify user to authenticate to the database via file input (alternative to DB_USER)."
+    },
+    {
+      "name": "embedded.keycloak.db-password",
+      "type": "java.lang.String",
+      "description": "Specify user's password to use to authenticate to the database (optional, default is ``)."
+    },
+    {
+      "name": "embedded.keycloak.db-password-file",
+      "type": "java.lang.String",
+      "description": "Specify user's password to use to authenticate to the database via file input (alternative to DB_PASSWORD)."
     }
   ],
   "hints": [

@@ -33,12 +33,52 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withEnv("KEYCLOAK_HTTP_PORT", String.valueOf(DEFAULT_HTTP_PORT_INTERNAL));
         withEnv("KEYCLOAK_USER", properties.getAdminUser());
         withEnv("KEYCLOAK_PASSWORD", properties.getAdminPassword());
+        withDB();
         withCommand(properties.getCommand());
         withStartupTimeout(properties.getTimeoutDuration());
         withLogConsumer(containerLogsConsumer(log));
         withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
         waitingFor(authBasePath());
         withImportFile(properties.getImportFile());
+    }
+
+    private void withDB() {
+        String db_vendor = properties.getDbVendor();
+        if(db_vendor != null) {
+          withEnv("DB_VENDOR", db_vendor);
+        }
+        String db_addr = properties.getDbAddr();
+        if(db_addr != null) {
+          withEnv("DB_ADDR", db_addr);
+        }
+        String db_port = properties.getDbPort();
+        if(db_port != null) {
+          withEnv("DB_PORT", db_port);
+        }
+        String db_database = properties.getDbDatabase();
+        if(db_database != null) {
+          withEnv("DB_DATABASE", db_database);
+        }
+        String db_schema = properties.getDbSchema();
+        if(db_schema != null) {
+          withEnv("DB_SCHEMA", db_schema);
+        }
+        String db_user = properties.getDbUser();
+        if(db_user != null) {
+          withEnv("DB_USER", db_user);
+        }
+        String db_user_file = properties.getDbUserFile();
+        if(db_user_file != null) {
+          withEnv("DB_USER_FILE", db_user_file);
+        }
+        String db_password = properties.getDbPassword();
+        if(db_password != null) {
+          withEnv("DB_PASSWORD", db_password);
+        }
+        String db_password_file = properties.getDbPasswordFile();
+        if(db_password_file != null) {
+          withEnv("DB_PASSWORD_FILE", db_password_file);
+        }
     }
 
     private void withImportFile(String importFile) {
