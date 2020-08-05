@@ -4,7 +4,7 @@ https://codecov.io/gh/Playtika/testcontainers-spring-boot[image:https://codecov.
 https://www.codacy.com/app/PlaytikaCodacy/testcontainers-spring-boot?utm_source=github.com&utm_medium=referral&utm_content=testcontainers/testcontainers-spring-boot&utm_campaign=Badge_Grade[image:https://api.codacy.com/project/badge/Grade/add0d68eb8e040a1833a8f457189af7b[Codacy Badge]]
 https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot[image:https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot/badge.svg[Maven Central]]
 
-If you are writing services using Spring Boot (and maybe Spring Cloud) and you do
+If develop services using Spring Boot and maybe Spring Cloud and you do
 https://testing.googleblog.com/2010/12/test-sizes.html[medium sized] tests during build process, then this set of
 Spring Boot auto-configurations might be handy. By adding module into classpath, you will get stateful service,
 like Couchbase or Kafka, auto-started and available for connection from your application service w/o wiring any
@@ -27,6 +27,7 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
       <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
+            <version>https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter[pick version]<version>
             ...
         </dependency>
 ...
@@ -43,12 +44,12 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            ...
+            <version>https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter[pick version]<version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-            ...
+            <version>https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter[pick version]<version>
             <scope>test</scope>
         </dependency>
 ...
@@ -65,6 +66,7 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-kafka</artifactId>
+            <version>https://mvnrepository.com/artifact/com.playtika.testcontainers/embedded-kafka[pick version]<version>
             <scope>test</scope>
         </dependency>
 ...
