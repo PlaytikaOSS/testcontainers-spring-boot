@@ -43,41 +43,41 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     }
 
     private void withDB() {
-        String db_vendor = properties.getDbVendor();
-        if(db_vendor != null) {
-          withEnv("DB_VENDOR", db_vendor);
+        String dbVendor = properties.getDbVendor();
+        if(dbVendor != null) {
+            withEnv("DB_VENDOR", dbVendor);
         }
-        String db_addr = properties.getDbAddr();
-        if(db_addr != null) {
-          withEnv("DB_ADDR", db_addr);
+        String dbAddr = properties.getDbAddr();
+        if(dbAddr != null) {
+            withEnv("DB_ADDR", dbAddr);
         }
-        String db_port = properties.getDbPort();
-        if(db_port != null) {
-          withEnv("DB_PORT", db_port);
+        String dbPort = properties.getDbPort();
+        if(dbPort != null) {
+            withEnv("DB_PORT", dbPort);
         }
-        String db_database = properties.getDbDatabase();
-        if(db_database != null) {
-          withEnv("DB_DATABASE", db_database);
+        String dbDatabase = properties.getDbDatabase();
+        if(dbDatabase != null) {
+            withEnv("DB_DATABASE", dbDatabase);
         }
-        String db_schema = properties.getDbSchema();
-        if(db_schema != null) {
-          withEnv("DB_SCHEMA", db_schema);
+        String dbSchema = properties.getDbSchema();
+        if(dbSchema != null) {
+            withEnv("DB_SCHEMA", dbSchema);
         }
-        String db_user = properties.getDbUser();
-        if(db_user != null) {
-          withEnv("DB_USER", db_user);
+        String dbUser = properties.getDbUser();
+        if(dbUser != null) {
+            withEnv("DB_USER", dbUser);
         }
-        String db_user_file = properties.getDbUserFile();
-        if(db_user_file != null) {
-          withEnv("DB_USER_FILE", db_user_file);
+        String dbUserFile = properties.getDbUserFile();
+        if(dbUserFile != null) {
+            withEnv("DB_USER_FILE", dbUserFile);
         }
-        String db_password = properties.getDbPassword();
-        if(db_password != null) {
-          withEnv("DB_PASSWORD", db_password);
+        String dbPassword = properties.getDbPassword();
+        if(dbPassword != null) {
+            withEnv("DB_PASSWORD", dbPassword);
         }
-        String db_password_file = properties.getDbPasswordFile();
-        if(db_password_file != null) {
-          withEnv("DB_PASSWORD_FILE", db_password_file);
+        String dbPasswordFile = properties.getDbPasswordFile();
+        if(dbPasswordFile != null) {
+            withEnv("DB_PASSWORD_FILE", dbPasswordFile);
         }
     }
 
