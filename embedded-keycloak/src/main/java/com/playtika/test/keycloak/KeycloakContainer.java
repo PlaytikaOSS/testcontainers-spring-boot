@@ -43,38 +43,74 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     }
 
     private void withDB() {
+        withDBVendor();
+        withDBAddr();
+        withDBPort();
+        withDBDatabase();
+        withDBSchema();
+        withDBUser();
+        withDBUserFile();
+        withDBPassword();
+        withDBPasswordFile();
+    }
+
+    private void withDBVendor() {
         String dbVendor = properties.getDbVendor();
         if(dbVendor != null) {
             withEnv("DB_VENDOR", dbVendor);
         }
+    }
+
+    private void withDBAddr() {
         String dbAddr = properties.getDbAddr();
         if(dbAddr != null) {
             withEnv("DB_ADDR", dbAddr);
         }
+    }
+
+    private void withDBPort() {
         String dbPort = properties.getDbPort();
         if(dbPort != null) {
             withEnv("DB_PORT", dbPort);
         }
+    }
+
+    private void withDBDatabase() {
         String dbDatabase = properties.getDbDatabase();
         if(dbDatabase != null) {
             withEnv("DB_DATABASE", dbDatabase);
         }
+    }
+
+    private void withDBSchema() {
         String dbSchema = properties.getDbSchema();
         if(dbSchema != null) {
             withEnv("DB_SCHEMA", dbSchema);
         }
+    }
+
+    private void withDBUser() {
         String dbUser = properties.getDbUser();
         if(dbUser != null) {
             withEnv("DB_USER", dbUser);
         }
+    }
+
+    private void withDBUserFile() {
         String dbUserFile = properties.getDbUserFile();
         if(dbUserFile != null) {
             withEnv("DB_USER_FILE", dbUserFile);
         }
+    }
+
+    private void withDBPassword() {
         String dbPassword = properties.getDbPassword();
         if(dbPassword != null) {
             withEnv("DB_PASSWORD", dbPassword);
         }
+    }
+
+    private void withDBPasswordFile() {
         String dbPasswordFile = properties.getDbPasswordFile();
         if(dbPasswordFile != null) {
             withEnv("DB_PASSWORD_FILE", dbPasswordFile);
