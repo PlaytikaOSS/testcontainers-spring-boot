@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,14 @@
 package com.playtika.test.dynamodb;
 
 
+import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -38,18 +40,18 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
 @Configuration
-@Order(HIGHEST_PRECEDENCE)
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
+@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.dynamodb.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(DynamoDBProperties.class)
 public class EmbeddedDynamoDBBootstrapConfiguration {
 
     @Bean(name = DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
     public GenericContainer dynamoDb(ConfigurableEnvironment environment,
-                                    DynamoDBProperties properties) throws Exception {
+                                     DynamoDBProperties properties) throws Exception {
         log.info("Starting DynamoDb server. Docker image: {}", properties.dockerImage);
 
         GenericContainer container =
@@ -57,6 +59,7 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
                         .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .waitingFor(new HostPortWaitStrategy())
+                        .withReuse(properties.isReuseContainer())
                         .withStartupTimeout(properties.getTimeoutDuration());
 
         container.start();

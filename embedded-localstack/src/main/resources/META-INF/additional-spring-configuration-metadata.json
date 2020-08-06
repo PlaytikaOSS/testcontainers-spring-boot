@@ -1,0 +1,129 @@
+{
+  "groups": [
+    {
+      "name": "embedded.localstack",
+      "description": "Configuration properties related to embedded Localstack."
+    }
+  ],
+  "properties": [
+    {
+      "name": "embedded.localstack.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.localstack.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "localstack/localstack:0.10.8"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.localstack.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of Localstack server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disables configuration of Localstack server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.localstack.docker-image",
+      "values": [
+        {
+          "value": "localstack/localstack:0.10.8",
+          "description": "Default Localstack image in version 0.10.8. Ref https://hub.docker.com/r/localstack/localstack for further info."
+        }
+      ]
+    },
+    {
+      "name": "embedded.localstack.services",
+      "values": [
+        {
+          "value": "API_GATEWAY",
+          "description": "Includes API_GATEWAY service into Localstack on startup."
+        },
+        {
+          "value": "KINESIS",
+          "description": "Includes KINESIS service into Localstack on startup."
+        },
+        {
+          "value": "DYNAMODB",
+          "description": "Includes DYNAMODB service into Localstack on startup."
+        },
+        {
+          "value": "DYNAMODB_STREAMS",
+          "description": "Includes DYNAMODB_STREAMS service into Localstack on startup."
+        },
+        {
+          "value": "S3",
+          "description": "Includes S3 service into Localstack on startup."
+        },
+        {
+          "value": "FIREHOSE",
+          "description": "Includes FIREHOSE service into Localstack on startup."
+        },
+        {
+          "value": "LAMBDA",
+          "description": "Includes LAMBDA service into Localstack on startup."
+        },
+        {
+          "value": "SNS",
+          "description": "Includes SNS service into Localstack on startup."
+        },
+        {
+          "value": "SQS",
+          "description": "Includes SQS service into Localstack on startup."
+        },
+        {
+          "value": "REDSHIFT",
+          "description": "Includes REDSHIFT service into Localstack on startup."
+        },
+        {
+          "value": "SES",
+          "description": "Includes SES service into Localstack on startup."
+        },
+        {
+          "value": "ROUTE53",
+          "description": "Includes ROUTE53 service into Localstack on startup."
+        },
+        {
+          "value": "CLOUDFORMATION",
+          "description": "Includes CLOUDFORMATION service into Localstack on startup."
+        },
+        {
+          "value": "CLOUDWATCH",
+          "description": "Includes CLOUDWATCH service into Localstack on startup."
+        },
+        {
+          "value": "SSM",
+          "description": "Includes SSM service into Localstack on startup."
+        },
+        {
+          "value": "SECRETSMANAGER",
+          "description": "Includes SECRETSMANAGER service into Localstack on startup."
+        },
+        {
+          "value": "STEPFUNCTIONS",
+          "description": "Includes STEPFUNCTIONS service into Localstack on startup."
+        },
+        {
+          "value": "CLOUDWATCHLOGS",
+          "description": "Includes CLOUDWATCHLOGS service into Localstack on startup."
+        },
+        {
+          "value": "STS",
+          "description": "Includes STS service into Localstack on startup."
+        },
+        {
+          "value": "IAM",
+          "description": "Includes IAM service into Localstack on startup."
+        }
+      ]
+    }
+  ]
+}

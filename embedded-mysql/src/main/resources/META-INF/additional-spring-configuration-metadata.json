@@ -1,0 +1,32 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.mysql.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.mysql.init-script-path",
+      "type": "java.lang.String",
+      "defaultValue": "null",
+      "description": "The SQL file path to execute after the container starts to initialize the database."
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.mysql.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of mysql server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of mysql server on startup."
+        }
+      ]
+    }
+  ]
+}

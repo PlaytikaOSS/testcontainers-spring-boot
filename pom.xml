@@ -5,13 +5,13 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>1.42</version>
+    <version>1.80-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.5.RELEASE</version>
+        <version>2.3.2.RELEASE</version>
     </parent>
 
     <licenses>
@@ -29,6 +29,7 @@
     </scm>
 
     <modules>
+        <module>testcontainers-spring-boot-bom</module>
         <module>testcontainers-common</module>
         <module>embedded-kafka</module>
         <module>embedded-keycloak</module>
@@ -46,6 +47,13 @@
         <module>embedded-rabbitmq</module>
         <module>embedded-minio</module>
         <module>embedded-google-pubsub</module>
+        <module>embedded-influxdb</module>
+        <module>embedded-vault</module>
+        <module>embedded-oracle-xe</module>
+        <module>embedded-mysql</module>
+        <module>embedded-localstack</module>
+        <module>embedded-cassandra</module>
+        <module>embedded-clickhouse</module>
     </modules>
 
     <properties>
@@ -53,13 +61,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.13.0</testcontainers.version>
-        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <testcontainers.version>1.14.3</testcontainers.version>
+        <spring.cloud.version>Hoxton.SR6</spring.cloud.version>
 
-        <equalsverifier.version>3.1.12</equalsverifier.version>
+        <equalsverifier.version>3.4.1</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
+        <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
@@ -233,6 +241,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit-vintage-engine</artifactId>
+                    <groupId>org.junit.vintage</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -251,17 +265,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/libs-milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <distributionManagement>
         <snapshotRepository>

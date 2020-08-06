@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2018 Playtika
+* Copyright (c) 2020 Playtika
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,13 @@
  */
 package com.playtika.test.common.checks;
 
-import org.junit.Test;
+import java.time.Duration;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-
-import java.time.Duration;
 
 public class AbstractCommandWaitStrategyTest {
 
@@ -37,9 +38,12 @@ public class AbstractCommandWaitStrategyTest {
         startContainerWithWaitStrategy(new PositiveCommandWaitStrategy());
     }
 
-    @Test(expected = ContainerLaunchException.class)
+    @Test
     public void should_failStartupChecks_ifHealthCheckCmdIsFailed() {
-        startContainerWithWaitStrategy(new NegativeCommandWaitStrategy());
+        Assertions.assertThrows(
+                ContainerLaunchException.class,
+                () -> startContainerWithWaitStrategy(new NegativeCommandWaitStrategy())
+        );
     }
 
     private void startContainerWithWaitStrategy(WaitStrategy waitStrategy) {
@@ -50,29 +54,4 @@ public class AbstractCommandWaitStrategyTest {
                 .start();
     }
 
-    private static class PositiveCommandWaitStrategy extends AbstractCommandWaitStrategy {
-
-        @Override
-        public String getContainerType() {
-            return "Positive Test";
-        }
-
-        @Override
-        public String[] getCheckCommand() {
-            return new String[]{"echo", "health check passed"};
-        }
-    }
-
-    private static class NegativeCommandWaitStrategy extends AbstractCommandWaitStrategy {
-
-        @Override
-        public String getContainerType() {
-            return "Negative Test";
-        }
-
-        @Override
-        public String[] getCheckCommand() {
-            return new String[]{"/bin/sh", "-c", "invalid command"};
-        }
-    }
 }

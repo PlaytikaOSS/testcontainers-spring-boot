@@ -1,0 +1,40 @@
+=== embedded-clickhouse
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-clickhouse</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.clickhouse.enabled` `(true|false, default is 'true')`
+* `embedded.clickhouse.reuseContainer` `(true|false, default is 'false')`
+* `embedded.clickhouse.dockerImage` `(default is set to 'yandex/clickhouse-server:20.5')`
+
+==== Produces
+
+* `embedded.clickhouse.schema`
+* `embedded.clickhouse.host`
+* `embedded.clickhouse.port`
+* `embedded.clickhouse.user`
+* `embedded.clickhouse.password`
+
+==== Example
+
+To auto-configure `spring-jdbc` use these properties in your test `application.properties`:
+
+[source,properties]
+./src/test/resources/application.properties
+----
+spring.datasource.driver-class-name=ru.yandex.clickhouse.ClickHouseDriver
+spring.datasource.url=jdbc:clickhouse://${embedded.clickhouse.host}:${embedded.clickhouse.port}/${embedded.clickhouse.schema}
+spring.datasource.username=${embedded.clickhouse.user}
+spring.datasource.password=${embedded.clickhouse.password}
+----

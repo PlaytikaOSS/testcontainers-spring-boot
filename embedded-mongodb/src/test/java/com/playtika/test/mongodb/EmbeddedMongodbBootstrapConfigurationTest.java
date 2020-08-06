@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,34 @@
  */
 package com.playtika.test.mongodb;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.data.Offset;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
+import static java.time.Duration.ofMillis;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import static java.time.Duration.ofMillis;
-import static org.assertj.core.api.Assertions.assertThat;
+import com.playtika.test.common.operations.NetworkTestOperations;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.data.Offset;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
         properties = {
                 "embedded.mongodb.install.enabled=true",
                 "spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}"
-        })
+        }
+        ,classes = EmbeddedMongodbBootstrapConfigurationTest.TestConfiguration.class
+)
 public class EmbeddedMongodbBootstrapConfigurationTest {
 
     @Autowired
@@ -101,5 +102,10 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
         String someString;
         Instant someTimestamp;
         Long someNumber;
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }

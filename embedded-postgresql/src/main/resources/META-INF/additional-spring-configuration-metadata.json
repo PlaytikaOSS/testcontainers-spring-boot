@@ -11,6 +11,12 @@
       "name": "embedded.postgresql.docker-image",
       "type": "java.lang.String",
       "defaultValue": "postgres:10-alpine"
+    },
+    {
+      "name": "embedded.postgresql.init-script-path",
+      "type": "java.lang.String",
+      "defaultValue": "null",
+      "description": "The SQL file path to execute after the container starts to initialize the database."
     }
   ],
   "hints": [

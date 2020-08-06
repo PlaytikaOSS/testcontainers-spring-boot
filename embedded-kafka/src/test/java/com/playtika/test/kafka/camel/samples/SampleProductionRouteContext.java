@@ -28,6 +28,7 @@ import org.apache.camel.component.kafka.KafkaConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,6 +40,9 @@ public class SampleProductionRouteContext {
 
     @Autowired
     SampleRouteConfiguration configuration;
+
+    @Value("${embedded.kafka.brokerList}")
+    String kafkaBrokerList;
 
     @Bean
     public RouteBuilder productionRouteBuilder() {
@@ -56,5 +60,24 @@ public class SampleProductionRouteContext {
                         .setId(PRODUCTION_ROUTE);
             }
         };
+    }
+
+    @Bean
+    public SampleRouteConfiguration sampleRouteConfiguration() {
+        return () -> "kafka:helloTopic" +
+                "?" +
+                "brokers=" + kafkaBrokerList +
+                "&" +
+                "groupId=testConsumer" +
+                "&" +
+                "autoOffsetReset=earliest" +
+                "&" +
+                "autoCommitIntervalMs=100" +
+                "&" +
+                "serializerClass=org.apache.kafka.common.serialization.StringSerializer" +
+                "&" +
+                "keySerializerClass=org.apache.kafka.common.serialization.StringSerializer" +
+                "&" +
+                "autoCommitEnable=true";
     }
 }

@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.cassandra.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.cassandra.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of cassandra server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of cassandra server on startup."
+        }
+      ]
+    }
+  ]
+}

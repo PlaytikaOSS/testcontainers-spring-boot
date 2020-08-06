@@ -1,0 +1,4 @@
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.playtika.test.clickhouse.EmbeddedClickHouseBootstrapConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.playtika.test.clickhouse.EmbeddedClickHouseDependenciesAutoConfiguration

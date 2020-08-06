@@ -1,25 +1,25 @@
 /*
-* The MIT License (MIT)
-*
-* Copyright (c) 2020 Playtika
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2020 Playtika
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package com.playtika.test.kafka.configuration;
 
@@ -38,13 +38,13 @@ import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
 
 @Slf4j
@@ -74,27 +74,35 @@ public class ZookeeperContainerConfiguration {
                                       ZookeeperConfigurationProperties zookeeperProperties,
                                       ConfigurableEnvironment environment,
                                       Network network) {
-        String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
-        String zkData = Paths.get(zookeeperProperties.getDataFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
-        log.info("Writing zookeeper data to: {}", zkData);
-        String zkTransactionLogs = Paths.get(zookeeperProperties.getTxnLogsFileSystemBind(), currentTimestamp).toAbsolutePath().toString();
-        log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
-
         log.info("Starting zookeeper server. Docker image: {}", zookeeperProperties.getDockerImage());
 
         int mappingPort = zookeeperProperties.getZookeeperPort();
         GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("ZOOKEEPER_CLIENT_PORT", String.valueOf(mappingPort))
-                .withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
-                .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE)
                 .withExposedPorts(mappingPort)
                 .withFixedExposedPort(mappingPort, mappingPort)
                 .withNetwork(network)
                 .withNetworkAliases(ZOOKEEPER_HOST_NAME)
                 .waitingFor(zookeeperStatusCheck)
                 .withStartupTimeout(zookeeperProperties.getTimeoutDuration());
-        zookeeper.start();
+
+        ZookeeperConfigurationProperties.FileSystemBind fileSystemBind = zookeeperProperties.getFileSystemBind();
+        if (fileSystemBind.isEnabled()) {
+            String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
+
+            String dataFolder = fileSystemBind.getDataFolder();
+            String zkData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing zookeeper data to: {}", zkData);
+
+            String txnLogsFolder = fileSystemBind.getTxnLogsFolder();
+            String zkTransactionLogs = Paths.get(txnLogsFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
+
+            zookeeper.withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
+                    .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
+        }
+        startAndLogTime(zookeeper);
         registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
         return zookeeper;
     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,17 @@
  */
 package com.playtika.test.pubsub;
 
+import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -42,11 +44,11 @@ import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 import static java.lang.String.format;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
 @Configuration
-@Order(HIGHEST_PRECEDENCE)
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
+@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)
 @EnableConfigurationProperties({PubsubProperties.class})
 public class EmbeddedPubsubBootstrapConfiguration {
@@ -73,6 +75,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
                         )
                 )
                 .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
+                .withReuse(properties.isReuseContainer())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
         container.start();
@@ -98,7 +101,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
     public ManagedChannel managedChannel(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub, PubsubProperties properties) {
         return ManagedChannelBuilder.forAddress(pubsub.getContainerIpAddress(),
-                                                pubsub.getMappedPort(properties.getPort()))
+                pubsub.getMappedPort(properties.getPort()))
                 .usePlaintext()
                 .build();
     }

@@ -1,18 +1,42 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2020 Playtika
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.playtika.test.common.spring;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
+import static com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration.ALL_CONTAINERS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+@ExtendWith(MockitoExtension.class)
 public class DependsOnPostProcessorTest {
 
     private static final String TEST_BEAN_NAME_3 = "testBean3";
@@ -28,7 +52,7 @@ public class DependsOnPostProcessorTest {
     @Mock
     private BeanDefinition beanDefinition;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         dependsOnPostProcessor = new DependsOnPostProcessor(TestProcessor.class, new String[]{TEST_BEAN_NAME_3, TEST_BEAN_NAME_4});
     }
@@ -41,7 +65,7 @@ public class DependsOnPostProcessorTest {
 
         dependsOnPostProcessor.postProcessBeanFactory(configurableListableBeanFactory);
 
-        String[] expected = {TEST_BEAN_NAME_1, TEST_BEAN_NAME_2, TEST_BEAN_NAME_3, TEST_BEAN_NAME_4};
+        String[] expected = {TEST_BEAN_NAME_1, TEST_BEAN_NAME_2, TEST_BEAN_NAME_3, TEST_BEAN_NAME_4, ALL_CONTAINERS};
 
         verify(beanDefinition, times(1)).setDependsOn(expected);
     }
@@ -54,7 +78,7 @@ public class DependsOnPostProcessorTest {
 
         dependsOnPostProcessor.postProcessBeanFactory(configurableListableBeanFactory);
 
-        String[] expected = {TEST_BEAN_NAME_3, TEST_BEAN_NAME_4};
+        String[] expected = {TEST_BEAN_NAME_3, TEST_BEAN_NAME_4, ALL_CONTAINERS};
 
         verify(beanDefinition, times(1)).setDependsOn(expected);
     }

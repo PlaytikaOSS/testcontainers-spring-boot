@@ -1,0 +1,31 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.clickhouse.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.clickhouse.dockerImage",
+      "type": "java.lang.String",
+      "defaultValue": "yandex/clickhouse-server:20.5"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.clickhouse.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of ClickHouse server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of ClickHouse server on startup."
+        }
+      ]
+    }
+  ]
+}

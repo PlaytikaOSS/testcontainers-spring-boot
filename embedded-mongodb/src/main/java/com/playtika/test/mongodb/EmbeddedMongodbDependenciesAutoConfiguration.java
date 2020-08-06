@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,12 @@
  */
 package com.playtika.test.mongodb;
 
-import com.mongodb.MongoClient;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +39,13 @@ import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MON
 @Configuration
 @AutoConfigureOrder
 @ConditionalOnClass(MongoTemplate.class)
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(name = "embedded.mongodb.enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration")
 public class EmbeddedMongodbDependenciesAutoConfiguration {
 
     @Bean
-    public BeanFactoryPostProcessor mongoClientDependencyPostProcessor() {
-        return new DependsOnPostProcessor(MongoClient.class, new String[]{BEAN_NAME_EMBEDDED_MONGODB});
+    public static BeanFactoryPostProcessor mongoClientDependencyPostProcessor() {
+        return new DependsOnPostProcessor(MongoTemplate.class, new String[]{BEAN_NAME_EMBEDDED_MONGODB});
     }
 }

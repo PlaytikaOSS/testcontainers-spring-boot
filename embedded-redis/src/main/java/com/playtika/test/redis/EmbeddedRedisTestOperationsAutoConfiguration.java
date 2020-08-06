@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Playtika
+ * Copyright (c) 2020 Playtika
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import com.playtika.test.common.utils.ApkPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,6 +44,7 @@ import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
 @Configuration
 @ConditionalOnBean({RedisProperties.class})
+@ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(value = "embedded.redis.enabled", matchIfMissing = true)
 public class EmbeddedRedisTestOperationsAutoConfiguration {
 

@@ -11,6 +11,37 @@
       "name": "embedded.zookeeper.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.kafka.schema-registry.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.kafka.schema-registry.waitTimeoutInSeconds",
+      "type": "java.lang.Integer",
+      "defaultValue": "60"
+    },
+    {
+      "name": "embedded.kafka.schema-registry.dockerImage",
+      "type": "java.lang.String",
+      "defaultValue": "confluentinc/cp-schema-registry:5.4.1"
+    },
+    {
+      "name": "embedded.kafka.schema-registry.port",
+      "type": "java.lang.Integer",
+      "description": "The container internal port. Will be overwritten with mapped port.",
+      "defaultValue": "8081"
+    },
+    {
+      "name": "embedded.kafka.schema-registry.avroCompatibilityLevel",
+      "type": "java.lang.Enum",
+      "defaultValue": "BACKWARD"
+    },
+    {
+      "name": "embedded.kafka.schema-registry.authentication",
+      "type": "java.lang.Enum",
+      "defaultValue": "NONE"
     }
   ],
   "hints": [
@@ -24,6 +55,52 @@
         {
           "value": "false",
           "description": "Disabled configuration of kafka cluster on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.kafka.schema-registry.avro-compatibility-level",
+      "values": [
+        {
+          "value": "NONE",
+          "description": "New schema can be any valid Avro schema."
+        },
+        {
+          "value": "BACKWARD",
+          "description": "New schema can read data produced by latest registered schema."
+        },
+        {
+          "value": "BACKWARD_TRANSITIVE",
+          "description": "New schema can read data produced by all previously registered schemas."
+        },
+        {
+          "value": "FORWARD",
+          "description": "Latest registered schema can read data produced by the new schema."
+        },
+        {
+          "value": "FORWARD_TRANSITIVE",
+          "description": "All previously registered schemas can read data produced by the new schema."
+        },
+        {
+          "value": "FULL",
+          "description": "New schema is backward and forward compatible with latest registered schema."
+        },
+        {
+          "value": "FULL_TRANSITIVE",
+          "description": "New schema is backward and forward compatible with all previously registered schemas."
+        }
+      ]
+    },
+    {
+      "name": "embedded.kafka.schema-registry.authentication",
+      "values": [
+        {
+          "value": "NONE",
+          "description": "No authentication."
+        },
+        {
+          "value": "BASIC",
+          "description": "Enable basic authentication."
         }
       ]
     }
