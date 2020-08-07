@@ -28,7 +28,7 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
             <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter -->
-            <version>[pick version]<version>
+            <version>[pick version]</version>
         </dependency>
 ...
 </project>
@@ -45,13 +45,13 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter -->
-            <version>[pick version]<version>
+            <version>[pick version]</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
             <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter -->
-            <version>[pick version]<version>
+            <version>[pick version]</version>
             <scope>test</scope>
         </dependency>
 ...
@@ -69,7 +69,7 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-kafka</artifactId>
             <!-- https://mvnrepository.com/artifact/com.playtika.testcontainers/ -->
-            <version>[pick version]<version>
+            <version>[pick version]</version>
             <scope>test</scope>
         </dependency>
 ...
