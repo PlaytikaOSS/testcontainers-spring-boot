@@ -14,7 +14,7 @@
 
     <properties>
         <couchbase-client-1.x.version>1.4.13</couchbase-client-1.x.version>
-        <okhttp.version>4.8.0</okhttp.version>
+        <okhttp.version>4.8.1</okhttp.version>
     </properties>
 
     <dependencies>
