@@ -50,7 +50,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected int saslPlaintextBrokerPort = 0;
     protected int socketTimeoutMs = 5_000;
     protected int bufferSize = 64 * 1024;
-    protected String dockerImageVersion = "5.4.1";
+    protected String dockerImageVersion = "5.5.1";
     protected Collection<String> topicsToCreate = Collections.emptyList();
     Collection<String> secureTopics = Collections.emptyList();
     protected transient final int replicationFactor = 1;

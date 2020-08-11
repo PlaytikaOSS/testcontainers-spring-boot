@@ -71,13 +71,13 @@ public class ZookeeperContainerConfiguration {
 
     @Bean(name = ZOOKEEPER_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer zookeeper(ZookeeperStatusCheck zookeeperStatusCheck,
-                                      ZookeeperConfigurationProperties zookeeperProperties,
+                                      ZookeeperConfigurationProperties properties,
                                       ConfigurableEnvironment environment,
                                       Network network) {
-        log.info("Starting zookeeper server. Docker image: {}", zookeeperProperties.getDockerImage());
+        log.info("Starting zookeeper server. Docker image: {}", properties.getDockerImage());
 
-        int mappingPort = zookeeperProperties.getZookeeperPort();
-        GenericContainer zookeeper = new FixedHostPortGenericContainer<>(zookeeperProperties.getDockerImage())
+        int mappingPort = properties.getZookeeperPort();
+        GenericContainer zookeeper = new FixedHostPortGenericContainer<>(properties.getDockerImage())
                 .withLogConsumer(containerLogsConsumer(log))
                 .withEnv("ZOOKEEPER_CLIENT_PORT", String.valueOf(mappingPort))
                 .withExposedPorts(mappingPort)
@@ -85,9 +85,10 @@ public class ZookeeperContainerConfiguration {
                 .withNetwork(network)
                 .withNetworkAliases(ZOOKEEPER_HOST_NAME)
                 .waitingFor(zookeeperStatusCheck)
-                .withStartupTimeout(zookeeperProperties.getTimeoutDuration());
+                .withReuse(properties.isReuseContainer())
+                .withStartupTimeout(properties.getTimeoutDuration());
 
-        ZookeeperConfigurationProperties.FileSystemBind fileSystemBind = zookeeperProperties.getFileSystemBind();
+        ZookeeperConfigurationProperties.FileSystemBind fileSystemBind = properties.getFileSystemBind();
         if (fileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
 
@@ -103,7 +104,7 @@ public class ZookeeperContainerConfiguration {
                     .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
         }
         startAndLogTime(zookeeper);
-        registerZookeeperEnvironment(zookeeper, environment, zookeeperProperties);
+        registerZookeeperEnvironment(zookeeper, environment, properties);
         return zookeeper;
     }
 

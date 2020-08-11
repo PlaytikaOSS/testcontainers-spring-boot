@@ -43,7 +43,7 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
     protected int zookeeperPort = 0;
     protected int sessionTimeoutMs = 5_000;
     protected int socketTimeoutMs = 5_000;
-    protected String dockerImage = "confluentinc/cp-zookeeper:5.4.1";
+    protected String dockerImage = "confluentinc/cp-zookeeper:5.5.1";
     protected FileSystemBind fileSystemBind = new FileSystemBind();
 
     /**

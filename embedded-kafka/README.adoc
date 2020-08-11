@@ -14,19 +14,22 @@
 
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.zookeeper.enabled` `(true|false, default is 'true')`
+* `embedded.zookeeper.reuseContainer` `(boolean, true|false, default is 'false')`
 * `embedded.zookeeper.waitTimeoutInSeconds` `(default is 60 seconds)`
-* `embedded.zookeeper.dockerImage` `(default : confluentinc/cp-zookeeper:4.1.2)`
+* `embedded.zookeeper.dockerImage` `(default : confluentinc/cp-zookeeper:5.5.1)`
 ** To use another zookeper version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-zookeeper/tags[dockerhub]
 * `embedded.kafka.enabled` `(true|false, default is 'true')`
+* `embedded.kafka.reuseContainer` `(boolean, true|false, default is 'false')`
 * `embedded.kafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
 * `embedded.kafka.secureTopics` (subset of `embedded.kafka.topicsToCreate` that should be secured with ACLs)
-* `embedded.kafka.dockerImageVersion` `(default: 5.4.1. Kafka version is 1.1.x.)`
+* `embedded.kafka.dockerImageVersion` `(default: 5.5.1. Kafka version is 2.5.0.)`
 ** To use another kafka version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-kafka/tags[dockerhub]
 ** https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility[Confluent Platform and Apache Kafka Compatibility]
 * `embedded.kafka.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.kafka.schema-registry.enabled` `(true|false, default is 'false')`
+* `embedded.kafka.schema-registry.reuseContainer` `(boolean, true|false, default is 'false')`
 * `embedded.kafka.schema-registry.waitTimeoutInSeconds` `(default is 60 seconds)`
-* `embedded.kafka.schema-registry.dockerImage` `(default : confluentinc/cp-schema-registry:5.4.1)`
+* `embedded.kafka.schema-registry.dockerImage` `(default : confluentinc/cp-schema-registry:5.5.1)`
 ** To use another schema registry version pick corresponding docker image on https://hub.docker.com/r/confluentinc/cp-schema-registry/tags[dockerhub]
 * `embedded.kafka.schema-registry.port` `(default is 8081)`
 * `embedded.kafka.schema-registry.avroCompatibilityLevel` `(NONE|BACKWARD|BACKWARD_TRANSITIVE|FORWARD|FORWARD_TRANSITIVE|FULL|FULL_TRANSITIVE, default is BACKWARD)`
