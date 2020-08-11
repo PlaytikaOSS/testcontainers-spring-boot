@@ -25,7 +25,7 @@
     {
       "name": "embedded.kafka.schema-registry.dockerImage",
       "type": "java.lang.String",
-      "defaultValue": "confluentinc/cp-schema-registry:5.4.1"
+      "defaultValue": "confluentinc/cp-schema-registry:5.5.1"
     },
     {
       "name": "embedded.kafka.schema-registry.port",
