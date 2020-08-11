@@ -41,7 +41,7 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     public static final String USERNAME = "admin";
     public static final String PASSWORD = "letmein";
 
-    private String dockerImage = "confluentinc/cp-schema-registry:5.4.1";
+    private String dockerImage = "confluentinc/cp-schema-registry:5.5.1";
     private int port = 8081;
     private AvroCompatibilityLevel avroCompatibilityLevel = BACKWARD;
     private Authentication authentication = NONE;

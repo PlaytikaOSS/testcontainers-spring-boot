@@ -74,17 +74,17 @@ public class KafkaContainerConfiguration {
     @DependsOn("zookeeper")
     public GenericContainer kafka(
             KafkaStatusCheck kafkaStatusCheck,
-            KafkaConfigurationProperties kafkaProperties,
+            KafkaConfigurationProperties properties,
             @Value("${embedded.zookeeper.containerZookeeperConnect}") String containerZookeeperConnect,
             ConfigurableEnvironment environment,
             Network network) {
 
-        int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
-        int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
-        int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
+        int kafkaInternalPort = properties.getContainerBrokerPort(); // for access from other containers
+        int kafkaExternalPort = properties.getBrokerPort();  // for access from host
+        int saslPlaintextKafkaExternalPort = properties.getSaslPlaintextBrokerPort();
         // https://docs.confluent.io/current/installation/docker/docs/configuration.html search by KAFKA_ADVERTISED_LISTENERS
 
-        String dockerImageVersion = kafkaProperties.getDockerImageVersion();
+        String dockerImageVersion = properties.getDockerImageVersion();
         log.info("Starting kafka broker. Docker image version: {}", dockerImageVersion);
 
         KafkaContainer kafka = new KafkaContainer(dockerImageVersion)
@@ -119,25 +119,27 @@ public class KafkaContainerConfiguration {
                 )
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
-                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getReplicationFactor()))
+                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(properties.getReplicationFactor()))
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
                 .withEnv("KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE", "false")
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
-                .withEnv("KAFKA_LOG_FLUSH_INTERVAL_MS", String.valueOf(kafkaProperties.getLogFlushIntervalMs()))
-                .withEnv("KAFKA_REPLICA_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getReplicaSocketTimeoutMs()))
-                .withEnv("KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getControllerSocketTimeoutMs()))
+                .withEnv("KAFKA_LOG_FLUSH_INTERVAL_MS", String.valueOf(properties.getLogFlushIntervalMs()))
+                .withEnv("KAFKA_REPLICA_SOCKET_TIMEOUT_MS", String.valueOf(properties.getReplicaSocketTimeoutMs()))
+                .withEnv("KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS", String.valueOf(properties.getControllerSocketTimeoutMs()))
                 .withEnv("KAFKA_SASL_ENABLED_MECHANISMS", "PLAIN")
                 .withEnv("ZOOKEEPER_SASL_ENABLED", "false")
                 .withCopyFileToContainer(MountableFile.forClasspathResource("kafka_server_jaas.conf"), "/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_OPTS", "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf")
+                .withEnv("KAFKA_GC_LOG_OPTS", "-Dnogclog")
                 .withExposedPorts(kafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort, KAFKA_PORT)
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
                 .waitingFor(kafkaStatusCheck)
-                .withStartupTimeout(kafkaProperties.getTimeoutDuration());
+                .withReuse(properties.isReuseContainer())
+                .withStartupTimeout(properties.getTimeoutDuration());
 
-        KafkaConfigurationProperties.FileSystemBind fileSystemBind = kafkaProperties.getFileSystemBind();
+        KafkaConfigurationProperties.FileSystemBind fileSystemBind = properties.getFileSystemBind();
         if (fileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
             String dataFolder = fileSystemBind.getDataFolder();
@@ -148,7 +150,7 @@ public class KafkaContainerConfiguration {
         }
 
         startAndLogTime(kafka);
-        registerKafkaEnvironment(kafka, environment, kafkaProperties);
+        registerKafkaEnvironment(kafka, environment, properties);
         return kafka;
     }
 
