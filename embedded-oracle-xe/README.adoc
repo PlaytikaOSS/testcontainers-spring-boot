@@ -27,6 +27,6 @@
 
 * `embedded.oracle.host`
 * `embedded.oracle.port` (mapped TCP port)
-* `embedded.oracle.db` (set to 'xe')
+* `embedded.oracle.database` (set to 'xe')
 
 // TODO: missing example
