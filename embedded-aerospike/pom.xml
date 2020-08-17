@@ -13,7 +13,7 @@
     <artifactId>embedded-aerospike</artifactId>
 
     <properties>
-        <aerospike-client.version>4.4.15</aerospike-client.version>
+        <aerospike-client.version>4.4.16</aerospike-client.version>
         <joda-time.version>2.10.6</joda-time.version>
     </properties>
 
