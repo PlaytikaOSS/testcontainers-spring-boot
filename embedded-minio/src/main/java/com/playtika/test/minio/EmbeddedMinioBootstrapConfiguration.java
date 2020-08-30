@@ -25,10 +25,8 @@ package com.playtika.test.minio;
 
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
-import com.playtika.test.common.spring.DockerPresenceMarker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
