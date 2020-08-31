@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.82</version>
+        <version>1.83-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-cassandra</artifactId>
