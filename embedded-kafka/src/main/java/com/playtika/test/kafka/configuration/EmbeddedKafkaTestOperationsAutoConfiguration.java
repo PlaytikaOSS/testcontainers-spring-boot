@@ -46,7 +46,7 @@ import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KA
 @Configuration
 @ConditionalOnBean({KafkaConfigurationProperties.class})
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@ConditionalOnProperty(value = {"embedded.kafka.enabled", "embedded.zookeeper.enabled"}, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = {"embedded.kafka.enabled"}, havingValue = "true", matchIfMissing = true)
 public class EmbeddedKafkaTestOperationsAutoConfiguration {
 
     @Bean

@@ -46,12 +46,11 @@ public class DisableKafkaTest {
     public void contextLoads() {
         contextRunner
                 .withPropertyValues(
-                        "embedded.kafka.enabled=false",
-                        "embedded.zookeeper.enabled=false")
+                        "embedded.kafka.enabled=false"
+                )
                 .run((context) -> assertThat(context)
                         .hasNotFailed()
                         .doesNotHaveBean("kafkaNetworkTestOperations")
-                        .doesNotHaveBean("zookeeper")
                         .doesNotHaveBean("kafka")
                         .doesNotHaveBean("schema-registry"));
     }

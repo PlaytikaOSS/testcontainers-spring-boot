@@ -37,7 +37,6 @@ import org.springframework.context.annotation.Import;
 public class EmbeddedKafkaBootstrapConfiguration {
 
     @Import(value = {
-            ZookeeperContainerConfiguration.class,
             KafkaContainerConfiguration.class,
             SchemaRegistryContainerConfiguration.class,
     })

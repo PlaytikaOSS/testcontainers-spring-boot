@@ -72,7 +72,6 @@ public class SchemaRegistryContainerConfiguration {
                 .withExposedPorts(properties.getPort())
                 .withNetwork(network)
                 .withNetworkAliases(SCHEMA_REGISTRY_HOST_NAME)
-                .withReuse(properties.isReuseContainer())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
         if (properties.isBasicAuthenticationEnabled()) {

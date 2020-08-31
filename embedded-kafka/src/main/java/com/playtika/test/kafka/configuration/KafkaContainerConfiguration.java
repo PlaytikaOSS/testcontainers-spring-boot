@@ -27,15 +27,13 @@ import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.kafka.KafkaTopicsConfigurer;
 import com.playtika.test.kafka.checks.KafkaStatusCheck;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
@@ -57,12 +55,19 @@ import static org.testcontainers.containers.KafkaContainer.KAFKA_PORT;
 
 @Slf4j
 @Configuration
-@ConditionalOnBean({ZookeeperContainerConfiguration.class})
 @ConditionalOnProperty(value = "embedded.kafka.enabled", havingValue = "true", matchIfMissing = true)
-@EnableConfigurationProperties(KafkaConfigurationProperties.class)
+@EnableConfigurationProperties(value = {KafkaConfigurationProperties.class, ZookeeperConfigurationProperties.class})
 public class KafkaContainerConfiguration {
 
     public static final String KAFKA_HOST_NAME = "kafka-broker.testcontainer.docker";
+
+    @Bean(destroyMethod = "close")
+    @ConditionalOnMissingBean(Network.class)
+    public Network kafkaNetwork() {
+        Network network = Network.newNetwork();
+        log.info("Created docker Network id={}", network.getId());
+        return network;
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -71,24 +76,22 @@ public class KafkaContainerConfiguration {
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
-    @DependsOn("zookeeper")
     public GenericContainer kafka(
             KafkaStatusCheck kafkaStatusCheck,
-            KafkaConfigurationProperties properties,
-            @Value("${embedded.zookeeper.containerZookeeperConnect}") String containerZookeeperConnect,
+            KafkaConfigurationProperties kafkaProperties,
+            ZookeeperConfigurationProperties zookeeperProperties,
             ConfigurableEnvironment environment,
             Network network) {
 
-        int kafkaInternalPort = properties.getContainerBrokerPort(); // for access from other containers
-        int kafkaExternalPort = properties.getBrokerPort();  // for access from host
-        int saslPlaintextKafkaExternalPort = properties.getSaslPlaintextBrokerPort();
+        int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
+        int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
+        int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
         // https://docs.confluent.io/current/installation/docker/docs/configuration.html search by KAFKA_ADVERTISED_LISTENERS
 
-        String dockerImageVersion = properties.getDockerImageVersion();
+        String dockerImageVersion = kafkaProperties.getDockerImageVersion();
         log.info("Starting kafka broker. Docker image version: {}", dockerImageVersion);
 
-        KafkaContainer kafka = new KafkaContainer(dockerImageVersion)
-        {
+        KafkaContainer kafka = new KafkaContainer(dockerImageVersion) {
             @Override
             public String getBootstrapServers() {
                 super.getBootstrapServers();
@@ -100,32 +103,32 @@ public class KafkaContainerConfiguration {
                 .withLogConsumer(containerLogsConsumer(log))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                .withExternalZookeeper(containerZookeeperConnect)
+                .withEmbeddedZookeeper()
                 .withEnv("KAFKA_BROKER_ID", "-1")
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
                 //see: https://github.com/wurstmeister/kafka-docker/blob/master/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
                 .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
                         "EXTERNAL_PLAINTEXT:PLAINTEXT," +
-                        "EXTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
-                        "INTERNAL_PLAINTEXT:PLAINTEXT," +
-                        "BROKER:PLAINTEXT"
+                                "EXTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
+                                "INTERNAL_PLAINTEXT:PLAINTEXT," +
+                                "BROKER:PLAINTEXT"
                 )
                 .withEnv("KAFKA_LISTENERS",
                         "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + "," +
-                        "EXTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaExternalPort + "," +
-                        "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
-                        "BROKER://0.0.0.0:9092"
+                                "EXTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaExternalPort + "," +
+                                "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
+                                "BROKER://0.0.0.0:9092"
                 )
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
-                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(properties.getReplicationFactor()))
+                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getReplicationFactor()))
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
                 .withEnv("KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE", "false")
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
-                .withEnv("KAFKA_LOG_FLUSH_INTERVAL_MS", String.valueOf(properties.getLogFlushIntervalMs()))
-                .withEnv("KAFKA_REPLICA_SOCKET_TIMEOUT_MS", String.valueOf(properties.getReplicaSocketTimeoutMs()))
-                .withEnv("KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS", String.valueOf(properties.getControllerSocketTimeoutMs()))
+                .withEnv("KAFKA_LOG_FLUSH_INTERVAL_MS", String.valueOf(kafkaProperties.getLogFlushIntervalMs()))
+                .withEnv("KAFKA_REPLICA_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getReplicaSocketTimeoutMs()))
+                .withEnv("KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS", String.valueOf(kafkaProperties.getControllerSocketTimeoutMs()))
                 .withEnv("KAFKA_SASL_ENABLED_MECHANISMS", "PLAIN")
                 .withEnv("ZOOKEEPER_SASL_ENABLED", "false")
                 .withCopyFileToContainer(MountableFile.forClasspathResource("kafka_server_jaas.conf"), "/etc/kafka/kafka_server_jaas.conf")
@@ -136,10 +139,18 @@ public class KafkaContainerConfiguration {
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
                 .waitingFor(kafkaStatusCheck)
-                .withReuse(properties.isReuseContainer())
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .withStartupTimeout(kafkaProperties.getTimeoutDuration());
 
-        KafkaConfigurationProperties.FileSystemBind fileSystemBind = properties.getFileSystemBind();
+        kafkaFileSystemBind(kafkaProperties, kafka);
+        zookeperFileSystemBind(zookeeperProperties, kafka);
+
+        startAndLogTime(kafka);
+        registerKafkaEnvironment(kafka, environment, kafkaProperties);
+        return kafka;
+    }
+
+    private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, KafkaContainer kafka) {
+        KafkaConfigurationProperties.FileSystemBind fileSystemBind = kafkaProperties.getFileSystemBind();
         if (fileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
             String dataFolder = fileSystemBind.getDataFolder();
@@ -148,10 +159,24 @@ public class KafkaContainerConfiguration {
 
             kafka.withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE);
         }
+    }
 
-        startAndLogTime(kafka);
-        registerKafkaEnvironment(kafka, environment, properties);
-        return kafka;
+    private void zookeperFileSystemBind(ZookeeperConfigurationProperties zookeeperProperties, KafkaContainer kafka) {
+        ZookeeperConfigurationProperties.FileSystemBind zookeeperFileSystemBind = zookeeperProperties.getFileSystemBind();
+        if (zookeeperFileSystemBind.isEnabled()) {
+            String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
+
+            String dataFolder = zookeeperFileSystemBind.getDataFolder();
+            String zkData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing zookeeper data to: {}", zkData);
+
+            String txnLogsFolder = zookeeperFileSystemBind.getTxnLogsFolder();
+            String zkTransactionLogs = Paths.get(txnLogsFolder, currentTimestamp).toAbsolutePath().toString();
+            log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
+
+            kafka.withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
+                    .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
+        }
     }
 
     private void registerKafkaEnvironment(GenericContainer kafka,
@@ -183,12 +208,11 @@ public class KafkaContainerConfiguration {
 
     @Bean
     public KafkaTopicsConfigurer kafkaConfigurer(
-            GenericContainer zookeeper,
             GenericContainer kafka,
             KafkaConfigurationProperties kafkaProperties,
-            @Value("${embedded.zookeeper.containerZookeeperConnect}") String containerZookeeperConnect
+            ZookeeperConfigurationProperties zookeeperProperties
     ) {
-        return new KafkaTopicsConfigurer(kafka, containerZookeeperConnect, kafkaProperties);
+        return new KafkaTopicsConfigurer(kafka, zookeeperProperties, kafkaProperties);
     }
 
 }

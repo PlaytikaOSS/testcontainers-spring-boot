@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
-import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,7 +83,7 @@ public class CamelRouteTest extends AbstractEmbeddedKafkaTest {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
                 .isNotNull()
                 .isNotEmpty()
-                .contains(KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME);
+                .contains(KAFKA_BEAN_NAME);
     }
 
 }

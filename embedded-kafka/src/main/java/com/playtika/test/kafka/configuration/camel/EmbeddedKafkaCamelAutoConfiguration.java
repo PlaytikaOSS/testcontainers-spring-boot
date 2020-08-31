@@ -35,18 +35,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
-import static com.playtika.test.kafka.properties.ZookeeperConfigurationProperties.ZOOKEEPER_BEAN_NAME;
 
 @Configuration
 @AutoConfigureOrder
 @ConditionalOnClass(CamelContext.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@ConditionalOnProperty(value = {"embedded.kafka.enabled", "embedded.zookeeper.enabled"}, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = {"embedded.kafka.enabled"}, havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(name = "org.apache.camel.spring.boot.CamelAutoConfiguration")
 public class EmbeddedKafkaCamelAutoConfiguration {
 
     @Bean
     public static BeanFactoryPostProcessor kafkaCamelDependencyPostProcessor() {
-        return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME, ZOOKEEPER_BEAN_NAME});
+        return new DependsOnPostProcessor(CamelContext.class, new String[]{KAFKA_BEAN_NAME});
     }
 }
