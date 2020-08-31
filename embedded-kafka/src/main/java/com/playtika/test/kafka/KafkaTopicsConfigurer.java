@@ -25,6 +25,7 @@ package com.playtika.test.kafka;
 
 import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +40,13 @@ import java.util.Collection;
 public class KafkaTopicsConfigurer {
 
     private final GenericContainer kafka;
-    private final String kafkaZookeeperConnect;
-    private final KafkaConfigurationProperties properties;
+    private final ZookeeperConfigurationProperties zookeeperProperties;
+    private final KafkaConfigurationProperties kafkaProperties;
 
     @PostConstruct
     void configure() {
-        createTopics(this.properties.getTopicsToCreate());
-        restrictTopics(KafkaConfigurationProperties.KAFKA_USER, this.properties.getSecureTopics());
+        createTopics(this.kafkaProperties.getTopicsToCreate());
+        restrictTopics(KafkaConfigurationProperties.KAFKA_USER, this.kafkaProperties.getSecureTopics());
     }
 
     public void createTopics(Collection<String> topics) {
@@ -58,7 +59,7 @@ public class KafkaTopicsConfigurer {
     }
 
     private void createTopic(String topic) {
-        String[] createTopicCmd = getCreateTopicCmd(topic, kafkaZookeeperConnect);
+        String[] createTopicCmd = getCreateTopicCmd(topic, zookeeperProperties.getZookeeperConnect());
         ContainerUtils.ExecCmdResult output = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), createTopicCmd);
         log.debug("Topic={} creation cmd='{}' exitCode={} : {}",
                 topic, createTopicCmd, output.getExitCode(), output.getOutput());
@@ -68,8 +69,8 @@ public class KafkaTopicsConfigurer {
         if (!topics.isEmpty()) {
             log.info("Creating ACLs for Kafka topics: {}", topics);
             for (String topic : topics) {
-                String[] topicConsumerACLsCmd = getTopicConsumerACLCmd(username, topic, kafkaZookeeperConnect);
-                String[] topicProducerACLsCmd = getTopicProducerACLCmd(username, topic, kafkaZookeeperConnect);
+                String[] topicConsumerACLsCmd = getTopicConsumerACLCmd(username, topic, zookeeperProperties.getZookeeperConnect());
+                String[] topicProducerACLsCmd = getTopicProducerACLCmd(username, topic, zookeeperProperties.getZookeeperConnect());
                 ContainerUtils.ExecCmdResult topicConsumerACLsOutput = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), topicConsumerACLsCmd);
                 ContainerUtils.ExecCmdResult topicProducerACLsOutput = ContainerUtils.execCmd(this.kafka.getDockerClient(), this.kafka.getContainerId(), topicProducerACLsCmd);
                 log.debug("Topic={} consumer ACLs cmd='{}' exitCode={} : {}, producer ACLs cmd='{}' exitCode={} : {}",
