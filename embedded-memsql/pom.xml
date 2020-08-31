@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.82-SNAPSHOT</version>
+        <version>1.82</version>
     </parent>
 
     <artifactId>embedded-memsql</artifactId>
