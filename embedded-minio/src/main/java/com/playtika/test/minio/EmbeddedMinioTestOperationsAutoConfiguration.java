@@ -26,7 +26,6 @@ package com.playtika.test.minio;
 import com.playtika.test.common.operations.DefaultNetworkTestOperations;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
-import com.playtika.test.common.spring.DockerPresenceMarker;
 import com.playtika.test.common.utils.ApkPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
