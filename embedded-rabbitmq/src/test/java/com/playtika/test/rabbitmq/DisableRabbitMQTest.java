@@ -53,6 +53,7 @@ public class DisableRabbitMQTest {
         assertThat(environment.getProperty("embedded.rabbitmq.vhost")).isNullOrEmpty();
         assertThat(environment.getProperty("embedded.rabbitmq.user")).isNullOrEmpty();
         assertThat(environment.getProperty("embedded.rabbitmq.password")).isNullOrEmpty();
+        assertThat(environment.getProperty("embedded.rabbitmq.httpPort")).isNullOrEmpty();
     }
 
     @Test

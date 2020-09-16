@@ -88,6 +88,7 @@ public class EmbeddedRabbitMQBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.rabbitmq.vhost")).isNotEmpty();
         assertThat(environment.getProperty("embedded.rabbitmq.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.rabbitmq.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.rabbitmq.httpPort")).isNotEmpty();
     }
 
     @Test

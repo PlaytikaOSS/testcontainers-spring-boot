@@ -59,7 +59,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                         .withAdminPassword(properties.getPassword())
                         .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
                         .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.getPort())
+                        .withExposedPorts(properties.getPort(), properties.getHttpPort())
                         .withStartupTimeout(properties.getTimeoutDuration())
                         .withReuse(properties.isReuseContainer());
         rabbitMQ.start();
@@ -72,6 +72,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                                              ConfigurableEnvironment environment,
                                              RabbitMQProperties properties) {
         Integer mappedPort = rabbitMQ.getMappedPort(properties.getPort());
+        Integer mappedHttpPort = rabbitMQ.getMappedPort(properties.getHttpPort());
         String host = rabbitMQ.getContainerIpAddress();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -80,6 +81,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         map.put("embedded.rabbitmq.vhost", properties.getVhost());
         map.put("embedded.rabbitmq.user", rabbitMQ.getAdminUsername());
         map.put("embedded.rabbitmq.password", rabbitMQ.getAdminPassword());
+        map.put("embedded.rabbitmq.httpPort", mappedHttpPort);
 
         log.info("Started RabbitMQ server. Connection details: {}", map);
 
