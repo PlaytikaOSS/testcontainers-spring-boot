@@ -39,4 +39,5 @@ public class RabbitMQProperties extends CommonContainerProperties {
     private String host = "localhost";
     private String vhost = "/";
     private int port = 5672;
+    private int httpPort = 15672;
 }

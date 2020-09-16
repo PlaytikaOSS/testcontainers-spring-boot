@@ -29,5 +29,6 @@
 * `embedded.rabbitmq.user`
 * `embedded.rabbitmq.password`
 * `embedded.rabbitmq.vhost`
+* `embedded.rabbitmq.httpPort`
 
 //TODO: example missing
