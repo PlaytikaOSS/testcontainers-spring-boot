@@ -26,29 +26,23 @@ package com.playtika.test.elasticsearch;
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.elasticsearch.rest.CreateIndex;
 import com.playtika.test.elasticsearch.rest.WaitForGreenStatus;
-import org.slf4j.Logger;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
 
 class ElasticSearchContainerFactory {
 
-    static ElasticsearchContainer create(ElasticSearchProperties properties, Logger containerLogger) {
+    static ElasticsearchContainer create(ElasticSearchProperties properties) {
         return new ElasticsearchContainer(properties.dockerImage)
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                .withLogConsumer(containerLogsConsumer(containerLogger))
-                .waitingFor(getCompositeWaitStrategy(properties))
-                .withReuse(properties.isReuseContainer())
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .waitingFor(getCompositeWaitStrategy(properties));
     }
 
     private static String getJavaOpts(ElasticSearchProperties properties) {

@@ -39,6 +39,7 @@ import org.testcontainers.couchbase.CouchbaseContainer;
 
 import java.util.LinkedHashMap;
 
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
 
 @Slf4j
@@ -62,9 +63,9 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
                 .withBucket(bucketDefinition)
                 .withEnabledServices(properties.getServices())
                 .withCredentials(properties.getUser(), properties.getPassword())
-                .withReuse(properties.isReuseContainer())
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN));
-        couchbase.start();
+
+        couchbase = (CouchbaseContainer) configureCommonsAndStart(couchbase, properties, log);
 
         registerCouchbaseEnvironment(couchbase, environment, properties);
         return couchbase;

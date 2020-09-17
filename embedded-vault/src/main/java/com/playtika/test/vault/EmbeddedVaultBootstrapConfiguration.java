@@ -39,8 +39,7 @@ import org.testcontainers.vault.VaultContainer;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.vault.VaultProperties.BEAN_NAME_EMBEDDED_VAULT;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -55,16 +54,11 @@ public class EmbeddedVaultBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_VAULT, destroyMethod = "stop")
     public VaultContainer vault(ConfigurableEnvironment environment, VaultProperties properties) {
-
         log.info("Starting vault server. Docker image: {}", properties.getDockerImage());
-
 
         VaultContainer vault = new VaultContainer<>(properties.getDockerImage())
                 .withVaultToken(properties.getToken())
-                .withLogConsumer(containerLogsConsumer(log))
-                .withExposedPorts(properties.getPort())
-                .withStartupTimeout(properties.getTimeoutDuration())
-                .withReuse(properties.isReuseContainer());
+                .withExposedPorts(properties.getPort());
 
         String[] secrets = properties.getSecrets().entrySet().stream()
                 .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
@@ -74,7 +68,7 @@ public class EmbeddedVaultBootstrapConfiguration {
             vault.withSecretInVault(properties.getPath(), secrets[0], Arrays.copyOfRange(secrets, 1, secrets.length));
         }
 
-        startAndLogTime(vault);
+        vault = (VaultContainer) configureCommonsAndStart(vault, properties, log);
         registerVaultEnvironment(vault, environment, properties);
         return vault;
     }

@@ -39,7 +39,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
 @Configuration
@@ -51,18 +51,14 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
 
     @Bean(name = DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
     public GenericContainer dynamoDb(ConfigurableEnvironment environment,
-                                     DynamoDBProperties properties) throws Exception {
+                                     DynamoDBProperties properties) {
         log.info("Starting DynamoDb server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer container =
-                new GenericContainer(properties.dockerImage)
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port)
-                        .waitingFor(new HostPortWaitStrategy())
-                        .withReuse(properties.isReuseContainer())
-                        .withStartupTimeout(properties.getTimeoutDuration());
+        GenericContainer container = new GenericContainer(properties.dockerImage)
+                .withExposedPorts(properties.port)
+                .waitingFor(new HostPortWaitStrategy());
 
-        container.start();
+        container = configureCommonsAndStart(container, properties, log);
 
         registerDynamodbEnvironment(container, environment, properties);
         return container;

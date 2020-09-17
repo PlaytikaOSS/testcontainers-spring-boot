@@ -26,12 +26,14 @@ package com.playtika.test.common.utils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.playtika.test.common.properties.CommonContainerProperties;
+import com.playtika.test.common.properties.CommonContainerProperties.CopyFileProperties;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
+import org.testcontainers.utility.MountableFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,13 +45,31 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 @UtilityClass
-@Slf4j
 public class ContainerUtils {
 
     public static final Duration DEFAULT_CONTAINER_WAIT_DURATION = Duration.ofSeconds(60);
 
-    @SuppressWarnings("rawtypes")
-    public long startAndLogTime(GenericContainer container) {
+    public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
+                                                               CommonContainerProperties properties,
+                                                               Logger logger) {
+        GenericContainer<?> updatedContainer = container
+                .withStartupTimeout(properties.getTimeoutDuration())
+                .withReuse(properties.isReuseContainer())
+                .withLogConsumer(containerLogsConsumer(logger))
+                .withEnv(properties.getEnv());
+
+        for (CopyFileProperties fileToCopy : properties.getFilesToInclude()) {
+            MountableFile mountableFile = MountableFile.forClasspathResource(fileToCopy.getClasspathResource());
+            updatedContainer = updatedContainer.withCopyFileToContainer(mountableFile, fileToCopy.getContainerPath());
+        }
+
+        updatedContainer = properties.getCommand() != null ? updatedContainer.withCommand(properties.getCommand()) : updatedContainer;
+
+        startAndLogTime(updatedContainer, logger);
+        return updatedContainer;
+    }
+
+    private long startAndLogTime(GenericContainer<?> container, Logger logger) {
         Instant startTime = Instant.now();
         container.start();
         Instant endTime = Instant.now();
@@ -57,12 +77,11 @@ public class ContainerUtils {
         long startupTime = Duration.between(startTime, endTime).toMillis() / 1000;
 
         if (startupTime < 10L) {
-            log.info("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
-        } else
-        if (startupTime < 20L) {
-            log.warn("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+            logger.info("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+        } else if (startupTime < 20L) {
+            logger.warn("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
         } else {
-            log.error("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+            logger.error("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
         }
         return startupTime;
     }

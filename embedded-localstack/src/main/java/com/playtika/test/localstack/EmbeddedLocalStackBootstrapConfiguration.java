@@ -15,6 +15,7 @@ import org.testcontainers.containers.localstack.LocalStackContainer;
 
 import java.util.LinkedHashMap;
 
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.localstack.LocalStackProperties.BEAN_NAME_EMBEDDED_LOCALSTACK;
 
 @Slf4j
@@ -31,17 +32,17 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         log.info("Starting Localstack server. Docker image: {}", properties.dockerImage);
 
         EmbeddedLocalStackContainer localStackContainer = new EmbeddedLocalStackContainer(properties.dockerImage);
-        localStackContainer.withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
+        localStackContainer
+                .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
                 .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
                 .withEnv("HOSTNAME", properties.getHostname())
                 .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
-                .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()))
-                .withReuse(properties.isReuseContainer());
+                .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
 
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);
         }
-        localStackContainer.start();
+        localStackContainer = (EmbeddedLocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
         registerLocalStackEnvironment(localStackContainer, environment, properties);
         return localStackContainer;
     }

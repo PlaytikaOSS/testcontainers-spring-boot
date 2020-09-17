@@ -38,8 +38,7 @@ import org.testcontainers.containers.MySQLContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 
 @Slf4j
@@ -51,7 +50,7 @@ import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 public class EmbeddedMySQLBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MYSQL, destroyMethod = "stop")
     public MySQLContainer mysql(ConfigurableEnvironment environment,
-                                MySQLProperties properties) throws Exception {
+                                MySQLProperties properties) {
         log.info("Starting mysql server. Docker image: {}", properties.dockerImage);
 
         MySQLContainer mysql =
@@ -63,13 +62,10 @@ public class EmbeddedMySQLBootstrapConfiguration {
                         .withCommand(
                                 "--character-set-server=" + properties.getEncoding(),
                                 "--collation-server=" + properties.getCollation())
-                        .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withInitScript(properties.initScriptPath)
-                        .withReuse(properties.isReuseContainer());
-        startAndLogTime(mysql);
+                        .withInitScript(properties.initScriptPath);
+        mysql = (MySQLContainer) configureCommonsAndStart(mysql, properties, log);
         registerMySQLEnvironment(mysql, environment, properties);
         return mysql;
     }

@@ -39,8 +39,7 @@ import org.testcontainers.containers.Network;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties.SCHEMA_REGISTRY_BEAN_NAME;
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
@@ -62,7 +61,6 @@ public class SchemaRegistryContainerConfiguration {
         log.info("Starting schema registry server. Docker image: {}", properties.getDockerImage());
 
         GenericContainer schemaRegistry = new FixedHostPortGenericContainer<>(properties.getDockerImage())
-                .withLogConsumer(containerLogsConsumer(log))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(SCHEMA_REGISTRY_HOST_NAME))
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", "PLAINTEXT://" + kafkaContainerBrokerList)
@@ -71,8 +69,7 @@ public class SchemaRegistryContainerConfiguration {
                 .withEnv("SCHEMA_REGISTRY_AVRO_COMPATIBILITY_LEVEL", properties.getAvroCompatibilityLevel().name())
                 .withExposedPorts(properties.getPort())
                 .withNetwork(network)
-                .withNetworkAliases(SCHEMA_REGISTRY_HOST_NAME)
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .withNetworkAliases(SCHEMA_REGISTRY_HOST_NAME);
 
         if (properties.isBasicAuthenticationEnabled()) {
             schemaRegistry
@@ -84,7 +81,7 @@ public class SchemaRegistryContainerConfiguration {
                     .withEnv("SCHEMA_REGISTRY_OPTS", "-Djava.security.auth.login.config=/etc/schema-registry/jaas_config.file");
         }
 
-        startAndLogTime(schemaRegistry);
+        schemaRegistry = configureCommonsAndStart(schemaRegistry, properties, log);
         registerSchemaRegistryEnvironment(schemaRegistry, environment, properties);
         return schemaRegistry;
     }

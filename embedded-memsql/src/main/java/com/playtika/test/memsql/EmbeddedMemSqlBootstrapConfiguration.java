@@ -40,7 +40,7 @@ import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
 
 @Slf4j
@@ -65,14 +65,11 @@ public class EmbeddedMemSqlBootstrapConfiguration {
 
         GenericContainer memsql = new GenericContainer<>(properties.dockerImage)
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
-                .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                .waitingFor(memSqlStatusCheck)
-                .withStartupTimeout(properties.getTimeoutDuration())
-                .withReuse(properties.isReuseContainer());
-        memsql.start();
+                .waitingFor(memSqlStatusCheck);
+        memsql = configureCommonsAndStart(memsql, properties, log);
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;
     }

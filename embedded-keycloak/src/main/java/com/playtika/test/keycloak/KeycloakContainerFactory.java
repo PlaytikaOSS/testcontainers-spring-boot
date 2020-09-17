@@ -1,36 +1,30 @@
 package com.playtika.test.keycloak;
 
-import java.util.LinkedHashMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 
+import java.util.LinkedHashMap;
+
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
+
 @Slf4j
+@RequiredArgsConstructor
 public class KeycloakContainerFactory {
 
     private final ConfigurableEnvironment environment;
     private final KeycloakProperties properties;
     private final ResourceLoader resourceLoader;
 
-    @Autowired
-    KeycloakContainerFactory(ConfigurableEnvironment environment, KeycloakProperties properties,
-        ResourceLoader resourceLoader) {
-        this.environment = environment;
-        this.properties = properties;
-        this.resourceLoader = resourceLoader;
-    }
-
     public KeycloakContainer newKeycloakContainer() {
         log.info("Starting Keycloak server. Docker image: {}", properties.getDockerImage());
 
-        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader)
-                .withReuse(properties.isReuseContainer());
-        keycloak.start();
+        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
 
+        keycloak = (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);
         registerKeycloakEnvironment(keycloak);
-
         return keycloak;
     }
 

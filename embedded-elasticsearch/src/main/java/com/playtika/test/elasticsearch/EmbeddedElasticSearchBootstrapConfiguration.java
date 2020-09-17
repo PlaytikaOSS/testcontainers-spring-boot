@@ -38,7 +38,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 
 @Slf4j
@@ -55,8 +55,8 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
                                                 ElasticSearchProperties properties) {
         log.info("Starting ElasticSearch server. Docker image: {}", properties.dockerImage);
 
-        ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties, log);
-        startAndLogTime(elasticSearch);
+        ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties);
+        elasticSearch = (ElasticsearchContainer) configureCommonsAndStart(elasticSearch, properties, log);
         registerElasticSearchEnvironment(elasticSearch, environment, properties);
         return elasticSearch;
     }

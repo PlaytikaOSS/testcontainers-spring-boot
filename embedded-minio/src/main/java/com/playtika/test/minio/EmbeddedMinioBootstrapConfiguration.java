@@ -38,8 +38,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.*;
 import static com.playtika.test.minio.MinioProperties.MINIO_BEAN_NAME;
 
 @Slf4j
@@ -70,7 +69,6 @@ public class EmbeddedMinioBootstrapConfiguration {
         GenericContainer minio =
                 new GenericContainer<>(properties.dockerImage)
                         .withExposedPorts(properties.port)
-                        .withLogConsumer(containerLogsConsumer(log))
                         .withEnv("MINIO_ACCESS_KEY", properties.accessKey)
                         .withEnv("MINIO_SECRET_KEY", properties.secretKey)
                         .withEnv("MINIO_USERNAME", properties.userName)
@@ -80,11 +78,9 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withEnv("MINIO_BROWSER", properties.browser)
                         .withCommand("server", properties.directory)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .waitingFor(minioWaitStrategy)
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withReuse(properties.isReuseContainer());
+                        .waitingFor(minioWaitStrategy);
 
-        startAndLogTime(minio);
+        minio = configureCommonsAndStart(minio, properties, log);
         registerEnvironment(minio, environment, properties);
         return minio;
     }

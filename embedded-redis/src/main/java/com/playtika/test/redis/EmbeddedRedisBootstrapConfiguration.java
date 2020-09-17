@@ -48,10 +48,9 @@ import org.testcontainers.utility.MountableFile;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
-import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
+import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
 @Slf4j
@@ -97,17 +96,14 @@ public class EmbeddedRedisBootstrapConfiguration {
                 new FixedHostPortGenericContainer(properties.dockerImage)
                         .withFixedExposedPort(properties.port, properties.port)
                         .withExposedPorts(properties.port)
-                        .withLogConsumer(containerLogsConsumer(log))
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCreateContainerCmdModifier(containerCmdModifier)
                         .withCopyFileToContainer(MountableFile.forClasspathResource("redis.conf"), "/data/redis.conf")
                         .withCopyFileToContainer(MountableFile.forClasspathResource("nodes.conf"), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
-                        .waitingFor(redisStartupCheckStrategy)
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withReuse(properties.isReuseContainer());
-        startAndLogTime(redis);
+                        .waitingFor(redisStartupCheckStrategy);
+        redis = configureCommonsAndStart(redis, properties, log);
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.port);
         log.info("Started Redis cluster. Connection details: {}", redisEnv);
         return redis;

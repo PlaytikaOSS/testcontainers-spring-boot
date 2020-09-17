@@ -42,7 +42,7 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static java.lang.String.format;
 
 @Slf4j
@@ -62,7 +62,6 @@ public class EmbeddedPubsubBootstrapConfiguration {
         log.info("Starting Google Cloud Pubsub emulator. Docker image: {}", properties.getDockerImage());
 
         GenericContainer container = new GenericContainer(properties.getDockerImage())
-                .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.getPort())
                 .withCommand(
                         "/bin/sh",
@@ -74,11 +73,9 @@ public class EmbeddedPubsubBootstrapConfiguration {
                                 properties.getPort()
                         )
                 )
-                .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
-                .withReuse(properties.isReuseContainer())
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"));
 
-        container.start();
+        container = configureCommonsAndStart(container, properties, log);
         registerPubsubEnvironment(container, environment, properties);
         return container;
     }

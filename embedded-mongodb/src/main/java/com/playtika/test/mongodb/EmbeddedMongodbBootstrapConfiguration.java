@@ -39,7 +39,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MONGODB;
 
 @Slf4j
@@ -63,14 +63,11 @@ public class EmbeddedMongodbBootstrapConfiguration {
                         .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
                         .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
-                        .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.getPort())
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .waitingFor(mongodbStatusCheck)
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withReuse(properties.isReuseContainer());
+                        .waitingFor(mongodbStatusCheck);
 
-        mongodb.start();
+        mongodb = configureCommonsAndStart(mongodb, properties, log);
         registerMongodbEnvironment(mongodb, environment, properties);
         return mongodb;
     }

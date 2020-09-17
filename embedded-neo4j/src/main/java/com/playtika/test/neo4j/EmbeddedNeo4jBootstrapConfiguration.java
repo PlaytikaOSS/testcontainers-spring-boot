@@ -38,7 +38,7 @@ import org.testcontainers.containers.Neo4jContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Slf4j
@@ -52,17 +52,13 @@ public class EmbeddedNeo4jBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
     public Neo4jContainer neo4j(ConfigurableEnvironment environment,
-                                Neo4jProperties properties){
-
+                                Neo4jProperties properties) {
         log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
 
         Neo4jContainer neo4j = new Neo4jContainer<>(properties.dockerImage)
                 .withAdminPassword(properties.password)
-                .withLogConsumer(containerLogsConsumer(log))
-                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                .withStartupTimeout(properties.getTimeoutDuration())
-                .withReuse(properties.isReuseContainer());
-        neo4j.start();
+                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN));
+        neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;
     }

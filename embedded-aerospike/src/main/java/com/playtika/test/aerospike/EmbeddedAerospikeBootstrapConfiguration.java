@@ -45,8 +45,7 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
 @Configuration
@@ -76,18 +75,15 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         GenericContainer aerospike =
                 new GenericContainer<>(properties.dockerImage)
                         .withExposedPorts(properties.port)
-                        .withLogConsumer(containerLogsConsumer(log))
                         // see https://github.com/aerospike/aerospike-server.docker/blob/master/aerospike.template.conf
                         .withEnv("NAMESPACE", properties.namespace)
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .waitingFor(waitStrategy)
-                        .withReuse(properties.isReuseContainer())
-                        .withStartupTimeout(properties.getTimeoutDuration());
+                        .waitingFor(waitStrategy);
 
-        startAndLogTime(aerospike);
+        aerospike = configureCommonsAndStart(aerospike, properties, log);
         registerAerospikeEnvironment(aerospike, environment, properties);
         return aerospike;
     }
