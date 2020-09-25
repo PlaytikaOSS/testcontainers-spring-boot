@@ -232,6 +232,8 @@ embedded.redis.filesToInclude:
 
 === link:embedded-clickhouse/README.adoc[embedded-clickhouse]
 
+=== link:embedded-pulsar/README.adoc[embedded-pulsar]
+
 == How to contribute
 
 === Flow
