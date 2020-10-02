@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -77,7 +78,7 @@ public class EmbeddedLocalStackBootstrapConfiguration {
 
     private static class EmbeddedLocalStackContainer extends LocalStackContainer {
         EmbeddedLocalStackContainer(final String dockerImageName) {
-            setDockerImageName(dockerImageName);
+            super(DockerImageName.parse(dockerImageName));
         }
     }
 }

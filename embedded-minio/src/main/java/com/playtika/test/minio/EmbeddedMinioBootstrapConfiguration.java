@@ -77,7 +77,7 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withEnv("MINIO_WORM", properties.worm)
                         .withEnv("MINIO_BROWSER", properties.browser)
                         .withCommand("server", properties.directory)
-                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
+                        .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(minioWaitStrategy);
 
         minio = configureCommonsAndStart(minio, properties, log);
