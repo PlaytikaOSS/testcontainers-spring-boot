@@ -27,6 +27,7 @@ import com.playtika.test.postgresql.dummyapp.TestApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,7 +62,7 @@ class AutoConfiguredDatasourceDependsOnTest {
 
         @Test
         void shouldSetupDependsOnForAllDataSources() {
-            String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+            String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
             assertThat(beanNamesForType)
                     .as("Auto-configured datasource should be present")
                     .hasSize(1)

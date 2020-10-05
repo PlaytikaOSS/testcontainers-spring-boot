@@ -24,6 +24,7 @@
 package com.playtika.test.clickhouse;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 
 import javax.sql.DataSource;
 
@@ -34,7 +35,7 @@ public class AutoConfiguredDatasourceDependsOnTest extends BaseEmbeddedClickHous
 
     @Test
     public void shouldSetupDependsOnForAllDataSources() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
         assertThat(beanNamesForType)
                 .as("Auto-configured datasource should be present")
                 .hasSize(1)

@@ -2,6 +2,7 @@ package com.playtika.test.influxdb;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +20,7 @@ public class EmbeddedInfluxDBDisabledTest {
 
     @Test
     public void contextLoads() {
-        String[] containers = beanFactory.getBeanNamesForType(GenericContainer.class);
+        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
         assertThat(containers).isEmpty();
     }
 

@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.redis.BaseEmbeddedRedisTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -65,14 +66,14 @@ public abstract class BaseStandaloneEmbeddedRedisTest extends BaseEmbeddedRedisT
 
     @Test
     public void shouldSetupDependsOnForAllClients() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(RedisConnectionFactory.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RedisConnectionFactory.class);
         assertThat(beanNamesForType)
                 .as("RedisConnectionFactory should be present")
                 .hasSize(1)
                 .contains("redisConnectionFactory");
         asList(beanNamesForType).forEach(this::hasDependsOn);
 
-        beanNamesForType = beanFactory.getBeanNamesForType(RedisTemplate.class);
+        beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RedisTemplate.class);
         assertThat(beanNamesForType)
                 .as("redisTemplates should be present")
                 .hasSize(2)

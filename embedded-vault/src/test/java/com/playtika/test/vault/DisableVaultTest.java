@@ -23,9 +23,8 @@
  */
 package com.playtika.test.vault;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,10 +33,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.vault.VaultContainer;
 
-@SpringBootTest(properties = {
-        "embedded.vault.enabled=false"
-}
-,classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(properties = "embedded.vault.enabled=false",
+        classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
 public class DisableVaultTest {
 
     @Autowired
@@ -47,8 +46,8 @@ public class DisableVaultTest {
     private ConfigurableEnvironment environment;
 
     @Test
-    public void contextLoads() {
-        String[] containers = beanFactory.getBeanNamesForType(VaultContainer.class);
+    public void shouldLoadContextWithoutContainer() {
+        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, VaultContainer.class);
 
         assertThat(containers).isEmpty();
     }

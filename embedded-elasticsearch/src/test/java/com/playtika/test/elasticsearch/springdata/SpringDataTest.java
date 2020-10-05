@@ -31,6 +31,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
@@ -91,7 +92,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
 
     @Test
     public void shouldSetupDependsOnForNewClient() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(Client.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Client.class);
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
                     .as("New client should be present")
@@ -99,7 +100,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
                     .contains("elasticsearchClient");
             asList(beanNamesForType).forEach(this::hasDependsOn);
         }
-        beanNamesForType = beanFactory.getBeanNamesForType(RestClient.class);
+        beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
 
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)

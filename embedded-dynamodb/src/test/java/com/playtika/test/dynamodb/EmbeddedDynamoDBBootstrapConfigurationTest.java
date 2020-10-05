@@ -41,6 +41,7 @@ import com.playtika.test.dynamodb.springdata.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -79,7 +80,7 @@ public class EmbeddedDynamoDBBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForAllDataAmazonDBs() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(AmazonDynamoDB.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, AmazonDynamoDB.class);
         assertThat(beanNamesForType)
                 .as("Auto-configured AmazonDynamoDB should be present")
                 .hasSize(1)
