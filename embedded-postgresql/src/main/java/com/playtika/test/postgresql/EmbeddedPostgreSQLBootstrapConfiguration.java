@@ -37,7 +37,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
 
 @Slf4j
@@ -58,11 +58,8 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withInitScript(properties.initScriptPath)
-                        .withReuse(properties.isReuseContainer());
-        postgresql.start();
+                        .withInitScript(properties.initScriptPath);
+        postgresql = (ConcretePostgreSQLContainer) configureCommonsAndStart(postgresql, properties, log);
         registerPostgresqlEnvironment(postgresql, environment, properties);
         return postgresql;
     }

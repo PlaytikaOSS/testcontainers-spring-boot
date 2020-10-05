@@ -109,7 +109,7 @@ embedded.kafka.topicsToCreate=some_topic
 ----
 embedded.containers.forceShutdown=true //default is false
 ----
-NOTE: Otherwise it will be shutdown with delay, see https://github.com/testcontainers/moby-ryuk
+NOTE: Otherwise, it will be shutdown with delay, see https://github.com/testcontainers/moby-ryuk
 
 === Disables all embedded containers
 
@@ -140,6 +140,47 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |embedded.containers.enabled is missing
 |embedded.memsql.enabled is missing
 |Memsql will start
+|===
+
+=== Other specific container related properties
+|===
+|Setting name | Default value |Description
+
+|embedded.{module-name}.waitTimeoutInSeconds
+|60
+|Waiting time for a container to start in seconds
+
+|embedded.{module-name}.enabled
+|true
+|Enables a container to be started on startup
+
+|embedded.{module-name}.reuseContainer
+|false
+|Enables a reuse container testcontainers feature.
+
+|embedded.{module-name}.command
+|null
+|List of keywords which combines into command for container startup. Some modules ship container's commands by default, so resetting this value may lead to incorrect work of container.
+
+|embedded.{module-name}.env
+|null
+|key-value map of additional environment variables. Where key is name of variable and value is actual value of it.
+
+|embedded.{module-name}.filesToInclude
+| empty list
+a|List of files to include objects.
+Each object should have two parameters:
+
+ * `classpathResource` (path to local file)
+ * `containerPath` (path in a container to where file needs to be copied)
+
+Example:
+[source,yaml]
+----
+embedded.redis.filesToInclude:
+  classpathResource: "/my_local_file.txt"
+  containerPath: "/etc/path_in_container.txt"
+----
 |===
 
 

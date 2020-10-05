@@ -38,7 +38,7 @@ import org.testcontainers.containers.ClickHouseContainer;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
 @Configuration
@@ -53,12 +53,9 @@ public class EmbeddedClickHouseBootstrapConfiguration {
                                                            ClickHouseProperties properties) {
         log.info("Starting ClickHouse server. Docker image: {}", properties.getDockerImage());
 
-        ConcreteClickHouseContainer clickHouseContainer = (ConcreteClickHouseContainer) new ConcreteClickHouseContainer(properties.dockerImage)
-                .withLogConsumer(containerLogsConsumer(log))
-                .withStartupTimeout(properties.getTimeoutDuration())
-                .withReuse(properties.isReuseContainer());
+        ConcreteClickHouseContainer clickHouseContainer = new ConcreteClickHouseContainer(properties.dockerImage);
 
-        clickHouseContainer.start();
+        clickHouseContainer = (ConcreteClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
 
         registerClickHouseEnvironment(clickHouseContainer, environment, properties);
 

@@ -38,8 +38,7 @@ import org.testcontainers.containers.MariaDBContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
 
 @Slf4j
@@ -64,13 +63,10 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                 "--character-set-server=" + properties.getEncoding(),
                                 "--collation-server=" + properties.getCollation(),
                                 "--max_allowed_packet=" + properties.getMaxAllowedPacket())
-                        .withLogConsumer(containerLogsConsumer(log))
                         .withExposedPorts(properties.port)
                         .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withInitScript(properties.initScriptPath)
-                        .withReuse(properties.isReuseContainer());
-        startAndLogTime(mariadb);
+                        .withInitScript(properties.initScriptPath);
+        mariadb = (MariaDBContainer) configureCommonsAndStart(mariadb, properties, log);
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;
     }

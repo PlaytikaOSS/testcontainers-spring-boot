@@ -38,7 +38,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.voltdb.VoltDBProperties.BEAN_NAME_EMBEDDED_VOLTDB;
 
 @Slf4j
@@ -61,15 +61,12 @@ public class EmbeddedVoltDBBootstrapConfiguration {
                                    VoltDBStatusCheck voltDbStatusCheck) {
         log.info("Starting VoltDB server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer voltDB =
-                new GenericContainer(properties.dockerImage)
-                        .withEnv("HOST_COUNT", "1")
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.port)
-                        .waitingFor(voltDbStatusCheck)
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withReuse(properties.isReuseContainer());
-        voltDB.start();
+        GenericContainer voltDB = new GenericContainer(properties.dockerImage)
+                .withEnv("HOST_COUNT", "1")
+                .withExposedPorts(properties.port)
+                .waitingFor(voltDbStatusCheck);
+        voltDB = configureCommonsAndStart(voltDB, properties, log);
+
         registerVoltDBEnvironment(voltDB, environment, properties);
         return voltDB;
     }

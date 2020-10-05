@@ -47,8 +47,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static java.lang.String.format;
 import static org.testcontainers.containers.KafkaContainer.KAFKA_PORT;
@@ -100,7 +99,6 @@ public class KafkaContainerConfiguration {
                         "INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort;
             }
         }
-                .withLogConsumer(containerLogsConsumer(log))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
                 .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
                 .withEmbeddedZookeeper()
@@ -138,13 +136,12 @@ public class KafkaContainerConfiguration {
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
-                .waitingFor(kafkaStatusCheck)
-                .withStartupTimeout(kafkaProperties.getTimeoutDuration());
+                .waitingFor(kafkaStatusCheck);
 
         kafkaFileSystemBind(kafkaProperties, kafka);
         zookeperFileSystemBind(zookeeperProperties, kafka);
 
-        startAndLogTime(kafka);
+        kafka = (KafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;
     }

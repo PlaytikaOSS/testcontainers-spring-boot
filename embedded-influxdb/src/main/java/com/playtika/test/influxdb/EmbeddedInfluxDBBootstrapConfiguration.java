@@ -39,7 +39,7 @@ import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
 @Configuration
@@ -62,14 +62,11 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())
                 .withDatabase(properties.getDatabase())
-                .withExposedPorts(properties.getPort())
-                .withLogConsumer(containerLogsConsumer(log))
-                .withReuse(properties.isReuseContainer())
-                .withStartupTimeout(properties.getTimeoutDuration());
+                .withExposedPorts(properties.getPort());
 
         influxDBContainer.waitingFor(getInfluxWaitStrategy(properties.getUser(), properties.getPassword()));
 
-        influxDBContainer.start();
+        influxDBContainer = (ConcreteInfluxDbContainer) configureCommonsAndStart(influxDBContainer, properties, log);
         registerInfluxEnvironment(influxDBContainer, environment, properties);
         return influxDBContainer;
     }

@@ -1,9 +1,5 @@
 package com.playtika.test.keycloak;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static java.lang.String.format;
-import static java.time.Duration.ofSeconds;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -11,6 +7,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
+
+import static java.lang.String.format;
+import static java.time.Duration.ofSeconds;
 
 @Slf4j
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
@@ -22,7 +21,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     private final ResourceLoader resourceLoader;
 
     public KeycloakContainer(KeycloakProperties properties,
-        ResourceLoader resourceLoader) {
+                             ResourceLoader resourceLoader) {
         super(properties.getDockerImage());
         this.properties = properties;
         this.resourceLoader = resourceLoader;
@@ -35,8 +34,6 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withEnv("KEYCLOAK_PASSWORD", properties.getAdminPassword());
         withDB();
         withCommand(properties.getCommand());
-        withStartupTimeout(properties.getTimeoutDuration());
-        withLogConsumer(containerLogsConsumer(log));
         withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
         waitingFor(authBasePath());
         withImportFile(properties.getImportFile());
@@ -56,63 +53,63 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     private void withDBVendor() {
         String dbVendor = properties.getDbVendor();
-        if(dbVendor != null) {
+        if (dbVendor != null) {
             withEnv("DB_VENDOR", dbVendor);
         }
     }
 
     private void withDBAddr() {
         String dbAddr = properties.getDbAddr();
-        if(dbAddr != null) {
+        if (dbAddr != null) {
             withEnv("DB_ADDR", dbAddr);
         }
     }
 
     private void withDBPort() {
         String dbPort = properties.getDbPort();
-        if(dbPort != null) {
+        if (dbPort != null) {
             withEnv("DB_PORT", dbPort);
         }
     }
 
     private void withDBDatabase() {
         String dbDatabase = properties.getDbDatabase();
-        if(dbDatabase != null) {
+        if (dbDatabase != null) {
             withEnv("DB_DATABASE", dbDatabase);
         }
     }
 
     private void withDBSchema() {
         String dbSchema = properties.getDbSchema();
-        if(dbSchema != null) {
+        if (dbSchema != null) {
             withEnv("DB_SCHEMA", dbSchema);
         }
     }
 
     private void withDBUser() {
         String dbUser = properties.getDbUser();
-        if(dbUser != null) {
+        if (dbUser != null) {
             withEnv("DB_USER", dbUser);
         }
     }
 
     private void withDBUserFile() {
         String dbUserFile = properties.getDbUserFile();
-        if(dbUserFile != null) {
+        if (dbUserFile != null) {
             withEnv("DB_USER_FILE", dbUserFile);
         }
     }
 
     private void withDBPassword() {
         String dbPassword = properties.getDbPassword();
-        if(dbPassword != null) {
+        if (dbPassword != null) {
             withEnv("DB_PASSWORD", dbPassword);
         }
     }
 
     private void withDBPasswordFile() {
         String dbPasswordFile = properties.getDbPasswordFile();
-        if(dbPasswordFile != null) {
+        if (dbPasswordFile != null) {
             withEnv("DB_PASSWORD_FILE", dbPasswordFile);
         }
     }
@@ -126,8 +123,8 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
         String importFileInContainer = "/tmp/" + importFile;
         withCopyFileToContainer(
-            MountableFile.forClasspathResource(importFile),
-            importFileInContainer
+                MountableFile.forClasspathResource(importFile),
+                importFileInContainer
         );
         withEnv("KEYCLOAK_IMPORT", importFileInContainer);
     }
@@ -144,9 +141,9 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     private WaitStrategy authBasePath() {
         return Wait
-            .forHttp(AUTH_BASE_PATH)
-            .forPort(DEFAULT_HTTP_PORT_INTERNAL)
-            .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds() * 2));
+                .forHttp(AUTH_BASE_PATH)
+                .forPort(DEFAULT_HTTP_PORT_INTERNAL)
+                .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds() * 2));
     }
 
     public String getIp() {
@@ -167,8 +164,8 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
         ImportFileNotFoundException(String importFile) {
             super(format(
-                "Classpath resource '%s' defined through 'embedded.keycloak.import-file' does not exist.",
-                importFile));
+                    "Classpath resource '%s' defined through 'embedded.keycloak.import-file' does not exist.",
+                    importFile));
         }
     }
 }

@@ -24,17 +24,38 @@
 package com.playtika.test.common.properties;
 
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+
+@Validated
 @Data
 public class CommonContainerProperties {
 
     private long waitTimeoutInSeconds = 60;
     private boolean enabled = true;
     private boolean reuseContainer = false;
+    private String[] command;
+    private Map<String, String> env = emptyMap();
+    @Valid
+    private List<CopyFileProperties> filesToInclude = emptyList();
 
     public Duration getTimeoutDuration() {
         return Duration.ofSeconds(waitTimeoutInSeconds);
+    }
+
+    @Data
+    public static class CopyFileProperties {
+        @NotBlank
+        String classpathResource;
+        @NotBlank
+        String containerPath;
     }
 }

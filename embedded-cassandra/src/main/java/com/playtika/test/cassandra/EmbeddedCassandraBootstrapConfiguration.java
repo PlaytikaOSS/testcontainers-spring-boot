@@ -35,16 +35,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.CassandraContainer;
-import org.testcontainers.containers.GenericContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.playtika.test.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
 import static com.playtika.test.cassandra.CassandraProperties.DEFAULT_DATACENTER;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
-import static com.playtika.test.common.utils.ContainerUtils.startAndLogTime;
 
 @Slf4j
 @Configuration
@@ -59,18 +57,18 @@ public class EmbeddedCassandraBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")
     public CassandraContainer cassandra(ConfigurableEnvironment environment,
-                                  CassandraProperties properties) throws Exception {
+                                        CassandraProperties properties) throws Exception {
 
         log.info("Starting Cassandra cluster. Docker image: {}", properties.dockerImage);
 
         prepareCassandraInitScript(properties);
 
         CassandraContainer cassandra = new CassandraContainer<>(properties.dockerImage)
-                .withReuse(properties.isReuseContainer())
                 .withInitScript("cassandra-init.sql")
-                .withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(properties.getPort());
-        startAndLogTime(cassandra);
+
+        cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
+
         Map<String, Object> cassandraEnv = registerCassandraEnvironment(environment, cassandra, properties);
 
         log.info("Started Cassandra. Connection details: {}", cassandraEnv);

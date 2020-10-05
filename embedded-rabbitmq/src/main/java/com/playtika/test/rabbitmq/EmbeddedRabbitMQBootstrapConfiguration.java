@@ -37,7 +37,7 @@ import org.testcontainers.containers.RabbitMQContainer;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.test.common.utils.ContainerUtils.containerLogsConsumer;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_RABBITMQ;
 
 @Slf4j
@@ -58,11 +58,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                 new RabbitMQContainer(properties.getDockerImage())
                         .withAdminPassword(properties.getPassword())
                         .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
-                        .withLogConsumer(containerLogsConsumer(log))
-                        .withExposedPorts(properties.getPort(), properties.getHttpPort())
-                        .withStartupTimeout(properties.getTimeoutDuration())
-                        .withReuse(properties.isReuseContainer());
-        rabbitMQ.start();
+                        .withExposedPorts(properties.getPort(), properties.getHttpPort());
+        rabbitMQ = (RabbitMQContainer) configureCommonsAndStart(rabbitMQ, properties, log);
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
         return rabbitMQ;
     }
