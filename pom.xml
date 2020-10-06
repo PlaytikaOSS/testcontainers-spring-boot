@@ -61,7 +61,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <testcontainers.version>1.14.3</testcontainers.version>
+        <testcontainers.version>1.15.0-rc2</testcontainers.version>
         <spring.cloud.version>Hoxton.SR8</spring.cloud.version>
 
         <equalsverifier.version>3.4.2</equalsverifier.version>

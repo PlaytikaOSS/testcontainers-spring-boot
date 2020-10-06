@@ -63,7 +63,7 @@ public class EmbeddedMySQLBootstrapConfiguration {
                                 "--character-set-server=" + properties.getEncoding(),
                                 "--collation-server=" + properties.getCollation())
                         .withExposedPorts(properties.port)
-                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
+                        .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                         .withInitScript(properties.initScriptPath);
         mysql = (MySQLContainer) configureCommonsAndStart(mysql, properties, log);
         registerMySQLEnvironment(mysql, environment, properties);
