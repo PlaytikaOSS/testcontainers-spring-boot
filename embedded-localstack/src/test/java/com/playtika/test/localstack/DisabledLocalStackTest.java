@@ -2,6 +2,7 @@ package com.playtika.test.localstack;
 
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -19,7 +20,7 @@ public class DisabledLocalStackTest {
 
     @Test
     public void contextLoads() {
-        String[] containers = beanFactory.getBeanNamesForType(LocalStackContainer.class);
+        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, LocalStackContainer.class);
         assertThat(containers).isEmpty();
     }
 

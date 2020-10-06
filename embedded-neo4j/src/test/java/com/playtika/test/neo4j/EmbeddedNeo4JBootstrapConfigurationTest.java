@@ -35,6 +35,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.session.SessionFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -114,7 +115,7 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForAllClients() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(SessionFactory.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, SessionFactory.class);
         assertThat(beanNamesForType)
                 .as("sessionFactory should be present")
                 .hasSize(1)

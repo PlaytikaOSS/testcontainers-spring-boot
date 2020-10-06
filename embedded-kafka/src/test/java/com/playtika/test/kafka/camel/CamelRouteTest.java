@@ -31,6 +31,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
@@ -71,7 +72,7 @@ public class CamelRouteTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     public void shouldSetupDependsOnForCamel() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(CamelContext.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, CamelContext.class);
         assertThat(beanNamesForType)
                 .as("CamelContext should be present")
                 .hasSize(1);

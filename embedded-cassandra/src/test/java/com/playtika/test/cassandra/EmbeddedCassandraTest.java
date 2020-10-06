@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -89,7 +90,7 @@ public class EmbeddedCassandraTest {
     }
 
     private void assertDependsOnEmbeddedCassandra(Class beanClass, String beanName) {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(beanClass);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass);
         assertThat(beanNamesForType)
                 .as(beanName + " should be present")
                 .hasSize(1)

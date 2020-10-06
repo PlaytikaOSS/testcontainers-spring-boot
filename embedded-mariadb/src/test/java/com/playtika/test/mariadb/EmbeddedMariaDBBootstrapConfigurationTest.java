@@ -37,6 +37,7 @@ import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -113,7 +114,7 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForAllDataSources() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
         assertThat(beanNamesForType)
                 .as("Custom datasource should be present")
                 .hasSize(1)

@@ -9,6 +9,7 @@ import java.util.List;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -77,7 +78,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForPubSubTemplate() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(PubSubTemplate.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, PubSubTemplate.class);
         assertThat(beanNamesForType)
                 .as("pubSubTemplate should be present")
                 .hasSize(1)
