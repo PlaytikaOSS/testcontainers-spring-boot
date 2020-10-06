@@ -80,7 +80,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
-                        .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
+                        .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(waitStrategy);
 
         aerospike = configureCommonsAndStart(aerospike, properties, log);

@@ -1,33 +1,34 @@
 /*
-* The MIT License (MIT)
-*
-* Copyright (c) 2018 Playtika
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2018 Playtika
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package com.playtika.test.common.checks;
 
-import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.Container;
 
-import static com.playtika.test.common.utils.ContainerUtils.ExecCmdResult;
+import java.util.Arrays;
+
+import static com.playtika.test.common.utils.ContainerUtils.executeInContainer;
 
 @Slf4j
 public abstract class AbstractCommandWaitStrategy extends AbstractRetryingWaitStrategy {
@@ -36,14 +37,14 @@ public abstract class AbstractCommandWaitStrategy extends AbstractRetryingWaitSt
 
     protected boolean isReady() {
         String commandName = getContainerType();
+
         String containerId = waitStrategyTarget.getContainerId();
-        log.debug("{} execution of command {} for container id: {} ", commandName, containerId);
+        String[] checkCommand = getCheckCommand();
+        log.debug("{} execution of command {} for container id: {} ", commandName, Arrays.toString(checkCommand), containerId);
 
-        ExecCmdResult healthCheckCmdResult =
-                ContainerUtils.execCmd(DockerClientFactory.instance().client(), containerId, getCheckCommand());
+        Container.ExecResult healthCheckCmdResult = executeInContainer(waitStrategyTarget, checkCommand);
 
-        log.debug("{} executed with exitCode: {}, output: {}",
-                commandName, healthCheckCmdResult.getExitCode(), healthCheckCmdResult.getOutput());
+        log.debug("{} executed with result: {}", commandName, healthCheckCmdResult);
 
         if (healthCheckCmdResult.getExitCode() != 0) {
             log.debug("{} executed with exitCode !=0, considering status as unknown", commandName);
