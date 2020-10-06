@@ -57,7 +57,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
 
         Neo4jContainer neo4j = new Neo4jContainer<>(properties.dockerImage)
                 .withAdminPassword(properties.password)
-                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN));
+                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN));
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;

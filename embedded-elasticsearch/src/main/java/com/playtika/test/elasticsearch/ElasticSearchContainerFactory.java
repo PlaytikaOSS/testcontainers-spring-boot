@@ -30,18 +30,20 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
 
 class ElasticSearchContainerFactory {
 
     static ElasticsearchContainer create(ElasticSearchProperties properties) {
-        return new ElasticsearchContainer(properties.dockerImage)
+        return new ElasticsearchContainer(DockerImageName.parse(properties.dockerImage)
+                .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch"))
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
-                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
+                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(getCompositeWaitStrategy(properties));
     }
 

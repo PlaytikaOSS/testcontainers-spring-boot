@@ -67,7 +67,7 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
-                .withCreateContainerCmdModifier(cmd -> cmd.withCapAdd(Capability.NET_ADMIN))
+                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(memSqlStatusCheck);
         memsql = configureCommonsAndStart(memsql, properties, log);
         registerMemSqlEnvironment(memsql, environment, properties);

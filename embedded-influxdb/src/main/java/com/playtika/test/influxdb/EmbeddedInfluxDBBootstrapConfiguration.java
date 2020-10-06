@@ -36,6 +36,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.InfluxDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -94,7 +95,7 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
 
     private static class ConcreteInfluxDbContainer extends InfluxDBContainer<ConcreteInfluxDbContainer> {
         ConcreteInfluxDbContainer(final String dockerImageName) {
-            setDockerImageName(dockerImageName);
+            super(DockerImageName.parse(dockerImageName));
             addExposedPort(INFLUXDB_PORT);
         }
     }

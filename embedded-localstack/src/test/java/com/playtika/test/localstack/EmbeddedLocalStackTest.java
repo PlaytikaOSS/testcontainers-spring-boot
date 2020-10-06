@@ -67,7 +67,7 @@ public class EmbeddedLocalStackTest {
 
         final List<Bucket> buckets = s3.listBuckets();
         final Optional<Bucket> maybeBucket = buckets.stream().filter(b -> b.getName().equals(bucketName)).findFirst();
-        assertThat(maybeBucket.isPresent()).isTrue();
+        assertThat(maybeBucket).isPresent();
 
         final Bucket bucket = maybeBucket.get();
         assertThat(bucketName).isEqualTo(bucket.getName());

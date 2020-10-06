@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -54,7 +55,8 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         log.info("Starting postgresql server. Docker image: {}", properties.dockerImage);
 
         ConcretePostgreSQLContainer postgresql =
-                new ConcretePostgreSQLContainer(properties.dockerImage)
+                new ConcretePostgreSQLContainer(DockerImageName.parse(properties.dockerImage)
+                        .asCompatibleSubstituteFor("postgres"))
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
@@ -86,7 +88,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
     }
 
     private static class ConcretePostgreSQLContainer extends PostgreSQLContainer<ConcretePostgreSQLContainer> {
-        public ConcretePostgreSQLContainer(String dockerImageName) {
+        public ConcretePostgreSQLContainer(DockerImageName dockerImageName) {
             super(dockerImageName);
         }
     }
