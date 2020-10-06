@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -58,7 +59,7 @@ public class AutoConfiguredDatasourceDependsOnTest {
 
     @Test
     public void shouldSetupDependsOnForAllDataSources() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(DataSource.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
         assertThat(beanNamesForType)
                 .as("Auto-configured datasource should be present")
                 .hasSize(1)

@@ -30,6 +30,7 @@ import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
@@ -54,7 +55,7 @@ public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTe
 
     @Test
     public void shouldSetupDependsOnForAerospikeClient() throws Exception {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(AerospikeClient.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, AerospikeClient.class);
         assertThat(beanNamesForType)
                 .as("AerospikeClient should be present")
                 .hasSize(1)

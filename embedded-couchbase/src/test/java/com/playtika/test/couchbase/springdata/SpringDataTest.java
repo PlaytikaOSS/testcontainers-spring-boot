@@ -31,6 +31,7 @@ import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
@@ -101,7 +102,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
 
     @Test
     public void shouldSetupDependsOnForNewClient() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(Bucket.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Bucket.class);
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
                     .as("New sync client should be present")
@@ -110,7 +111,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
             asList(beanNamesForType).forEach(this::hasDependsOn);
         }
 
-        beanNamesForType = beanFactory.getBeanNamesForType(AsyncBucket.class);
+        beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, AsyncBucket.class);
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
                     .as("New async client should be present")
@@ -119,7 +120,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
             asList(beanNamesForType).forEach(this::hasDependsOn);
         }
 
-        beanNamesForType = beanFactory.getBeanNamesForType(Cluster.class);
+        beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Cluster.class);
 
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)

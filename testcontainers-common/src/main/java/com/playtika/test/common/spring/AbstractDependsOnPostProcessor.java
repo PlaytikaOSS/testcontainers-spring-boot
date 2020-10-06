@@ -24,6 +24,7 @@
 package com.playtika.test.common.spring;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -65,7 +66,7 @@ public abstract class AbstractDependsOnPostProcessor implements BeanFactoryPostP
     private String[] getBeanNamesForType(ConfigurableListableBeanFactory beanFactory) {
         boolean includeNonSingletons = true;
         boolean allowEagerInit = true;
-        return beanFactory.getBeanNamesForType(beansOfType, includeNonSingletons, allowEagerInit);
+        return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beansOfType, includeNonSingletons, allowEagerInit);
     }
 
     private static List<String> asList(String[] array) {

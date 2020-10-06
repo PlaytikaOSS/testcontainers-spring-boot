@@ -25,6 +25,7 @@ package com.playtika.test.postgresql;
 
 import com.playtika.test.postgresql.dummyapp.TestApplication;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -43,8 +44,8 @@ class DisablePostgreSQLTest {
 
     @Test
     public void contextLoads() {
-        String[] containers = beanFactory.getBeanNamesForType(GenericContainer.class);
-        String[] postProcessors = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class);
+        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
+        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
 
         assertThat(containers).isEmpty();
         assertThat(postProcessors).doesNotContain("datasourceDependencyPostProcessor");

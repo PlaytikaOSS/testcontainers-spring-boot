@@ -33,6 +33,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -93,7 +94,7 @@ public class EmbeddedRabbitMQBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForRabbitTemplate() {
-        String[] beanNamesForType = beanFactory.getBeanNamesForType(RabbitTemplate.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RabbitTemplate.class);
         assertThat(beanNamesForType)
                 .as("rabbitTemplate should be present")
                 .hasSize(1)
