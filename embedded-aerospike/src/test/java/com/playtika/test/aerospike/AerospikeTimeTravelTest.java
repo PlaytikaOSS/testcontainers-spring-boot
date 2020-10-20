@@ -45,12 +45,9 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
     @Autowired
     private ExpiredDocumentsCleaner expiredDocumentsCleaner;
 
-    @Autowired
-    private AerospikeTestOperations testOperations;
-
     @AfterEach
     public void tearDown() {
-        testOperations.rollbackTime();
+        aerospikeTestOperations.rollbackTime();
     }
 
     @Test
@@ -83,10 +80,10 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldTimeTravel");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
 
-        testOperations.addDuration(standardHours(24));
+        aerospikeTestOperations.addDuration(standardHours(24));
         assertThat(client.get(null, key)).isNotNull();
 
-        testOperations.addDuration(standardHours(2));
+        aerospikeTestOperations.addDuration(standardHours(2));
         assertThat(client.get(null, key)).isNull();
     }
 
@@ -95,10 +92,10 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldAddDays");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
 
-        testOperations.addDuration(standardDays(1));
+        aerospikeTestOperations.addDuration(standardDays(1));
         assertThat(client.get(null, key)).isNotNull();
 
-        testOperations.addDuration(standardDays(1));
+        aerospikeTestOperations.addDuration(standardDays(1));
         assertThat(client.get(null, key)).isNull();
     }
 
@@ -107,17 +104,17 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldSetFutureTime");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
 
-        testOperations.timeTravelTo(DateTime.now().plusHours(24));
+        aerospikeTestOperations.timeTravelTo(DateTime.now().plusHours(24));
         assertThat(client.get(null, key)).isNotNull();
 
-        testOperations.timeTravelTo(DateTime.now().plusHours(2));
+        aerospikeTestOperations.timeTravelTo(DateTime.now().plusHours(2));
         assertThat(client.get(null, key)).isNull();
     }
 
     @Test
     public void shouldNotSetFutureTime() {
         DateTime minusDay = DateTime.now().minusDays(1);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> testOperations.timeTravelTo(minusDay));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> aerospikeTestOperations.timeTravelTo(minusDay));
     }
 
     @Test
@@ -125,11 +122,11 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldRollbackTime");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(3));
 
-        testOperations.addDuration(standardHours(2));
+        aerospikeTestOperations.addDuration(standardHours(2));
         assertThat(client.get(null, key)).isNotNull();
 
-        testOperations.rollbackTime();
-        testOperations.addDuration(standardHours(2));
+        aerospikeTestOperations.rollbackTime();
+        aerospikeTestOperations.addDuration(standardHours(2));
         assertThat(client.get(null, key)).isNotNull();
     }
 

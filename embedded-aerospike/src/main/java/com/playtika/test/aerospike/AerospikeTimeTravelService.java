@@ -28,7 +28,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 /**
- * Please instead use AerospikeTestOperations
+ * @deprecated please instead use AerospikeTestOperations
  */
 @Deprecated
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class AerospikeTimeTravelService {
     private final AerospikeTestOperations testOperations;
 
     /**
-     * Please instead use AerospikeTestOperations
+     * @deprecated please instead use AerospikeTestOperations
      */
     @Deprecated
     public void timeTravelTo(DateTime futureTime) {
@@ -45,7 +45,7 @@ public class AerospikeTimeTravelService {
     }
 
     /**
-     * Please instead use AerospikeTestOperations
+     * @deprecated please instead use AerospikeTestOperations
      */
     @Deprecated
     public void nextDay() {
@@ -53,7 +53,7 @@ public class AerospikeTimeTravelService {
     }
 
     /**
-     * Please instead use AerospikeTestOperations
+     * @deprecated please instead use AerospikeTestOperations
      */
     @Deprecated
     public void addDays(int days) {
@@ -61,7 +61,7 @@ public class AerospikeTimeTravelService {
     }
 
     /**
-     * Please instead use AerospikeTestOperations
+     * @deprecated please instead use AerospikeTestOperations
      */
     @Deprecated
     public void addHours(int hours) {
@@ -69,7 +69,7 @@ public class AerospikeTimeTravelService {
     }
 
     /**
-     * Please instead use AerospikeTestOperations
+     * @deprecated please instead use AerospikeTestOperations
      */
     @Deprecated
     public void rollbackTime() {
