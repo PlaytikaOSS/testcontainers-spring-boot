@@ -83,8 +83,9 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AerospikeTestOperations aerospikeTestOperations(ExpiredDocumentsCleaner expiredDocumentsCleaner,
-                                                           NetworkTestOperations aerospikeNetworkTestOperations) {
-        return new AerospikeTestOperations(expiredDocumentsCleaner, aerospikeNetworkTestOperations);
+                                                           NetworkTestOperations aerospikeNetworkTestOperations,
+                                                           @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer aerospike) {
+        return new AerospikeTestOperations(expiredDocumentsCleaner, aerospikeNetworkTestOperations, aerospike);
     }
 
     @Bean

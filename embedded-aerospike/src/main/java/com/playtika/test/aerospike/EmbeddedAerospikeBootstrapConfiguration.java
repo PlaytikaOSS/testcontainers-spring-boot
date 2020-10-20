@@ -41,6 +41,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -73,7 +74,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                 .withStartupTimeout(properties.getTimeoutDuration());
 
         GenericContainer aerospike =
-                new GenericContainer<>(properties.dockerImage)
+                new GenericContainer<>(DockerImageName.parse(properties.dockerImage))
                         .withExposedPorts(properties.port)
                         // see https://github.com/aerospike/aerospike-server.docker/blob/master/aerospike.template.conf
                         .withEnv("NAMESPACE", properties.namespace)
