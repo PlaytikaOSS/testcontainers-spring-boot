@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.84</version>
+        <version>1.85-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-mysql</artifactId>
