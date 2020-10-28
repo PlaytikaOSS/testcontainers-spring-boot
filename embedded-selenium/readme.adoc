@@ -1,0 +1,117 @@
+=== embedded-selenium
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-selenium</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.selenium.enabled` `(boolean, true|false, default is 'true')`
+* `embedded.selenium.browser` `(enum, FIREFOX|CHROMIUM, default is 'CHROMIUM')`
+
+
+==== Produces
+
+
+* `embedded.selenium.port`
+* `embedded.selenium.host`
+* `embedded.selenium.vnc.host`
+* `embedded.selenium.vnc.port` (mapped HTTP port)
+* `embedded.selenium.vnc.username`
+* `embedded.selenium.vnc.password`
+
+==== Example
+
+There is currently no starter library for using selenium server so there is no need to
+use the produced variables. You can control the configuration of the browser in 2 ways.
+The first is via the properties file:
+
+./src/test/resources/application.yaml
+[source,yaml]
+----
+embedded:
+  selenium:
+    enabled: true
+    browser: CHROMIUM
+    arguments:
+        - ignore-certificate-errors
+
+----
+
+The second (which may be more configurable) is via defining either a
+ChromeOptions class or a FirefoxOptions class in your test class:
+[source,java]
+-----------------
+    @TestConfiguration
+    static class LocalTestConfiguration {
+
+        @Bean
+        public FirefoxOptions firefoxOptions(SeleniumProperties properties) {
+
+            FirefoxOptions options = new FirefoxOptions();
+            properties.apply(options);
+            options.addArguments("hello-world");
+            options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, false);
+            options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, false);
+            return options;
+        }
+    }
+-----------------
+If you are testing your local machine you can access the hostname via the annotation
+
+[source,java]
+-----------------
+    @DockerHostname
+    private String hostname;
+-----------------
+
+An example test class would look like the following:
+
+[source,java]
+-----------------
+@RunWith(SpringRunner.class)
+@SpringBootTest(
+        classes = SpringBootWebApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
+@Import(TestLoginPage.LocalTestConfiguration.class)
+public class TestLoginPage {
+
+    @LocalServerPort
+    private int port;
+
+    @DockerHostname
+    private String hostname;
+
+    @Autowired
+    private RemoteWebDriver remoteWebDriver;
+
+    @Test
+    public void test1() {
+        remoteWebDriver.get("https://" + hostname +":" + port);
+        assertThat(remoteWebDriver.getPageSource()).contains("helloworld");
+    }
+
+    @TestConfiguration
+    static class LocalTestConfiguration {
+
+        @Bean
+        public FirefoxOptions firefoxOptions(SeleniumProperties properties) {
+
+            FirefoxOptions options = new FirefoxOptions();
+            properties.apply(options);
+            options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+            options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+            return options;
+        }
+    }
+}
+-----------------
