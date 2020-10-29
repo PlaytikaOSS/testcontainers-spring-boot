@@ -13,7 +13,7 @@
     <artifactId>embedded-mysql</artifactId>
 
     <properties>
-        <mysql-driver.version>8.0.21</mysql-driver.version>
+        <mysql-driver.version>8.0.22</mysql-driver.version>
     </properties>
 
     <dependencies>
