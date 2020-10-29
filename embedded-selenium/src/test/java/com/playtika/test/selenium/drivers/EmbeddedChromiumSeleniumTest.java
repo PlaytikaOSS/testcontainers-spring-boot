@@ -26,7 +26,7 @@ package com.playtika.test.selenium.drivers;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 import java.util.Map;
@@ -34,13 +34,11 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest(
-        classes = TestApplication.class,
+@TestPropertySource(
         properties = {
                 "embedded.selenium.browser=CHROMIUM",
                 "embedded.selenium.arguments=start-maximized"
-        },
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        }
 )
 public class EmbeddedChromiumSeleniumTest extends BaseEmbeddedSeleniumTest {
     @Autowired

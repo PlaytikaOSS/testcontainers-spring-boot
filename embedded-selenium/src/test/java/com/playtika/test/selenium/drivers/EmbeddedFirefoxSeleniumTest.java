@@ -24,16 +24,14 @@ package com.playtika.test.selenium.drivers;
 
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-        classes = TestApplication.class,
+@TestPropertySource(
         properties = {
-                "embedded.selenium.browser=FIREFOX",
-        },
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+                "embedded.selenium.browser=FIREFOX"
+        }
 )
 public class EmbeddedFirefoxSeleniumTest extends BaseEmbeddedSeleniumTest {
 

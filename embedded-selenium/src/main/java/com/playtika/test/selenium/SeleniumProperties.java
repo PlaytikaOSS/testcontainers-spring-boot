@@ -59,6 +59,6 @@ public class SeleniumProperties extends CommonContainerProperties {
     @Data
     public static class Vnc {
         private File recordingDir = null;
-        private VncRecordingMode mode = VncRecordingMode.SKIP;;
+        private VncRecordingMode mode = VncRecordingMode.SKIP;
     }
 }

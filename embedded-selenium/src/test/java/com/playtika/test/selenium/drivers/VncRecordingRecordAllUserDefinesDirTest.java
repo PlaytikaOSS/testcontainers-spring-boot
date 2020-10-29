@@ -30,10 +30,10 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -43,12 +43,11 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
+@TestPropertySource(
         properties = {
                 "embedded.selenium.browser=CHROMIUM",
                 "embedded.selenium.vnc.mode=RECORD_ALL"
-        },
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        }
 )
 @ContextConfiguration(
         initializers = VncRecordingRecordAllUserDefinesDirTest.PropertyOverrideContextInitializer.class,

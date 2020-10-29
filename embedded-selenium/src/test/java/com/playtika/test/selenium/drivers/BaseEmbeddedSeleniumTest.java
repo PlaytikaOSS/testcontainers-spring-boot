@@ -22,6 +22,7 @@
  */
 package com.playtika.test.selenium.drivers;
 
+import com.playtika.test.selenium.DockerHostname;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,15 +34,16 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.BrowserWebDriverContainer;
-import org.testcontainers.containers.GenericContainer;
 
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(
+        classes = TestApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 public abstract class BaseEmbeddedSeleniumTest {
 
     @Autowired
@@ -55,6 +57,9 @@ public abstract class BaseEmbeddedSeleniumTest {
 
     @LocalServerPort
     private int port;
+
+    @DockerHostname
+    private String dockerHostname;
 
     @Test
     public void seleniumShouldWork() {
@@ -84,23 +89,11 @@ public abstract class BaseEmbeddedSeleniumTest {
     }
 
     private void getIndexPage(RemoteWebDriver driver, int port) {
-        driver.get("http://" + getHostName(container) + ":" + port + "/index.html");
+        driver.get("http://" + dockerHostname + ":" + port + "/index.html");
     }
 
     public String getBrowserName() {
         return (String)container.getWebDriver().getCapabilities().getCapability("browserName");
     }
 
-    public String getHostName(GenericContainer container) {
-        String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-        if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
-            return  "host.docker.internal";
-        } else if (OS.indexOf("win") >= 0) {
-            return container.getTestHostIpAddress();
-        } else if (OS.indexOf("nux") >= 0) {
-            return  container.getTestHostIpAddress();
-        }
-
-        return container.getTestHostIpAddress();
-    }
 }
