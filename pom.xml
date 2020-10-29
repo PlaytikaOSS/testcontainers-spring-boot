@@ -54,6 +54,7 @@
         <module>embedded-localstack</module>
         <module>embedded-cassandra</module>
         <module>embedded-clickhouse</module>
+        <module>embedded-selenium</module>
     </modules>
 
     <properties>
