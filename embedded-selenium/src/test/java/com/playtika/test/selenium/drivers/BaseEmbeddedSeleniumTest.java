@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = "embedded.selenium.enabled=true")
+@SpringBootTest
 public abstract class BaseEmbeddedSeleniumTest {
 
     @Autowired

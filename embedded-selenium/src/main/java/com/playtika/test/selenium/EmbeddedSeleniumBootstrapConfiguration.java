@@ -23,6 +23,7 @@
 package com.playtika.test.selenium;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.MutableCapabilities;
@@ -111,7 +112,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
 
 
         log.info("Starting Selenium. Docker image: {}", container.getDockerImageName());
-        container.start();
+        ContainerUtils.configureCommonsAndStart(container, properties, log);
 
         Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, container, properties.getVnc().getMode().convert(), recordingDirOrNull);
         log.info("Started Selenium server. Connection details: {}", seleniumEnv);
