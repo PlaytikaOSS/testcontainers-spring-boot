@@ -22,6 +22,7 @@
  */
 package com.playtika.test.selenium;
 
+import com.google.common.net.InetAddresses;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.DefaultRecordingFileFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -73,6 +75,8 @@ public class EmbeddedSeleniumBootstrapConfiguration {
     private static final String TC_TEMP_DIR_PREFIX = "tc";
     public static final String DEFINED_VNC_USERNAME = "vnc";
     public static final String DEFINED_VNC_PASSWORD = "secret";
+
+    public static final String DOCKER_FOR_LINUX_STATIC_IP = "172.17.0.1";
 
     @Bean
     @ConditionalOnMissingBean(MutableCapabilities.class)
@@ -179,16 +183,50 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         return map;
     }
 
+
+    /**
+     * Implementation partly based upon
+     *
+     * https://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container
+     * @param container
+     * @return
+     */
     public String getHostName(GenericContainer container) {
+        // unfortunately host.docker.internal only works for mac and windows :(
+        // and we need to work out the hostname for linux.
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
             return  "host.docker.internal";
         } else if (OS.indexOf("win") >= 0) {
-            return container.getTestHostIpAddress();
+            return "host.docker.internal";
         } else if (OS.indexOf("nux") >= 0) {
-            return  container.getTestHostIpAddress();
+            Container.ExecResult execResult;
+            try {
+                execResult = container.execInContainer("/sbin/ip route|awk '/default/ { print $3 }'");
+            } catch (IOException e) {
+                log.warn("Cannot find host ip", e);
+                return DOCKER_FOR_LINUX_STATIC_IP;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return DOCKER_FOR_LINUX_STATIC_IP;
+            }
+            String hostIpAddress = execResult.getStdout();
+            if(isValidIpAddress(hostIpAddress)) {
+                return hostIpAddress;
+            } else {
+                return DOCKER_FOR_LINUX_STATIC_IP;
+            }
         }
 
+        // currently only supported if docker machine is installed.
+        // otherwise throws an UnsupportedOpertaion exception
         return container.getTestHostIpAddress();
+    }
+
+    private boolean isValidIpAddress(String ipAddress) {
+        if (ipAddress == null) {
+            return false;
+        }
+        return InetAddresses.isInetAddress(ipAddress);
     }
 }
