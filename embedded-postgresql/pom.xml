@@ -12,7 +12,7 @@
     <artifactId>embedded-postgresql</artifactId>
 
     <properties>
-        <postgresql-driver.version>42.2.16</postgresql-driver.version>
+        <postgresql-driver.version>42.2.18</postgresql-driver.version>
     </properties>
 
     <dependencies>
