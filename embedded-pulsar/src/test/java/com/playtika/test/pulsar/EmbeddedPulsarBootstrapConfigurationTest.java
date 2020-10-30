@@ -10,9 +10,7 @@ import org.testcontainers.containers.PulsarContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = TestConfiguration.class,
-        properties = "embedded.pulsar.enabled=true")
-class EmbeddedPulsarBootstrapConfigurationTest {
+class EmbeddedPulsarBootstrapConfigurationTest extends AbstractEmbeddedPulsarTest {
 
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;

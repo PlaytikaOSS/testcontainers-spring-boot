@@ -11,24 +11,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-        classes = TestConfiguration.class,
-        properties = {
-                "embedded.pulsar.enabled=true"
-        })
-class EmbeddedPulsarBrokerTest {
+class EmbeddedPulsarBrokerTest extends AbstractEmbeddedPulsarTest {
 
     private static final String TEST_MESSAGE = "My message";
     private static final String TOPIC_NAME = "test-topic";
     private static final String SUBSCRIPTION_NAME = "test-subscription";
 
-    @Autowired
-    private ConfigurableEnvironment configurableEnvironment;
+    @Value("${embedded.pulsar.brokerUrl}")
+    private String brokerUrl;
 
     private PulsarClient client;
     private Consumer<String> consumer;
@@ -37,7 +33,7 @@ class EmbeddedPulsarBrokerTest {
     @BeforeEach
     public void setUp() throws PulsarClientException {
         client = PulsarClient.builder()
-                .serviceUrl(configurableEnvironment.getProperty("embedded.pulsar.brokerUrl"))
+                .serviceUrl(brokerUrl)
                 .build();
 
         consumer = client.newConsumer(Schema.STRING)
@@ -53,9 +49,7 @@ class EmbeddedPulsarBrokerTest {
 
     @AfterEach
     public void tearDown() throws PulsarClientException {
-        client.close();
-        producer.close();
-        consumer.close();
+        client.close(); // Closes producer and consumer
     }
 
     @Test

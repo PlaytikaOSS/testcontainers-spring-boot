@@ -25,8 +25,6 @@
 
 ==== Example
 
-Properties can be used to configure `PulsarClient` directly :
-
 ----
 PulsarClient pulsarClient = PulsarClient.builder()
         .serviceUrl(environment.getProperty("embedded.pulsar.brokerUrl"))

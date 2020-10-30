@@ -2,6 +2,7 @@ package com.playtika.test.pulsar;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -12,31 +13,19 @@ import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-        classes = TestConfiguration.class,
-        properties = {
-                "embedded.pulsar.enabled=true"
-        })
-public class EmbeddedPulsarHttpServiceTest {
+class EmbeddedPulsarHttpServiceTest extends AbstractEmbeddedPulsarTest {
 
     private static final String METRICS_PATH = "/admin/broker-stats/metrics";
 
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.pulsar.httpServiceUrl}")
+    private String pulsarServiceUrl;
 
     @Test
     void shouldCommunicateWithPulsarHttpService() {
-        //given
-        String pulsarServiceUrl = environment.getProperty("embedded.pulsar.httpServiceUrl");
         URI pulsarHttpService = URI.create(pulsarServiceUrl + METRICS_PATH);
-
-        //when
         ResponseEntity<String> response = testRestTemplate.getForEntity(pulsarHttpService, String.class);
-
-        //then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
     }
 }

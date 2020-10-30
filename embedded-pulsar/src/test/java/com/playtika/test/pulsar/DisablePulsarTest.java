@@ -9,15 +9,15 @@ import org.testcontainers.containers.PulsarContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = TestConfiguration.class,
+@SpringBootTest(classes = AbstractEmbeddedPulsarTest.TestConfiguration.class,
         properties = "embedded.pulsar.enabled=false")
-public class DisablePulsarTest {
+class DisablePulsarTest {
 
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
 
     @Test
-    void shouldRegisterBean() {
+    void shouldNotRegisterBean() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, PulsarContainer.class);
         assertThat(beanNamesForType).isEmpty();
     }
