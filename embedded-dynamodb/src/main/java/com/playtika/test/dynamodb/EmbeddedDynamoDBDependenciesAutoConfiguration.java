@@ -43,7 +43,7 @@ import static com.playtika.test.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_D
 public class EmbeddedDynamoDBDependenciesAutoConfiguration {
 
     @Configuration
-    public static class EmbeddedMariaDbDataSourceDependencyContext {
+    public static class EmbeddedDynamoDbDataSourceDependencyContext {
         @Bean
         public static BeanFactoryPostProcessor dynamodbDependencyPostProcessor() {
             return new DependsOnPostProcessor(AmazonDynamoDB.class, new String[]{BEAN_NAME_EMBEDDED_DYNAMODB});
