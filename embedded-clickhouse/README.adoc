@@ -17,6 +17,7 @@
 * `embedded.clickhouse.enabled` `(true|false, default is 'true')`
 * `embedded.clickhouse.reuseContainer` `(true|false, default is 'false')`
 * `embedded.clickhouse.dockerImage` `(default is set to 'yandex/clickhouse-server:20.5')`
+* `embedded.clickhouse.asCompatibleImage` `(true|false, default is 'false')`
 
 ==== Produces
 
