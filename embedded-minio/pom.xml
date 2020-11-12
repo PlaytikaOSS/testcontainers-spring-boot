@@ -12,7 +12,7 @@
     <artifactId>embedded-minio</artifactId>
 
     <properties>
-        <minio.version>7.1.4</minio.version>
+        <minio.version>8.0.0</minio.version>
     </properties>
 
     <dependencies>
