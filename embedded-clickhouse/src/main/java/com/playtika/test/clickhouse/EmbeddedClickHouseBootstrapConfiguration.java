@@ -34,10 +34,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.ClickHouseContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
+import static com.playtika.test.clickhouse.ClickHouseProperties.DEFAULT_DOCKER_IMAGE;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
@@ -53,7 +55,13 @@ public class EmbeddedClickHouseBootstrapConfiguration {
                                                            ClickHouseProperties properties) {
         log.info("Starting ClickHouse server. Docker image: {}", properties.getDockerImage());
 
-        ConcreteClickHouseContainer clickHouseContainer = new ConcreteClickHouseContainer(properties.dockerImage);
+        DockerImageName dockerImageName = DockerImageName.parse(properties.dockerImage);
+
+        if (properties.asCompatibleImage) {
+            dockerImageName = dockerImageName.asCompatibleSubstituteFor(DEFAULT_DOCKER_IMAGE);
+        }
+
+        ConcreteClickHouseContainer clickHouseContainer = new ConcreteClickHouseContainer(dockerImageName);
 
         clickHouseContainer = (ConcreteClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
 
@@ -82,7 +90,7 @@ public class EmbeddedClickHouseBootstrapConfiguration {
     }
 
     private static class ConcreteClickHouseContainer extends ClickHouseContainer {
-        public ConcreteClickHouseContainer(String dockerImageName) {
+        public ConcreteClickHouseContainer(DockerImageName dockerImageName) {
             super(dockerImageName);
         }
     }

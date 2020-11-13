@@ -33,7 +33,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.clickhouse")
 public class ClickHouseProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_CLICK_HOUSE = "embeddedClickHouse";
-    String dockerImage = "yandex/clickhouse-server:20.5";
+    static final String DEFAULT_DOCKER_IMAGE = "yandex/clickhouse-server";
+    static final String DEFAULT_DOCKER_IMAGE_TAG = "20.5";
+    String dockerImage = DEFAULT_DOCKER_IMAGE + ":" + DEFAULT_DOCKER_IMAGE_TAG;
     String host = "localhost";
     int port = 8123;
+    Boolean asCompatibleImage = false;
 }
