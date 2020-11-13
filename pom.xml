@@ -55,6 +55,7 @@
         <module>embedded-cassandra</module>
         <module>embedded-clickhouse</module>
         <module>embedded-selenium</module>
+        <module>embedded-pulsar</module>
     </modules>
 
     <properties>

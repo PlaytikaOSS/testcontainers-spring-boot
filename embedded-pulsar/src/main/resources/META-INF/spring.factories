@@ -1,0 +1,2 @@
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+com.playtika.test.pulsar.EmbeddedPulsarBootstrapConfiguration

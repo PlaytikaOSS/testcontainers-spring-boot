@@ -1,0 +1,32 @@
+=== embedded-pulsar
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-pulsar</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.pulsar.enabled` `(true|false, default is 'true')`
+* `embedded.pulsar.imageTag` `(default is '2.6.1')`
+** You can pick the desired version on https://hub.docker.com/r/apachepulsar/pulsar/tags[dockerhub]
+
+==== Produces
+
+* `embedded.pulsar.brokerUrl`
+* `embedded.pulsar.httpServiceUrl`
+
+==== Example
+
+----
+PulsarClient pulsarClient = PulsarClient.builder()
+        .serviceUrl(environment.getProperty("embedded.pulsar.brokerUrl"))
+        .build();
+----
