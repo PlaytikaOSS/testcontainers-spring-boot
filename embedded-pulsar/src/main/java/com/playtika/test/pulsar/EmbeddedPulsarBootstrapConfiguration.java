@@ -31,7 +31,6 @@ public class EmbeddedPulsarBootstrapConfiguration {
                 .withTag(pulsarProperties.imageTag);
         PulsarContainer pulsarContainer = new PulsarContainer(image);
         pulsarContainer = (PulsarContainer) ContainerUtils.configureCommonsAndStart(pulsarContainer, pulsarProperties, log);
-        pulsarContainer.start();
         registerEmbeddedPulsarEnvironment(environment, pulsarContainer);
         return pulsarContainer;
     }
