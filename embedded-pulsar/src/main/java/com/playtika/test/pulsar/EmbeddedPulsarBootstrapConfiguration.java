@@ -1,5 +1,6 @@
 package com.playtika.test.pulsar;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -9,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.PulsarContainer;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,7 +26,11 @@ public class EmbeddedPulsarBootstrapConfiguration {
     @Bean(name = PulsarProperties.EMBEDDED_PULSAR)
     public PulsarContainer embeddedPulsar(final PulsarProperties pulsarProperties,
                                           final ConfigurableEnvironment environment) {
-        PulsarContainer pulsarContainer = new PulsarContainer(pulsarProperties.imageTag);
+        DockerImageName image = TestcontainersConfiguration.getInstance()
+                .getPulsarDockerImageName()
+                .withTag(pulsarProperties.imageTag);
+        PulsarContainer pulsarContainer = new PulsarContainer(image);
+        pulsarContainer = (PulsarContainer) ContainerUtils.configureCommonsAndStart(pulsarContainer, pulsarProperties, log);
         pulsarContainer.start();
         registerEmbeddedPulsarEnvironment(environment, pulsarContainer);
         return pulsarContainer;
