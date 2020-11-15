@@ -26,8 +26,7 @@ public class EmbeddedPulsarBootstrapConfiguration {
     @Bean(name = PulsarProperties.EMBEDDED_PULSAR)
     public PulsarContainer embeddedPulsar(final PulsarProperties pulsarProperties,
                                           final ConfigurableEnvironment environment) {
-        DockerImageName image = TestcontainersConfiguration.getInstance()
-                .getPulsarDockerImageName()
+        DockerImageName image = DockerImageName.parse(TestcontainersConfiguration.getInstance().getPulsarImage())
                 .withTag(pulsarProperties.imageTag);
         PulsarContainer pulsarContainer = new PulsarContainer(image);
         pulsarContainer = (PulsarContainer) ContainerUtils.configureCommonsAndStart(pulsarContainer, pulsarProperties, log);
