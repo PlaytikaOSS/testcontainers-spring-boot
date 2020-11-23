@@ -57,13 +57,17 @@ public class VncRecordingRecordAllUserDefinesDirTest extends BaseEmbeddedSeleniu
     @Autowired
     public ChromeOptions options;
 
-    @Value("${embedded.selenium.vnc.record-dir}")
+    @Value("${embedded.selenium.vnc.recording-dir}")
     private String recordDir;
 
 
     @AfterAll
     public void cleanupTmpDir() {
         File dirToDelete = new File(recordDir);
+        assertThat(dirToDelete.list()).isNotEmpty();
+
+        //assert that all tests generated a video
+        assertThat(dirToDelete.list().length).isEqualTo(5);
         if (dirToDelete.exists()) {
             FileSystemUtils.deleteRecursively(new File(recordDir));
         }
@@ -86,8 +90,8 @@ public class VncRecordingRecordAllUserDefinesDirTest extends BaseEmbeddedSeleniu
         assertThat(environment.getProperty("embedded.selenium.vnc.mode")).isEqualTo("RECORD_ALL");
         assertThat(environment.getProperty("embedded.selenium.vnc.wassetintest")).isEqualTo("true");
 
-        assertThat(environment.getProperty("embedded.selenium.vnc.record-dir")).isNotEmpty();
-        File recordDir = new File(environment.getProperty("embedded.selenium.vnc.record-dir"));
+        assertThat(environment.getProperty("embedded.selenium.vnc.recording-dir")).isNotEmpty();
+        File recordDir = new File(environment.getProperty("embedded.selenium.vnc.recording-dir"));
         assertThat(recordDir).exists();
     }
 
@@ -99,7 +103,7 @@ public class VncRecordingRecordAllUserDefinesDirTest extends BaseEmbeddedSeleniu
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             Path tmpDir = Files.createTempDirectory("UnitTest");
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                    configurableApplicationContext, "embedded.selenium.vnc.record-dir=" + tmpDir.toAbsolutePath().toString());
+                    configurableApplicationContext, "embedded.selenium.vnc.recording-dir=" + tmpDir.toAbsolutePath().toString());
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
                     configurableApplicationContext, "embedded.selenium.vnc.wassetintest=" + true);
 
