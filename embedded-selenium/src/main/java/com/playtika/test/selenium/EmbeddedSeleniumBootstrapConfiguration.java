@@ -104,9 +104,15 @@ public class EmbeddedSeleniumBootstrapConfiguration {
             SeleniumProperties properties,
             MutableCapabilities capabilities
     ) {
-
-        BrowserWebDriverContainer container = new BrowserWebDriverContainer<>().withCapabilities(capabilities);
-        container.withRecordingFileFactory(getRecordingFileFactory());
+        BrowserWebDriverContainer container;
+        String imageName = properties.getImageName();
+        if(isNotBlank(imageName)) {
+            container = new BrowserWebDriverContainer<>(imageName).withCapabilities(capabilities);
+            container.withRecordingFileFactory(getRecordingFileFactory());
+        } else {
+            container = new BrowserWebDriverContainer<>().withCapabilities(capabilities);
+            container.withRecordingFileFactory(getRecordingFileFactory());
+        }
 
         File recordingDirOrNull = null;
         if (properties.getVnc().getMode().convert() != BrowserWebDriverContainer.VncRecordingMode.SKIP) {
@@ -228,5 +234,9 @@ public class EmbeddedSeleniumBootstrapConfiguration {
             return false;
         }
         return InetAddresses.isInetAddress(ipAddress);
+    }
+
+    private boolean isNotBlank(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }
