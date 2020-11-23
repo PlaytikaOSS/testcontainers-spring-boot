@@ -123,13 +123,6 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         return container;
     }
 
-    @Bean(name = BEAN_NAME_EMBEDDED_SELENIUM_DRIVER)
-    public RemoteWebDriver driver(
-            BrowserWebDriverContainer container
-    ) {
-        return container.getWebDriver();
-    }
-
     /**
      * Testcontainers does not expose its default vnc dir when it is not
      * defined, so we recreate this implementation here.
