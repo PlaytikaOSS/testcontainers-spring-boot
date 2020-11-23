@@ -77,7 +77,7 @@ An example test class would look like the following:
 
 [source,java]
 -----------------
-@RunWith(SpringRunner.class)
+import org.openqa.selenium.WebDriver;@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = SpringBootWebApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -92,12 +92,13 @@ public class TestLoginPage {
     private String hostname;
 
     @Autowired
-    private RemoteWebDriver remoteWebDriver;
+    private BrowserWebDriverContainer webDriverContainer;
 
     @Test
     public void test1() {
-        remoteWebDriver.get("https://" + hostname +":" + port);
-        assertThat(remoteWebDriver.getPageSource()).contains("helloworld");
+        RemoteWebDriver webDriver = webDriverContainer.getWebDriver();
+        webDriver.get("https://" + hostname +":" + port);
+        assertThat(webDriver.getPageSource()).contains("helloworld");
     }
 
     @TestConfiguration
