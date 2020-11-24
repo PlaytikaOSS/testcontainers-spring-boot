@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -60,7 +59,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM;
-import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM_DRIVER;
 
 
 @Slf4j
@@ -104,15 +102,14 @@ public class EmbeddedSeleniumBootstrapConfiguration {
             SeleniumProperties properties,
             MutableCapabilities capabilities
     ) {
-        BrowserWebDriverContainer container;
+
         String imageName = properties.getImageName();
-        if(isNotBlank(imageName)) {
-            container = new BrowserWebDriverContainer<>(imageName).withCapabilities(capabilities);
-            container.withRecordingFileFactory(getRecordingFileFactory());
-        } else {
-            container = new BrowserWebDriverContainer<>().withCapabilities(capabilities);
-            container.withRecordingFileFactory(getRecordingFileFactory());
-        }
+        BrowserWebDriverContainer container = isNotBlank(imageName)
+                ? new BrowserWebDriverContainer<>(imageName)
+                :  new BrowserWebDriverContainer<>();
+
+        container.withCapabilities(capabilities);
+        container.withRecordingFileFactory(getRecordingFileFactory());
 
         File recordingDirOrNull = null;
         if (properties.getVnc().getMode().convert() != BrowserWebDriverContainer.VncRecordingMode.SKIP) {
