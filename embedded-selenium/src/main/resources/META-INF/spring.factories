@@ -1,2 +1,10 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.playtika.test.selenium.EmbeddedSeleniumBootstrapConfiguration
+
+# Spring Test ContextCustomizerFactories
+org.springframework.test.context.ContextCustomizerFactory=\
+   com.playtika.test.selenium.testscope.TestcontainerContextCustomizerFactory
+
+org.springframework.test.context.TestExecutionListener=\
+  com.playtika.test.selenium.testscope.TestcontainerTestExecutionListener
+
