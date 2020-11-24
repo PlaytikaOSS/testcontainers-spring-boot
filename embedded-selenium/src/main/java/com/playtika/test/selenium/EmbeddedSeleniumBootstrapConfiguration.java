@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -60,7 +59,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM;
-import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM_DRIVER;
 
 
 @Slf4j
@@ -105,7 +103,12 @@ public class EmbeddedSeleniumBootstrapConfiguration {
             MutableCapabilities capabilities
     ) {
 
-        BrowserWebDriverContainer container = new BrowserWebDriverContainer<>().withCapabilities(capabilities);
+        String imageName = properties.getImageName();
+        BrowserWebDriverContainer container = isNotBlank(imageName)
+                ? new BrowserWebDriverContainer<>(imageName)
+                :  new BrowserWebDriverContainer<>();
+
+        container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
 
         File recordingDirOrNull = null;
@@ -221,5 +224,9 @@ public class EmbeddedSeleniumBootstrapConfiguration {
             return false;
         }
         return InetAddresses.isInetAddress(ipAddress);
+    }
+
+    private boolean isNotBlank(String str) {
+        return str != null && !str.trim().isEmpty();
     }
 }

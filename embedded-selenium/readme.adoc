@@ -16,10 +16,9 @@
 
 * `embedded.selenium.enabled` `(boolean, true|false, default is 'true')`
 * `embedded.selenium.browser` `(enum, FIREFOX|CHROMIUM, default is 'CHROMIUM')`
-
+* `embedded.selenium.image-name` `(string, a compatible image  such as "selenium/standalone-chrome-debug:3.141.59-mercury")`
 * `embedded.selenium.vnc.mode` `RECORD_ALL | SKIP | RECORD_FAILING`
 * `embedded.selenium.vnc.recording-dir` `a file location`
-
 
 ==== Produces
 
