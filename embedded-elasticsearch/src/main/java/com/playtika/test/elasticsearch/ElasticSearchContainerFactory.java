@@ -36,15 +36,28 @@ import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WA
 
 class ElasticSearchContainerFactory {
 
+    private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch");
+
     static ElasticsearchContainer create(ElasticSearchProperties properties) {
-        return new ElasticsearchContainer(DockerImageName.parse(properties.dockerImage)
-                .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch"))
+        return new ElasticsearchContainer(getDockerImageName(properties))
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(getCompositeWaitStrategy(properties));
+    }
+
+    private static DockerImageName getDockerImageName(ElasticSearchProperties properties) {
+        DockerImageName imageName = DockerImageName.parse(properties.dockerImage);
+        if (imageName.getRegistry().isEmpty()
+                && (imageName.getUnversionedPart().isEmpty()
+                || imageName.getUnversionedPart().equals("elasticsearch"))) {
+            return DEFAULT_IMAGE_NAME.withTag(imageName.getVersionPart());
+        } else if (imageName.isCompatibleWith(DEFAULT_IMAGE_NAME)) {
+            return imageName;
+        }
+        return imageName.asCompatibleSubstituteFor(DEFAULT_IMAGE_NAME);
     }
 
     private static String getJavaOpts(ElasticSearchProperties properties) {
