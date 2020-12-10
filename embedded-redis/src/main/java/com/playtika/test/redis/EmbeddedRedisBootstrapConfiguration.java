@@ -85,7 +85,7 @@ public class EmbeddedRedisBootstrapConfiguration {
                                   RedisProperties properties,
                                   @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
 
-        log.info("Starting Redis cluster. Docker image: {}", properties.dockerImage);
+        log.info("Starting Redis cluster. Docker image: {}", properties.getDockerImage());
 
         prepareRedisConfFiles(properties);
 
@@ -93,9 +93,9 @@ public class EmbeddedRedisBootstrapConfiguration {
         // container must be the same
         Consumer<CreateContainerCmd> containerCmdModifier = cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN);
         GenericContainer redis =
-                new FixedHostPortGenericContainer(properties.dockerImage)
-                        .withFixedExposedPort(properties.port, properties.port)
-                        .withExposedPorts(properties.port)
+                new FixedHostPortGenericContainer(properties.getDockerImage())
+                        .withFixedExposedPort(properties.getPort(), properties.getPort())
+                        .withExposedPorts(properties.getPort())
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCreateContainerCmdModifier(containerCmdModifier)
@@ -104,7 +104,7 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy);
         redis = configureCommonsAndStart(redis, properties, log);
-        Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.port);
+        Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.getPort());
         log.info("Started Redis cluster. Connection details: {}", redisEnv);
         return redis;
     }
