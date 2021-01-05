@@ -29,11 +29,18 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.SessionConfig;
+import org.neo4j.driver.types.Node;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +61,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Autowired
+    Driver driver;
+
+    @Autowired
     PersonRepository personRepository;
 
     @Autowired
@@ -71,35 +81,27 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
     @Autowired
     ConfigurableEnvironment environment;
 
+
     @Test
-    public void springDataNeo4jShouldWork() throws Exception {
-        personRepository.deleteAll();
+    void springDataNeo4jShouldWork() {
+        long friendId;
 
-        Person greg = new Person("Greg");
-        Person roy = new Person("Roy");
-        Person craig = new Person("Craig");
+        try (Session session = driver.session()) {
+            Record record = session.run("CREATE (n:Person{name:'Freddie'}),"
+                    + " (n)-[:TEAMMATE{since: 1995}]->(:Person{name:'Frank'})"
+                    + "RETURN n").single();
 
-        List<Person> team = asList(greg, roy, craig);
+            Node friendNode = record.get("n").asNode();
+            friendId = friendNode.id();
+        }
 
-        personRepository.save(greg);
-        personRepository.save(roy);
-        personRepository.save(craig);
+        Person person = personRepository.findById(friendId).get();
 
-        greg = personRepository.findByName(greg.getName());
-        greg.worksWith(roy);
-        greg.worksWith(craig);
-        personRepository.save(greg);
-
-        roy = personRepository.findByName(roy.getName());
-        roy.worksWith(craig);
-        // We already know that roy works with greg
-        personRepository.save(roy);
-
-        // We already know craig works with roy and greg
-
-        log.info("Lookup each person by name...");
-        team.forEach(person -> log.info(personRepository.findByName(person.getName()).toString()));
-        team.forEach(person -> assertThat(personRepository.findByName(person.getName()).getTeammates().size()).isEqualTo(2));
+        Set<TeamMateRelationship> loadedRelationship = person.getTeammates();
+        assertThat(loadedRelationship).allSatisfy(relationship -> {
+            assertThat(relationship.getSince()).isEqualTo(1995);
+            assertThat(relationship.getTeamMate().getName()).isEqualTo("Frank");
+        });
     }
 
     @Test
@@ -115,11 +117,11 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForAllClients() throws Exception {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, SessionFactory.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Driver.class);
         assertThat(beanNamesForType)
-                .as("sessionFactory should be present")
+                .as("neo4jDriver should be present")
                 .hasSize(1)
-                .contains("sessionFactory");
+                .contains("neo4jDriver");
         asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 

@@ -25,6 +25,7 @@ package com.playtika.test.neo4j;
 
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.neo4j.driver.Driver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -61,6 +62,15 @@ public class EmbeddedNeo4jDependenciesAutoConfiguration {
         @Bean
         public static BeanFactoryPostProcessor neo4jSessionFactoryDependencyPostProcessor() {
             return new DependsOnPostProcessor(SessionFactory.class, new String[]{BEAN_NAME_EMBEDDED_NEO4J});
+        }
+    }
+
+    @Configuration
+    @ConditionalOnClass(Driver.class)
+    public static class Neo4jDriverDependencyContext {
+        @Bean
+        public static BeanFactoryPostProcessor neo4jDriverDependencyPostProcessor() {
+            return new DependsOnPostProcessor(Driver.class, new String[]{BEAN_NAME_EMBEDDED_NEO4J});
         }
     }
 }

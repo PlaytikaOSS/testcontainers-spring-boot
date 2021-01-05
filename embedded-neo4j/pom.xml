@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
@@ -11,6 +10,10 @@
     </parent>
 
     <artifactId>embedded-neo4j</artifactId>
+
+    <properties>
+        <neo4j-ogm.version>3.2.19</neo4j-ogm.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -36,16 +39,19 @@
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-ogm-core</artifactId>
+            <version>${neo4j-ogm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-ogm-bolt-driver</artifactId>
+            <version>${neo4j-ogm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-ogm-http-driver</artifactId>
+            <version>${neo4j-ogm.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

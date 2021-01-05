@@ -17,7 +17,7 @@ Usage of Spring Cloud in your production code is optional, but __you will need i
 
 . https://docs.docker.com/install/[Install Docker] on your machine
 . Make sure you have http://projects.spring.io/spring-cloud/#quick-start[Spring Boot and Spring Cloud] in classpath of your tests.
-In case if you need to https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter[pick version].
+In case if you need to https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap[pick version].
 +
 .pom.xml
 [source,xml]
@@ -26,8 +26,8 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
 ...
       <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter</artifactId>
-            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter -->
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap -->
             <version>[pick version]</version>
         </dependency>
 ...
@@ -49,8 +49,8 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter</artifactId>
-            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter -->
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap -->
             <version>[pick version]</version>
             <scope>test</scope>
         </dependency>
