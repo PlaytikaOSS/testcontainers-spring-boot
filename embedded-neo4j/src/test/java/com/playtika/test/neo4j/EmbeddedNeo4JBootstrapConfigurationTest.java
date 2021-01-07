@@ -34,7 +34,6 @@ import java.util.concurrent.Callable;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -99,7 +98,9 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
         log.info("Lookup each person by name...");
         team.forEach(person -> log.info(personRepository.findByName(person.getName()).toString()));
-        team.forEach(person -> assertThat(personRepository.findByName(person.getName()).getTeammates().size()).isEqualTo(2));
+        assertThat(personRepository.findByName(greg.getName()).getTeammates().size()).isEqualTo(2);
+        assertThat(personRepository.findByName(roy.getName()).getTeammates().size()).isEqualTo(1);
+        assertThat(personRepository.findByName(craig.getName()).getTeammates().size()).isEqualTo(0);
     }
 
     @Test
@@ -115,11 +116,11 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Test
     public void shouldSetupDependsOnForAllClients() throws Exception {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, SessionFactory.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, org.neo4j.driver.Driver.class);
         assertThat(beanNamesForType)
-                .as("sessionFactory should be present")
+                .as("neo4jDriver should be present")
                 .hasSize(1)
-                .contains("sessionFactory");
+                .contains("neo4jDriver");
         asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 

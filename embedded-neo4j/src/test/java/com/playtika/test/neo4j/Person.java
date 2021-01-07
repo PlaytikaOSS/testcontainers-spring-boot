@@ -3,10 +3,10 @@ package com.playtika.test.neo4j;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import java.util.Set;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 
-@NodeEntity
+@Node("Person")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -36,7 +36,7 @@ public class Person {
      * to ignore the direction of the relationship.
      * https://dzone.com/articles/modelling-data-neo4j
      */
-    @Relationship(type = "TEAMMATE", direction = Relationship.UNDIRECTED)
+    @Relationship(type = "TEAMMATE", direction = Relationship.Direction.OUTGOING)
     public Set<Person> teammates;
 
     public void worksWith(Person person) {
