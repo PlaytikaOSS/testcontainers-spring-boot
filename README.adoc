@@ -33,6 +33,10 @@ In case if you need to https://mvnrepository.com/artifact/org.springframework.cl
 ...
 </project>
 ----
++
+NOTE: `testcontainers-spring-boot` project migrated to Spring Boot 2.4 in 2.0.0 version.
+Please note, that in order to use this project with Spring Boot 2.4, you need to use `spring-cloud-starter-bootstrap` dependency.
+For earlier Spring Boot (prior to 2.4) users -- you need to use `spring-cloud-starter` dependency instead.
 
 . If you do not use Spring Cloud - make it work for tests only:
 +
