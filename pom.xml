@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.6.RELEASE</version>
+        <version>2.4.1</version>
     </parent>
 
     <licenses>
@@ -64,7 +64,8 @@
         <java.version>1.8</java.version>
 
         <testcontainers.version>1.15.1</testcontainers.version>
-        <spring.cloud.version>Hoxton.SR9</spring.cloud.version>
+        <spring.cloud.version>2020.0.0</spring.cloud.version>
+        <spring.cloud.gcp.version>1.2.6.RELEASE</spring.cloud.gcp.version>
 
         <equalsverifier.version>3.5</equalsverifier.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -139,7 +140,6 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- we use BootstrapConfiguration from spring cloud to setup container -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -147,7 +147,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-gcp-dependencies</artifactId>
+                <version>${spring.cloud.gcp.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers</artifactId>
@@ -190,7 +196,7 @@
         -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter</artifactId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -207,6 +213,10 @@
                 <exclusion>
                     <artifactId>junit-vintage-engine</artifactId>
                     <groupId>org.junit.vintage</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
