@@ -30,6 +30,7 @@ import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,6 +48,7 @@ import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAM
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
+@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.aerospike.AerospikeAutoConfiguration")
 public class EmbeddedAerospikeTestOperationsAutoConfiguration {
 
     @Bean
