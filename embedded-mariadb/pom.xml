@@ -5,9 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>testcontainers-spring-boot</artifactId>
+        <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
         <version>2.0.1-SNAPSHOT</version>
+        <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
     <artifactId>embedded-mariadb</artifactId>
