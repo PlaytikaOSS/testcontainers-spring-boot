@@ -8,12 +8,24 @@
     <version>2.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Container auto-configurations for spring-boot based integration tests</description>
+    <url>https://github.com/Playtika/testcontainers-spring-boot</url>
+
     <licenses>
         <license>
             <name>MIT</name>
             <url>http://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Playtika</name>
+            <organization>Playtika</organization>
+            <organizationUrl>https://www.playtika.com</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://svn.apache.org/viewvc/maven</url>
