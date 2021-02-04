@@ -39,17 +39,24 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StreamUtils;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
-import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
@@ -65,6 +72,7 @@ public class EmbeddedRedisBootstrapConfiguration {
     public final static String REDIS_WAIT_STRATEGY_BEAN_NAME = "redisStartupCheckStrategy";
 
     private final ResourceLoader resourceLoader;
+    private final RedisProperties properties;
 
     @Bean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
     @ConditionalOnMissingBean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
@@ -82,12 +90,9 @@ public class EmbeddedRedisBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
     public GenericContainer redis(ConfigurableEnvironment environment,
-                                  RedisProperties properties,
                                   @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
 
         log.info("Starting Redis cluster. Docker image: {}", properties.getDockerImage());
-
-        prepareRedisConfFiles(properties);
 
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
@@ -99,8 +104,8 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCreateContainerCmdModifier(containerCmdModifier)
-                        .withCopyFileToContainer(MountableFile.forClasspathResource("redis.conf"), "/data/redis.conf")
-                        .withCopyFileToContainer(MountableFile.forClasspathResource("nodes.conf"), "/data/nodes.conf")
+                        .withCopyFileToContainer(prepareRedisConf(), "/data/redis.conf")
+                        .withCopyFileToContainer(prepareNodesConf(), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy);
         redis = configureCommonsAndStart(redis, properties, log);
@@ -109,14 +114,35 @@ public class EmbeddedRedisBootstrapConfiguration {
         return redis;
     }
 
-    private void prepareRedisConfFiles(RedisProperties properties) throws Exception {
-        resolveTemplate(resourceLoader, "redis.conf", content -> content
+    private MountableFile prepareRedisConf() throws IOException {
+        return processTemplate("redis.conf", content -> content
                 .replace("{{requirepass}}", properties.isRequirepass() ? "yes" : "no")
                 .replace("{{password}}", properties.isRequirepass() ? "requirepass " + properties.getPassword() : "")
                 .replace("{{clustered}}", properties.isClustered() ? "yes" : "no")
                 .replace("{{port}}", String.valueOf(properties.getPort())));
-        resolveTemplate(resourceLoader, "nodes.conf", content -> content
+    }
+
+    private MountableFile prepareNodesConf() throws IOException {
+        return processTemplate("nodes.conf", content -> content
                 .replace("{{port}}", String.valueOf(properties.getPort()))
                 .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
+    }
+
+    private MountableFile processTemplate(String templateName, UnaryOperator<String> templateProcessor) throws IOException {
+        String template = readTemplate(templateName);
+        String content = templateProcessor.apply(template);
+        Path file = Files.createTempFile("testcontainers_redis_", ".conf");
+        file.toFile().deleteOnExit();
+        Files.write(file, content.getBytes(StandardCharsets.UTF_8));
+        return MountableFile.forHostPath(file);
+    }
+
+    private String readTemplate(String templateName) {
+        Resource resource = resourceLoader.getResource(templateName + ".template");
+        try (InputStream inputStream = resource.getInputStream()) {
+            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IllegalStateException(String.format("Cannot read resource: %s", resource.getDescription()), e);
+        }
     }
 }
