@@ -23,6 +23,7 @@
  */
 package com.playtika.test.cassandra;
 
+import com.playtika.test.common.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -35,6 +36,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.containers.delegate.CassandraDatabaseDelegate;
+import org.testcontainers.delegate.DatabaseDelegate;
+import org.testcontainers.ext.ScriptUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,7 +46,8 @@ import java.util.Map;
 import static com.playtika.test.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
 import static com.playtika.test.cassandra.CassandraProperties.DEFAULT_DATACENTER;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
-import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
+
+import javax.script.ScriptException;
 
 @Slf4j
 @Configuration
@@ -61,13 +66,12 @@ public class EmbeddedCassandraBootstrapConfiguration {
 
         log.info("Starting Cassandra cluster. Docker image: {}", properties.dockerImage);
 
-        prepareCassandraInitScript(properties);
-
         CassandraContainer cassandra = new CassandraContainer<>(properties.dockerImage)
-                .withInitScript("cassandra-init.sql")
                 .withExposedPorts(properties.getPort());
 
         cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
+
+        initKeyspace(properties, cassandra);
 
         Map<String, Object> cassandraEnv = registerCassandraEnvironment(environment, cassandra, properties);
 
@@ -90,8 +94,15 @@ public class EmbeddedCassandraBootstrapConfiguration {
         return cassandraEnv;
     }
 
-    private void prepareCassandraInitScript(CassandraProperties properties) throws Exception {
-        resolveTemplate(resourceLoader, "cassandra-init.sql", content -> content
+    private void initKeyspace(CassandraProperties properties, CassandraContainer<?> cassandra) throws ScriptException {
+        String initScriptContent = prepareCassandraInitScript(properties);
+        try (DatabaseDelegate databaseDelegate = new CassandraDatabaseDelegate(cassandra)) {
+            ScriptUtils.executeDatabaseScript(databaseDelegate, "init.cql", initScriptContent);
+        }
+    }
+
+    private String prepareCassandraInitScript(CassandraProperties properties) {
+        return FileUtils.resolveTemplateAsString(resourceLoader, "cassandra-init.sql", content -> content
                 .replace("{{keyspaceName}}", properties.keyspaceName));
     }
 }

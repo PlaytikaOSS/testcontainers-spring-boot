@@ -3,15 +3,19 @@ package com.playtika.test.common.utils;
 import lombok.experimental.UtilityClass;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StreamUtils;
+import org.testcontainers.utility.MountableFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
@@ -19,25 +23,23 @@ import static java.util.stream.Collectors.joining;
 @UtilityClass
 public class FileUtils {
 
-    public static void resolveTemplate(ResourceLoader resourceLoader, String fileName, Function<String, String> modifyFunc) throws Exception {
+    public static String resolveTemplateAsString(ResourceLoader resourceLoader, String fileName, UnaryOperator<String> modifyFunc) {
         String fileTemplateContent = getFileContent(resourceLoader, fileName + ".template");
-        String modifiedFile = modifyFunc.apply(fileTemplateContent);
-        writeToFileInClassesDir(modifiedFile, fileName);
+        return modifyFunc.apply(fileTemplateContent);
     }
 
-    public static void writeToFileInClassesDir(String body, String fileName) throws Exception {
-        Path filePath = Paths.get(FileUtils.class.getClassLoader().getResource("").toURI()).resolve(fileName);
-        if (!Files.exists(filePath.getParent())) {
-            Files.createDirectories(filePath.getParent());
-        }
-        Files.write(filePath, body.getBytes());
+    public static Path resolveTemplateAsPath(ResourceLoader resourceLoader, String fileName, UnaryOperator<String> modifyFunc) throws IOException {
+        String modifiedFile = resolveTemplateAsString(resourceLoader, fileName, modifyFunc);
+        Path tempFilePath = Files.createTempFile("tc_", "_" + fileName);
+        tempFilePath.toFile().deleteOnExit();
+        Files.write(tempFilePath, modifiedFile.getBytes(StandardCharsets.UTF_8));
+        return tempFilePath;
     }
 
-    private static String getFileContent(ResourceLoader resourceLoader, String fileName) {
+    public static String getFileContent(ResourceLoader resourceLoader, String fileName) {
         Resource resource = resourceLoader.getResource(fileName);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-            return reader.lines()
-                    .collect(joining(lineSeparator()));
+        try (InputStream inputStream = resource.getInputStream()) {
+            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalStateException(String.format("Cannot read resource: %s", resource.getDescription()), e);
         }

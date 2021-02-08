@@ -26,6 +26,7 @@ package com.playtika.test.redis;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.FileUtils;
 import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
 import com.playtika.test.redis.wait.RedisStatusCheck;
 import lombok.RequiredArgsConstructor;
@@ -39,22 +40,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.StreamUtils;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
@@ -104,8 +99,8 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
                         .withCreateContainerCmdModifier(containerCmdModifier)
-                        .withCopyFileToContainer(prepareRedisConf(), "/data/redis.conf")
-                        .withCopyFileToContainer(prepareNodesConf(), "/data/nodes.conf")
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf()), "/data/redis.conf")
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy);
         redis = configureCommonsAndStart(redis, properties, log);
@@ -114,35 +109,17 @@ public class EmbeddedRedisBootstrapConfiguration {
         return redis;
     }
 
-    private MountableFile prepareRedisConf() throws IOException {
-        return processTemplate("redis.conf", content -> content
+    private Path prepareRedisConf() throws IOException {
+        return FileUtils.resolveTemplateAsPath(resourceLoader, "redis.conf", content -> content
                 .replace("{{requirepass}}", properties.isRequirepass() ? "yes" : "no")
                 .replace("{{password}}", properties.isRequirepass() ? "requirepass " + properties.getPassword() : "")
                 .replace("{{clustered}}", properties.isClustered() ? "yes" : "no")
                 .replace("{{port}}", String.valueOf(properties.getPort())));
     }
 
-    private MountableFile prepareNodesConf() throws IOException {
-        return processTemplate("nodes.conf", content -> content
+    private Path prepareNodesConf() throws IOException {
+        return FileUtils.resolveTemplateAsPath(resourceLoader, "nodes.conf", content -> content
                 .replace("{{port}}", String.valueOf(properties.getPort()))
                 .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
-    }
-
-    private MountableFile processTemplate(String templateName, UnaryOperator<String> templateProcessor) throws IOException {
-        String template = readTemplate(templateName);
-        String content = templateProcessor.apply(template);
-        Path file = Files.createTempFile("testcontainers_redis_", ".conf");
-        file.toFile().deleteOnExit();
-        Files.write(file, content.getBytes(StandardCharsets.UTF_8));
-        return MountableFile.forHostPath(file);
-    }
-
-    private String readTemplate(String templateName) {
-        Resource resource = resourceLoader.getResource(templateName + ".template");
-        try (InputStream inputStream = resource.getInputStream()) {
-            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new IllegalStateException(String.format("Cannot read resource: %s", resource.getDescription()), e);
-        }
     }
 }
