@@ -16,7 +16,7 @@
 
 * `embedded.aerospike.enabled` `(true|false, default is 'true')`
 * `embedded.aerospike.reuseContainer` `(true|false, default is 'false')`
-* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server:4.3.0.8')`
+* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server:5.5.0.2')`
 ** You can pick wanted version on https://hub.docker.com/r/library/aerospike/tags/[dockerhub]
 * `embedded.aerospike.waitTimeoutInSeconds` `(default is 60 seconds)`
 *  https://mvnrepository.com/artifact/com.aerospike/aerospike-client[aerospike client library]
