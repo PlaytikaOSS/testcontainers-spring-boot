@@ -27,9 +27,9 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Autowired
     protected NetworkTestOperations kafkaNetworkTestOperations;
     @Autowired
-    private ZookeeperConfigurationProperties zookeeperProperties;
+    protected ZookeeperConfigurationProperties zookeeperProperties;
     @Autowired
-    private KafkaConfigurationProperties kafkaProperties;
+    protected KafkaConfigurationProperties kafkaProperties;
 
     @Test
     @DisplayName("creates topics on startup")
@@ -86,20 +86,14 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     }
 
     @AfterAll
-    public void shouldBindToFileSystem() throws Exception {
+    public void afterAll() throws Exception {
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());
         Path kafkaDataFolder = projectDir.resolve(kafkaProperties.getFileSystemBind().getDataFolder());
 
-        assertThat(zookeeperDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(zookeeperTxnLogsFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(kafkaDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
+        assertThat(zookeeperDataFolder.toFile()).doesNotExist();
+        assertThat(zookeeperTxnLogsFolder.toFile()).doesNotExist();
+        assertThat(kafkaDataFolder.toFile()).doesNotExist();
     }
 }

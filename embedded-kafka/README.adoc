@@ -33,10 +33,10 @@
 Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to host filesystem.
 By default, to your projects `target` folder. You can configure binding using properties:
 
-* `embedded.zookeeper.fileSystemBind.enabled` `(true|false, default is 'true')`
+* `embedded.zookeeper.fileSystemBind.enabled` `(true|false, default is 'false')`
 * `embedded.zookeeper.fileSystemBind.dataFolder` `(default : target/embedded-zk-data)`
 * `embedded.zookeeper.fileSystemBind.txnLogsFolder` `(default : target/embedded-zk-txn-logs)`
-* `embedded.kafka.fileSystemBind.enabled` `(true|false, default is 'true')`
+* `embedded.kafka.fileSystemBind.enabled` `(true|false, default is 'false')`
 * `embedded.kafka.fileSystemBind.dataFolder` `(default : target/embedded-kafka-data)`
 
 ==== Produces

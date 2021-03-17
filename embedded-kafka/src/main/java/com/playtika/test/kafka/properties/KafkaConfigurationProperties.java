@@ -83,7 +83,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     @Data
     public static final class FileSystemBind {
-        private boolean enabled = true;
+        private boolean enabled = false;
         private String dataFolder = "target/embedded-kafka-data";
     }
 
