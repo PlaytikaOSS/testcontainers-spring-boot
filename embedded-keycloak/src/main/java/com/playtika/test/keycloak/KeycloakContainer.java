@@ -1,5 +1,8 @@
 package com.playtika.test.keycloak;
 
+import static java.lang.String.format;
+import static java.time.Duration.ofSeconds;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -8,14 +11,10 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
-import static java.lang.String.format;
-import static java.time.Duration.ofSeconds;
-
 @Slf4j
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     private static final int DEFAULT_HTTP_PORT_INTERNAL = 8080;
-    private static final String AUTH_BASE_PATH = "/auth";
 
     private final KeycloakProperties properties;
     private final ResourceLoader resourceLoader;
@@ -35,7 +34,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         withDB();
         withCommand(properties.getCommand());
         withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
-        waitingFor(authBasePath());
+        waitingFor(waitForListeningPort());
         withImportFile(properties.getImportFile());
     }
 
@@ -139,11 +138,10 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
         throw new ImportFileNotFoundException(importFile);
     }
 
-    private WaitStrategy authBasePath() {
+    private WaitStrategy waitForListeningPort() {
         return Wait
-                .forHttp(AUTH_BASE_PATH)
-                .forPort(DEFAULT_HTTP_PORT_INTERNAL)
-                .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds() * 2));
+                .forListeningPort()
+                .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()));
     }
 
     public String getIp() {
@@ -155,7 +153,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     }
 
     public String getAuthServerUrl() {
-        return format("http://%s:%d%s", getIp(), getHttpPort(), AUTH_BASE_PATH);
+        return format("http://%s:%d%s", getIp(), getHttpPort(), properties.getAuthBasePath());
     }
 
     public static final class ImportFileNotFoundException extends IllegalArgumentException {

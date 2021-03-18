@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 
-@SpringBootTest(classes = {VanillaTestApplication.class})
+@SpringBootTest(classes = VanillaTestApplication.class)
 @ActiveProfiles("disabled")
 public class DisableKeycloakTest {
 
