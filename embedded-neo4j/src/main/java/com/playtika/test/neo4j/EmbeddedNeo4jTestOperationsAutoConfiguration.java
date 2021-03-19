@@ -26,7 +26,7 @@ package com.playtika.test.neo4j;
 import com.playtika.test.common.operations.DefaultNetworkTestOperations;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
-import com.playtika.test.common.utils.ApkPackageInstaller;
+import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -61,7 +61,7 @@ public class EmbeddedNeo4jTestOperationsAutoConfiguration {
             InstallPackageProperties neo4jPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer neo4j
     ) {
-        return new ApkPackageInstaller(neo4jPackageProperties, neo4j);
+        return new AptGetPackageInstaller(neo4jPackageProperties, neo4j);
     }
 
     @Bean

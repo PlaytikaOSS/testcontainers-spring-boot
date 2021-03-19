@@ -35,11 +35,11 @@ public class AptGetPackageInstaller extends PackageInstaller {
 
     @Override
     protected void updatePackageList() {
-        executeSafely("apt-get", "update");
+        executeCommandAndCheckExitCode("apt-get", "update");
     }
 
     @Override
     protected void install(String packageToInstall) {
-        executeSafely("apt-get", "-qq", "-y", "install", packageToInstall);
+        executeCommandAndCheckExitCode("apt-get", "-qq", "-y", "install", packageToInstall);
     }
 }

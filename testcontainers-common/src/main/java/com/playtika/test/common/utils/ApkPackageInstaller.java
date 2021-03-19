@@ -34,11 +34,11 @@ public class ApkPackageInstaller extends PackageInstaller {
 
     @Override
     protected void updatePackageList() {
-        executeSafely("apk", "update");
+        executeCommandAndCheckExitCode("apk", "update");
     }
 
     @Override
     protected void install(String packageToInstall) {
-        executeSafely("apk", "add", packageToInstall);
+        executeCommandAndCheckExitCode("apk", "add", packageToInstall);
     }
 }
