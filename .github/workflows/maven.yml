@@ -24,5 +24,5 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Maven
-      run: mvn clean verify -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 -Dsurefire.rerunFailingTestsCount=2 --fail-at-end --no-snapshot-updates --batch-mode --no-transfer-progress
+      run: mvn clean verify -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 -Dsurefire.rerunFailingTestsCount=2 --no-snapshot-updates --batch-mode --no-transfer-progress
 

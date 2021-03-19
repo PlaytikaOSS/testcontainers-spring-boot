@@ -63,7 +63,7 @@ public class CamelRouteTest extends AbstractEmbeddedKafkaTest {
     @Test
     public void should_sendAndReceiveMessage() throws InterruptedException {
         String message = "this is a test!";
-        producerTemplate.sendBodyAndHeader(routeConfiguration.helloTopicEndpoint(), message, KafkaConstants.KEY, "12345678");
+        producerTemplate.sendBodyAndHeader(routeConfiguration.camelTopicEndpoint(), message, KafkaConstants.KEY, "12345678");
 
         routeMonitor.getResultEndpoint().setResultWaitTime(15000);
         routeMonitor.getResultEndpoint().expectedBodiesReceived(message);
