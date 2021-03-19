@@ -34,6 +34,6 @@ public class YumPackageInstaller extends PackageInstaller {
 
     @Override
     protected void install(String packageToInstall) {
-        executeSafely("yum", "-y", "install", packageToInstall);
+        executeCommandAndCheckExitCode("yum", "-y", "install", packageToInstall);
     }
 }

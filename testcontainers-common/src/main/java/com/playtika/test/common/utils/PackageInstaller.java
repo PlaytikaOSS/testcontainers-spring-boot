@@ -71,18 +71,15 @@ public abstract class PackageInstaller {
     }
 
     protected boolean shouldInstall(String packageToInstall) {
-        Container.ExecResult result = executeSafely("which", packageToInstall);
+        Container.ExecResult result = ContainerUtils.executeInContainer(container, "which", packageToInstall);
         // returns empty result if package is not installed
         // if package is installed -- returns path
         // see: https://www.ostechnix.com/how-to-find-if-a-package-is-installed-or-not-in-linux-and-unix/
         return result.getStdout().isEmpty();
     }
 
-    protected Container.ExecResult executeSafely(String... command) {
-        try {
-            return container.execInContainer(command);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to execute command", e);
-        }
+    protected void executeCommandAndCheckExitCode(String... command) {
+        ContainerUtils.executeAndCheckExitCode(container, command);
     }
+
 }
