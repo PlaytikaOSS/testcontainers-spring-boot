@@ -21,24 +21,30 @@
     {
       "name": "embedded.keycloak.docker-image",
       "type": "java.lang.String",
-      "defaultValue": "jboss/keycloak:8.0.1"
+      "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_KEYCLOAK_VERSION"
     },
     {
       "name": "embedded.keycloak.command",
       "type": "java.lang.String[]",
-      "description": "The default command string issued to the container.",
+      "description": "The command string issued to the container.",
       "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_COMMAND"
+    },
+    {
+      "name": "embedded.keycloak.authBasePath",
+      "type": "java.lang.String",
+      "description": "The relative auth URL of the container. Maybe needs to be tweaked for the WaitStrategy for different Keycloak versions (/auth vs. /auth/).",
+      "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_AUTH_BASE_URL"
     },
     {
       "name": "embedded.keycloak.admin-user",
       "type": "java.lang.String",
-      "description": "The default admin username to use.",
+      "description": "The admin username to use.",
       "defaultValue": "admin"
     },
     {
       "name": "embedded.keycloak.admin-password",
       "type": "java.lang.String",
-      "description": "The default Keycloak admin password to use.",
+      "description": "The Keycloak admin password to use.",
       "defaultValue": "letmein"
     },
     {
