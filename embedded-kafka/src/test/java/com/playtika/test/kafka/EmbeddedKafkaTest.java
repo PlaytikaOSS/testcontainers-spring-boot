@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @TestInstance(PER_CLASS)
 @DisplayName("Default embedded-kafka setup test")
 public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
-    private static final String TOPIC = "topic1";
+
     private static final String MESSAGE = "test message";
 
     @Autowired
@@ -34,7 +34,7 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Test
     @DisplayName("creates topics on startup")
     public void shouldAutoCreateTopic() throws Exception {
-        assertThatTopicExists("autoCreatedTopic");
+        assertThatTopicExists("topic1");
     }
 
     @Test
@@ -50,9 +50,9 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Test
     @DisplayName("allows send and consume messages")
     public void shouldSendAndConsumeMessage() throws Exception {
-        sendMessage(TOPIC, MESSAGE);
+        sendMessage("topic1", MESSAGE);
 
-        String consumedMessage = consumeMessage(TOPIC);
+        String consumedMessage = consumeMessage("topic1");
 
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
@@ -61,9 +61,9 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Test
     @DisplayName("allows send and consume transactional messages")
     public void shouldSendAndConsumeTransactionalMessage() throws Exception {
-        sendTransactionalMessage(TOPIC, MESSAGE);
+        sendTransactionalMessage("topic2", MESSAGE);
 
-        String consumedMessage = consumeTransactionalMessage(TOPIC);
+        String consumedMessage = consumeTransactionalMessage("topic2");
 
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
@@ -75,13 +75,13 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
         kafkaNetworkTestOperations
                 .withNetworkLatency(
                         ofMillis(1000),
-                        () -> assertThat(durationOf(() -> sendMessage(TOPIC, "abc0")))
+                        () -> assertThat(durationOf(() -> sendMessage("topic3", "abc0")))
                                 .isGreaterThan(1000L));
 
-        assertThat(durationOf(() -> sendMessage(TOPIC, "abc1")))
+        assertThat(durationOf(() -> sendMessage("topic3", "abc1")))
                 .isLessThan(200L);
 
-        assertThat(consumeMessages(TOPIC))
+        assertThat(consumeMessages("topic3"))
                 .containsExactly("abc0", "abc1");
     }
 
