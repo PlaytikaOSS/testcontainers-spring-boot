@@ -26,6 +26,7 @@ package com.playtika.test.common.utils;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.CopyFileProperties;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerState;
@@ -40,6 +41,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+@Slf4j
 @UtilityClass
 public class ContainerUtils {
 
@@ -107,7 +109,7 @@ public class ContainerUtils {
         };
     }
 
-    public static Container.ExecResult executeInContainer(ContainerState container, String[] command) {
+    public static Container.ExecResult executeInContainer(ContainerState container, String... command) {
         try {
             return container.execInContainer(command);
         } catch (Exception e) {
@@ -115,4 +117,18 @@ public class ContainerUtils {
             throw new IllegalStateException(format, e);
         }
     }
+
+    public static Container.ExecResult executeAndCheckExitCode(ContainerState container, String... command) {
+        try {
+            Container.ExecResult execResult = container.execInContainer(command);
+            log.debug("Executed command in container: {} with result: {}", container.getContainerId(), execResult);
+            if (execResult.getExitCode() != 0) {
+                throw new IllegalStateException("Failed to execute command. Execution result: " + execResult);
+            }
+            return execResult;
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to execute command in container: " + container.getContainerId(), e);
+        }
+    }
+
 }

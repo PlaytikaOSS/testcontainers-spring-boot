@@ -27,12 +27,14 @@ import com.playtika.test.kafka.configuration.EmbeddedKafkaBootstrapConfiguration
 import com.playtika.test.kafka.configuration.EmbeddedKafkaTestOperationsAutoConfiguration;
 import com.playtika.test.kafka.configuration.camel.EmbeddedKafkaCamelAutoConfiguration;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Order(1)
 @DisplayName("Test that application")
 public class DisableKafkaTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -42,7 +44,7 @@ public class DisableKafkaTest {
                     EmbeddedKafkaCamelAutoConfiguration.class));
 
     @Test
-    @DisplayName("run with zookeeper & kafka & schema registry disabled")
+    @DisplayName("runs with zookeeper & kafka & schema registry disabled")
     public void contextLoads() {
         contextRunner
                 .withPropertyValues(

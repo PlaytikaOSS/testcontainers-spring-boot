@@ -2,13 +2,17 @@ package com.playtika.test.kafka;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Order(6)
 @TestPropertySource(properties = {
         "embedded.zookeeper.fileSystemBind.enabled=true",
         "embedded.kafka.fileSystemBind.enabled=true",
