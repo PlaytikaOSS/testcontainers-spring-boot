@@ -49,7 +49,7 @@ public class SampleProductionRouteContext {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                from(configuration.helloTopicEndpoint())
+                from(configuration.camelTopicEndpoint())
                         .process(exchange -> {
                             logger.info("------------------ BEGIN OF RECEIVED MESSAGE --------------");
                             logger.info("Hello " + exchange.getIn().getBody().toString() + "!");
@@ -64,7 +64,7 @@ public class SampleProductionRouteContext {
 
     @Bean
     public SampleRouteConfiguration sampleRouteConfiguration() {
-        return () -> "kafka:helloTopic" +
+        return () -> "kafka:camelTopic" +
                 "?" +
                 "brokers=" + kafkaBrokerList +
                 "&" +
