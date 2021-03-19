@@ -25,6 +25,7 @@ package com.playtika.test.common.operations;
 
 import com.playtika.test.common.utils.ThrowingRunnable;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.GenericContainer;
@@ -33,6 +34,7 @@ import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
+@Slf4j
 @RequiredArgsConstructor
 public class DefaultNetworkTestOperations implements NetworkTestOperations {
     private final GenericContainer targetContainer;
@@ -86,6 +88,7 @@ public class DefaultNetworkTestOperations implements NetworkTestOperations {
 
     private void executeCommandInContainer(Function<Container<?>, ExecResult> command) {
         Container.ExecResult execResult = command.apply(targetContainer);
+        log.info("Executed command with result: {}", execResult);
         if (!execResult.getStderr().isEmpty()) {
             throw new IllegalStateException("Failed to execute command with message: " + execResult.getStderr());
         }
