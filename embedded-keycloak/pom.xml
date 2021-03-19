@@ -13,7 +13,7 @@
     <artifactId>embedded-keycloak</artifactId>
 
     <properties>
-        <keycloak.version>12.0.2</keycloak.version>
+        <keycloak.version>12.0.4</keycloak.version>
     </properties>
 
     <dependencies>
@@ -21,6 +21,7 @@
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
         </dependency>
+
         <!-- using vanilla Keycloak -->
         <dependency>
             <groupId>org.keycloak</groupId>
