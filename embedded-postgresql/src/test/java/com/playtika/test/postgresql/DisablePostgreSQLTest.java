@@ -48,6 +48,6 @@ class DisablePostgreSQLTest {
         String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
 
         assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("datasourceDependencyPostProcessor");
+        assertThat(postProcessors).doesNotContain("datasourcePostgreSqlDependencyPostProcessor");
     }
 }
