@@ -48,7 +48,7 @@ public class EmbeddedVoltDBDependenciesAutoConfiguration {
     @Configuration
     public static class EmbeddedVoltDBDataSourceDependencyContext {
         @Bean
-        public static BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor datasourceVoltDbDependencyPostProcessor() {
             return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_VOLTDB});
         }
     }
