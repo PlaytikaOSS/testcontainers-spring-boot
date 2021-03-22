@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -33,6 +34,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Order(5)
 @TestPropertySource(properties = {
         "embedded.kafka.schema-registry.enabled=true",
         "embedded.kafka.schema-registry.authentication=BASIC"

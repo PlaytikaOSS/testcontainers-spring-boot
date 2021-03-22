@@ -5,6 +5,7 @@ import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@Order(2)
 @TestInstance(PER_CLASS)
 @DisplayName("Default embedded-kafka setup test")
 public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
@@ -27,9 +29,9 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Autowired
     protected NetworkTestOperations kafkaNetworkTestOperations;
     @Autowired
-    private ZookeeperConfigurationProperties zookeeperProperties;
+    protected ZookeeperConfigurationProperties zookeeperProperties;
     @Autowired
-    private KafkaConfigurationProperties kafkaProperties;
+    protected KafkaConfigurationProperties kafkaProperties;
 
     @Test
     @DisplayName("creates topics on startup")
@@ -86,20 +88,14 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     }
 
     @AfterAll
-    public void shouldBindToFileSystem() throws Exception {
+    public void afterAll() throws Exception {
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());
         Path kafkaDataFolder = projectDir.resolve(kafkaProperties.getFileSystemBind().getDataFolder());
 
-        assertThat(zookeeperDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(zookeeperTxnLogsFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(kafkaDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
+        assertThat(zookeeperDataFolder.toFile()).doesNotExist();
+        assertThat(zookeeperTxnLogsFolder.toFile()).doesNotExist();
+        assertThat(kafkaDataFolder.toFile()).doesNotExist();
     }
 }

@@ -27,6 +27,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.errors.SaslAuthenticationException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -38,6 +39,7 @@ import static org.apache.kafka.common.config.SaslConfigs.SASL_MECHANISM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Order(3)
 @DisplayName("Test that embedded-kafka supports SASL_PLAINTEXT")
 public class EmbeddedKafkaSaslPlaintextTests extends AbstractEmbeddedKafkaTest {
 

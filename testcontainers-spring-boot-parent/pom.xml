@@ -20,10 +20,18 @@
         <spring.cloud.version>2020.0.0</spring.cloud.version>
         <spring.cloud.gcp.version>1.2.6.RELEASE</spring.cloud.gcp.version>
         <equalsverifier.version>3.5</equalsverifier.version>
+        <junit-jupiter.version>5.8.0-M1</junit-jupiter.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
