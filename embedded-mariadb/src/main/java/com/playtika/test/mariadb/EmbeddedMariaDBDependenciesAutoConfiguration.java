@@ -25,7 +25,7 @@ public class EmbeddedMariaDBDependenciesAutoConfiguration {
     @Configuration
     public static class EmbeddedMariaDbDataSourceDependencyContext {
         @Bean
-        public static BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
+        public static BeanFactoryPostProcessor datasourceMariaDbDependencyPostProcessor() {
             return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_MARIADB});
         }
     }
