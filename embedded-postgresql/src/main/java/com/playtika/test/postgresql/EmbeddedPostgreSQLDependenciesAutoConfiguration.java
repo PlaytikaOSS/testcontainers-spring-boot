@@ -46,7 +46,7 @@ import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDD
 public class EmbeddedPostgreSQLDependenciesAutoConfiguration {
 
     @Bean
-    public static BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor datasourcePostgreSqlDependencyPostProcessor() {
         return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_POSTGRESQL});
     }
 }

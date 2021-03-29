@@ -41,7 +41,7 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
 
     @Data
     public static final class FileSystemBind {
-        private boolean enabled = true;
+        private boolean enabled = false;
         private String dataFolder = "target/embedded-zk-data";
         private String txnLogsFolder = "target/embedded-zk-txn-logs";
     }

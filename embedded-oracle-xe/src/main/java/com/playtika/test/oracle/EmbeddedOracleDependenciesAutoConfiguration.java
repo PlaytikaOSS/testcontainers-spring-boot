@@ -46,7 +46,7 @@ import static com.playtika.test.oracle.OracleProperties.BEAN_NAME_EMBEDDED_ORACL
 public class EmbeddedOracleDependenciesAutoConfiguration {
 
     @Bean
-    public static BeanFactoryPostProcessor datasourceDependencyPostProcessor() {
+    public static BeanFactoryPostProcessor datasourceOracleDependencyPostProcessor() {
         return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_ORACLE});
     }
 }

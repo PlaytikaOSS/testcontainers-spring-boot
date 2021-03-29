@@ -55,13 +55,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         properties = {
-                "embedded.kafka.topicsToCreate=autoCreatedTopic,secureTopic,helloTopic",
+                "embedded.kafka.topicsToCreate=secureTopic,topic1,topic2,topic3,camelTopic",
                 "embedded.kafka.secureTopics=secureTopic",
                 "embedded.kafka.schema-registry.enabled=true"
         },
         classes = {EmbeddedKafkaTest.TestConfiguration.class, SampleProductionRouteContext.class}
 )
 public abstract class AbstractEmbeddedKafkaTest {
+
     @Autowired
     protected AdminClient adminClient;
     @Value("${embedded.kafka.brokerList}")

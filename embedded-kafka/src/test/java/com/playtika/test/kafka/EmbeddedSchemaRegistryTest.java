@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -35,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
+@Order(4)
 class EmbeddedSchemaRegistryTest extends AbstractEmbeddedKafkaTest {
 
     @Value("${embedded.kafka.schema-registry.host}")

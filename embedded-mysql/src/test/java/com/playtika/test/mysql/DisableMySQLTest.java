@@ -51,7 +51,7 @@ public class DisableMySQLTest {
         String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
 
         assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("datasourceDependencyPostProcessor");
+        assertThat(postProcessors).doesNotContain("datasourceMySqlDependencyPostProcessor");
     }
 
     @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)

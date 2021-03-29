@@ -5,6 +5,7 @@ import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,11 @@ import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@Order(2)
 @TestInstance(PER_CLASS)
 @DisplayName("Default embedded-kafka setup test")
 public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
-    private static final String TOPIC = "topic1";
+
     private static final String MESSAGE = "test message";
 
     @Autowired
@@ -27,14 +29,14 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Autowired
     protected NetworkTestOperations kafkaNetworkTestOperations;
     @Autowired
-    private ZookeeperConfigurationProperties zookeeperProperties;
+    protected ZookeeperConfigurationProperties zookeeperProperties;
     @Autowired
-    private KafkaConfigurationProperties kafkaProperties;
+    protected KafkaConfigurationProperties kafkaProperties;
 
     @Test
     @DisplayName("creates topics on startup")
     public void shouldAutoCreateTopic() throws Exception {
-        assertThatTopicExists("autoCreatedTopic");
+        assertThatTopicExists("topic1");
     }
 
     @Test
@@ -50,9 +52,9 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Test
     @DisplayName("allows send and consume messages")
     public void shouldSendAndConsumeMessage() throws Exception {
-        sendMessage(TOPIC, MESSAGE);
+        sendMessage("topic1", MESSAGE);
 
-        String consumedMessage = consumeMessage(TOPIC);
+        String consumedMessage = consumeMessage("topic1");
 
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
@@ -61,9 +63,9 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Test
     @DisplayName("allows send and consume transactional messages")
     public void shouldSendAndConsumeTransactionalMessage() throws Exception {
-        sendTransactionalMessage(TOPIC, MESSAGE);
+        sendTransactionalMessage("topic2", MESSAGE);
 
-        String consumedMessage = consumeTransactionalMessage(TOPIC);
+        String consumedMessage = consumeTransactionalMessage("topic2");
 
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
@@ -75,31 +77,25 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
         kafkaNetworkTestOperations
                 .withNetworkLatency(
                         ofMillis(1000),
-                        () -> assertThat(durationOf(() -> sendMessage(TOPIC, "abc0")))
+                        () -> assertThat(durationOf(() -> sendMessage("topic3", "abc0")))
                                 .isGreaterThan(1000L));
 
-        assertThat(durationOf(() -> sendMessage(TOPIC, "abc1")))
+        assertThat(durationOf(() -> sendMessage("topic3", "abc1")))
                 .isLessThan(200L);
 
-        assertThat(consumeMessages(TOPIC))
+        assertThat(consumeMessages("topic3"))
                 .containsExactly("abc0", "abc1");
     }
 
     @AfterAll
-    public void shouldBindToFileSystem() throws Exception {
+    public void afterAll() throws Exception {
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());
         Path kafkaDataFolder = projectDir.resolve(kafkaProperties.getFileSystemBind().getDataFolder());
 
-        assertThat(zookeeperDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(zookeeperTxnLogsFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(kafkaDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
+        assertThat(zookeeperDataFolder.toFile()).doesNotExist();
+        assertThat(zookeeperTxnLogsFolder.toFile()).doesNotExist();
+        assertThat(kafkaDataFolder.toFile()).doesNotExist();
     }
 }
