@@ -34,12 +34,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
+import static java.time.Duration.*;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Slf4j
 @Configuration
@@ -61,6 +67,13 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
                         .withInitScript(properties.initScriptPath);
+
+        WaitStrategy waitStrategy = new LogMessageWaitStrategy()
+            .withRegEx(properties.getStartupLogCheckRegex())
+            .withTimes(2)
+            .withStartupTimeout(of(properties.getWaitTimeoutInSeconds(), SECONDS));
+        postgresql.setWaitStrategy(waitStrategy);
+
         postgresql = (ConcretePostgreSQLContainer) configureCommonsAndStart(postgresql, properties, log);
         registerPostgresqlEnvironment(postgresql, environment, properties);
         return postgresql;
