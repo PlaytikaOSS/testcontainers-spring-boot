@@ -23,6 +23,7 @@
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
 * `embedded.postgresql.initScriptPath` `(default is null)`
+* `embedded.postgresql.startupLogCheckRegex` `(default is null)`
 
 ==== Produces
 
@@ -32,4 +33,26 @@
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
 
-//TODO: example missing
+==== Example (Spring Boot)
+
+bootstrap-test.yml
+[source,yaml]
+----
+embedded:
+  postgresql:
+    enabled: true
+    docker-image: 'bitnami/postgresql:13.1.0'
+    wait-timeout-in-seconds: 40
+    command: '/opt/bitnami/scripts/postgresql/run.sh'
+    startupLogCheckRegex: '.*database system is ready to accept connections.*'
+----
+
+application-test.yml
+[source,yaml]
+----
+spring:
+  datasource:
+    url: "jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}"
+    username: ${embedded.postgresql.user}
+    password: ${embedded.postgresql.password}
+----

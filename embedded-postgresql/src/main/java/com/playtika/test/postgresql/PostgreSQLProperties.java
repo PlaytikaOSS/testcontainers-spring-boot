@@ -38,5 +38,6 @@ public class PostgreSQLProperties extends CommonContainerProperties {
     String user = "postgresql";
     String password = "letmein";
     String database = "test_db";
+    String startupLogCheckRegex;
     String initScriptPath;
 }
