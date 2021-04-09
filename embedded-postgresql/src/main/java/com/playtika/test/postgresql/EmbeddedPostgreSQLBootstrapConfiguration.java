@@ -36,15 +36,12 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-import org.testcontainers.shaded.com.google.common.base.Strings;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
-import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.testcontainers.shaded.com.google.common.base.Strings.isNullOrEmpty;
 
 @Slf4j
@@ -72,8 +69,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         if (!isNullOrEmpty(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
                 .withRegEx(startupLogCheckRegex)
-                .withTimes(2)
-                .withStartupTimeout(Duration.of(properties.getWaitTimeoutInSeconds(), SECONDS));
+                .withTimes(2);
             postgresql.setWaitStrategy(waitStrategy);
         }
 
