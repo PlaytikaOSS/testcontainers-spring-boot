@@ -68,8 +68,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
         if (!isNullOrEmpty(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
-                .withRegEx(startupLogCheckRegex)
-                .withTimes(2);
+                .withRegEx(startupLogCheckRegex);
             postgresql.setWaitStrategy(waitStrategy);
         }
 
