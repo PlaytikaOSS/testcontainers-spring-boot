@@ -40,4 +40,5 @@ public class AerospikeProperties extends CommonContainerProperties {
     String namespace = "TEST";
     String host = "localhost";
     int port = 3000;
+    String featureKey;
 }
