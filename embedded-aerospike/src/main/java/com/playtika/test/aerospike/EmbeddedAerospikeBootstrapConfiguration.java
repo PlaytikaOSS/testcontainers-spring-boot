@@ -83,7 +83,13 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("STORAGE_GB", String.valueOf(1))
                         .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(waitStrategy);
-
+        String featureKey = properties.featureKey;
+        if (featureKey != null) {
+            // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/master/aerospike.template.conf
+            aerospike
+                .withEnv("FEATURES", featureKey)
+                .withEnv("FEATURE_KEY_FILE", "env-b64:FEATURES");
+        }
         aerospike = configureCommonsAndStart(aerospike, properties, log);
         registerAerospikeEnvironment(aerospike, environment, properties);
         return aerospike;
