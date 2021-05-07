@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.vertica.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.vertica.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of Vertica server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of Vertica server on startup."
+        }
+      ]
+    }
+  ]
+}
