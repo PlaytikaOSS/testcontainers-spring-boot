@@ -12,6 +12,10 @@
 
     <artifactId>embedded-vertica</artifactId>
 
+    <properties>
+        <vertica-jdbc.version>10.1.1-0</vertica-jdbc.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
@@ -20,7 +24,7 @@
         <dependency>
             <groupId>com.vertica.jdbc</groupId>
             <artifactId>vertica-jdbc</artifactId>
-            <version>10.1.1-0</version>
+            <version>${vertica-jdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -17,7 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest(
         classes = DisableVerticaTest.TestConfiguration.class,
-        properties = "embedded.vertica.enabled=false"
+        properties = {
+                "spring.profiles.active=disabled",
+                "embedded.vertica.enabled=false"
+        }
 )
 public class DisableVerticaTest {
     @Autowired
