@@ -17,6 +17,7 @@
 * `embedded.cassandra.enabled` `(true|false, default is 'true')`
 * `embedded.cassandra.reuseContainer` `(true|false, default is 'false')`
 * `embedded.cassandra.keyspace-name` `(default is set to 'embedded')`
+* `embedded.cassandra.replication-factor` `(default is set to '1')`
 * `embedded.cassandra.dockerImage` `(default is set to 'cassandra:3.11.6')`
 ** You can pick the desired version on https://hub.docker.com/r/library/cassandra/tags/[dockerhub]
 

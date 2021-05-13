@@ -103,6 +103,7 @@ public class EmbeddedCassandraBootstrapConfiguration {
 
     private String prepareCassandraInitScript(CassandraProperties properties) {
         return FileUtils.resolveTemplateAsString(resourceLoader, "cassandra-init.sql", content -> content
-                .replace("{{keyspaceName}}", properties.keyspaceName));
+                .replace("{{keyspaceName}}", properties.keyspaceName))
+                .replace("{{replicationFactor}}", Integer.toString(properties.replicationFactor));
     }
 }
