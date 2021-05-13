@@ -38,4 +38,5 @@ public class CassandraProperties extends CommonContainerProperties {
     public String host = "localhost";
     public int port = 9042;
     public String keyspaceName = "embedded";
+    public int replicationFactor = 1;
 }
