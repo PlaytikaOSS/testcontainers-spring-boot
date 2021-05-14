@@ -3,12 +3,17 @@ package com.playtika.test.vertica;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,5 +52,31 @@ class EmbeddedVerticaBootstrapConfigurationTest {
     @EnableAutoConfiguration
     @Configuration
     static class TestConfiguration {
+        @Value("${spring.datasource.driver-class-name}")
+        String driverClassName;
+
+        @Value("${spring.datasource.url}")
+        String url;
+
+        @Value("${spring.datasource.username}")
+        String user;
+
+        @Value("${spring.datasource.password}")
+        String password;
+
+        @Bean
+        public DataSource verticaDataSource() {
+            return DataSourceBuilder.create()
+                    .driverClassName(driverClassName)
+                    .url(url)
+                    .username(user)
+                    .password(password)
+                    .build();
+        }
+
+        @Bean
+        public JdbcTemplate jdbcTemplate (DataSource verticaDataSource) {
+            return new JdbcTemplate(verticaDataSource);
+        }
     }
 }
