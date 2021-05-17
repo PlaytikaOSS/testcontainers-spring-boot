@@ -52,31 +52,5 @@ class EmbeddedVerticaBootstrapConfigurationTest {
     @EnableAutoConfiguration
     @Configuration
     static class TestConfiguration {
-        @Value("${spring.datasource.driver-class-name}")
-        String driverClassName;
-
-        @Value("${spring.datasource.url}")
-        String url;
-
-        @Value("${spring.datasource.username}")
-        String user;
-
-        @Value("${spring.datasource.password}")
-        String password;
-
-        @Bean
-        public DataSource verticaDataSource() {
-            return DataSourceBuilder.create()
-                    .driverClassName(driverClassName)
-                    .url(url)
-                    .username(user)
-                    .password(password)
-                    .build();
-        }
-
-        @Bean
-        public JdbcTemplate jdbcTemplate (DataSource verticaDataSource) {
-            return new JdbcTemplate(verticaDataSource);
-        }
     }
 }
