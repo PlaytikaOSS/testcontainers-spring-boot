@@ -33,8 +33,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -83,7 +83,7 @@ public class AerospikeTestOperations {
 
     private void timeTravel(LocalDateTime newNow) {
         //DateTimeUtils.setCurrentMillisFixed(newNow.toInstant(ZoneOffset.systemDefault()).toEpochMilli());
-        expiredDocumentsCleaner.cleanExpiredDocumentsBefore(Instant.from(newNow));
+        expiredDocumentsCleaner.cleanExpiredDocumentsBefore(newNow.toInstant(ZoneOffset.UTC));
     }
 
     /**
