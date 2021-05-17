@@ -1,0 +1,47 @@
+=== embedded-vertica
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-vertica</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.vertica.enabled` `(true|false, default: 'true')`
+* `embedded.vertica.reuseContainer` `(true|false, default: 'false')`
+* `embedded.vertica.dockerImage` `(default: 'jbfavre/vertica:latest')`
+** You can pick wanted version on https://hub.docker.com/r/jbfavre/vertica/tags[dockerhub] or specify your own Docker image
+* `embedded.vertica.waitTimeoutInSeconds` `(default: 60 seconds)`
+
+==== Produces
+
+* `embedded.vertica.port` `(default: '5433')`
+* `embedded.vertica.host` `(default: 'localhost')`
+* `embedded.vertica.database` `(default: 'docker')`
+* `embedded.vertica.user` `(default: 'dbadmin')`
+* `embedded.vertica.password` `(default: "")`
+
+==== Notes
+
+* You can enable debug logs for `com.playtika.test` category to troubleshoot issues
+
+==== Example
+
+To auto-configure `data source` use these properties in your test `application.properties`:
+
+./src/test/resources/application.properties
+[source,properties]
+----
+spring.datasource.driver-class-name=com.vertica.jdbc.Driver
+spring.datasource.url=jdbc:vertica://${embedded.vertica.host}:${embedded.vertica.port}/${embedded.vertica.database}
+spring.datasource.username=${embedded.vertica.user}
+spring.datasource.password=${embedded.vertica.password}
+----
+

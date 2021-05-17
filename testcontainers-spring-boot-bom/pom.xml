@@ -140,6 +140,11 @@
                 <artifactId>embedded-selenium</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-vertica</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

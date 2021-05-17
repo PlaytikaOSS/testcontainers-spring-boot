@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} |%-5p| %c{1}:%L - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.playtika.test" level="info"/>
+        <Logger name="org.springframework" level="error"/>
+        <Root level="error">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>

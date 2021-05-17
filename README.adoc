@@ -238,6 +238,8 @@ embedded.redis.filesToInclude:
 
 === link:embedded-pulsar/README.adoc[embedded-pulsar]
 
+=== link:embedded-vertica/README.adoc[embedded-vertica]
+
 == How to contribute
 
 === Flow
