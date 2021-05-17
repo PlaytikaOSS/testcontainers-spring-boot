@@ -28,8 +28,6 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
@@ -37,8 +35,6 @@ import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -82,7 +78,7 @@ public class AerospikeTestOperations {
     }
 
     public void rollbackTime() {
-        DateTimeUtils.setCurrentMillisSystem();
+        //DateTimeUtils.setCurrentMillisSystem();
     }
 
     private void timeTravel(LocalDateTime newNow) {
