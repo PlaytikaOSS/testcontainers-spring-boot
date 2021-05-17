@@ -30,11 +30,15 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
-import org.joda.time.Duration;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -65,12 +69,12 @@ public class AerospikeTestOperations {
     }
 
     public void addDuration(Duration duration) {
-        timeTravel(DateTime.now().plus(duration).plusMinutes(1));
+        timeTravel(LocalDateTime.now().plus(duration).plusMinutes(1));
     }
 
-    public void timeTravelTo(DateTime futureTime) {
-        DateTime now = DateTime.now();
-        if (futureTime.isBeforeNow()) {
+    public void timeTravelTo(LocalDateTime futureTime) {
+        LocalDateTime now = LocalDateTime.now();
+        if (futureTime.isBefore(now)) {
             throw new IllegalArgumentException("Time should be in future. Now is: " + now + " time is:" + futureTime);
         } else {
             timeTravel(futureTime);
@@ -81,9 +85,9 @@ public class AerospikeTestOperations {
         DateTimeUtils.setCurrentMillisSystem();
     }
 
-    private void timeTravel(DateTime newNow) {
-        DateTimeUtils.setCurrentMillisFixed(newNow.getMillis());
-        expiredDocumentsCleaner.cleanExpiredDocumentsBefore(newNow.getMillis());
+    private void timeTravel(LocalDateTime newNow) {
+        //DateTimeUtils.setCurrentMillisFixed(newNow.toInstant(ZoneOffset.systemDefault()).toEpochMilli());
+        expiredDocumentsCleaner.cleanExpiredDocumentsBefore(Instant.from(newNow));
     }
 
     /**

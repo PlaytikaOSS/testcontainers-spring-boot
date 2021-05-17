@@ -24,17 +24,17 @@
 package com.playtika.test.aerospike;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.joda.time.Duration.standardDays;
-import static org.joda.time.Duration.standardHours;
+import static java.time.Duration.ofDays;
+import static java.time.Duration.ofHours;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.WritePolicy;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -80,10 +80,10 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldTimeTravel");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
 
-        aerospikeTestOperations.addDuration(standardHours(24));
+        aerospikeTestOperations.addDuration(ofHours(24));
         assertThat(client.get(null, key)).isNotNull();
 
-        aerospikeTestOperations.addDuration(standardHours(2));
+        aerospikeTestOperations.addDuration(ofHours(2));
         assertThat(client.get(null, key)).isNull();
     }
 
@@ -92,10 +92,10 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldAddDays");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
 
-        aerospikeTestOperations.addDuration(standardDays(1));
+        aerospikeTestOperations.addDuration(ofDays(1));
         assertThat(client.get(null, key)).isNotNull();
 
-        aerospikeTestOperations.addDuration(standardDays(1));
+        aerospikeTestOperations.addDuration(ofDays(1));
         assertThat(client.get(null, key)).isNull();
     }
 
@@ -104,16 +104,16 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldSetFutureTime");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
 
-        aerospikeTestOperations.timeTravelTo(DateTime.now().plusHours(24));
+        aerospikeTestOperations.timeTravelTo(LocalDateTime.now().plusHours(24));
         assertThat(client.get(null, key)).isNotNull();
 
-        aerospikeTestOperations.timeTravelTo(DateTime.now().plusHours(2));
+        aerospikeTestOperations.timeTravelTo(LocalDateTime.now().plusHours(2));
         assertThat(client.get(null, key)).isNull();
     }
 
     @Test
     public void shouldNotSetFutureTime() {
-        DateTime minusDay = DateTime.now().minusDays(1);
+        LocalDateTime minusDay = LocalDateTime.now().minusDays(1);
         Assertions.assertThrows(IllegalArgumentException.class, () -> aerospikeTestOperations.timeTravelTo(minusDay));
     }
 
@@ -122,11 +122,11 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
         Key key = new Key(namespace, SET, "shouldRollbackTime");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(3));
 
-        aerospikeTestOperations.addDuration(standardHours(2));
+        aerospikeTestOperations.addDuration(ofHours(2));
         assertThat(client.get(null, key)).isNotNull();
 
         aerospikeTestOperations.rollbackTime();
-        aerospikeTestOperations.addDuration(standardHours(2));
+        aerospikeTestOperations.addDuration(ofHours(2));
         assertThat(client.get(null, key)).isNotNull();
     }
 

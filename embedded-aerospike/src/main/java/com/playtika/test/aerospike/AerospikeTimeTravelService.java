@@ -24,8 +24,9 @@
 package com.playtika.test.aerospike;
 
 import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import java.time.Duration;
+
+import java.time.LocalDateTime;
 
 /**
  * @deprecated please instead use AerospikeTestOperations
@@ -40,7 +41,7 @@ public class AerospikeTimeTravelService {
      * @deprecated please instead use AerospikeTestOperations
      */
     @Deprecated
-    public void timeTravelTo(DateTime futureTime) {
+    public void timeTravelTo(LocalDateTime futureTime) {
         testOperations.timeTravelTo(futureTime);
     }
 
@@ -49,7 +50,7 @@ public class AerospikeTimeTravelService {
      */
     @Deprecated
     public void nextDay() {
-        testOperations.timeTravelTo(DateTime.now().plusDays(1));
+        testOperations.timeTravelTo(LocalDateTime.now().plusDays(1));
     }
 
     /**
@@ -57,7 +58,7 @@ public class AerospikeTimeTravelService {
      */
     @Deprecated
     public void addDays(int days) {
-        testOperations.addDuration(Duration.standardDays(days));
+        testOperations.addDuration(Duration.ofDays(days));
     }
 
     /**
@@ -65,7 +66,7 @@ public class AerospikeTimeTravelService {
      */
     @Deprecated
     public void addHours(int hours) {
-        testOperations.addDuration(Duration.standardHours(hours));
+        testOperations.addDuration(Duration.ofHours(hours));
     }
 
     /**

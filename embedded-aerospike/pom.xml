@@ -15,7 +15,6 @@
 
     <properties>
         <aerospike-client.version>4.4.18</aerospike-client.version>
-        <joda-time.version>2.10.8</joda-time.version>
     </properties>
 
     <dependencies>
@@ -32,11 +31,6 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda-time.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
