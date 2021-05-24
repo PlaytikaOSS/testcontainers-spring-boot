@@ -26,6 +26,7 @@ package com.playtika.test.memsql;
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
@@ -60,7 +62,8 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
     public GenericContainer memsql(ConfigurableEnvironment environment,
                                    MemSqlProperties properties,
-                                   MemSqlStatusCheck memSqlStatusCheck) {
+                                   MemSqlStatusCheck memSqlStatusCheck,
+                                   @Autowired(required = false) Network network) {
         log.info("Starting memsql server. Docker image: {}", properties.dockerImage);
 
         GenericContainer memsql = new GenericContainer<>(properties.dockerImage)
@@ -69,6 +72,9 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(memSqlStatusCheck);
+        if (network != null) {
+          memsql = memsql.withNetwork(network);
+        }
         memsql = configureCommonsAndStart(memsql, properties, log);
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;
