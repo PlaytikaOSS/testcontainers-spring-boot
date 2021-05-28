@@ -82,7 +82,7 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
     void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.postgresql.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.postgresql.schema")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.postgresql.database")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.user")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.password")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.init-script-path")).isNotEmpty();

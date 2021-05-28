@@ -172,7 +172,7 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 
 |embedded.{module-name}.filesToInclude
 | empty list
-a|List of files to include objects.
+|List of files to include objects.
 Each object should have two parameters:
 
  * `classpathResource` (path to local file)
@@ -184,6 +184,24 @@ Example:
 embedded.redis.filesToInclude:
   classpathResource: "/my_local_file.txt"
   containerPath: "/etc/path_in_container.txt"
+----
+
+|embedded.{module-name}.mountVolumes
+| empty list
+|List of mount volumes to persist between container restarts.
+Each object should have three parameters:
+
+ * `hostPath` (path to local file/directory)
+ * `containerPath` (path in container to mount file/directory onto)
+ * `mode` (access mode default *READ_ONLY*, or *READ_WRITE*)
+
+Example:
+[source,yaml]
+----
+embedded.postgresql.mountVolumes:
+  hostPath: "pgdata"
+  containerPath: "/var/lib/postgresql/data"
+  mode: READ_WRITE
 ----
 |===
 

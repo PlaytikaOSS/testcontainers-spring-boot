@@ -27,6 +27,7 @@ import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.CopyFileProperties;
+import com.playtika.test.common.properties.CommonContainerProperties.MountVolume;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -61,6 +62,10 @@ public class ContainerUtils {
         for (CopyFileProperties fileToCopy : properties.getFilesToInclude()) {
             MountableFile mountableFile = MountableFile.forClasspathResource(fileToCopy.getClasspathResource());
             updatedContainer = updatedContainer.withCopyFileToContainer(mountableFile, fileToCopy.getContainerPath());
+        }
+
+        for (MountVolume mountVolume : properties.getMountVolumes()) {
+            updatedContainer.addFileSystemBind(mountVolume.getHostPath(), mountVolume.getContainerPath(), mountVolume.getMode());
         }
 
         updatedContainer = properties.getCommand() != null ? updatedContainer.withCommand(properties.getCommand()) : updatedContainer;
