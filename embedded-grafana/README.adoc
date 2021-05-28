@@ -1,0 +1,32 @@
+=== embedded-grafana
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-grafana</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.grafana.enabled` `(true|false, default is 'true')`
+* `embedded.grafana.reuseContainer` `(true|false, default is 'false')`
+* `embedded.grafana.dockerImage` `(default is set to 'grafana/grafana:7.1.3')`
+* `embedded.grafana.networkAlias` `(default is set to 'grafana')`
+* `embedded.grafana.username` `(default is set to 'admin')`
+* `embedded.grafana.password` `(default is set to 'password')`
+
+==== Produces
+
+* `embedded.grafana.host`
+* `embedded.grafana.port`
+* `embedded.grafana.username`
+* `embedded.grafana.password`
+
+
+
