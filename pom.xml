@@ -64,6 +64,7 @@
         <module>embedded-selenium</module>
         <module>embedded-pulsar</module>
         <module>embedded-vertica</module>
+        <module>embedded-prometheus</module>
     </modules>
 
     <properties>

@@ -240,6 +240,8 @@ embedded.redis.filesToInclude:
 
 === link:embedded-vertica/README.adoc[embedded-vertica]
 
+=== link:embedded-prometheus/README.adoc[embedded-prometheus]
+
 == How to contribute
 
 === Flow
