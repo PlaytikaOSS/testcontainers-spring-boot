@@ -1,0 +1,26 @@
+=== embedded-prometheus
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-prometheus</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.prometheus.enabled` `(true|false, default is 'true')`
+* `embedded.prometheus.reuseContainer` `(true|false, default is 'false')`
+* `embedded.prometheus.dockerImage` `(default is set to 'prom/prometheus:v2.10.0')`
+* `embedded.prometheus.networkAlias` `(default is set to 'prometheus')`
+
+
+==== Produces
+
+* `embedded.prometheus.host`
+* `embedded.prometheus.port`
