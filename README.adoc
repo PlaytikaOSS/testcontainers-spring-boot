@@ -242,6 +242,8 @@ embedded.redis.filesToInclude:
 
 === link:embedded-prometheus/README.adoc[embedded-prometheus]
 
+=== link:embedded-grafana/README.adoc[embedded-grafana]
+
 == How to contribute
 
 === Flow

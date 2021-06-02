@@ -65,6 +65,7 @@
         <module>embedded-pulsar</module>
         <module>embedded-vertica</module>
         <module>embedded-prometheus</module>
+        <module>embedded-grafana</module>
     </modules>
 
     <properties>

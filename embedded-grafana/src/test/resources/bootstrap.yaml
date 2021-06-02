@@ -1,0 +1,5 @@
+embedded:
+  grafana:
+    filesToInclude:
+      - classpathResource: /embedded/grafana/provisioning/datasources/datasource.yml
+        containerPath: /etc/grafana/provisioning/datasources/datasource.yml
