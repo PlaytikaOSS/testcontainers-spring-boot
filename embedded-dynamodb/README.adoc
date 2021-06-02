@@ -14,9 +14,10 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.dynamodb.enabled` `(true|false, default is 'true')`
-* `embedded.dynamodb.reuseContainer` `(true|false, default is 'false')`
-* `embedded.dynamodb.dockerImage` `(default is set to 'amazon/dynamodb-local:latest')`
+* `embedded.dynamodb.enabled` `(true|false, default is true)`
+* `embedded.dynamodb.reuseContainer` `(true|false, default is false)`
+* `embedded.dynamodb.dockerImage` `(default is 'amazon/dynamodb-local:latest')`
+** Image versions on https://hub.docker.com/r/amazon/dynamodb-local/tags[dockerhub]
 
 ==== Produces
 

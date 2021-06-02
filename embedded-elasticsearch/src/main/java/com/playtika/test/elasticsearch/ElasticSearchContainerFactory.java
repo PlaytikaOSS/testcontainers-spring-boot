@@ -32,8 +32,6 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import static com.playtika.test.common.utils.ContainerUtils.DEFAULT_CONTAINER_WAIT_DURATION;
-
 class ElasticSearchContainerFactory {
 
     private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch");
@@ -70,6 +68,6 @@ class ElasticSearchContainerFactory {
         properties.indices.forEach(index -> strategy.withStrategy(new CreateIndex(properties, index)));
         return strategy
                 .withStrategy(new WaitForGreenStatus(properties))
-                .withStartupTimeout(DEFAULT_CONTAINER_WAIT_DURATION);
+                .withStartupTimeout(properties.getTimeoutDuration());
     }
 }

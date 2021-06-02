@@ -64,9 +64,9 @@ public class RedisClusterStatusCheck extends AbstractRetryingWaitStrategy {
             String clusterNodes = jedis.clusterNodes();
             log.error("Cluster in failed state:\n" +
                             "-- cluster info:\n{}\n" +
-                            "-- nodes:\n{}\n",
+                            "-- nodes:\n{}\n" +
                             "-- info:\n{}\n" +
-                            "-- config:\n{}" +
+                            "-- config:\n{}",
                             clusterInfo, clusterNodes, info, String.join("\n", config));
         }
     }

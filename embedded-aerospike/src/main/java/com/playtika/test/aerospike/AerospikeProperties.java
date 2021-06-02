@@ -35,9 +35,10 @@ public class AerospikeProperties extends CommonContainerProperties {
 
     static final String AEROSPIKE_BEAN_NAME = "aerospike";
 
-    boolean enabled = true;
-    String dockerImage = "aerospike/aerospike-server:4.5.0.19";
-    String namespace = "TEST";
+    // https://hub.docker.com/r/aerospike/aerospike-server  Aerospike Community Edition
+    // https://hub.docker.com/_/aerospike  Aerospike Official Images (choose community or enterprise edition)
+    String dockerImage = "aerospike:ce-5.6.0.5";
+    String namespace = "test";
     String host = "localhost";
     int port = 3000;
     String featureKey;

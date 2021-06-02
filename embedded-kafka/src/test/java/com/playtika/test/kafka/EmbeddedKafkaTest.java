@@ -4,6 +4,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,7 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
                 .isEqualTo(MESSAGE);
     }
 
+    @Disabled("RHEL image doesn't support to simply install tc")
     @Test
     @DisplayName("allows to emulate latency on send")
     public void shouldEmulateLatencyOnSend() throws Exception {

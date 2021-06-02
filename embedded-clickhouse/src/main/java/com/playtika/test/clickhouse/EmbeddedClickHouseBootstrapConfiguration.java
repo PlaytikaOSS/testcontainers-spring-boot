@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.ClickHouseContainer;
+import org.testcontainers.shaded.com.google.common.base.Strings;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
@@ -62,17 +63,22 @@ public class EmbeddedClickHouseBootstrapConfiguration {
         }
 
         ConcreteClickHouseContainer clickHouseContainer = new ConcreteClickHouseContainer(dockerImageName);
+        String username = Strings.isNullOrEmpty(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
+        String password = Strings.isNullOrEmpty(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
+        clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
+        clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", Strings.nullToEmpty(password));
 
         clickHouseContainer = (ConcreteClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
 
-        registerClickHouseEnvironment(clickHouseContainer, environment, properties);
+        registerClickHouseEnvironment(clickHouseContainer, environment, properties, username, password);
 
         return clickHouseContainer;
     }
 
     private void registerClickHouseEnvironment(ConcreteClickHouseContainer clickHouseContainer,
                                                ConfigurableEnvironment environment,
-                                               ClickHouseProperties properties) {
+                                               ClickHouseProperties properties,
+                                               String username, String password) {
         Integer mappedPort = clickHouseContainer.getMappedPort(properties.port);
         String host = clickHouseContainer.getContainerIpAddress();
 
@@ -80,8 +86,8 @@ public class EmbeddedClickHouseBootstrapConfiguration {
         map.put("embedded.clickhouse.schema", "default");
         map.put("embedded.clickhouse.host", host);
         map.put("embedded.clickhouse.port", mappedPort);
-        map.put("embedded.clickhouse.user", clickHouseContainer.getUsername());
-        map.put("embedded.clickhouse.password", clickHouseContainer.getPassword());
+        map.put("embedded.clickhouse.user", username);
+        map.put("embedded.clickhouse.password", password);
 
         log.info("Started ClickHouse server. Connection details: {}", map);
 

@@ -23,7 +23,6 @@
  */
 package com.playtika.test.couchbase;
 
-import com.couchbase.client.CouchbaseClient;
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
@@ -51,7 +50,6 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     @Configuration
     @ConditionalOnClass(Bucket.class)
     public static class CouchbaseBucketDependencyContext {
-
         @Bean
         public static BeanFactoryPostProcessor bucketDependencyPostProcessor() {
             return new DependsOnPostProcessor(Bucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
@@ -61,7 +59,6 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     @Configuration
     @ConditionalOnClass(AsyncBucket.class)
     public static class CouchbaseAsyncBucketDependencyContext {
-
         @Bean
         public static BeanFactoryPostProcessor asyncBucketDependencyPostProcessor() {
             return new DependsOnPostProcessor(AsyncBucket.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
@@ -69,20 +66,8 @@ public class EmbeddedCouchbaseDependenciesAutoConfiguration {
     }
 
     @Configuration
-    @ConditionalOnClass(CouchbaseClient.class)
-    public static class CouchbaseClientDependencyContext {
-
-        @Bean
-        public static BeanFactoryPostProcessor couchbaseClientDependencyPostProcessor() {
-            return new DependsOnPostProcessor(CouchbaseClient.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});
-        }
-    }
-
-
-    @Configuration
     @ConditionalOnClass(Cluster.class)
     public static class CouchbaseClusterDependencyContext {
-
         @Bean
         public static BeanFactoryPostProcessor couchbaseClusterDependencyPostProcessor() {
             return new DependsOnPostProcessor(Cluster.class, new String[]{BEAN_NAME_EMBEDDED_COUCHBASE});

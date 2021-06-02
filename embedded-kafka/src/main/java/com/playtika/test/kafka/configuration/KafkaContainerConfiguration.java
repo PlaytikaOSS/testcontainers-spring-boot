@@ -85,7 +85,10 @@ public class KafkaContainerConfiguration {
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
         int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
-        // https://docs.confluent.io/current/installation/docker/docs/configuration.html search by KAFKA_ADVERTISED_LISTENERS
+
+        // Map properties to env variables: https://docs.confluent.io/platform/current/installation/docker/config-reference.html#confluent-ak-configuration
+        // All properties: https://docs.confluent.io/platform/current/installation/configuration/
+        // Kafka Broker properties: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 
         String dockerImageVersion = kafkaProperties.getDockerImageVersion();
         log.info("Starting kafka broker. Docker image version: {}", dockerImageVersion);
@@ -120,7 +123,7 @@ public class KafkaContainerConfiguration {
                 )
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
-                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getReplicationFactor()))
+                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getOffsetsTopicReplicationFactor()))
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
                 .withEnv("KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE", "false")
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")

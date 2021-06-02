@@ -34,11 +34,12 @@ public class EmbeddedLocalStackBootstrapConfiguration {
 
         EmbeddedLocalStackContainer localStackContainer = new EmbeddedLocalStackContainer(properties.dockerImage);
         localStackContainer
-                .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
-                .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
-                .withEnv("HOSTNAME", properties.getHostname())
-                .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
-                .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
+            .withExposedPorts(properties.getEdgePort())
+            .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
+            .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
+            .withEnv("HOSTNAME", properties.getHostname())
+            .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
+            .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
 
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);
@@ -59,14 +60,14 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         map.put("embedded.localstack.secretKey", localStack.getSecretKey());
         map.put("embedded.localstack.region", localStack.getRegion());
         String prefix = "embedded.localstack.";
+        Integer mappedPort = localStack.getMappedPort(properties.getEdgePort());
         for (LocalStackContainer.Service service : properties.services) {
-            map.put(prefix + service, localStack.getEndpointConfiguration(service)
-                    .getServiceEndpoint());
-            map.put(prefix + service + ".port", localStack.getMappedPort(service.getPort()));
+            map.put(prefix + service, localStack.getEndpointConfiguration(service).getServiceEndpoint());
+            map.put(prefix + service + ".port", mappedPort);
         }
         log.info("Started Localstack. Connection details: {}", map);
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedLocalstackInfo", map);
+        MapPropertySource propertySource = new MapPropertySource("embeddedLocalStackInfo", map);
         environment.getPropertySources().addFirst(propertySource);
         setSystemProperties(localStack);
     }

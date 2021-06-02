@@ -1,11 +1,5 @@
 package com.playtika.test.pubsub;
 
-import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -21,8 +15,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
+import static com.playtika.test.pubsub.PubsubProperties.BASE_DOCKER_IMAGE;
+import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Slf4j
-@SpringBootTest(classes = EmbeddedPubsubBootstrapConfigurationTest.TestConfiguration.class)
+@SpringBootTest(classes = EmbeddedPubsubBootstrapConfigurationTest.TestConfiguration.class,
+    properties = "embedded.google.pubsub.dockerImage=" + BASE_DOCKER_IMAGE + "-emulators") // much smaller image
 @ActiveProfiles("enabled")
 public class EmbeddedPubsubBootstrapConfigurationTest {
 
