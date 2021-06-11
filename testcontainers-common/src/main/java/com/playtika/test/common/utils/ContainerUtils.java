@@ -23,6 +23,8 @@
  */
 package com.playtika.test.common.utils;
 
+import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.exception.NotFoundException;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.CopyFileProperties;
 import lombok.experimental.UtilityClass;
@@ -70,18 +72,35 @@ public class ContainerUtils {
     private long startAndLogTime(GenericContainer<?> container, Logger logger) {
         Instant startTime = Instant.now();
         container.start();
-        Instant endTime = Instant.now();
+        long startupTime = Duration.between(startTime, Instant.now()).toMillis() / 1000;
 
-        long startupTime = Duration.between(startTime, endTime).toMillis() / 1000;
-
+        String dockerImageName = container.getDockerImageName();
+        String buildDate = getBuildDate(container, dockerImageName);
+        // influxdb:1.4.3 build 2018-07-06T17:25:49+02:00 (2 years 11 months ago) startup time is 21 seconds
         if (startupTime < 10L) {
-            logger.info("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+            logger.info("{} build {} startup time is {} seconds", dockerImageName, buildDate, startupTime);
         } else if (startupTime < 20L) {
-            logger.warn("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+            logger.warn("{} build {} startup time is {} seconds", dockerImageName, buildDate, startupTime);
         } else {
-            logger.error("{} startup time is {} seconds", container.getDockerImageName(), startupTime);
+            logger.error("{} build {} startup time is {} seconds", dockerImageName, buildDate, startupTime);
         }
         return startupTime;
+    }
+
+    private String getBuildDate(GenericContainer<?> container, String dockerImageName) {
+        String imageResponseCreated = null;
+        try {
+            InspectImageResponse inspectImageResponse = container.getDockerClient().inspectImageCmd(dockerImageName).exec();
+            if(inspectImageResponse != null) {
+                imageResponseCreated = inspectImageResponse.getCreated();
+                return DateUtils.toDateAndTimeAgo(imageResponseCreated);
+            } else {
+                log.error("InspectImageResponse was null");
+            }
+        } catch (NotFoundException e) {
+            log.error("Could not get InspectImageResponse", e);
+        }
+        return imageResponseCreated;
     }
 
     public static int getAvailableMappingPort() {
