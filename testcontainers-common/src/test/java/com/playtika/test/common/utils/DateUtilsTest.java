@@ -48,38 +48,6 @@ class DateUtilsTest {
         return map;
     }
 
-    public static void main(String[] args) {
-        long now = Instant.now().toEpochMilli();
-        System.out.println(" 0 sec = " + DateUtils.toTimeAgo(now - 1000L * 0));
-        System.out.println("89 sec = " + DateUtils.toTimeAgo(now - 1000L * 89));
-        System.out.println("90 sec = " + DateUtils.toTimeAgo(now - 1000L * 90));
-        System.out.println("50 min = " + DateUtils.toTimeAgo(now - 1000L * 60 * 50));
-        System.out.println("51 min = " + DateUtils.toTimeAgo(now - 1000L * 60 * 51));
-        System.out.println("89 min = " + DateUtils.toTimeAgo(now - 1000L * 60 * 89));
-        System.out.println("90 min = " + DateUtils.toTimeAgo(now - 1000L * 60 * 90));
-        System.out.println("20 hrs = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 20));
-        System.out.println("21 hrs = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 21));
-        System.out.println("35 hrs = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 35));
-        System.out.println("36 hrs = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 36));
-        System.out.println(" 5 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 5));
-        System.out.println(" 6 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 6));
-        System.out.println("10 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 10));
-        System.out.println("11 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 11));
-        System.out.println("17 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 17));
-        System.out.println("18 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 18));
-        System.out.println("24 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 24));
-        System.out.println("25 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 25));
-        System.out.println("45 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 45));
-        System.out.println("46 day = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 46));
-        System.out.println("10 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 10));
-        System.out.println("11 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 11));
-        System.out.println("13 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 13));
-        System.out.println("14 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 14));
-        System.out.println("23 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 23));
-        System.out.println("25 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 25));
-        System.out.println("26 mon = " + DateUtils.toTimeAgo(now - 1000L * 60 * 60 * 24 * 30 * 26));
-    }
-
     private static OffsetDateTime toOffsetDateTime(Instant now, Long time) {
         return now.minusMillis(time).with(ChronoField.NANO_OF_SECOND, 0).atZone(ZoneId.systemDefault())
                   .toOffsetDateTime();
