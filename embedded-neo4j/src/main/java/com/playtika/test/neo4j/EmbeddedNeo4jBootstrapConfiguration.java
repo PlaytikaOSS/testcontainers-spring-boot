@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -55,7 +56,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
                                 Neo4jProperties properties) {
         log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
 
-        Neo4jContainer neo4j = new Neo4jContainer<>(properties.dockerImage)
+        Neo4jContainer neo4j = new Neo4jContainer<>(DockerImageName.parse(properties.dockerImage).asCompatibleSubstituteFor("neo4j"))
                 .withAdminPassword(properties.password)
                 .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN));
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
