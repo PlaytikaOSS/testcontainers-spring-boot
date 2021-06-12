@@ -86,7 +86,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.postgresql.port", mappedPort);
         map.put("embedded.postgresql.host", host);
-        map.put("embedded.postgresql.database", properties.getDatabase());
+        map.put("embedded.postgresql.schema", properties.getDatabase());
         map.put("embedded.postgresql.user", properties.getUser());
         map.put("embedded.postgresql.password", properties.getPassword());
 

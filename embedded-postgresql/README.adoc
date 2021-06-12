@@ -30,7 +30,7 @@
 
 * `embedded.postgresql.port`
 * `embedded.postgresql.host`
-* `embedded.postgresql.database`
+* `embedded.postgresql.schema`
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
 
@@ -62,7 +62,7 @@ application-test.yml
 ----
 spring:
   datasource:
-    url: "jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.database}"
+    url: "jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}"
     username: ${embedded.postgresql.user}
     password: ${embedded.postgresql.password}
 ----
