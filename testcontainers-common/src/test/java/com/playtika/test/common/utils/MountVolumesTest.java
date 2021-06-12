@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MountVolumesTest {
 
     ApplicationContextRunner context = new ApplicationContextRunner()
-        .withUserConfiguration(CommonContainerPropertiesConfiguration.class);
+        .withUserConfiguration(PostgreSQLContainerPropertiesConfiguration.class);
 
     private static void assertMountVolume(CommonContainerProperties properties, String folder, String s, BindMode readOnly) {
         assertThat(properties).isNotNull();
@@ -44,7 +44,7 @@ public class MountVolumesTest {
     @Test
     void partialConfigurationEqualsDefaultList() {
         context
-            .withPropertyValues("embedded.containers.mount-volumes[0].host-path=folder", "embedded.containers.mount-volumes[0].container-path=/mnt/folder")
+            .withPropertyValues("embedded.postgresql.mount-volumes[0].host-path=folder", "embedded.postgresql.mount-volumes[0].container-path=/mnt/folder")
             .run(it -> {
                 assertThat(it).hasNotFailed();
                 assertThat(it).hasSingleBean(CommonContainerProperties.class);
@@ -56,7 +56,7 @@ public class MountVolumesTest {
     @Test
     void propertyNamesWorkForAllSpringBootRelaxations() {
         context
-            .withPropertyValues("embedded.containers.MOUNTVOLUMES[0].MODE=Read_WRITE", "embedded.containers.mount-Volumes[0].host-PATH=folder", "embedded.containers.MOUNT-volumes[0].containerPath=/mnt/folder")
+            .withPropertyValues("embedded.postgresql.MOUNTVOLUMES[0].MODE=Read_WRITE", "embedded.postgresql.mount-Volumes[0].host-PATH=folder", "embedded.postgresql.MOUNT-volumes[0].containerPath=/mnt/folder")
             .run(it -> {
                 assertThat(it).hasNotFailed();
                 assertThat(it).hasSingleBean(CommonContainerProperties.class);
@@ -67,18 +67,18 @@ public class MountVolumesTest {
 
     @Test
     void wrongModeFailsAtStartup() {
-        context.withPropertyValues("embedded.containers.mountVolumes[0].mode=read_Wrong")
+        context.withPropertyValues("embedded.postgresql.mountVolumes[0].mode=read_Wrong")
                .run(it -> {
                    assertThat(it).hasFailed();
                    assertThat(it).getFailure().hasCauseExactlyInstanceOf(BindException.class);
                    assertThat(it).getFailure().getCause()
-                                 .hasMessage("Failed to bind properties under 'embedded.containers.mount-volumes[0].mode' to org.testcontainers.containers.BindMode");
+                                 .hasMessage("Failed to bind properties under 'embedded.postgresql.mount-volumes[0].mode' to org.testcontainers.containers.BindMode");
                });
     }
 
     @Test
     void nullContainerPathFailsAtStartup() {
-        context.withPropertyValues("embedded.containers.mount-volumes[0].host-path=folder")
+        context.withPropertyValues("embedded.postgresql.mount-volumes[0].host-path=folder")
                .run(it -> {
                    assertThat(it).hasFailed();
                    assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class);
@@ -90,7 +90,7 @@ public class MountVolumesTest {
     @Test
     void emptyContainerPathFailsAtStartup() {
         context
-            .withPropertyValues("embedded.containers.mount-volumes[0].host-path=folder", "embedded.containers.mount-volumes[0].container-path= ")
+            .withPropertyValues("embedded.postgresql.mount-volumes[0].host-path=folder", "embedded.postgresql.mount-volumes[0].container-path= ")
             .run(it -> {
                 assertThat(it).hasFailed();
                 assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class)
@@ -100,7 +100,7 @@ public class MountVolumesTest {
 
     @Test
     void nullHostPathFailsAtStartup() {
-        context.withPropertyValues("embedded.containers.mount-volumes[0].container-path=folder")
+        context.withPropertyValues("embedded.postgresql.mount-volumes[0].container-path=folder")
                .run(it -> {
                    assertThat(it).hasFailed();
                    assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class)
@@ -111,7 +111,7 @@ public class MountVolumesTest {
     @Test
     void emptyHostPathFailsAtStartup() {
         context
-            .withPropertyValues("embedded.containers.mount-volumes[0].host-path= ", "embedded.containers.mount-volumes[0].container-path=/mnt/folder")
+            .withPropertyValues("embedded.postgresql.mount-volumes[0].host-path= ", "embedded.postgresql.mount-volumes[0].container-path=/mnt/folder")
             .run(it -> {
                 assertThat(it).hasFailed();
                 assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class)
@@ -121,48 +121,52 @@ public class MountVolumesTest {
 
     @Test
     void inheritedPropertiesWorkIndependently() {
-        context.withUserConfiguration(InheritedCommonContainerPropertiesConfiguration.class)
-               .withPropertyValues("embedded.containers.mount-volumes[0].host-path=folder", "embedded.containers.mount-volumes[0].container-path=/mnt/folder", "embedded.containers.mount-volumes[0].mode=READ_WRITE")
-               .withPropertyValues("inherited.containers.mount-Volumes[0].host-PATH=folder2", "inherited.containers.MOUNT-volumes[0].containerPath=/mnt/folder2")
+        context.withUserConfiguration(OtherContainerPropertiesConfiguration.class)
+               .withPropertyValues("embedded.postgresql.mount-volumes[0].host-path=folder", "embedded.postgresql.mount-volumes[0].container-path=/mnt/folder", "embedded.postgresql.mount-volumes[0].mode=READ_WRITE")
+               .withPropertyValues("embedded.other.mount-Volumes[0].host-PATH=folder2", "embedded.other.MOUNT-volumes[0].containerPath=/mnt/folder2")
                .run(it -> {
                    assertThat(it).hasNotFailed();
                    Map<String, CommonContainerProperties> commonContainerPropertiesMap = it.getBeansOfType(CommonContainerProperties.class);
                    assertThat(commonContainerPropertiesMap)
                        .hasSize(2)
-                       .containsKey("embedded.containers-" + CommonContainerProperties.class.getName())
-                       .containsKey("inherited.containers-" + InheritedCommonContainerProperties.class.getName());
+                       .containsKey("embedded.postgresql-" + PostgreSQLContainerProperties.class.getName())
+                       .containsKey("embedded.other-" + OtherContainerProperties.class.getName());
                    assertThat(commonContainerPropertiesMap
-                       .get("embedded.containers-" + CommonContainerProperties.class.getName()))
-                       .isExactlyInstanceOf(CommonContainerProperties.class);
+                       .get("embedded.postgresql-" + PostgreSQLContainerProperties.class.getName()))
+                       .isExactlyInstanceOf(PostgreSQLContainerProperties.class);
                    assertThat(commonContainerPropertiesMap
-                       .get("inherited.containers-" + InheritedCommonContainerProperties.class.getName()))
-                       .isExactlyInstanceOf(InheritedCommonContainerProperties.class);
+                       .get("embedded.other-" + OtherContainerProperties.class.getName()))
+                       .isExactlyInstanceOf(OtherContainerProperties.class);
 
                    CommonContainerProperties properties = commonContainerPropertiesMap
-                       .get("embedded.containers-" + CommonContainerProperties.class.getName());
+                       .get("embedded.postgresql-" + PostgreSQLContainerProperties.class.getName());
                    assertMountVolume(properties, "folder", "/mnt/folder", BindMode.READ_WRITE);
 
-                   assertThat(it).hasSingleBean(InheritedCommonContainerProperties.class);
-                   InheritedCommonContainerProperties inheritedProperties = it.getBean(InheritedCommonContainerProperties.class);
+                   assertThat(it).hasSingleBean(OtherContainerProperties.class);
+                   OtherContainerProperties inheritedProperties = it.getBean(OtherContainerProperties.class);
                    assertThat(commonContainerPropertiesMap
-                       .get("inherited.containers-" + InheritedCommonContainerProperties.class.getName()))
+                       .get("embedded.other-" + OtherContainerProperties.class.getName()))
                        .isSameAs(inheritedProperties);
                    assertMountVolume(inheritedProperties, "folder2", "/mnt/folder2", BindMode.READ_ONLY);
                });
     }
 
     @TestConfiguration
-    @EnableConfigurationProperties(CommonContainerProperties.class)
-    static class CommonContainerPropertiesConfiguration {
+    @EnableConfigurationProperties(PostgreSQLContainerProperties.class)
+    static class PostgreSQLContainerPropertiesConfiguration {
+    }
+
+    @ConfigurationProperties("embedded.postgresql")
+    static class PostgreSQLContainerProperties extends CommonContainerProperties {
     }
 
     @TestConfiguration
-    @EnableConfigurationProperties(InheritedCommonContainerProperties.class)
-    static class InheritedCommonContainerPropertiesConfiguration {
+    @EnableConfigurationProperties(OtherContainerProperties.class)
+    static class OtherContainerPropertiesConfiguration {
     }
 
-    @ConfigurationProperties("inherited.containers")
-    static class InheritedCommonContainerProperties extends CommonContainerProperties {
+    @ConfigurationProperties("embedded.other")
+    static class OtherContainerProperties extends CommonContainerProperties {
     }
 
 }

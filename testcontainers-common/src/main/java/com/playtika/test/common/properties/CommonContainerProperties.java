@@ -27,7 +27,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 import org.testcontainers.containers.BindMode;
 
@@ -43,7 +42,6 @@ import static java.util.Collections.emptyMap;
 
 @Validated
 @Data
-@ConfigurationProperties("embedded.containers")
 public class CommonContainerProperties {
 
     /**
