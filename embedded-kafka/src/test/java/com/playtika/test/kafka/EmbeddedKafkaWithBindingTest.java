@@ -15,6 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Order(6)
 @TestPropertySource(properties = {
+        "embedded.kafka.fileSystemBind.dataFolder=target/embedded-kafka-data-expected",
+        "embedded.zookeeper.fileSystemBind.dataFolder=target/embedded-zk-data-expected",
+        "embedded.zookeeper.fileSystemBind.txnLogsFolder=target/embedded-zk-txn-logs-expected",
         "embedded.zookeeper.fileSystemBind.enabled=true",
         "embedded.kafka.fileSystemBind.enabled=true",
 })
