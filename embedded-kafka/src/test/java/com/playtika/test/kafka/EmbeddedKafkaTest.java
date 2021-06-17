@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -19,6 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @Order(2)
+@TestPropertySource(properties = {
+    "embedded.kafka.fileSystemBind.dataFolder=target/embedded-kafka-data-unexpected",
+    "embedded.zookeeper.fileSystemBind.dataFolder=target/embedded-zk-data-unexpected",
+    "embedded.zookeeper.fileSystemBind.txnLogsFolder=target/embedded-zk-txn-logs-unexpected",
+})
 @TestInstance(PER_CLASS)
 @DisplayName("Default embedded-kafka setup test")
 public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
@@ -29,10 +35,6 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     protected KafkaTopicsConfigurer kafkaTopicsConfigurer;
     @Autowired
     protected NetworkTestOperations kafkaNetworkTestOperations;
-    @Autowired
-    protected ZookeeperConfigurationProperties zookeeperProperties;
-    @Autowired
-    protected KafkaConfigurationProperties kafkaProperties;
 
     @Test
     @DisplayName("creates topics on startup")
@@ -90,7 +92,7 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     }
 
     @AfterAll
-    public void afterAll() throws Exception {
+    public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties) throws Exception {
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());

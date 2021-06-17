@@ -1,14 +1,15 @@
 package com.playtika.test.kafka;
 
+import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
-import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,20 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EmbeddedKafkaWithBindingTest extends EmbeddedKafkaTest {
 
     @AfterAll
-    public void afterAll() throws Exception {
+    public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties) throws Exception {
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());
         Path kafkaDataFolder = projectDir.resolve(kafkaProperties.getFileSystemBind().getDataFolder());
 
-        assertThat(zookeeperDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(zookeeperTxnLogsFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
-        assertThat(kafkaDataFolder.toFile())
-                .isDirectory()
-                .isNotEmptyDirectory();
+        assertThat(zookeeperDataFolder.toFile()).isNotEmptyDirectory();
+        assertThat(zookeeperTxnLogsFolder.toFile()).isNotEmptyDirectory();
+        assertThat(kafkaDataFolder.toFile()).isNotEmptyDirectory();
     }
 }

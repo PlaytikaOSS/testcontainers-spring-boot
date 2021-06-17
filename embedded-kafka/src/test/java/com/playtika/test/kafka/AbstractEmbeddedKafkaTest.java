@@ -55,6 +55,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         properties = {
+                "embedded.kafka.wait-timeout-in-seconds=180",
+                "embedded.kafka.schema-registry.wait-timeout-in-seconds=180",
+                "embedded.zookeeper.wait-timeout-in-seconds=180",
                 "embedded.kafka.topicsToCreate=secureTopic,topic1,topic2,topic3,camelTopic",
                 "embedded.kafka.secureTopics=secureTopic",
                 "embedded.kafka.schema-registry.enabled=true"
