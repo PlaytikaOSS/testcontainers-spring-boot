@@ -96,6 +96,7 @@
                 <executions>
                     <execution>
                         <id>prepare-tests</id>
+                        <!-- Delete eventual artifacts from previous test mounts -->
                         <phase>test-compile</phase>
                         <goals>
                             <goal>clean</goal>
@@ -103,10 +104,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <failOnError>false</failOnError>
                     <excludeDefaultDirectories>true</excludeDefaultDirectories>
                     <filesets>
                         <fileset>
-                            <directory>target</directory>
+                            <directory>${java.io.tmpdir}</directory>
                             <followSymlinks>false</followSymlinks>
                             <useDefaultExcludes>true</useDefaultExcludes>
                             <includes>
