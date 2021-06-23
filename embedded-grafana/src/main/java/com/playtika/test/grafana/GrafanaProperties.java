@@ -14,7 +14,7 @@ public class GrafanaProperties extends CommonContainerProperties {
 
     boolean enabled = true;
     // https://hub.docker.com/r/grafana/grafana
-    String dockerImage = "grafana/grafana:8.0.1";
+    String dockerImage = "grafana/grafana:8.0.3";
     String networkAlias = "grafana";
     String username = "admin";
     String password = "password";

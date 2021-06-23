@@ -16,7 +16,7 @@
 
 * `embedded.prometheus.enabled` `(true|false, default is true)`
 * `embedded.prometheus.reuseContainer` `(true|false, default is false)`
-* `embedded.prometheus.dockerImage` `(default is 'prom/prometheus:v2.27.1')`
+* `embedded.prometheus.dockerImage` `(default is 'prom/prometheus:v2.28.0')`
 ** Image versions on https://hub.docker.com/r/prom/prometheus/tags[dockerhub]
 * `embedded.prometheus.networkAlias` `(default is 'prometheus')`
 

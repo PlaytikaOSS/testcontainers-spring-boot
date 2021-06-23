@@ -20,6 +20,6 @@ public class LocalStackProperties extends CommonContainerProperties {
     public String hostname = "localhost";
     public String hostnameExternal = "localhost";
     // https://hub.docker.com/r/localstack/localstack
-    public String dockerImage = "localstack/localstack:0.12.12";
+    public String dockerImage = "localstack/localstack:0.12.13";
     public boolean useSsl = false;
 }

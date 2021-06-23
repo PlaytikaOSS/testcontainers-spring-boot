@@ -18,7 +18,7 @@
 * `embedded.localstack.services` `(comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)`
 ** You can choose available services on localstack
 * `embedded.localstack.defaultRegion` `(default is 'us-east-1')`
-* `embedded.localstack.dockerImage` `(default is 'localstack/localstack:0.12.12')`
+* `embedded.localstack.dockerImage` `(default is 'localstack/localstack:0.12.13')`
 ** Image versions on https://hub.docker.com/r/localstack/localstack/tags[dockerhub]
 * `embedded.localstack.useSsl` `(default is false)`
 * `embedded.localstack.hostname` `(default is 'localhost')`

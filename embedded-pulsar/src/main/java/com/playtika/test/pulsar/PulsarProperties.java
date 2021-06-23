@@ -11,5 +11,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class PulsarProperties extends CommonContainerProperties {
     public static final String EMBEDDED_PULSAR = "embeddedPulsar";
     // https://hub.docker.com/r/apachepulsar/pulsar
-    public String imageTag = "2.7.2";
+    public String imageTag = "2.8.0";
 }
