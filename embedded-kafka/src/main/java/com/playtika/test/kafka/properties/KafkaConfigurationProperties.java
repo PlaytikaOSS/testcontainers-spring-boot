@@ -57,6 +57,10 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/confluentinc/cp-kafka
     // https://docs.confluent.io/platform/current/installation/versions-interoperability.html
     protected String dockerImageVersion = "6.2.0";
+    /**
+     * Default Dockerfile USER since 6.0.0 (was root before)
+     */
+    protected String dockerUser = "appuser";
 
     protected Collection<String> topicsToCreate = Collections.emptyList();
     Collection<String> secureTopics = Collections.emptyList();

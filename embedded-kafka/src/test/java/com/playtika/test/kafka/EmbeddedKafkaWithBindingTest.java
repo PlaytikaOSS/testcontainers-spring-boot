@@ -20,11 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Order(6)
 @TestPropertySource(properties = {
+    "embedded.kafka.waitTimeoutInSeconds=120",
     "embedded.zookeeper.fileSystemBind.enabled=true",
     "embedded.kafka.fileSystemBind.enabled=true",
     "embedded.kafka.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-kafka-data", // /tmp is more permissible than target
     "embedded.zookeeper.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-zk-data",
     "embedded.zookeeper.fileSystemBind.txnLogsFolder=${java.io.tmpdir}/embedded-zk-txn-logs",
+    "embedded.kafka.dockerUser=root", // Needed to create mounted directories, or Zookeeper fails: "Unable to create data directory /var/lib/zookeeper/log/version-2"
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Test that embedded-kafka with filesystem binding")

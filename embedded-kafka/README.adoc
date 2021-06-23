@@ -19,6 +19,7 @@
 * `embedded.kafka.dockerImageVersion` `(default '6.2.0' provides Kafka 2.8)`
 ** Image versions on https://hub.docker.com/r/confluentinc/cp-kafka/tags[dockerhub]
 ** https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility[Confluent Platform and Apache Kafka Compatibility]
+* `embedded.kafka.dockerUser` `(default 'appuser' since Confluent Platform 6.0.0)`
 * `embedded.kafka.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.kafka.schema-registry.enabled` `(true|false, default is false)`
 * `embedded.kafka.schema-registry.waitTimeoutInSeconds` `(default is 60 seconds)`
