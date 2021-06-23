@@ -39,33 +39,33 @@
         <module>testcontainers-spring-boot-parent</module>
         <module>testcontainers-common</module>
         <module>embedded-kafka</module>
-<!--        <module>embedded-keycloak</module>-->
-<!--        <module>embedded-aerospike</module>-->
-<!--        <module>embedded-mariadb</module>-->
-<!--        <module>embedded-memsql</module>-->
-<!--        <module>embedded-mongodb</module>-->
-<!--        <module>embedded-couchbase</module>-->
-<!--        <module>embedded-redis</module>-->
-<!--        <module>embedded-neo4j</module>-->
-<!--        <module>embedded-postgresql</module>-->
-<!--        <module>embedded-elasticsearch</module>-->
-<!--        <module>embedded-dynamodb</module>-->
-<!--        <module>embedded-voltdb</module>-->
-<!--        <module>embedded-rabbitmq</module>-->
-<!--        <module>embedded-minio</module>-->
-<!--        <module>embedded-google-pubsub</module>-->
-<!--        <module>embedded-influxdb</module>-->
-<!--        <module>embedded-vault</module>-->
-<!--        <module>embedded-oracle-xe</module>-->
-<!--        <module>embedded-mysql</module>-->
-<!--        <module>embedded-localstack</module>-->
-<!--        <module>embedded-cassandra</module>-->
-<!--        <module>embedded-clickhouse</module>-->
-<!--        <module>embedded-selenium</module>-->
-<!--        <module>embedded-pulsar</module>-->
-<!--        <module>embedded-vertica</module>-->
-<!--        <module>embedded-prometheus</module>-->
-<!--        <module>embedded-grafana</module>-->
+        <module>embedded-keycloak</module>
+        <module>embedded-aerospike</module>
+        <module>embedded-mariadb</module>
+        <module>embedded-memsql</module>
+        <module>embedded-mongodb</module>
+        <module>embedded-couchbase</module>
+        <module>embedded-redis</module>
+        <module>embedded-neo4j</module>
+        <module>embedded-postgresql</module>
+        <module>embedded-elasticsearch</module>
+        <module>embedded-dynamodb</module>
+        <module>embedded-voltdb</module>
+        <module>embedded-rabbitmq</module>
+        <module>embedded-minio</module>
+        <module>embedded-google-pubsub</module>
+        <module>embedded-influxdb</module>
+        <module>embedded-vault</module>
+        <module>embedded-oracle-xe</module>
+        <module>embedded-mysql</module>
+        <module>embedded-localstack</module>
+        <module>embedded-cassandra</module>
+        <module>embedded-clickhouse</module>
+        <module>embedded-selenium</module>
+        <module>embedded-pulsar</module>
+        <module>embedded-vertica</module>
+        <module>embedded-prometheus</module>
+        <module>embedded-grafana</module>
     </modules>
 
     <properties>
