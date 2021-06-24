@@ -76,7 +76,7 @@ public class VncRecordingRecordAllUserDefinesDirTest extends BaseEmbeddedSeleniu
         }
 
         //assert that all tests generated a video
-        assertThat(tmpFiles.length).isGreaterThanOrEqualTo(4);
+        assertThat(tmpFiles.length).isGreaterThanOrEqualTo(3);
     }
 
     @Test
