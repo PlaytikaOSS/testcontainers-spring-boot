@@ -13,10 +13,6 @@
 
     <artifactId>embedded-selenium</artifactId>
 
-    <properties>
-        <maven.test.skip>true</maven.test.skip><!-- disable tests temporarily to see if others fail -->
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.testcontainers</groupId>
