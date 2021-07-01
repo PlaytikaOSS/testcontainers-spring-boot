@@ -17,6 +17,11 @@
       "type": "java.lang.String",
       "defaultValue": "null",
       "description": "The SQL file path to execute after the container starts to initialize the database."
+    },
+    {
+      "name": "embedded.postgresql.use-pull-always-policy",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
     }
   ],
   "hints": [
@@ -59,6 +64,19 @@
         {
           "value": "timescale/timescaledb:latest-pg11",
           "description": "Latest 11.x alpine timescaledb version. Ref https://hub.docker.com/r/timescale/timescaledb for further info."
+        }
+      ]
+    },
+    {
+      "name": "embedded.postgresql.use-pull-always-policy",
+      "values": [
+        {
+          "value": "true",
+          "description": "It is necessary to do an image pull before the start of the container."
+        },
+        {
+          "value": "false",
+          "description": "Do not need to do an image pull before the start of the container."
         }
       ]
     }

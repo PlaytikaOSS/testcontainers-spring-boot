@@ -18,4 +18,5 @@ public class VerticaProperties extends CommonContainerProperties {
     String database = "docker";
     String user = "dbadmin";
     String password = "";
+    boolean usePullAlwaysPolicy = false;
 }

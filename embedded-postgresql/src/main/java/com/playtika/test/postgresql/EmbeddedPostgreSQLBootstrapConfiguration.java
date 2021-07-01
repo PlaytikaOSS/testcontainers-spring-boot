@@ -36,6 +36,8 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.images.ImagePullPolicy;
+import org.testcontainers.images.PullPolicy;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
@@ -63,6 +65,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
+                        .withImagePullPolicy(resolveImagePullPolicy(properties))
                         .withInitScript(properties.initScriptPath);
 
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
@@ -96,6 +99,10 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedPostgreInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+    }
+
+    private ImagePullPolicy resolveImagePullPolicy(PostgreSQLProperties properties) {
+        return properties.isUsePullAlwaysPolicy() ? PullPolicy.alwaysPull() : PullPolicy.defaultPolicy();
     }
 
     private static class ConcretePostgreSQLContainer extends PostgreSQLContainer<ConcretePostgreSQLContainer> {

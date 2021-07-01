@@ -25,6 +25,7 @@
 * `embedded.postgresql.initScriptPath` `(default is null)`
 * `embedded.postgresql.startupLogCheckRegex` `(default is null)`
 * `embedded.postgresql.mountVolumes` `(default is empty list)`
+* `embedded.postgresql.usePullAlwaysPolicy` `(true|false, default is 'false')`
 
 ==== Produces
 
@@ -55,6 +56,7 @@ embedded:
         hostPath: 'src/main/resources/my-postgresql.conf'  # local file
         containerPath: '/bitnami/postgresql/conf/postgresql.conf' # /etc/postgresql/postgresql.conf for https://hub.docker.com/_/postgres
         mode: READ_ONLY  # prevent container from changing file contents (default)
+    usePullAlwaysPolicy: true
 ----
 
 application-test.yml

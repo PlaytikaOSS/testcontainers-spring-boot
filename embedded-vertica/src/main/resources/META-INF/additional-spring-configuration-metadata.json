@@ -6,6 +6,11 @@
       "name": "embedded.vertica.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.vertica.use-pull-always-policy",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
     }
   ],
   "hints": [
@@ -19,6 +24,19 @@
         {
           "value": "false",
           "description": "Disabled configuration of Vertica server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.vertica.use-pull-always-policy",
+      "values": [
+        {
+          "value": "true",
+          "description": "It is necessary to do an image pull before the start of the container."
+        },
+        {
+          "value": "false",
+          "description": "Do not need to do an image pull before the start of the container."
         }
       ]
     }

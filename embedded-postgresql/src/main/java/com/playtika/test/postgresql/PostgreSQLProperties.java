@@ -40,4 +40,5 @@ public class PostgreSQLProperties extends CommonContainerProperties {
     String database = "test_db";
     String startupLogCheckRegex;
     String initScriptPath;
+    boolean usePullAlwaysPolicy = false;
 }

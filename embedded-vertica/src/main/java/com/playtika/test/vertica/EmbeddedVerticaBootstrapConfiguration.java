@@ -12,6 +12,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.images.ImagePullPolicy;
+import org.testcontainers.images.PullPolicy;
 
 import java.util.LinkedHashMap;
 
@@ -45,6 +47,7 @@ public class EmbeddedVerticaBootstrapConfiguration {
         return new GenericContainer(properties.getDockerImage())
                 .withExposedPorts(properties.getPort())
                 .withEnv(map)
+                .withImagePullPolicy(resolveImagePullPolicy(properties))
                 .waitingFor(new HostPortWaitStrategy());
     }
 
@@ -66,5 +69,9 @@ public class EmbeddedVerticaBootstrapConfiguration {
         environment.getPropertySources().addFirst(propertySource);
 
         log.info("Started Vertica server. Connection details: {}, ", map);
+    }
+
+    private ImagePullPolicy resolveImagePullPolicy(VerticaProperties properties) {
+        return properties.isUsePullAlwaysPolicy() ? PullPolicy.alwaysPull() : PullPolicy.defaultPolicy();
     }
 }

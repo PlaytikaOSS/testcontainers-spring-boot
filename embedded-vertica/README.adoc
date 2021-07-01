@@ -19,6 +19,7 @@
 * `embedded.vertica.dockerImage` `(default: 'jbfavre/vertica:latest')`
 ** You can pick wanted version on https://hub.docker.com/r/jbfavre/vertica/tags[dockerhub] or specify your own Docker image
 * `embedded.vertica.waitTimeoutInSeconds` `(default: 60 seconds)`
+* `embedded.vertica.usePullAlwaysPolicy` `(true|false, default is 'false')`
 
 ==== Produces
 
