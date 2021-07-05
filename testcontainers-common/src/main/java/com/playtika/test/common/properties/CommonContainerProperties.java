@@ -56,6 +56,10 @@ public class CommonContainerProperties {
      * Reuse embedded container.
      */
     private boolean reuseContainer = false;
+    /**
+     * Whether to pull a docker image each time.
+     */
+    private boolean usePullAlwaysPolicy = false;
     private String[] command;
     private Map<String, String> env = emptyMap();
     @Valid

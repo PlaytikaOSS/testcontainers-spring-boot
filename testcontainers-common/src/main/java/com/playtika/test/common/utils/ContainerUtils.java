@@ -35,6 +35,8 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
+import org.testcontainers.images.ImagePullPolicy;
+import org.testcontainers.images.PullPolicy;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
@@ -57,6 +59,7 @@ public class ContainerUtils {
                 .withStartupTimeout(properties.getTimeoutDuration())
                 .withReuse(properties.isReuseContainer())
                 .withLogConsumer(containerLogsConsumer(logger))
+                .withImagePullPolicy(resolveImagePullPolicy(properties))
                 .withEnv(properties.getEnv());
 
         for (CopyFileProperties fileToCopy : properties.getFilesToInclude()) {
@@ -106,6 +109,10 @@ public class ContainerUtils {
             log.error("Could not get InspectImageResponse", e);
         }
         return imageResponseCreated;
+    }
+
+    private static ImagePullPolicy resolveImagePullPolicy(CommonContainerProperties properties) {
+        return properties.isUsePullAlwaysPolicy() ? PullPolicy.alwaysPull() : PullPolicy.defaultPolicy();
     }
 
     public static int getAvailableMappingPort() {
