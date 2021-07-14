@@ -36,7 +36,7 @@ public class ClickHouseProperties extends CommonContainerProperties {
     // https://github.com/ClickHouse/ClickHouse/releases
     // https://hub.docker.com/r/yandex/clickhouse-server
     static final String DEFAULT_DOCKER_IMAGE = "yandex/clickhouse-server";
-    static final String DEFAULT_DOCKER_IMAGE_TAG = "21.6-alpine";
+    static final String DEFAULT_DOCKER_IMAGE_TAG = "21.7-alpine";
     String dockerImage = DEFAULT_DOCKER_IMAGE + ":" + DEFAULT_DOCKER_IMAGE_TAG;
     String host = "localhost";
     int port = 8123;

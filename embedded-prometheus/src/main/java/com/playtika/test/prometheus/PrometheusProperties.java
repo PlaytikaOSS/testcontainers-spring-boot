@@ -14,7 +14,7 @@ public class PrometheusProperties extends CommonContainerProperties {
 
     boolean enabled = true;
     // https://hub.docker.com/r/prom/prometheus
-    String dockerImage = "prom/prometheus:v2.28.0";
+    String dockerImage = "prom/prometheus:v2.28.1";
     String networkAlias = "prometheus";
     int port = 9090;
 }

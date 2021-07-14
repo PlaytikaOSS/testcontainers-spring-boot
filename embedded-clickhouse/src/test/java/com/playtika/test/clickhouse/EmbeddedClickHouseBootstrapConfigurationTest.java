@@ -36,7 +36,7 @@ public class EmbeddedClickHouseBootstrapConfigurationTest extends BaseEmbeddedCl
     @Test
     public void shouldConnectToClickHouse() throws Exception {
         Matcher m = Pattern.compile("([0-9]+\\.[0-9]+).*").matcher(DEFAULT_DOCKER_IMAGE_TAG);
-        String versionPrefix = m.matches() ? m.toMatchResult().group(1) + "." : "21.6."; // Fallback to last known version
+        String versionPrefix = m.matches() ? m.toMatchResult().group(1) + "." : "21.7."; // Fallback to last known version
         assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith(versionPrefix);
     }
 

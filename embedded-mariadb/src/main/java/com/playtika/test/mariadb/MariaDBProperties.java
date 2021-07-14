@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MariaDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
     // https://hub.docker.com/_/mariadb
-    String dockerImage = "mariadb:10.5-focal";
+    String dockerImage = "mariadb:10.6-focal";
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";
 
