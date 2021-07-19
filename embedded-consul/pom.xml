@@ -12,10 +12,20 @@
 
   <artifactId>embedded-consul</artifactId>
 
+  <properties>
+    <consul-api-version>1.4.5</consul-api-version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.playtika.testcontainers</groupId>
       <artifactId>testcontainers-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ecwid.consul</groupId>
+      <artifactId>consul-api</artifactId>
+      <version>${consul-api-version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
