@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -36,6 +37,12 @@ public class EmbeddedConsulBootstrapConfiguration {
                         Wait.forHttp("/v1/status/leader")
                                 .forStatusCode(200)
                 ).withStartupTimeout(properties.getTimeoutDuration());
+
+        if (properties.getConfigurationFile() != null) {
+            consul = consul.withClasspathResourceMapping(
+                    properties.getConfigurationFile(), "/consul/config/test-acl.hcl",
+                    BindMode.READ_ONLY);
+        }
 
         consul = configureCommonsAndStart(consul, properties, log);
         registerConsulEnvironment(consul, environment, properties);
