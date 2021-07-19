@@ -40,7 +40,7 @@ public class EmbeddedConsulBootstrapConfiguration {
 
         if (properties.getConfigurationFile() != null) {
             consul = consul.withClasspathResourceMapping(
-                    properties.getConfigurationFile(), "/consul/config/test-acl.hcl",
+                    properties.getConfigurationFile(), "/consul/config/test.hcl",
                     BindMode.READ_ONLY);
         }
 

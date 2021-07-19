@@ -1,5 +1,6 @@
 package com.playtika.test.consul;
 
+import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,9 @@ public class EmbeddedConsulBootstrapConfigurationTest extends EmbeddedConsulBoot
 
     @Test
     public void shouldUpdateKey() {
-        Response<Boolean> booleanResponse = this.client.setKVValue("key", "val");
+        ConsulClient client = buildClient();
+
+        Response<Boolean> booleanResponse = client.setKVValue("key", "val");
         assertThat(booleanResponse.getValue()).isEqualTo(true);
     }
 }

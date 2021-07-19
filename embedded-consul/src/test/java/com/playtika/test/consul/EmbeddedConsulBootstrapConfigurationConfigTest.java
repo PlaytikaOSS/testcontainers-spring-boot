@@ -1,5 +1,6 @@
 package com.playtika.test.consul;
 
+import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.OperationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,13 +31,13 @@ public class EmbeddedConsulBootstrapConfigurationConfigTest extends EmbeddedCons
 
     @Test
     public void shouldUpdateKeyForbidden() {
+        ConsulClient client = buildClient();
+
         // with the loaded config consul should require use of an access token,
         // which is not provided so 403 should be returned by consul
         OperationException ex = assertThrows(OperationException.class, () -> {
-            this.client.setKVValue("key", "val");
+            client.setKVValue("key", "val");
         });
         assertThat(ex.getStatusCode()).isEqualTo(403);
     }
-
-
 }
