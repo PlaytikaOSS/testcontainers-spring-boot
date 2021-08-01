@@ -27,7 +27,6 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,16 +50,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         classes = EmbeddedCassandraTest.TestConfiguration.class,
-        properties = "embedded.cassandra.enabled=true"
+        properties = { "embedded.cassandra.enabled=true", "embedded.cassandra.waitTimeoutInSeconds=90" }
 )
 @ActiveProfiles("enabled")
 public class EmbeddedCassandraTest {
 
     @Autowired
     protected ConfigurableListableBeanFactory beanFactory;
-
-    @Autowired
-    protected CqlSession cqlSession;
 
     @Autowired
     protected DummyCassandraRepository dummyCassandraRepository;
@@ -71,11 +67,10 @@ public class EmbeddedCassandraTest {
 
     @Test
     public void springDataCassandraShouldWork() {
-
         DummyCassandraEntity entityToSave = new DummyCassandraEntity(UUID.randomUUID(), "name");
         dummyCassandraRepository.save(entityToSave);
         DummyCassandraEntity retrievedEntity = dummyCassandraRepository.findByName("name");
-        Assert.assertEquals(entityToSave, retrievedEntity);
+        assertThat(retrievedEntity).isEqualTo(entityToSave);
     }
 
     @Test
@@ -121,7 +116,6 @@ public class EmbeddedCassandraTest {
     }
 
     interface DummyCassandraRepository extends CassandraRepository<DummyCassandraEntity, UUID> {
-
         @AllowFiltering
         DummyCassandraEntity findByName(String name);
     }

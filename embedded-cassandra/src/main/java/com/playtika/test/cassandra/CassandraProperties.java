@@ -35,7 +35,7 @@ public class CassandraProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_CASSANDRA = "embeddedCassandra";
     public static final String DEFAULT_DATACENTER = "datacenter1";
     // https://hub.docker.com/_/cassandra
-    public String dockerImage = "cassandra:3.11";
+    public String dockerImage = "cassandra:4.0";
     public String host = "localhost";
     public int port = 9042;
     public String keyspaceName = "embedded";

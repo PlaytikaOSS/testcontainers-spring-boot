@@ -41,7 +41,7 @@ public class KeycloakProperties extends CommonContainerProperties {
     };
 
     // https://hub.docker.com/r/jboss/keycloak
-    public static final String DEFAULT_KEYCLOAK_IMAGE = "jboss/keycloak:14.0.0";
+    public static final String DEFAULT_KEYCLOAK_IMAGE = "jboss/keycloak:15.0.0";
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
