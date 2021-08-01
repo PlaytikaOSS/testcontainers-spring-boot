@@ -244,7 +244,7 @@ public class KafkaContainerConfiguration {
                 } catch (FileAlreadyExistsException e) {
                     makeWritable(p);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -268,7 +268,7 @@ public class KafkaContainerConfiguration {
                 fileAttributeView.setPermissions(permissions);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
