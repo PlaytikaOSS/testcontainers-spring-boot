@@ -14,8 +14,8 @@
 
 ==== Consumer (via `bootstrap.properties`)
 
-* `embedded.redis.enabled` `(true|false, default is 'true')`
-* `embedded.redis.configurationFile` `(path for the consul configuration file to be mounted, relative to the resources folder, default is 'null')`
+* `embedded.consul.enabled` `(true|false, default is 'true')`
+* `embedded.consul.configurationFile` `(path for the consul configuration file to be mounted, relative to the resources folder, default is 'null')`
 
 Example spring configuration:
 
