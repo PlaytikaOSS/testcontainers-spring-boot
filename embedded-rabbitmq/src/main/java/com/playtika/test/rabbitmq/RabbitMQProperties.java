@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.rabbitmq")
 public class RabbitMQProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_RABBITMQ = "embeddedRabbitMq";
-    private String dockerImage = "rabbitmq:3-alpine";
+    private String dockerImage = "rabbitmq:3.8-alpine";
 
     private String password = "rabbitmq";
     private String host = "localhost";

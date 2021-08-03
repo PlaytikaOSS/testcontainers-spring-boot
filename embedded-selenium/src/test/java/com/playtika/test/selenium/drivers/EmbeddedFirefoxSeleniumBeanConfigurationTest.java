@@ -24,6 +24,7 @@ package com.playtika.test.selenium.drivers;
 
 
 import com.playtika.test.selenium.SeleniumProperties;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -32,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Map;
@@ -43,10 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * {@link FirefoxOptions}
  */
-@SpringBootTest(
-        classes = TestApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@Disabled
 @Import(EmbeddedFirefoxSeleniumBeanConfigurationTest.LocalTestConfiguration.class)
 public class EmbeddedFirefoxSeleniumBeanConfigurationTest extends BaseEmbeddedSeleniumTest {
 
