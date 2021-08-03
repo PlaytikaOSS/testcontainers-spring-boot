@@ -37,15 +37,15 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     public static final String[] DEFAULT_COMMAND = {
         "-b 0.0.0.0",
-        "-c standalone.xml",
-        "-Dkeycloak.profile.feature.upload_scripts=enabled"
+        "-c standalone.xml"
     };
 
-    public static final String DEFAULT_KEYCLOAK_IMAGE = "jboss/keycloak:12.0.4";
+    public static final String DEFAULT_KEYCLOAK_IMAGE = "jboss/keycloak:14.0.0";
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
     public static final String DEFAULT_AUTH_BASE_PATH = "/auth";
+    public static final String DEFAULT_DB_VENDOR = "h2";
 
     private String dockerImage = DEFAULT_KEYCLOAK_IMAGE;
     private String[] command = DEFAULT_COMMAND;
@@ -53,7 +53,7 @@ public class KeycloakProperties extends CommonContainerProperties {
     private String adminPassword = DEFAULT_ADMIN_PASSWORD;
     private String authBasePath = DEFAULT_AUTH_BASE_PATH;
     private String importFile;
-    private String dbVendor;
+    private String dbVendor = DEFAULT_DB_VENDOR;
     private String dbAddr;
     private String dbPort;
     private String dbDatabase;
