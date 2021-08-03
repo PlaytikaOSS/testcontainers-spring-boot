@@ -47,6 +47,10 @@ import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.DefaultRecordingFileFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.RecordingFileFactory;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 
 import java.io.File;
@@ -54,11 +58,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 
 @Slf4j
@@ -108,6 +114,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
                 ? new BrowserWebDriverContainer<>(imageName)
                 :  new BrowserWebDriverContainer<>();
 
+        container.setWaitStrategy(getWaitStrategy());
         container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
 
@@ -124,6 +131,19 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, container, properties.getVnc().getMode().convert(), recordingDirOrNull);
         log.info("Started Selenium server. Connection details: {}", seleniumEnv);
         return container;
+    }
+
+    //See: https://github.com/testcontainers/testcontainers-java/pull/4357
+    @Deprecated
+    private WaitStrategy getWaitStrategy() {
+        WaitStrategy logWaitStrategy = new LogMessageWaitStrategy()
+                .withRegEx(".*(RemoteWebDriver instances should connect to|Selenium Server is up and running).*\n")
+                .withStartupTimeout(Duration.of(60, SECONDS));
+
+        return new WaitAllStrategy()
+                .withStrategy(logWaitStrategy)
+                .withStrategy(new HostPortWaitStrategy())
+                .withStartupTimeout(Duration.of(60, SECONDS));
     }
 
     /**
