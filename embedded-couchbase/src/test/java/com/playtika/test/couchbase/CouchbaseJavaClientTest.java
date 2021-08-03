@@ -25,6 +25,8 @@ package com.playtika.test.couchbase;
 
 import com.couchbase.client.core.env.SeedNode;
 import com.couchbase.client.core.env.TimeoutConfig;
+import com.couchbase.client.core.retry.BestEffortRetryStrategy;
+import com.couchbase.client.core.retry.RetryStrategy;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
@@ -75,6 +77,8 @@ public class CouchbaseJavaClientTest extends EmbeddedCouchbaseBootstrapConfigura
                         Optional.of(mappedHttpPort))));
 
         ClusterEnvironment env = ClusterEnvironment.builder()
+                .retryStrategy(BestEffortRetryStrategy.withExponentialBackoff(Duration.ofMillis(50), Duration.ofMillis(500), 2))
+                .maxNumRequestsInRetry(5)
                 .timeoutConfig(TimeoutConfig.kvTimeout(Duration.ofSeconds(20)))
                 .build();
 
