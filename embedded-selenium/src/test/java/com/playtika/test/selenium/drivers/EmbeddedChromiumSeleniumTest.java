@@ -55,4 +55,9 @@ public class EmbeddedChromiumSeleniumTest extends BaseEmbeddedSeleniumTest {
         List<String> args = (List<String>)capabilities.get("args");
         assertThat(args).contains("start-maximized");
     }
+
+    @Test
+    public void vncModeIsSkipByDefault() {
+        assertThat(environment.getProperty("embedded.selenium.vnc.mode")).isEqualTo("SKIP");
+    }
 }
