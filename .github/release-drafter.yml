@@ -1,0 +1,25 @@
+name-template: $NEXT_PATCH_VERSION
+tag-template: $NEXT_PATCH_VERSION
+
+template: |
+  # Changes
+  $CHANGES
+
+categories:
+  - title: 🚀 Features & Enhancements
+    labels:
+      - feature
+      - enhancement
+
+  - title: 🐞 Fixes
+    label: bug
+
+  - title: 📁 Dependencies updates
+    label: dependencies
+
+  - title: 📖 Documentation
+    label: documentation
+
+  - title: 🏡 Housekeeping
+    label: housekeeping
+
