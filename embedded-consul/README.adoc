@@ -1,0 +1,38 @@
+=== embedded-consul
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-consul</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumer (via `bootstrap.properties`)
+
+* `embedded.consul.enabled` `(true|false, default is 'true')`
+* `embedded.consul.configurationFile` `(path for the consul configuration file to be mounted, relative to the resources folder, default is 'null')`
+
+Example spring configuration:
+
+.application.yml
+[source,yaml]
+----
+embedded:
+  containers:
+    enabled: true
+  consul:
+    enabled: true
+    # file to be mounted in docker as '/consul/config/test-acl.hcl' 
+    # path relative from the resources directory (usually 'src/test/resources')
+    configurationFile: consul/test-acl.hcl 
+----
+
+==== Produces
+
+* `embedded.consul.host`
+* `embedded.consul.port`
