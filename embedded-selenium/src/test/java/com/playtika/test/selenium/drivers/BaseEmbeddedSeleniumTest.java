@@ -25,16 +25,12 @@ package com.playtika.test.selenium.drivers;
 import com.playtika.test.selenium.DockerHostname;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.BrowserWebDriverContainer;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,9 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public abstract class BaseEmbeddedSeleniumTest {
-
-    @Autowired
-    protected ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
     protected BrowserWebDriverContainer container;
@@ -63,20 +56,17 @@ public abstract class BaseEmbeddedSeleniumTest {
     @Test
     public void seleniumShouldWork() {
         RemoteWebDriver driver = container.getWebDriver();
-        getIndexPage(driver, port);
+        getIndexPage(driver);
         assertThat(driver.getTitle()).isEqualTo("Hello World Page");
     }
 
     @Test
-    public void seleniumLinkShouldWork() {
+    public void seleniumLinkShouldWorkAndPropertiesAreAvailable() {
         RemoteWebDriver driver = container.getWebDriver();
-        getIndexPage(driver, port);
+        getIndexPage(driver);
         driver.findElementByLinkText("Test Link").click();
         assertThat(driver.getTitle()).isEqualTo("Test Link Page");
-    }
 
-    @Test
-    public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.selenium.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.selenium.host")).isNotEmpty();
 
@@ -84,10 +74,9 @@ public abstract class BaseEmbeddedSeleniumTest {
         assertThat(environment.getProperty("embedded.selenium.vnc.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.selenium.vnc.username")).isNotEmpty();
         assertThat(environment.getProperty("embedded.selenium.vnc.password")).isNotEmpty();
-
     }
 
-    private void getIndexPage(RemoteWebDriver driver, int port) {
+    private void getIndexPage(RemoteWebDriver driver) {
         driver.get("http://" + dockerHostname + ":" + port + "/index.html");
     }
 

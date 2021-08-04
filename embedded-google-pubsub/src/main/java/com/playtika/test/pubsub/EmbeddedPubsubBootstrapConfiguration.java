@@ -37,7 +37,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -62,18 +61,17 @@ public class EmbeddedPubsubBootstrapConfiguration {
         log.info("Starting Google Cloud Pubsub emulator. Docker image: {}", properties.getDockerImage());
 
         GenericContainer container = new GenericContainer(properties.getDockerImage())
-                .withExposedPorts(properties.getPort())
-                .withCommand(
-                        "/bin/sh",
-                        "-c",
-                        format(
-                                "gcloud beta emulators pubsub start --project %s --host-port=%s:%d",
-                                properties.getProjectId(),
-                                properties.getHost(),
-                                properties.getPort()
-                        )
+            .withExposedPorts(properties.getPort())
+            .withCommand(
+                "/bin/sh",
+                "-c",
+                format(
+                    "gcloud beta emulators pubsub start --project %s --host-port=%s:%d",
+                    properties.getProjectId(),
+                    properties.getHost(),
+                    properties.getPort()
                 )
-                .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"));
+            );
 
         container = configureCommonsAndStart(container, properties, log);
         registerPubsubEnvironment(container, environment, properties);
@@ -97,10 +95,9 @@ public class EmbeddedPubsubBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
     public ManagedChannel managedChannel(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub, PubsubProperties properties) {
-        return ManagedChannelBuilder.forAddress(pubsub.getContainerIpAddress(),
-                pubsub.getMappedPort(properties.getPort()))
-                .usePlaintext()
-                .build();
+        return ManagedChannelBuilder
+            .forAddress(pubsub.getContainerIpAddress(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
+            .build();
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR)

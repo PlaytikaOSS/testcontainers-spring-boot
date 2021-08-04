@@ -14,10 +14,10 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.voltdb.enabled` `(true|false, default is 'true')`
-* `embedded.voltdb.reuseContainer` `(true|false, default is 'false')`
-* `embedded.voltdb.dockerImage` `(default is set to 'voltdb/voltdb-community:8.3.3')`
-** You can pick wanted version on https://hub.docker.com/r/voltdb/voltdb-community/tags/[dockerhub]
+* `embedded.voltdb.enabled` `(true|false, default is true)`
+* `embedded.voltdb.reuseContainer` `(true|false, default is false)`
+* `embedded.voltdb.dockerImage` `(default is 'voltdb/voltdb-community:9.2.1')`
+** Image versions on https://hub.docker.com/r/voltdb/voltdb-community/tags[dockerhub]
 
 ==== Produces
 

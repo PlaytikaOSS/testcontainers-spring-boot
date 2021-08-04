@@ -14,8 +14,10 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>3.6.0</camel.version>
-        <kafka-clients.version>2.6.0</kafka-clients.version>
+        <camel.version>3.11.0</camel.version>
+        <!-- https://spring.io/projects/spring-kafka#kafka-client-compatibility Confluent Platform 6.2 provides Kafka 2.8 -->
+        <kafka-clients.version>2.8.0</kafka-clients.version>
+        <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -84,4 +86,39 @@
             </exclusions>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven-clean-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-tests</id>
+                        <!-- Delete eventual artifacts from previous test mounts -->
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                    <filesets>
+                        <fileset>
+                            <directory>${java.io.tmpdir}</directory>
+                            <followSymlinks>false</followSymlinks>
+                            <useDefaultExcludes>true</useDefaultExcludes>
+                            <includes>
+                                <include>embedded-kafka-*/**</include>
+                                <include>embedded-zk-*/**</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

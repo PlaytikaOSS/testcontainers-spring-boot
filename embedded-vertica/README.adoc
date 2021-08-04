@@ -14,19 +14,19 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.vertica.enabled` `(true|false, default: 'true')`
-* `embedded.vertica.reuseContainer` `(true|false, default: 'false')`
-* `embedded.vertica.dockerImage` `(default: 'jbfavre/vertica:latest')`
-** You can pick wanted version on https://hub.docker.com/r/jbfavre/vertica/tags[dockerhub] or specify your own Docker image
-* `embedded.vertica.waitTimeoutInSeconds` `(default: 60 seconds)`
+* `embedded.vertica.enabled` `(true|false, default is true)`
+* `embedded.vertica.reuseContainer` `(true|false, default is false)`
+* `embedded.vertica.dockerImage` `(default is 'jbfavre/vertica:9.2.0-7_debian-8')`
+** Image versions on https://hub.docker.com/r/jbfavre/vertica/tags[dockerhub]
+* `embedded.vertica.waitTimeoutInSeconds` `(default is 60 seconds)`
 
 ==== Produces
 
-* `embedded.vertica.port` `(default: '5433')`
-* `embedded.vertica.host` `(default: 'localhost')`
-* `embedded.vertica.database` `(default: 'docker')`
-* `embedded.vertica.user` `(default: 'dbadmin')`
-* `embedded.vertica.password` `(default: "")`
+* `embedded.vertica.port` `(default is '5433')`
+* `embedded.vertica.host` `(default is 'localhost')`
+* `embedded.vertica.database` `(default is 'docker')`
+* `embedded.vertica.user` `(default is 'dbadmin')`
+* `embedded.vertica.password` `(default is "")`
 
 ==== Notes
 
@@ -44,4 +44,3 @@ spring.datasource.url=jdbc:vertica://${embedded.vertica.host}:${embedded.vertica
 spring.datasource.username=${embedded.vertica.user}
 spring.datasource.password=${embedded.vertica.password}
 ----
-

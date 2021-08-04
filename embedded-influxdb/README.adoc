@@ -14,18 +14,18 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.influxdb.enabled` `(boolean, true|false, default is 'true')`
-* `embedded.influxdb.reuseContainer` `(boolean, true|false, default is 'false')`
-* `embedded.influxdb.dockerImage` `(String, default is set to 'influxdb:1.5-alpine')`
-** You can pick wanted version on dockerhub
-* `embedded.influxdb.admin-user` `(String, default is 'admin')`
-* `embedded.influxdb.admin-password` `(String, default is 'admin')`
-* `embedded.influxdb.user` `(String, default is 'user')`
-* `embedded.influxdb.password` `(String, default is 'password')`
-* `embedded.influxdb.enable-http-auth` `(boolean true|false, default is 'true')`
-* `embedded.influxdb.host` `(String, default is 'localhost')`
+* `embedded.influxdb.enabled` `(true|false, default is true)`
+* `embedded.influxdb.reuseContainer` `(true|false, default is false)`
+* `embedded.influxdb.dockerImage` `(default is 'influxdb:2.0-alpine')`
+** Image versions on https://hub.docker.com/_/influxdb?tab=tags[dockerhub]
+* `embedded.influxdb.admin-user` `(default is 'admin')`
+* `embedded.influxdb.admin-password` `(default is 'admin')`
+* `embedded.influxdb.user` `(default is 'user')`
+* `embedded.influxdb.password` `(default is 'password')`
+* `embedded.influxdb.enable-http-auth` `(true|false, default is true)`
+* `embedded.influxdb.host` `(default is 'localhost')`
 * `embedded.influxdb.port` `(int, default is '8086')`
-* `embedded.influxdb.database` `(String, default is 'db')`
+* `embedded.influxdb.database` `(default is 'db')`
 
 ==== Produces
 

@@ -13,14 +13,14 @@
 ----
 
 ==== Consumes (via `bootstrap.properties`)
-* `embedded.localstack.enabled` `(true|false, default is 'true')`
-* `embedded.localstack.reuseContainer` `(true|false, default is 'false')`
+* `embedded.localstack.enabled` `(true|false, default is true)`
+* `embedded.localstack.reuseContainer` `(true|false, default is false)`
 * `embedded.localstack.services` `(comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)`
 ** You can choose available services on localstack
 * `embedded.localstack.defaultRegion` `(default is 'us-east-1')`
-* `embedded.localstack.dockerImage` `(default is set to 'localstack/localstack:0.10.8')`
-** You can pick a desired version on dockerhub.
-* `embedded.localstack.useSsl` `(default is 'false')`
+* `embedded.localstack.dockerImage` `(default is 'localstack/localstack:0.12.16')`
+** Image versions on https://hub.docker.com/r/localstack/localstack/tags[dockerhub]
+* `embedded.localstack.useSsl` `(default is false)`
 * `embedded.localstack.hostname` `(default is 'localhost')`
 * `embedded.localstack.hostnameExternal` `(default is 'localhost')`
 * `embedded.localstack.edgePort` `(default is '4566')`

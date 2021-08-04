@@ -4,11 +4,14 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -18,6 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @Order(2)
+@TestPropertySource(properties = {
+    "embedded.kafka.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-kafka-data-unexpected",
+    "embedded.zookeeper.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-zk-data-unexpected",
+    "embedded.zookeeper.fileSystemBind.txnLogsFolder=${java.io.tmpdir}/embedded-zk-txn-logs-unexpected",
+})
 @TestInstance(PER_CLASS)
 @DisplayName("Default embedded-kafka setup test")
 public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
@@ -28,10 +36,6 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     protected KafkaTopicsConfigurer kafkaTopicsConfigurer;
     @Autowired
     protected NetworkTestOperations kafkaNetworkTestOperations;
-    @Autowired
-    protected ZookeeperConfigurationProperties zookeeperProperties;
-    @Autowired
-    protected KafkaConfigurationProperties kafkaProperties;
 
     @Test
     @DisplayName("creates topics on startup")
@@ -71,6 +75,7 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
                 .isEqualTo(MESSAGE);
     }
 
+    @Disabled("RHEL image doesn't support to simply install tc")
     @Test
     @DisplayName("allows to emulate latency on send")
     public void shouldEmulateLatencyOnSend() throws Exception {
@@ -88,7 +93,12 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     }
 
     @AfterAll
-    public void afterAll() throws Exception {
+    public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties, TestInfo testInfo) throws Exception {
+        // JUnit invokes static afterAll() even when child class is running and TestInstance.Lifecycle.PER_CLASS is being used
+        if (!testInfo.getTestClass().map(EmbeddedKafkaTest.class::equals).orElse(false)) {
+            return;
+        }
+
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());

@@ -34,7 +34,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.mariadb")
 public class MariaDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
-    String dockerImage = "mariadb:10.3.6";
+    // https://hub.docker.com/_/mariadb
+    String dockerImage = "mariadb:10.6-focal";
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";
 
@@ -45,5 +46,8 @@ public class MariaDBProperties extends CommonContainerProperties {
     String host = "localhost";
     int port = 3306;
     long maxAllowedPacket = 16777216;
+    /**
+     * The SQL file path to execute after the container starts to initialize the database.
+     */
     String initScriptPath;
 }

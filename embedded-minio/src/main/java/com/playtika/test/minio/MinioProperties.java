@@ -36,8 +36,8 @@ public class MinioProperties extends CommonContainerProperties {
 
     static final String MINIO_BEAN_NAME = "minio";
 
-    boolean enabled = true;
-    String dockerImage = "minio/minio:RELEASE.2020-03-25T07-03-04Z";
+    // https://hub.docker.com/r/minio/minio
+    String dockerImage = "minio/minio:latest";
     String accessKey = "AKIAIOSFODNN7EXAMPLE";
     String secretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
     String userName = "root";

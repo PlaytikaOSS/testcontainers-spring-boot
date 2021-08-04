@@ -13,18 +13,18 @@
 ----
 
 ==== Consumes (via `bootstrap.properties`)
-* `embedded.minio.enabled` `(true|false, default is 'true')`
-* `embedded.minio.reuseContainer` `(true|false, default is 'false')`
-* `embedded.minio.dockerImage` `(default is set to 'minio/minio')`
-** You can pick wanted version on https://hub.docker.com/r/minio/minio/tags[dockerhub]
-* `embedded.minio.accessKey` `(default is set to 'AKIAIOSFODNN7EXAMPLE")`
-* `embedded.minio.secretKey` `(default is set to 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
-* `embedded.minio.userName` `(default is set to 'minio')`
-* `embedded.minio.groupName`  `(default is set to 'minio')`
-* `embedded.minio.region`  `(default is set to '')`
-* `embedded.minio.worm`  `(on|off, default is set to 'off')`
-* `embedded.minio.browser`  `(on|off, default is set to 'on')`
-* `embedded.minio.directory`  `(default is set to '/data')`
+* `embedded.minio.enabled` `(true|false, default is true)`
+* `embedded.minio.reuseContainer` `(true|false, default is false)`
+* `embedded.minio.dockerImage` `(default is 'minio/minio:latest')`
+** Image versions on https://hub.docker.com/r/minio/minio/tags[dockerhub]
+* `embedded.minio.accessKey` `(default is 'AKIAIOSFODNN7EXAMPLE")`
+* `embedded.minio.secretKey` `(default is 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
+* `embedded.minio.userName` `(default is 'minio')`
+* `embedded.minio.groupName`  `(default is 'minio')`
+* `embedded.minio.region`  `(default is '')`
+* `embedded.minio.worm`  `(on|off, default is 'off')`
+* `embedded.minio.browser`  `(on|off, default is 'on')`
+* `embedded.minio.directory`  `(default is '/data')`
 
 ==== Produces
 

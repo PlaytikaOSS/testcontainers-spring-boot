@@ -64,7 +64,7 @@ public class SampleProductionRouteContext {
 
     @Bean
     public SampleRouteConfiguration sampleRouteConfiguration() {
-        return () -> "kafka:camelTopic" +
+        return () -> "kafka:camelTopic" + // https://camel.apache.org/components/latest/kafka-component.html#_options
                 "?" +
                 "brokers=" + kafkaBrokerList +
                 "&" +
@@ -74,9 +74,9 @@ public class SampleProductionRouteContext {
                 "&" +
                 "autoCommitIntervalMs=100" +
                 "&" +
-                "serializerClass=org.apache.kafka.common.serialization.StringSerializer" +
+                "valueSerializer=org.apache.kafka.common.serialization.StringSerializer" + // StringSerializer is default
                 "&" +
-                "keySerializerClass=org.apache.kafka.common.serialization.StringSerializer" +
+                "keySerializer=org.apache.kafka.common.serialization.StringSerializer" + // StringSerializer is default
                 "&" +
                 "autoCommitEnable=true";
     }

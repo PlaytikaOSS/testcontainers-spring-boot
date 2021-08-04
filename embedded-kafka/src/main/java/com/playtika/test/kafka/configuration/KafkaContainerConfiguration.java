@@ -42,10 +42,19 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.MountableFile;
 
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
@@ -85,7 +94,10 @@ public class KafkaContainerConfiguration {
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
         int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
-        // https://docs.confluent.io/current/installation/docker/docs/configuration.html search by KAFKA_ADVERTISED_LISTENERS
+
+        // Map properties to env variables: https://docs.confluent.io/platform/current/installation/docker/config-reference.html#confluent-ak-configuration
+        // All properties: https://docs.confluent.io/platform/current/installation/configuration/
+        // Kafka Broker properties: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 
         String dockerImageVersion = kafkaProperties.getDockerImageVersion();
         log.info("Starting kafka broker. Docker image version: {}", dockerImageVersion);
@@ -99,6 +111,7 @@ public class KafkaContainerConfiguration {
                         "INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort;
             }
         }
+                .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
                 .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .withEmbeddedZookeeper()
@@ -120,7 +133,7 @@ public class KafkaContainerConfiguration {
                 )
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
-                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getReplicationFactor()))
+                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getOffsetsTopicReplicationFactor()))
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
                 .withEnv("KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE", "false")
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
@@ -151,10 +164,11 @@ public class KafkaContainerConfiguration {
         if (fileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
             String dataFolder = fileSystemBind.getDataFolder();
-            String kafkaData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
+            Path kafkaData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath();
             log.info("Writing kafka data to: {}", kafkaData);
+            createPathAndParentOrMakeWritable(kafkaData);
 
-            kafka.withFileSystemBind(kafkaData, "/var/lib/kafka/data", BindMode.READ_WRITE);
+            kafka.addFileSystemBind(kafkaData.toString(), "/var/lib/kafka/data", BindMode.READ_WRITE);
         }
     }
 
@@ -164,15 +178,17 @@ public class KafkaContainerConfiguration {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
 
             String dataFolder = zookeeperFileSystemBind.getDataFolder();
-            String zkData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath().toString();
+            Path zkData = Paths.get(dataFolder, currentTimestamp).toAbsolutePath();
             log.info("Writing zookeeper data to: {}", zkData);
 
             String txnLogsFolder = zookeeperFileSystemBind.getTxnLogsFolder();
-            String zkTransactionLogs = Paths.get(txnLogsFolder, currentTimestamp).toAbsolutePath().toString();
+            Path zkTransactionLogs = Paths.get(txnLogsFolder, currentTimestamp).toAbsolutePath();
             log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
 
-            kafka.withFileSystemBind(zkData, "/var/lib/zookeeper/data", BindMode.READ_WRITE)
-                    .withFileSystemBind(zkTransactionLogs, "/var/lib/zookeeper/log", BindMode.READ_WRITE);
+            createPathAndParentOrMakeWritable(zkData);
+            kafka.addFileSystemBind(zkData.toString(), "/var/lib/zookeeper/data", BindMode.READ_WRITE);
+            createPathAndParentOrMakeWritable(zkTransactionLogs);
+            kafka.addFileSystemBind(zkTransactionLogs.toString(), "/var/lib/zookeeper/log", BindMode.READ_WRITE);
         }
     }
 
@@ -210,6 +226,50 @@ public class KafkaContainerConfiguration {
             ZookeeperConfigurationProperties zookeeperProperties
     ) {
         return new KafkaTopicsConfigurer(kafka, zookeeperProperties, kafkaProperties);
+    }
+
+    /**
+     * Create folder (and parent folder if necessary) with write permissions for current user
+     *
+     * @param path folder to create
+     */
+    private void createPathAndParentOrMakeWritable(Path path) {
+        Stream.of(path.getParent(), path).forEach(p -> {
+            if (p.toFile().isDirectory()) {
+                makeWritable(p);
+            } else {
+                try {
+                    log.info("Create writable folder: {}", p);
+                    Files.createDirectory(p, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx")));
+                } catch (FileAlreadyExistsException e) {
+                    makeWritable(p);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Make folder writable
+     *
+     * @param path folder to make writable
+     */
+    private void makeWritable(Path path) {
+        PosixFileAttributeView fileAttributeView = Files.getFileAttributeView(path, PosixFileAttributeView.class);
+        if (fileAttributeView == null) {
+            log.warn("Couldn't get file permissions: {}", path);
+            return;
+        }
+        try {
+            Set<PosixFilePermission> permissions = fileAttributeView.readAttributes().permissions();
+            if (permissions.add(PosixFilePermission.OTHERS_WRITE)) {
+                log.info("Make writable to others: {}", path);
+                fileAttributeView.setPermissions(permissions);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

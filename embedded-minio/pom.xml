@@ -13,7 +13,9 @@
     <artifactId>embedded-minio</artifactId>
 
     <properties>
-        <minio.version>7.1.4</minio.version>
+        <minio.version>8.3.0</minio.version>
+        <!-- Manage an OkHttp version supported by MinIO -->
+        <okhttp.version>4.9.1</okhttp.version>
     </properties>
 
     <dependencies>
@@ -28,4 +30,14 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

@@ -41,7 +41,11 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     public static final String USERNAME = "admin";
     public static final String PASSWORD = "letmein";
 
-    private String dockerImage = "confluentinc/cp-schema-registry:5.5.1";
+    // https://hub.docker.com/r/confluentinc/cp-schema-registry
+    private String dockerImage = "confluentinc/cp-schema-registry:6.2.0";
+    /**
+     * The container internal port. Will be overwritten with mapped port.
+     */
     private int port = 8081;
     private AvroCompatibilityLevel avroCompatibilityLevel = BACKWARD;
     private Authentication authentication = NONE;
@@ -51,12 +55,10 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     }
 
     public enum AvroCompatibilityLevel {
-
         NONE, BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE, FULL, FULL_TRANSITIVE
     }
 
     public enum Authentication {
-
         NONE, BASIC
     }
 }

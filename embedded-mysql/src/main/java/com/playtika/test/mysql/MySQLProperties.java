@@ -23,18 +23,18 @@
  */
 package com.playtika.test.mysql;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.playtika.test.common.properties.CommonContainerProperties;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.mysql")
 public class MySQLProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MYSQL = "embeddedMySQL";
-    String dockerImage = "mysql:5.7.22";
+    // https://hub.docker.com/_/mysql
+    String dockerImage = "mysql:8.0";
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";
 
@@ -44,5 +44,8 @@ public class MySQLProperties extends CommonContainerProperties {
     String schema = "test_db";
     String host = "localhost";
     int port = 3306;
+    /**
+     * The SQL file path to execute after the container starts to initialize the database.
+     */
     String initScriptPath;
 }

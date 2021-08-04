@@ -23,20 +23,21 @@
  */
 package com.playtika.test.elasticsearch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.elasticsearch")
 public class ElasticSearchProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
-    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:7.7.0";
+    // https://hub.docker.com/_/elasticsearch
+    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:7.13.4";
 
     String clusterName = "test_cluster";
     String host = "localhost";

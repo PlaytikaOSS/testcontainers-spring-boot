@@ -1,6 +1,6 @@
 embedded:
   keycloak:
     enabled: true
-    docker-image: 'jboss/keycloak:8.0.1'
+    docker-image: 'jboss/keycloak:15.0.0'
     wait-timeout-in-seconds: 60
     command: ["-b", "0.0.0.0", "-c", "standalone.xml"]

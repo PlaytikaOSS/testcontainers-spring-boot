@@ -14,12 +14,13 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.grafana.enabled` `(true|false, default is 'true')`
-* `embedded.grafana.reuseContainer` `(true|false, default is 'false')`
-* `embedded.grafana.dockerImage` `(default is set to 'grafana/grafana:7.1.3')`
-* `embedded.grafana.networkAlias` `(default is set to 'grafana')`
-* `embedded.grafana.username` `(default is set to 'admin')`
-* `embedded.grafana.password` `(default is set to 'password')`
+* `embedded.grafana.enabled` `(true|false, default is true)`
+* `embedded.grafana.reuseContainer` `(true|false, default is false)`
+* `embedded.grafana.dockerImage` `(default is 'grafana/grafana:8.0.6')`
+** Image versions on https://hub.docker.com/r/grafana/grafana/tags[dockerhub]
+* `embedded.grafana.networkAlias` `(default is 'grafana')`
+* `embedded.grafana.username` `(default is 'admin')`
+* `embedded.grafana.password` `(default is 'password')`
 
 ==== Produces
 
@@ -27,6 +28,3 @@
 * `embedded.grafana.port`
 * `embedded.grafana.username`
 * `embedded.grafana.password`
-
-
-

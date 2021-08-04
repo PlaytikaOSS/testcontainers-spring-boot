@@ -33,7 +33,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.neo4j")
 public class Neo4jProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
-    String dockerImage = "neo4j:4.2.1";
+    // https://hub.docker.com/_/neo4j
+    String dockerImage = "neo4j:4.3-community";
     String user = "neo4j";
     String password = "letmein";
     int httpsPort = 7473;

@@ -13,7 +13,8 @@ public class GrafanaProperties extends CommonContainerProperties {
     static final String GRAFANA_BEAN_NAME = "grafana";
 
     boolean enabled = true;
-    String dockerImage = "grafana/grafana:7.1.3";
+    // https://hub.docker.com/r/grafana/grafana
+    String dockerImage = "grafana/grafana:8.0.6";
     String networkAlias = "grafana";
     String username = "admin";
     String password = "password";

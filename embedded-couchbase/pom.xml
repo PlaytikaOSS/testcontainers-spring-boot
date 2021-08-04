@@ -14,8 +14,8 @@
     <artifactId>embedded-couchbase</artifactId>
 
     <properties>
-        <couchbase-client-1.x.version>1.4.13</couchbase-client-1.x.version>
-        <okhttp.version>4.9.0</okhttp.version>
+        <couchbase-java-client-3.x.version>3.2.0</couchbase-java-client-3.x.version>
+        <okhttp.version>4.9.1</okhttp.version>
     </properties>
 
     <dependencies>
@@ -35,13 +35,8 @@
         </dependency>
         <dependency>
             <groupId>com.couchbase.client</groupId>
-            <artifactId>couchbase-client</artifactId>
-            <version>${couchbase-client-1.x.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.couchbase.client</groupId>
             <artifactId>java-client</artifactId>
+            <version>${couchbase-java-client-3.x.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

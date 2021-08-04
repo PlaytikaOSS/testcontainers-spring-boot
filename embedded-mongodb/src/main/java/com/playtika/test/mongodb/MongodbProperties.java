@@ -12,8 +12,12 @@ public class MongodbProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_MONGODB = "embeddedMongodb";
 
-    private String dockerImage = "mongo:4.2.0-bionic";
+    // https://hub.docker.com/_/mongo
+    private String dockerImage = "mongo:5.0-focal";
     private String host = "localhost";
+    /**
+     * The container internal port. Will be overwritten with mapped port.
+     */
     private int port = 27017;
     private String username;
     private String password;

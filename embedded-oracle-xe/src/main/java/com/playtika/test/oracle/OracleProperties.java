@@ -41,5 +41,8 @@ public class OracleProperties extends CommonContainerProperties {
     String user = "system";
     String password = "oracle";
     String database = ORACLE_DB;
+    /**
+     * The SQL file path to execute after the container starts to initialize the database.
+     */
     String initScriptPath;
 }

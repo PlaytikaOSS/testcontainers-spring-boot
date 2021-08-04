@@ -14,14 +14,14 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.vault.enabled` `(boolean, true|false, default is 'true')`
-* `embedded.vault.reuseContainer` `(boolean, true|false, default is 'false')`
-* `embedded.vault.dockerImage` `(String, default is set to 'vault:1.4.0')`
-** You can pick wanted version on dockerhub
-* `embedded.vault.host` `(String, default is 'localhost')`
+* `embedded.vault.enabled` `(true|false, default is true)`
+* `embedded.vault.reuseContainer` `(true|false, default is false)`
+* `embedded.vault.dockerImage` `(default is 'vault:1.8.0')`
+** Image versions on https://hub.docker.com/_/vault?tab=tags[dockerhub]
+* `embedded.vault.host` `(default is 'localhost')`
 * `embedded.vault.port` `(int, default is 8200)`
-* `embedded.vault.token` `(String, default is '00000000-0000-0000-0000-000000000000')`
-* `embedded.vault.path` `(String, default is 'secret/application')`
+* `embedded.vault.token` `(default is '00000000-0000-0000-0000-000000000000')`
+* `embedded.vault.path` `(default is 'secret/application')`
 * `embedded.vault.secrets` `(Map, default is empty)`
 
 ==== Produces

@@ -1,8 +1,5 @@
 package com.playtika.test.keycloak;
 
-import static java.lang.String.format;
-import static java.time.Duration.ofSeconds;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -10,6 +7,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
+
+import static java.lang.String.format;
 
 @Slf4j
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
@@ -141,7 +140,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     private WaitStrategy waitForListeningPort() {
         return Wait
                 .forListeningPort()
-                .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()));
+                .withStartupTimeout(properties.getTimeoutDuration());
     }
 
     public String getIp() {

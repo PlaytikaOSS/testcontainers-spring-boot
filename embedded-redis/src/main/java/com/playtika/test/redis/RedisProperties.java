@@ -36,7 +36,8 @@ import javax.annotation.PostConstruct;
 @ConfigurationProperties("embedded.redis")
 public class RedisProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
-    public String dockerImage = "redis:4.0.12-alpine";
+    // https://hub.docker.com/_/redis
+    public String dockerImage = "redis:6.2-alpine";
     public String user = "root";
     public String password = "passw";
     public String host = "localhost";

@@ -14,9 +14,9 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.pulsar.enabled` `(true|false, default is 'true')`
-* `embedded.pulsar.imageTag` `(default is '2.6.1')`
-** You can pick the desired version on https://hub.docker.com/r/apachepulsar/pulsar/tags[dockerhub]
+* `embedded.pulsar.enabled` `(true|false, default is true)`
+* `embedded.pulsar.imageTag` `(default is '2.8.0')`
+** Image versions on https://hub.docker.com/r/apachepulsar/pulsar/tags[dockerhub]
 
 ==== Produces
 

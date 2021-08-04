@@ -14,10 +14,13 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.clickhouse.enabled` `(true|false, default is 'true')`
-* `embedded.clickhouse.reuseContainer` `(true|false, default is 'false')`
-* `embedded.clickhouse.dockerImage` `(default is set to 'yandex/clickhouse-server:20.5')`
-* `embedded.clickhouse.asCompatibleImage` `(true|false, default is 'false')`
+* `embedded.clickhouse.enabled` `(true|false, default is true)`
+* `embedded.clickhouse.reuseContainer` `(true|false, default is false)`
+* `embedded.clickhouse.dockerImage` `(default is 'yandex/clickhouse-server:21.7-alpine')`
+** Image versions on https://hub.docker.com/r/yandex/clickhouse-server/tags[dockerhub]
+* `embedded.clickhouse.asCompatibleImage` `(true|false, default is false)`
+* `embedded.clickhouse.user` `(default is 'default')`
+* `embedded.clickhouse.password` `(default is '')`
 
 ==== Produces
 
