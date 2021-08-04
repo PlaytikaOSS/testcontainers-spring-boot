@@ -25,13 +25,11 @@ package com.playtika.test.selenium.drivers;
 import com.playtika.test.selenium.DockerHostname;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
