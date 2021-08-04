@@ -35,8 +35,8 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     @Autowired
     private MinioClient minioClient;
 
-    @Autowired
-    NetworkTestOperations minioNetworkTestOperations;
+//    @Autowired
+//    NetworkTestOperations minioNetworkTestOperations;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -54,14 +54,13 @@ public class EmbeddedMinioBootstrapConfigurationTest {
         assertThat(content).isEqualTo("Hello Minio!");
     }
 
-    @Disabled("Current image doesn't support installing tc")
-    @Test
-    public void latencyIsSlower() {
-        minioNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-            () -> assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))
-                .isGreaterThan(1000L)
-        );
-    }
+//    @Test
+//    public void latencyIsSlower() {
+//        minioNetworkTestOperations.withNetworkLatency(ofMillis(1000),
+//            () -> assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))
+//                .isGreaterThan(1000L)
+//        );
+//    }
 
     @Test
     public void noLatencyIsFaster() throws Exception {

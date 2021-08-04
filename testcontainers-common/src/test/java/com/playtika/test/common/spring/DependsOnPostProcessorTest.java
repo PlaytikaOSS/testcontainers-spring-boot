@@ -23,6 +23,7 @@
  */
 package com.playtika.test.common.spring;
 
+import static com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration.ALL_CONTAINERS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,7 @@ public class DependsOnPostProcessorTest {
 
         dependsOnPostProcessor.postProcessBeanFactory(configurableListableBeanFactory);
 
-        String[] expected = {TEST_BEAN_NAME_1, TEST_BEAN_NAME_2, TEST_BEAN_NAME_3, TEST_BEAN_NAME_4};
+        String[] expected = {TEST_BEAN_NAME_1, TEST_BEAN_NAME_2, TEST_BEAN_NAME_3, TEST_BEAN_NAME_4, ALL_CONTAINERS};
 
         verify(beanDefinition, times(1)).setDependsOn(expected);
     }
@@ -77,7 +78,7 @@ public class DependsOnPostProcessorTest {
 
         dependsOnPostProcessor.postProcessBeanFactory(configurableListableBeanFactory);
 
-        String[] expected = {TEST_BEAN_NAME_3, TEST_BEAN_NAME_4};
+        String[] expected = {TEST_BEAN_NAME_3, TEST_BEAN_NAME_4, ALL_CONTAINERS};
 
         verify(beanDefinition, times(1)).setDependsOn(expected);
     }

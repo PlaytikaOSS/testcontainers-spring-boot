@@ -23,16 +23,12 @@
  */
 package com.playtika.test.minio;
 
-import com.playtika.test.common.operations.DefaultNetworkTestOperations;
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
-import com.playtika.test.common.utils.ApkPackageInstaller;
+import com.playtika.test.common.utils.MicroDnfPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -53,24 +49,25 @@ public class EmbeddedMinioTestOperationsAutoConfiguration {
     @ConfigurationProperties("embedded.minio.install")
     InstallPackageProperties minioPackageProperties() {
         InstallPackageProperties properties = new InstallPackageProperties();
-        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
+//        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
         return properties;
     }
 
     @Bean
-    @ConditionalOnClass(name = "disabled.because.current.minio.cannot.install.packages")
     PackageInstaller minioPackageInstaller(
             InstallPackageProperties minioPackageProperties,
             @Qualifier(MINIO_BEAN_NAME) GenericContainer minio
     ) {
-        return new ApkPackageInstaller(minioPackageProperties, minio);
+        return new MicroDnfPackageInstaller(minioPackageProperties, minio);
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "minioNetworkTestOperations")
-    public NetworkTestOperations minioNetworkTestOperations(
-            @Qualifier(MINIO_BEAN_NAME) GenericContainer minio
-    ) {
-        return new DefaultNetworkTestOperations(minio);
-    }
+// Current image doesn't support `tc` command, since Minio is currently based on ubi-minimal with microdnf package manager. `iproute2` package is not available here.
+// This bean is commented, so that users that expect NetworkTestOperations in the tests are notified that this is not supported anymore.
+//    @Bean
+//    @ConditionalOnMissingBean(name = "minioNetworkTestOperations")
+//    public NetworkTestOperations minioNetworkTestOperations(
+//            @Qualifier(MINIO_BEAN_NAME) GenericContainer minio
+//    ) {
+//        return new DefaultNetworkTestOperations(minio);
+//    }
 }
