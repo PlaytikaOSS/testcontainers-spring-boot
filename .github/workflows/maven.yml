@@ -15,7 +15,7 @@ jobs:
     name: Build Java 8 projects
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v2.1.4
+    - uses: actions/cache@v2.1.6
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-jdk8-${{ hashFiles('**/pom.xml') }}
