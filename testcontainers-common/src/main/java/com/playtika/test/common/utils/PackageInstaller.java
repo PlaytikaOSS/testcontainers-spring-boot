@@ -78,8 +78,8 @@ public abstract class PackageInstaller {
         return result.getStdout().isEmpty();
     }
 
-    protected void executeCommandAndCheckExitCode(String... command) {
-        ContainerUtils.executeAndCheckExitCode(container, command);
+    protected Container.ExecResult executeCommandAndCheckExitCode(String... command) {
+        return ContainerUtils.executeAndCheckExitCode(container, command);
     }
 
 }

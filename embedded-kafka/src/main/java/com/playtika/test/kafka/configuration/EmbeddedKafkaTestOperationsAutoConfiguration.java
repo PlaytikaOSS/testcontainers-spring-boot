@@ -28,6 +28,7 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
+import com.playtika.test.common.utils.YumPackageInstaller;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -53,19 +54,21 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
     @ConfigurationProperties("embedded.kafka.install")
     public InstallPackageProperties kafkaPackageProperties() {
         InstallPackageProperties properties = new InstallPackageProperties();
-        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
+//        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
         return properties;
     }
 
     @Bean
     public PackageInstaller kafkaPackageInstaller(InstallPackageProperties kafkaPackageProperties,
                                                   @Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
-        return new AptGetPackageInstaller(kafkaPackageProperties, kafka);
+        return new YumPackageInstaller(kafkaPackageProperties, kafka);
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "kafkaNetworkTestOperations")
-    public NetworkTestOperations kafkaNetworkTestOperations(@Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
-        return new DefaultNetworkTestOperations(kafka);
-    }
+// Current image doesn't support `tc` command, since kafka is currently based on ubi with microdnf package manager. `iproute2` package is not available here.
+// This bean is commented, so that users that expect NetworkTestOperations in the tests are notified that this is not supported anymore.
+//    @Bean
+//    @ConditionalOnMissingBean(name = "kafkaNetworkTestOperations")
+//    public NetworkTestOperations kafkaNetworkTestOperations(@Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
+//        return new DefaultNetworkTestOperations(kafka);
+//    }
 }

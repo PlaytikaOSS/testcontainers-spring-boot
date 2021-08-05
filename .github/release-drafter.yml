@@ -6,6 +6,9 @@ template: |
   $CHANGES
 
 categories:
+  - title: 💣️ Breaking changes
+    label: breaking-change
+
   - title: 🚀 Features & Enhancements
     labels:
       - feature

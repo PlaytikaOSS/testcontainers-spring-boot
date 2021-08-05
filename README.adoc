@@ -262,6 +262,8 @@ embedded.postgresql.mountVolumes:
 
 === link:embedded-grafana/README.adoc[embedded-grafana]
 
+=== link:embedded-consul/README.adoc[embedded-consul]
+
 == How to contribute
 
 === Flow
