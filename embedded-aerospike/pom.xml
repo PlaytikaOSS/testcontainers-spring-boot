@@ -15,7 +15,7 @@
 
     <properties>
         <aerospike-client.version>4.4.18</aerospike-client.version>
-        <joda-time.version>2.10.8</joda-time.version>
+        <joda-time.version>2.10.10</joda-time.version>
     </properties>
 
     <dependencies>
