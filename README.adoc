@@ -170,6 +170,14 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |null
 |key-value map of additional environment variables. Where key is name of variable and value is actual value of it.
 
+|embedded.{module-name}.logBuildDate
+|true
+|Enables logging of container build date.
+
+|embedded.{module-name}.logBuildTime
+|false
+|Enables logging of container build time (no effect if logBuildDate=false).
+
 |embedded.{module-name}.filesToInclude
 | empty list
 |List of files to include objects.

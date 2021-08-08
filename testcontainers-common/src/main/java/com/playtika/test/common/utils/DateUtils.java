@@ -16,19 +16,31 @@ import java.time.temporal.TemporalAccessor;
  */
 public class DateUtils {
 
+    public static final String NO_DATE_REPRODUCIBLE_BUILD = "(no date / reproducible build)";
+
     /**
      * @param isoFormattedDate ISO timestamp {@code "2021-12-31T23:59:59.123456789+18:00"}
      * @return Combine original timestamp at local time zone truncated to seconds and human-readable relative time: {@code "2021-12-31T07:59:59+02:00 (1 year 2 months ago)"}
      * @see #toTimeAgo(String)
      */
     public static String toDateAndTimeAgo(String isoFormattedDate) {
+        return toDateAndTimeAgo(isoFormattedDate, true);
+    }
+
+    /**
+     * @param isoFormattedDate ISO timestamp {@code "2021-12-31T23:59:59.123456789+18:00"}
+     * @param useTime if {@code false}, return date only {@code "2020-12-31 (8 months ago)"}
+     * @return Combine original timestamp at local time zone truncated to seconds and human-readable relative time: {@code "2021-12-31T07:59:59+02:00 (1 year 2 months ago)"}
+     * @see #toTimeAgo(String)
+     */
+    public static String toDateAndTimeAgo(String isoFormattedDate, boolean useTime) {
         Object instantOrString = parseToInstantOrString(isoFormattedDate);
-        if (!(instantOrString instanceof Instant)) {
+        if (instantOrString instanceof String) {
             return (String) instantOrString;
         }
         Instant instant = ((Instant) instantOrString);
         OffsetDateTime offsetDateTime = ((Instant) instantOrString).atZone(ZoneId.systemDefault()).toOffsetDateTime();
-        return offsetDateTime + " (" + toTimeAgo(instant.toEpochMilli()) + ")";
+        return (useTime ? offsetDateTime : offsetDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE)) + " (" + toTimeAgo(instant.toEpochMilli()) + ")";
     }
 
     /**
@@ -72,7 +84,8 @@ public class DateUtils {
      * <p>Thresholds are 60 seconds, 50 minutes, 20 hours, 3 weeks, 10 months.<br>
      * Everything else is rounded (1.5 becomes 2).<br>
      * Surplus months except 1 are not rounded (1 year 2 months ago).<br>
-     * 1 month are 30.42 days.
+     * Years are rounded after 24 months (25 months = 2 years ago, 30 months = 3 years ago).
+     * 1 month is 30.42 days.
      * <ul>
      *     <li>{@literal <}= 89 seconds: a minute ago</li>
      *     <li>{@literal <}= 50 minutes: 50 minutes ago</li>
@@ -87,6 +100,10 @@ public class DateUtils {
      *     <li>{@literal <}= 13 months: a year ago</li>
      *     <li>== 14 months: 1 year 2 months ago</li>
      *     <li>== 23 months: 1 year 11 months ago</li>
+     *     <li>== 29 months: 2 years ago</li>
+     *     <li>== 30 months: 3 years ago</li>
+     *     <li>== 35 months: 3 years ago</li>
+     *     <li>== EPOCH (1970-01-01): no date / reproducible build</li>
      * </ul>
      * <pre>
      *  0 sec = a minute ago
@@ -115,8 +132,10 @@ public class DateUtils {
      * 13 mon = a year ago
      * 14 mon = 1 year 2 months ago
      * 23 mon = 1 year 11 months ago
-     * 25 mon = 2 years ago
-     * 26 mon = 2 years 2 months ago
+     * 29 mon = 2 years ago
+     * 30 months = 3 years ago
+     * 35 months = 3 years ago
+     * EPOCH (1970-01-01) = no date / reproducible build
      * </pre>
      * </p>
      *
@@ -124,6 +143,9 @@ public class DateUtils {
      * @return human readable relative time: {@code "1 year 2 months ago"}
      */
     public static String toTimeAgo(long epochMillis) {
+        if (epochMillis <= 60000) {
+            return NO_DATE_REPRODUCIBLE_BUILD;
+        }
         long seconds = Instant.now().toEpochMilli() / 1000 - (epochMillis / 1000);
         long minutes = Math.round(seconds / 60.0);
         if (minutes <= 50) {
@@ -144,6 +166,9 @@ public class DateUtils {
         long months = Math.round(seconds / 2628288.0); // 30.42 days per month
         if (months <= 10) {
             return months <= 1 ? "a month ago" : months + " months ago";
+        }
+        if(months >= 24) {
+            return Math.round(months / 12.0) + " years ago";
         }
         long years = months / 12; // 11 -> 0, 23 -> 1
         months = months % 12;

@@ -18,7 +18,7 @@ class DateUtilsTest {
     private static Map<Long, String> createRelativeTimeToStringExamples() {
         Map<Long, String> map = new LinkedHashMap<>();
         map.put(1000L * 0, " 0 sec = a minute ago");
-        map.put(1000L * 89, "89 sec = a minute ago");
+        map.put(1000L * 88, "88 sec = a minute ago");
         map.put(1000L * 90, "90 sec = 2 minutes ago");
         map.put(1000L * 60 * 50, "50 min = 50 minutes ago");
         map.put(1000L * 60 * 51, "51 min = an hour ago");
@@ -43,8 +43,10 @@ class DateUtilsTest {
         map.put(1000L * 60 * 60 * 24 * 30 * 13, "13 mon = a year ago");
         map.put(1000L * 60 * 60 * 24 * 30 * 14, "14 mon = 1 year 2 months ago");
         map.put(1000L * 60 * 60 * 24 * 30 * 23, "23 mon = 1 year 11 months ago");
-        map.put(1000L * 60 * 60 * 24 * 30 * 25, "25 mon = 2 years ago");
-        map.put(1000L * 60 * 60 * 24 * 30 * 26, "26 mon = 2 years 2 months ago");
+        map.put(1000L * 60 * 60 * 24 * 30 * 29, "29 mon = 2 years ago");
+        map.put(1000L * 60 * 60 * 24 * 30 * 30, "30 mon = 3 years ago");
+        map.put(1000L * 60 * 60 * 24 * 35 * 30, "35 mon = 3 years ago");
+        map.put(Instant.now().toEpochMilli(), "EPOCH (1970-01-01) = (no date / reproducible build)");
         return map;
     }
 

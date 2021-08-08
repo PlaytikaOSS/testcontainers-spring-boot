@@ -46,21 +46,52 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import static com.playtika.test.common.utils.DateUtils.NO_DATE_REPRODUCIBLE_BUILD;
+
 @Slf4j
 @UtilityClass
 public class ContainerUtils {
 
     public static final Duration DEFAULT_CONTAINER_WAIT_DURATION = Duration.ofSeconds(60);
 
+    /**
+     * Configure and start container (don't log build date, startup time and container messages)
+     */
+    public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
+                                                               CommonContainerProperties properties) {
+        return configureCommonsAndStart(container, properties, null, null);
+    }
+
+    /**
+     * Configure and start container
+     * @param logger log build date and startup time, and container messages with default {@link #containerLogsConsumer(org.slf4j.Logger)} (don't log if {@code null})
+     */
     public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
                                                                CommonContainerProperties properties,
                                                                Logger logger) {
+        return configureCommonsAndStart(container, properties, logger, null);
+    }
+
+    /**
+     * Configure and start container (don't log if {@code logger} and {@code logConsumer} are {@code null})
+     * @param logger log build date, startup time and container messages
+     * @param logConsumer log container messages with custom consumer (if {@code null} use {@code logger} with default {@link #containerLogsConsumer})
+     */
+    public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
+                                                               CommonContainerProperties properties,
+                                                               Logger logger,
+                                                               Consumer<OutputFrame> logConsumer) {
         GenericContainer<?> updatedContainer = container
                 .withStartupTimeout(properties.getTimeoutDuration())
                 .withReuse(properties.isReuseContainer())
-                .withLogConsumer(containerLogsConsumer(logger))
                 .withImagePullPolicy(resolveImagePullPolicy(properties))
                 .withEnv(properties.getEnv());
+        if (logConsumer == null && logger != null) {
+            logConsumer = containerLogsConsumer(logger);
+        }
+        if (logConsumer != null) {
+            updatedContainer.withLogConsumer(logConsumer);
+        }
 
         for (CopyFileProperties fileToCopy : properties.getFilesToInclude()) {
             MountableFile mountableFile = MountableFile.forClasspathResource(fileToCopy.getClasspathResource());
@@ -73,42 +104,57 @@ public class ContainerUtils {
 
         updatedContainer = properties.getCommand() != null ? updatedContainer.withCommand(properties.getCommand()) : updatedContainer;
 
-        startAndLogTime(updatedContainer, logger);
+        startAndLogTime(updatedContainer, logger, properties);
         return updatedContainer;
     }
 
-    private long startAndLogTime(GenericContainer<?> container, Logger logger) {
+    private long startAndLogTime(GenericContainer<?> container, Logger logger, CommonContainerProperties properties) {
         Instant startTime = Instant.now();
         container.start();
         long startupTime = Duration.between(startTime, Instant.now()).toMillis() / 1000;
+        if (logger == null) {
+            return startupTime;
+        }
 
         String dockerImageName = container.getDockerImageName();
-        String buildDate = getBuildDate(container, dockerImageName);
-        // influxdb:1.4.3 build 2018-07-06T17:25:49+02:00 (2 years 11 months ago) startup time is 21 seconds
+        String buildDate = getBuildDate(container, dockerImageName, properties);
+        if (!buildDate.isEmpty()) {
+            buildDate = " " + buildDate;
+        }
+        // influxdb:1.4.3 build 2019-07-06T17:25:49+02:00 (1 years 11 months ago) startup time is 21 seconds
+        // without time:  build 2018-01-01 (3 years ago) startup time is 21 seconds
+        // EPOCH (1970):  (no date / reproducible build) startup time is 21 seconds
         if (startupTime < 10L) {
-            logger.info("{} build {} startup time is {} seconds", dockerImageName, buildDate, startupTime);
+            logger.info("{}{} startup time is {} seconds", dockerImageName, buildDate, startupTime);
         } else if (startupTime < 20L) {
-            logger.warn("{} build {} startup time is {} seconds", dockerImageName, buildDate, startupTime);
+            logger.warn("{}{} startup time is {} seconds", dockerImageName, buildDate, startupTime);
         } else {
-            logger.error("{} build {} startup time is {} seconds", dockerImageName, buildDate, startupTime);
+            logger.error("{}{} startup time is {} seconds", dockerImageName, buildDate, startupTime);
         }
         return startupTime;
     }
 
-    private String getBuildDate(GenericContainer<?> container, String dockerImageName) {
-        String imageResponseCreated = null;
+    /**
+     * @param properties Checked if logging date and time is enabled
+     * @return Container build date and time, empty string on error or if disabled
+     */
+    public static String getBuildDate(GenericContainer<?> container, String dockerImageName, CommonContainerProperties properties) {
+        if (!properties.isLogBuildDate()) {
+            return "";
+        }
         try {
             InspectImageResponse inspectImageResponse = container.getDockerClient().inspectImageCmd(dockerImageName).exec();
-            if(inspectImageResponse != null) {
-                imageResponseCreated = inspectImageResponse.getCreated();
-                return DateUtils.toDateAndTimeAgo(imageResponseCreated);
+            if (inspectImageResponse != null) {
+                String imageResponseCreated = inspectImageResponse.getCreated();
+                String dateAndTimeAgo = DateUtils.toDateAndTimeAgo(imageResponseCreated, properties.isLogBuildTime());
+                return NO_DATE_REPRODUCIBLE_BUILD.equals(dateAndTimeAgo) ? dateAndTimeAgo : "build " + dateAndTimeAgo;
             } else {
                 log.error("InspectImageResponse was null");
             }
         } catch (NotFoundException e) {
             log.error("Could not get InspectImageResponse", e);
         }
-        return imageResponseCreated;
+        return "";
     }
 
     private static ImagePullPolicy resolveImagePullPolicy(CommonContainerProperties properties) {
@@ -123,19 +169,24 @@ public class ContainerUtils {
         }
     }
 
-    public static Consumer<OutputFrame> containerLogsConsumer(Logger log) {
+    /**
+     * Default logs consumer (trim messages, log with debug level, don't log last message if empty)
+     * @return Consumer for {@link GenericContainer#withLogConsumer(java.util.function.Consumer)}
+     */
+    public static Consumer<OutputFrame> containerLogsConsumer(Logger logger) {
         return (OutputFrame outputFrame) -> {
+            String trimmed = outputFrame.getUtf8String().trim();
             switch (outputFrame.getType()) {
                 case STDERR:
-                    log.debug(outputFrame.getUtf8String());
+                    logger.error(trimmed);
                     break;
-                case STDOUT:
                 case END:
-                    log.debug(outputFrame.getUtf8String());
+                    if (!trimmed.isEmpty()) {
+                        logger.info(trimmed);
+                    }
                     break;
                 default:
-                    log.debug(outputFrame.getUtf8String());
-                    break;
+                    logger.debug(trimmed);
             }
         };
     }

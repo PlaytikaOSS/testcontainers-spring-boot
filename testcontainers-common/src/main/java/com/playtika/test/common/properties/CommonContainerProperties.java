@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import lombok.experimental.Accessors;
 import org.springframework.validation.annotation.Validated;
 import org.testcontainers.containers.BindMode;
 
@@ -41,6 +42,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
 @Validated
+@Accessors(chain = true)
 @Data
 public class CommonContainerProperties {
 
@@ -60,6 +62,18 @@ public class CommonContainerProperties {
      * Whether to pull a docker image each time.
      */
     private boolean usePullAlwaysPolicy = false;
+    /**
+     * Log container build date (if false, logBuildTime is overriden too).
+     * == true:  log date
+     * == false: don't log date (and time)
+     */
+    private boolean logBuildDate = true;
+    /**
+     * Log container build time.
+     * == true:  log time (if logBuildDate == true)
+     * == false: don't log time
+     */
+    private boolean logBuildTime = false;
     private String[] command;
     private Map<String, String> env = emptyMap();
     @Valid
