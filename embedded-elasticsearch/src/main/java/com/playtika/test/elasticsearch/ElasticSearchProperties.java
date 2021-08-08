@@ -37,7 +37,7 @@ import java.util.List;
 public class ElasticSearchProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
     // https://hub.docker.com/_/elasticsearch
-    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:7.13.4";
+    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:7.14.0";
 
     String clusterName = "test_cluster";
     String host = "localhost";
