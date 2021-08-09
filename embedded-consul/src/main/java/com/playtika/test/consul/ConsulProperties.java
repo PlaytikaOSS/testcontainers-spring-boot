@@ -10,7 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.consul")
 public class ConsulProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_CONSUL = "embeddedConsul";
-    private String dockerImage = "consul:1.9";
+    // https://hub.docker.com/_/consul
+    private String dockerImage = "consul:1.10";
     private int port = 8500;
     private String configurationFile = null;
 }
