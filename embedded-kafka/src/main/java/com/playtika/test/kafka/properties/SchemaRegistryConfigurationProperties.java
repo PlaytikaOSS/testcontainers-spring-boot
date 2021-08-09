@@ -26,12 +26,14 @@ package com.playtika.test.kafka.properties;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties.Authentication.BASIC;
 import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties.Authentication.NONE;
 import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties.AvroCompatibilityLevel.BACKWARD;
 
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.kafka.schema-registry")

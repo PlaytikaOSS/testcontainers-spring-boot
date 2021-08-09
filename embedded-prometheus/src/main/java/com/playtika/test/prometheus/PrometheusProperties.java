@@ -3,8 +3,10 @@ package com.playtika.test.prometheus;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.prometheus")

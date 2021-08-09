@@ -2,10 +2,12 @@ package com.playtika.test.influxdb;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.playtika.test.common.properties.CommonContainerProperties;
 
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.influxdb")

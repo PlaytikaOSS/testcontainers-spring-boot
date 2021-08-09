@@ -3,11 +3,13 @@ package com.playtika.test.pubsub;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.google.pubsub")

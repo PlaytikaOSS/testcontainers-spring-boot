@@ -26,6 +26,7 @@ package com.playtika.test.couchbase;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.testcontainers.couchbase.CouchbaseService;
 
@@ -34,6 +35,7 @@ import static java.lang.String.format;
 /**
  * https://blog.couchbase.com/testing-spring-data-couchbase-applications-with-testcontainers/
  */
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.couchbase")

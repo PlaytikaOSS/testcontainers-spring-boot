@@ -26,6 +26,7 @@ import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import lombok.experimental.Accessors;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.selenium")

@@ -3,12 +3,14 @@ package com.playtika.test.localstack;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@Accessors(chain = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.localstack")
