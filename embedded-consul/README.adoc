@@ -16,6 +16,8 @@
 
 * `embedded.consul.enabled` `(true|false, default is 'true')`
 * `embedded.consul.configurationFile` `(path for the consul configuration file to be mounted, relative to the resources folder, default is 'null')`
+* `embedded.consul.dockerImage` `(default is 'consul:1.10')`
+** Image versions on https://hub.docker.com/_/consul?tab=tags[dockerhub]
 
 Example spring configuration:
 
@@ -27,9 +29,9 @@ embedded:
     enabled: true
   consul:
     enabled: true
-    # file to be mounted in docker as '/consul/config/test-acl.hcl' 
+    # file to be mounted in docker as '/consul/config/test-acl.hcl'
     # path relative from the resources directory (usually 'src/test/resources')
-    configurationFile: consul/test-acl.hcl 
+    configurationFile: consul/test-acl.hcl
 ----
 
 ==== Produces
