@@ -13,6 +13,10 @@ jobs:
   build-jdk8:
     runs-on: ubuntu-latest
     name: Build Java 8 projects
+    concurrency:
+      # The commit SHA or the branch name of the pull request. See: https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions
+      group: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha}}
+      cancel-in-progress: true
     steps:
     - uses: actions/checkout@v2
     - name: Cache Maven packages
