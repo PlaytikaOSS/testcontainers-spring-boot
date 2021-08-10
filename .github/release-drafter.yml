@@ -5,6 +5,9 @@ template: |
   # Changes
   $CHANGES
 
+# --------
+# NOTE: When adding new labels please also update required-labels.yml workflow.
+# --------
 categories:
   - title: 💣️ Breaking changes
     label: breaking-change
