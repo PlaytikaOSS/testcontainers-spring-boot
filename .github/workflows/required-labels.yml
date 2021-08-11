@@ -1,0 +1,16 @@
+#  https://github.com/mheap/github-action-required-labels
+name: Pull Request Required Labels
+on:
+  pull_request:
+    types: [ opened, labeled, unlabeled, synchronize ]
+jobs:
+  label:
+    if: github.event.pull_request.state == 'open'
+    runs-on: ubuntu-latest
+    name: Verify Pull Request has labels
+    steps:
+      - uses: mheap/github-action-required-labels@v1
+        with:
+          mode: minimum
+          count: 1
+          labels: "breaking-change, feature, enhancement, bug, dependencies, documentation, housekeeping"
