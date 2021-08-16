@@ -63,6 +63,11 @@
                 <artifactId>testcontainers-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.ibm.db2</groupId>
+                <artifactId>jcc</artifactId>
+                <version>11.5.0.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
