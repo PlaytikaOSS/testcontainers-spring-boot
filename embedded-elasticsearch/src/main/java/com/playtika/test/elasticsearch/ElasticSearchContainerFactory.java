@@ -42,7 +42,6 @@ class ElasticSearchContainerFactory {
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
-                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(getCompositeWaitStrategy(properties));
     }
 

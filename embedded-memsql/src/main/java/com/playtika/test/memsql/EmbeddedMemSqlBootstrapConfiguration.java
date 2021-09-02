@@ -70,7 +70,6 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
-                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                 .waitingFor(memSqlStatusCheck);
         if (network != null) {
           memsql = memsql.withNetwork(network);

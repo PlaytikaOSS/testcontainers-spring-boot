@@ -23,6 +23,7 @@
  */
 package com.playtika.test.redis;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.SocketUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -44,6 +46,10 @@ public class RedisProperties extends CommonContainerProperties {
     public int port = 0;
     public boolean requirepass = true;
     public boolean clustered = false;
+
+    public RedisProperties() {
+        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
 
     @PostConstruct
     public void init() {

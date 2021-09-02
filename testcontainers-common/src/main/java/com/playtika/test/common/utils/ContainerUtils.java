@@ -25,6 +25,7 @@ package com.playtika.test.common.utils;
 
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.exception.NotFoundException;
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.CopyFileProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.MountVolume;
@@ -69,6 +70,10 @@ public class ContainerUtils {
 
         for (MountVolume mountVolume : properties.getMountVolumes()) {
             updatedContainer.addFileSystemBind(mountVolume.getHostPath(), mountVolume.getContainerPath(), mountVolume.getMode());
+        }
+
+        for (Capability capability : properties.getCapabilities()) {
+            updatedContainer.withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(capability));
         }
 
         updatedContainer = properties.getCommand() != null ? updatedContainer.withCommand(properties.getCommand()) : updatedContainer;

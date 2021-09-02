@@ -23,6 +23,7 @@
  */
 package com.playtika.test.common.properties;
 
+import com.github.dockerjava.api.model.Capability;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,12 +63,31 @@ public class CommonContainerProperties {
      * Whether to pull a docker image each time.
      */
     private boolean usePullAlwaysPolicy = false;
+
+    /**
+     * Container startup command.
+     */
     private String[] command;
-    private Map<String, String> env = emptyMap();
+
+    /**
+     * Set environment variables for the container.
+     */
+    private Map<String, String> env = new HashMap<>();
+    /**
+     * Files/directories that should be copied to the container.
+     */
     @Valid
-    private List<CopyFileProperties> filesToInclude = emptyList();
+    private List<CopyFileProperties> filesToInclude = new ArrayList<>();
+    /**
+     * Files/directories that should be mounted as container volumes.
+     */
     @Valid
-    private List<MountVolume> mountVolumes = emptyList();
+    private List<MountVolume> mountVolumes = new ArrayList<>();
+
+    /**
+     * The Linux capabilities that should be enabled.
+     */
+    private List<Capability> capabilities = new ArrayList<>();
 
     public Duration getTimeoutDuration() {
         return Duration.ofSeconds(waitTimeoutInSeconds);
