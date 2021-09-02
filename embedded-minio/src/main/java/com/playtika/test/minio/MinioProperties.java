@@ -24,10 +24,13 @@
 
 package com.playtika.test.minio;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Arrays;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -49,4 +52,8 @@ public class MinioProperties extends CommonContainerProperties {
 
     String host = "localhost";
     int port = 9000;
+
+    public MinioProperties() {
+        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
 }

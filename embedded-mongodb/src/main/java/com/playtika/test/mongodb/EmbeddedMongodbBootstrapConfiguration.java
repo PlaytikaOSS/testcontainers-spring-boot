@@ -64,7 +64,6 @@ public class EmbeddedMongodbBootstrapConfiguration {
                         .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                         .withExposedPorts(properties.getPort())
-                        .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                         .waitingFor(mongodbStatusCheck);
 
         mongodb = configureCommonsAndStart(mongodb, properties, log);

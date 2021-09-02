@@ -23,10 +23,13 @@
  */
 package com.playtika.test.kafka.properties;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Arrays;
 
 import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties.Authentication.BASIC;
 import static com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties.Authentication.NONE;
@@ -49,6 +52,10 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     private int port = 8081;
     private AvroCompatibilityLevel avroCompatibilityLevel = BACKWARD;
     private Authentication authentication = NONE;
+
+    public SchemaRegistryConfigurationProperties() {
+        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
 
     public boolean isBasicAuthenticationEnabled() {
         return authentication == BASIC;

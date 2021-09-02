@@ -23,6 +23,7 @@
  */
 package com.playtika.test.kafka.properties;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.utils.ContainerUtils;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.AssertTrue;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,6 +82,10 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected transient final int controllerSocketTimeoutMs = 1000;
 
     protected FileSystemBind fileSystemBind = new FileSystemBind();
+
+    public KafkaConfigurationProperties() {
+        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
 
     /**
      * Kafka container port will be assigned automatically if free port is available.

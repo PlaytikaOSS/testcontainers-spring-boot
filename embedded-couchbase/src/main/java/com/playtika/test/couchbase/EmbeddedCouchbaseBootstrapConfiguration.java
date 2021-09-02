@@ -62,8 +62,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
         CouchbaseContainer couchbase = new CouchbaseContainer(properties.dockerImage)
                 .withBucket(bucketDefinition)
                 .withEnabledServices(properties.getServices())
-                .withCredentials(properties.getUser(), properties.getPassword())
-                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN));
+                .withCredentials(properties.getUser(), properties.getPassword());
 
         couchbase = (CouchbaseContainer) configureCommonsAndStart(couchbase, properties, log);
 

@@ -1,9 +1,12 @@
 package com.playtika.test.mongodb;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Arrays;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -23,4 +26,7 @@ public class MongodbProperties extends CommonContainerProperties {
     private String password;
     private String database = "test";
 
+    public MongodbProperties() {
+        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
 }
