@@ -271,6 +271,8 @@ Available values can be taken from `com.github.dockerjava.api.model.Capability` 
 
 === link:embedded-consul/README.adoc[embedded-consul]
 
+=== link:embedded-artifactory/README.adoc[embedded-artifactory]
+
 == How to contribute
 
 === Flow
