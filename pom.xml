@@ -68,6 +68,7 @@
         <module>embedded-grafana</module>
         <module>embedded-consul</module>
         <module>embedded-db2</module>
+        <module>embedded-artifactory</module>
     </modules>
 
     <properties>

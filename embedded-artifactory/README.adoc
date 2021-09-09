@@ -1,0 +1,30 @@
+=== embedded-artifactory
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-artifactory</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.artifactory.enabled` `(true|false, default is true)`
+* `embedded.artifactory.reuseContainer` `(true|false, default is false)`
+* `embedded.artifactory.dockerImage` `(default is 'releases-docker.jfrog.io/jfrog/artifactory-oss:7.25.6')`
+** Release notes on https://www.jfrog.com/confluence/display/JFROG/Artifactory+Release+Notes[jfrog.com]
+* `embedded.artifactory.networkAlias` `(default is 'artifactory')`
+* `embedded.artifactory.username` `(default is 'admin')`
+* `embedded.artifactory.password` `(default is 'password')`
+
+==== Produces
+
+* `embedded.artifactory.host`
+* `embedded.artifactory.port`
+* `embedded.artifactory.username`
+* `embedded.artifactory.password`
