@@ -67,6 +67,7 @@
         <module>embedded-prometheus</module>
         <module>embedded-grafana</module>
         <module>embedded-consul</module>
+        <module>embedded-artifactory</module>
     </modules>
 
     <properties>
