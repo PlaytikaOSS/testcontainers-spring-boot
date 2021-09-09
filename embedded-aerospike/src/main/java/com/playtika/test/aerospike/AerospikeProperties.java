@@ -23,10 +23,13 @@
  */
 package com.playtika.test.aerospike;
 
+import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Arrays;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -41,4 +44,8 @@ public class AerospikeProperties extends CommonContainerProperties {
     String host = "localhost";
     int port = 3000;
     String featureKey;
+
+    public AerospikeProperties() {
+        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
 }

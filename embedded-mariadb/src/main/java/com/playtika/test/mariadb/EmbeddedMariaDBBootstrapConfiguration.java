@@ -64,7 +64,6 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                 "--collation-server=" + properties.getCollation(),
                                 "--max_allowed_packet=" + properties.getMaxAllowedPacket())
                         .withExposedPorts(properties.port)
-                        .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN))
                         .withInitScript(properties.initScriptPath);
         mariadb = (MariaDBContainer) configureCommonsAndStart(mariadb, properties, log);
         registerMariadbEnvironment(mariadb, environment, properties);

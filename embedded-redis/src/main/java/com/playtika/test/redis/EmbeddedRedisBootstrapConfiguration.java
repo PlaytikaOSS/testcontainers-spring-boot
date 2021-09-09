@@ -91,14 +91,12 @@ public class EmbeddedRedisBootstrapConfiguration {
 
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
-        Consumer<CreateContainerCmd> containerCmdModifier = cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN);
         GenericContainer redis =
                 new FixedHostPortGenericContainer(properties.getDockerImage())
                         .withFixedExposedPort(properties.getPort(), properties.getPort())
                         .withExposedPorts(properties.getPort())
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCreateContainerCmdModifier(containerCmdModifier)
                         .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf()), "/data/redis.conf")
                         .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")

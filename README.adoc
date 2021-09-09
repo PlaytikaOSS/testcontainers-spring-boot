@@ -147,6 +147,7 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |===
 
 === Other specific container related properties
+[cols="a,a,a"]
 |===
 |Setting name | Default value |Description
 
@@ -203,6 +204,12 @@ embedded.postgresql.mountVolumes:
   containerPath: "/var/lib/postgresql/data"
   mode: READ_WRITE
 ----
+
+|embedded.{module-name}.capabilities
+| empty list. `NET_ADMIN` is set for Aerospike, Couchbase, Elasticsearch, Kafka, Mariadb, Memsql, Minio, Mongodb, Mysql, Neo4j, Redis containers. NOTE: `NET_ADMIN` is needed for the `NetworkTestOperations` to work.
+|The Linux capabilities that should be enabled. You can disable all capabilities by providing empty value for this property.
+See: https://man7.org/linux/man-pages/man7/capabilities.7.html.
+Available values can be taken from `com.github.dockerjava.api.model.Capability` class.
 |===
 
 
