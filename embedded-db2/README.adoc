@@ -17,13 +17,13 @@
 * `embedded.db2.enabled` `(true|false, default is true)`
 * `embedded.db2.reuseContainer` `(true|false, default is false)`
 * `embedded.db2.dockerImage` `(default is 'ibmcom/db2:latest')`
+** Image versions: https://hub.docker.com/r/ibmcom/db2
 * `embedded.db2.user` `(default is db2inst1)`
 * `embedded.db2.password` `(default is foobar1234)`
 * `embedded.db2.database` `(default is test)`
 * `embedded.db2.acceptLicence` `(default is 'false')`
 * `embedded.db2.startupLogCheckRegex`
 * `embedded.db2.initScriptPath`
-** Image versions on https://hub.docker.com/r/voltdb/voltdb-community/tags[dockerhub]
 
 ==== Produces
 
