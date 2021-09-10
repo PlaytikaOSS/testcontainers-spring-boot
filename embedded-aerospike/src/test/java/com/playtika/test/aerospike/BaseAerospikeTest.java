@@ -36,7 +36,10 @@ import org.springframework.context.annotation.Configuration;
 
 @SpringBootTest(
         classes = BaseAerospikeTest.TestConfiguration.class,
-        properties = "embedded.aerospike.install.enabled=true"
+        properties = {
+                "embedded.aerospike.install.enabled=true",
+                "embedded.aerospike.capabilities="
+        }
 )
 public abstract class BaseAerospikeTest {
 
