@@ -1,0 +1,3 @@
+embedded:
+  artifactory:
+    wait-timeout-in-seconds: 180
