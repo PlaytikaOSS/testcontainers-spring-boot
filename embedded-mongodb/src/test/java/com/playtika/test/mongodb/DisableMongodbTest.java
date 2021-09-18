@@ -23,39 +23,30 @@
  */
 package com.playtika.test.mongodb;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import com.playtika.test.mongodb.DisableMongodbTest.TestConfiguration;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
-@SpringBootTest(
-        classes = TestConfiguration.class,
-        properties = "embedded.mongodb.enabled=false"
-)
 public class DisableMongodbTest {
 
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedMongodbBootstrapConfiguration.class,
+                    EmbeddedMongodbTestOperationsAutoConfiguration.class,
+                    EmbeddedMongodbDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("mongoClientDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.mongodb.enabled=false"
+                )
+                .run((context) -> Assertions.assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("mongoClientDependencyPostProcessor"));
     }
 
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
 }

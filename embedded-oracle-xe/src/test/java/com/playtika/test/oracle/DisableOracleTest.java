@@ -23,36 +23,30 @@
  */
 package com.playtika.test.oracle;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.playtika.test.oracle.dummy.TestApplication;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.containers.GenericContainer;
-
-@SpringBootTest(
-        classes = {TestApplication.class},
-        properties = {
-        "embedded.oracle.enabled=false",
-        // need to configure datasource
-        "spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver",
-        "spring.datasource.url=jdbc:oracle:thin:@some-real-oracle:1521/not-embedded-db"
-})
 class DisableOracleTest {
 
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedOracleBootstrapConfiguration.class,
+                    EmbeddedOracleDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("datasourceOracleDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.oracle.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("datasourceOracleDependencyPostProcessor"));
     }
+
 }
