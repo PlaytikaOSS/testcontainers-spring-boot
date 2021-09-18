@@ -23,31 +23,32 @@
  */
 package com.playtika.test.keycloak.vanilla;
 
+import com.playtika.test.keycloak.EmbeddedKeycloakBootstrapConfiguration;
+import com.playtika.test.keycloak.EmbeddedKeycloakDependenciesAutoConfiguration;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.GenericContainer;
-
-@SpringBootTest(classes = VanillaTestApplication.class)
-@ActiveProfiles("disabled")
 public class DisableKeycloakTest {
 
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedKeycloakBootstrapConfiguration.class,
+                    EmbeddedKeycloakDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors)
-            .doesNotContain("keycloakSpringBootConfigResolverDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.keycloak.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("keycloakSpringBootConfigResolverDependencyPostProcessor"));
     }
+
 }

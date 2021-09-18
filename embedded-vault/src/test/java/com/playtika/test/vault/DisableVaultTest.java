@@ -24,44 +24,28 @@
 package com.playtika.test.vault;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.testcontainers.vault.VaultContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = "embedded.vault.enabled=false",
-        classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
 public class DisableVaultTest {
 
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
-
-    @Autowired
-    private ConfigurableEnvironment environment;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedVaultBootstrapConfiguration.class));
 
     @Test
-    public void shouldLoadContextWithoutContainer() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, VaultContainer.class);
-
-        assertThat(containers).isEmpty();
+    public void contextLoads() {
+        contextRunner
+                .withPropertyValues(
+                        "embedded.vault.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class));
     }
 
 
-    @Test
-    public void propertiesAreNotAvailable() {
-        assertThat(environment.getProperty("embedded.vault.host")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.vault.port")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.vault.token")).isNullOrEmpty();
-    }
-
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
 }

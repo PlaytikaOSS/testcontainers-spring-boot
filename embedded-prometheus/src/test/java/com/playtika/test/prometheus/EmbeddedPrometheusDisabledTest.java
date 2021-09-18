@@ -1,33 +1,27 @@
 package com.playtika.test.prometheus;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = EmbeddedPrometheusDisabledTest.TestConfiguration.class,
-        properties = "embedded.prometheus.enabled=false"
-)
 public class EmbeddedPrometheusDisabledTest {
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedPrometheusBootstrapConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        assertThat(containers).isEmpty();
+        contextRunner
+                .withPropertyValues(
+                        "embedded.prometheus.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class));
     }
 
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-
-    }
 }

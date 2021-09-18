@@ -2,30 +2,27 @@ package com.playtika.test.localstack;
 
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = DisabledLocalStackTest.TestConfiguration.class,
-        properties = "embedded.localstack.enabled=false")
 public class DisabledLocalStackTest {
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedLocalStackBootstrapConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, LocalStackContainer.class);
-        assertThat(containers).isEmpty();
+        contextRunner
+                .withPropertyValues(
+                        "embedded.localstack.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class));
     }
 
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
 }

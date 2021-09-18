@@ -23,52 +23,30 @@
  */
 package com.playtika.test.rabbitmq;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.testcontainers.containers.GenericContainer;
-
-@Slf4j
-@SpringBootTest(
-        classes = DisableRabbitMQTest.TestConfiguration.class,
-        properties = "embedded.rabbitmq.enabled=false")
 public class DisableRabbitMQTest {
-    @Autowired
-    private ConfigurableEnvironment environment;
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
 
-    @Test
-    public void propertiesAreNotAvailable() {
-        assertThat(environment.getProperty("embedded.rabbitmq.port")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.rabbitmq.host")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.rabbitmq.vhost")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.rabbitmq.user")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.rabbitmq.password")).isNullOrEmpty();
-        assertThat(environment.getProperty("embedded.rabbitmq.httpPort")).isNullOrEmpty();
-    }
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedRabbitMQBootstrapConfiguration.class,
+                    EmbeddedRabbitMQDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("rabbitMessagingTemplateDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.rabbitmq.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("rabbitMessagingTemplateDependencyPostProcessor"));
     }
 
-
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
 }

@@ -23,43 +23,29 @@
  */
 package com.playtika.test.dynamodb;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
-import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
-@Slf4j
-@SpringBootTest(
-        classes = DisableDynamoDBTest.TestConfiguration.class,
-        properties = {
-                "embedded.dynamodb.enabled=false",
-                "spring.profiles.active=disabled"
-        }
-)
 public class DisableDynamoDBTest {
 
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedDynamoDBBootstrapConfiguration.class,
+                    EmbeddedDynamoDBDependenciesAutoConfiguration.class));
 
     @Test
-    public void contextLoad() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("dynamodbDependencyPostProcessor");
+    public void contextLoads() {
+        contextRunner
+                .withPropertyValues(
+                        "embedded.dynamodb.enabled=false"
+                )
+                .run((context) -> Assertions.assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("dynamodbDependencyPostProcessor"));
     }
 
-    @EnableAutoConfiguration
-    @Configuration
-    static class TestConfiguration {
-    }
 }
