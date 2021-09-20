@@ -19,4 +19,8 @@ public class ArtifactoryProperties extends CommonContainerProperties {
     String password = "password";
     int restApiPort = 8081;
     int generalPort = 8082;
+
+    public ArtifactoryProperties() {
+        setWaitTimeoutInSeconds(120);
+    }
 }

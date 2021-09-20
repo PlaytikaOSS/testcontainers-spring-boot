@@ -1,24 +1,27 @@
 package com.playtika.test.pulsar;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.containers.PulsarContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = AbstractEmbeddedPulsarTest.TestConfiguration.class,
-        properties = "embedded.pulsar.enabled=false")
 class DisablePulsarTest {
 
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedPulsarBootstrapConfiguration.class));
 
     @Test
-    void shouldNotRegisterBean() {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, PulsarContainer.class);
-        assertThat(beanNamesForType).isEmpty();
+    public void contextLoads() {
+        contextRunner
+                .withPropertyValues(
+                        "embedded.pulsar.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class));
     }
+
 }

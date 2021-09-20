@@ -23,39 +23,31 @@
  */
 package com.playtika.test.mysql;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.GenericContainer;
-
-@SpringBootTest(
-        classes = DisableMySQLTest.TestConfiguration.class,
-        properties = "embedded.mysql.enabled=false"
-)
 public class DisableMySQLTest {
 
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedMySQLBootstrapConfiguration.class,
+                    EmbeddedMySQLTestOperationsAutoConfiguration.class,
+                    EmbeddedMySQLDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("datasourceMySqlDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.mysql.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("datasourceMySqlDependencyPostProcessor"));
     }
 
-    @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
-    @Configuration
-    static class TestConfiguration {
-    }
 }

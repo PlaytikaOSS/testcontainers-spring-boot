@@ -23,37 +23,30 @@
  */
 package com.playtika.test.clickhouse;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
-@SpringBootTest(classes = EmbeddedClickHouseDisableTest.TestConfiguration.class,
-        properties = "embedded.clickhouse.enabled=false")
 public class EmbeddedClickHouseDisableTest {
 
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedClickHouseBootstrapConfiguration.class,
+                    EmbeddedClickHouseDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain(
-                "clickHouseContainerDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.clickhouse.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("clickHouseContainerDependencyPostProcessor"));
     }
 
-    @Configuration
-    static class TestConfiguration {
-    }
 }

@@ -23,36 +23,32 @@
  */
 package com.playtika.test.elasticsearch;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.GenericContainer;
-
-@ActiveProfiles("disabled")
-@SpringBootTest(classes = DisabledElasticSearchTest.Config.class)
 public class DisabledElasticSearchTest {
 
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedElasticSearchBootstrapConfiguration.class,
+                    EmbeddedElasticSearchTestOperationsAutoConfiguration.class,
+                    EmbeddedElasticSearchDependenciesAutoConfiguration.class,
+                    EmbeddedElasticSearchRestClientDependenciesAutoConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        String[] postProcessors = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, BeanFactoryPostProcessor.class);
-
-        assertThat(containers).isEmpty();
-        assertThat(postProcessors).doesNotContain("elasticClientDependencyPostProcessor");
+        contextRunner
+                .withPropertyValues(
+                        "embedded.elasticsearch.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class)
+                        .doesNotHaveBean("elasticClientDependencyPostProcessor"));
     }
 
-    @Configuration
-    @EnableAutoConfiguration
-    public static class Config {}
 }
