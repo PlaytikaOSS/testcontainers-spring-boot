@@ -21,6 +21,7 @@
         <spring.cloud.gcp.version>1.2.8.RELEASE</spring.cloud.gcp.version>
         <equalsverifier.version>3.7</equalsverifier.version>
         <junit-jupiter.version>5.8.0-M1</junit-jupiter.version>
+        <db2.jcc.version>11.5.0.0</db2.jcc.version>
     </properties>
 
     <dependencyManagement>
@@ -62,6 +63,11 @@
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>testcontainers-common</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.db2</groupId>
+                <artifactId>jcc</artifactId>
+                <version>${db2.jcc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
