@@ -1,10 +1,8 @@
 package com.playtika.test.kafka;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -16,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import java.nio.file.Path;
 import java.util.Collections;
 
-import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 

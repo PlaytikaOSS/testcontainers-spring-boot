@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.dynamodb")
 public class DynamoDBProperties extends CommonContainerProperties {
-    
+
     static final String BEAN_NAME_EMBEDDED_DYNAMODB = "embeddedDynamoDb";
 
     String dockerImage = "amazon/dynamodb-local:latest";

@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
-import java.util.Collections;
-
 import static com.playtika.test.minio.MinioProperties.MINIO_BEAN_NAME;
 
 @Configuration

@@ -6,7 +6,6 @@ import com.couchbase.client.java.Cluster;
 import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
 import org.assertj.core.data.Offset;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;

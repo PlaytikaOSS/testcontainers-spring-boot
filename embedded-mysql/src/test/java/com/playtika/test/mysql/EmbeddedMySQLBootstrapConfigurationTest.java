@@ -1,13 +1,5 @@
 package com.playtika.test.mysql;
 
-import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.sql.DataSource;
-import java.util.concurrent.Callable;
-
 import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
@@ -24,6 +16,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
+
+import java.util.concurrent.Callable;
+
+import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(

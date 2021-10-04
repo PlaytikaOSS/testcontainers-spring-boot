@@ -1,6 +1,5 @@
 package com.playtika.test.elasticsearch;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.elasticsearch.rest.CreateIndex;
 import com.playtika.test.elasticsearch.rest.WaitForGreenStatus;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;

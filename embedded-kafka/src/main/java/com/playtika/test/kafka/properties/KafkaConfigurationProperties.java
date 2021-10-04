@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.AssertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

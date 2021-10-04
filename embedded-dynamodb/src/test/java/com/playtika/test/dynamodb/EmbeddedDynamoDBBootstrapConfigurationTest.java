@@ -1,12 +1,5 @@
 package com.playtika.test.dynamodb;
 
-import static com.playtika.test.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
-
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -25,6 +18,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import javax.annotation.PostConstruct;
+
+import java.util.List;
+
+import static com.playtika.test.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(

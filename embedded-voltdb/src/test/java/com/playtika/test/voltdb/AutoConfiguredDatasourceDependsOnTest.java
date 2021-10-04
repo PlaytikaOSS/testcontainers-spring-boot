@@ -1,12 +1,6 @@
 
 package com.playtika.test.voltdb;
 
-import static com.playtika.test.voltdb.VoltDBProperties.BEAN_NAME_EMBEDDED_VOLTDB;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.sql.DataSource;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -17,6 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+
+import javax.sql.DataSource;
+
+import static com.playtika.test.voltdb.VoltDBProperties.BEAN_NAME_EMBEDDED_VOLTDB;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(

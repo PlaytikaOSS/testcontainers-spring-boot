@@ -9,6 +9,7 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
 import javax.annotation.PostConstruct;
+
 import java.util.Collection;
 
 import static com.playtika.test.common.utils.ContainerUtils.executeInContainer;

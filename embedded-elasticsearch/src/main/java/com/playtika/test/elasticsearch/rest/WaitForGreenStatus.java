@@ -1,9 +1,8 @@
 package com.playtika.test.elasticsearch.rest;
 
-import lombok.RequiredArgsConstructor;
-
 import com.playtika.test.common.checks.AbstractCommandWaitStrategy;
 import com.playtika.test.elasticsearch.ElasticSearchProperties;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class WaitForGreenStatus extends AbstractCommandWaitStrategy {

@@ -1,7 +1,6 @@
 package com.playtika.test.clickhouse;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

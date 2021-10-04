@@ -4,21 +4,14 @@ import lombok.experimental.UtilityClass;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StreamUtils;
-import org.testcontainers.utility.MountableFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static java.lang.System.lineSeparator;
-import static java.util.stream.Collectors.joining;
 
 @UtilityClass
 public class FileUtils {
@@ -45,4 +38,3 @@ public class FileUtils {
         }
     }
 }
-

@@ -1,10 +1,5 @@
 package com.playtika.test.common.spring;
 
-import static com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration.ALL_CONTAINERS;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+import static com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration.ALL_CONTAINERS;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DependsOnPostProcessorTest {

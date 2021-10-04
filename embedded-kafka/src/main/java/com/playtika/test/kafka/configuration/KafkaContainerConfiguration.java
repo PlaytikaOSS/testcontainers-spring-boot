@@ -1,6 +1,5 @@
 package com.playtika.test.kafka.configuration;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.kafka.KafkaTopicsConfigurer;
 import com.playtika.test.kafka.checks.KafkaStatusCheck;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;

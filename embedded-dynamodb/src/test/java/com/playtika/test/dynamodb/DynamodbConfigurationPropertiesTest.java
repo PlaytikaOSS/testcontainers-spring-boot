@@ -1,10 +1,10 @@
 package com.playtika.test.dynamodb;
 
-import static nl.jqno.equalsverifier.Warning.NONFINAL_FIELDS;
-import static nl.jqno.equalsverifier.Warning.STRICT_INHERITANCE;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
+
+import static nl.jqno.equalsverifier.Warning.NONFINAL_FIELDS;
+import static nl.jqno.equalsverifier.Warning.STRICT_INHERITANCE;
 
 public class DynamodbConfigurationPropertiesTest {
 

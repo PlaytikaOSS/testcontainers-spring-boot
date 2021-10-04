@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.SocketUtils;
 
 import javax.annotation.PostConstruct;
+
 import java.util.Arrays;
 
 @Data

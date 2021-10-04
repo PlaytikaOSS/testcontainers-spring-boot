@@ -1,10 +1,5 @@
 package com.playtika.test.common.spring;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-
-import java.util.List;
-
 import com.playtika.test.common.properties.TestcontainersProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.testcontainers.containers.GenericContainer;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 //TODO: Drop this workaround after proper fix available https://github.com/spring-cloud/spring-cloud-commons/issues/752
 

@@ -1,24 +1,12 @@
 package com.playtika.test.neo4j;
 
-import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
-import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
 import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
-import org.neo4j.driver.SessionConfig;
 import org.neo4j.driver.types.Node;
-import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,6 +16,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Set;
+import java.util.concurrent.Callable;
+
+import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
+import static java.time.Duration.ofMillis;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(

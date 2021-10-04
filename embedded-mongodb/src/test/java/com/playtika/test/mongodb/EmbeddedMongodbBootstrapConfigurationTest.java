@@ -1,12 +1,5 @@
 package com.playtika.test.mongodb;
 
-import static java.time.Duration.ofMillis;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Instant;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-
 import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +12,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+
+import static java.time.Duration.ofMillis;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(
