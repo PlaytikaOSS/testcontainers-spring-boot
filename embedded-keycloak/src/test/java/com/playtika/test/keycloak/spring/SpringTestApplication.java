@@ -1,9 +1,5 @@
 package com.playtika.test.keycloak.spring;
 
-import static org.keycloak.adapters.KeycloakDeploymentBuilder.build;
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
-import javax.annotation.security.RolesAllowed;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -21,6 +17,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import javax.annotation.security.RolesAllowed;
+
+import static org.keycloak.adapters.KeycloakDeploymentBuilder.build;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @EnableWebMvc
 @KeycloakConfiguration

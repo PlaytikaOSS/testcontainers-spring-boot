@@ -34,4 +34,3 @@ public class OtherCompatibleImageTest extends BaseEmbeddedSeleniumTest {
         assertThat(container.getDockerImageName()).isEqualTo(foundProperty);
     }
 }
-

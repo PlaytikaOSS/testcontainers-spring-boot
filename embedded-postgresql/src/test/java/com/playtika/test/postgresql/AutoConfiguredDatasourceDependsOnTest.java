@@ -63,4 +63,3 @@ class AutoConfiguredDatasourceDependsOnTest {
     class Timescale12Image extends TestDefaults {
     }
 }
-

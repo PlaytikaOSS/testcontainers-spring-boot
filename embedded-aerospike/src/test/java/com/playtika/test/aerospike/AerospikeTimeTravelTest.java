@@ -1,13 +1,5 @@
 package com.playtika.test.aerospike;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.joda.time.Duration.standardDays;
-import static org.joda.time.Duration.standardHours;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
-
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.WritePolicy;
@@ -16,6 +8,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.joda.time.Duration.standardDays;
+import static org.joda.time.Duration.standardHours;
 
 public class AerospikeTimeTravelTest extends BaseAerospikeTest {
 

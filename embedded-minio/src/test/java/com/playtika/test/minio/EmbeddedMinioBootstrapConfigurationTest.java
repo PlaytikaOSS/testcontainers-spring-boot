@@ -1,6 +1,5 @@
 package com.playtika.test.minio;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.utils.ThrowingRunnable;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -9,7 +8,6 @@ import io.minio.MinioClient;
 import io.minio.UploadObjectArgs;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +19,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
-import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(

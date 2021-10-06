@@ -9,7 +9,6 @@ import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 
-
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;

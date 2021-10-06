@@ -1,11 +1,5 @@
 package com.playtika.test.voltdb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.sql.CallableStatement;
-import java.util.Collections;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +10,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.sql.CallableStatement;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(classes = EmbeddedVoltDBBootstrapConfigurationTest.TestConfiguration.class)

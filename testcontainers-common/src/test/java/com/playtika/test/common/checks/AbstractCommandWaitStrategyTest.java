@@ -1,12 +1,12 @@
 package com.playtika.test.common.checks;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+
+import java.time.Duration;
 
 public class AbstractCommandWaitStrategyTest {
 

@@ -1,10 +1,9 @@
 package com.playtika.test.influxdb;
 
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.playtika.test.common.properties.CommonContainerProperties;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

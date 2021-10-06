@@ -3,7 +3,6 @@ package com.playtika.test.redis.clustered;
 import com.playtika.test.redis.BaseEmbeddedRedisTest;
 import com.playtika.test.redis.RedisProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,5 @@
 package com.playtika.test.kafka.configuration;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

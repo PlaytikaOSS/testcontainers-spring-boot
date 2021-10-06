@@ -17,14 +17,14 @@ import org.testcontainers.containers.delegate.CassandraDatabaseDelegate;
 import org.testcontainers.delegate.DatabaseDelegate;
 import org.testcontainers.ext.ScriptUtils;
 
+import javax.script.ScriptException;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.playtika.test.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
 import static com.playtika.test.cassandra.CassandraProperties.DEFAULT_DATACENTER;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
-
-import javax.script.ScriptException;
 
 @Slf4j
 @Configuration

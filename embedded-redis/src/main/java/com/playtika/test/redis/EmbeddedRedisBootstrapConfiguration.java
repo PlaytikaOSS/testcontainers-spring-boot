@@ -1,7 +1,5 @@
 package com.playtika.test.redis;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.FileUtils;
 import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
@@ -26,7 +24,6 @@ import org.testcontainers.utility.MountableFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;

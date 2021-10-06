@@ -39,4 +39,3 @@ public class VncRecordingRecordAllTest extends BaseEmbeddedSeleniumTest {
         assertThat(recordDir).exists();
     }
 }
-
