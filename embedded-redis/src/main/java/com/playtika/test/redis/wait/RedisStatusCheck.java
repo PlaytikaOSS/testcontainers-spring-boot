@@ -13,8 +13,14 @@ public class RedisStatusCheck extends AbstractCommandWaitStrategy {
 
     @Override
     public String[] getCheckCommand() {
-        return new String[] {
-                "redis-cli", "-a", "$REDIS_PASSWORD", "-p", String.valueOf(properties.getPort()), "ping"
-        };
+        if (properties.isRequirepass()) {
+            return new String[]{
+                    "redis-cli", "-a", properties.getPassword(), "-p", String.valueOf(properties.getPort()), "ping"
+            };
+        } else {
+            return new String[]{
+                    "redis-cli", "-p", String.valueOf(properties.getPort()), "ping"
+            };
+        }
     }
 }
