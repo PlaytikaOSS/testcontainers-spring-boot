@@ -14,15 +14,17 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.postgresql.enabled` `(true|false, default is 'true')`
-* `embedded.postgresql.reuseContainer` `(true|false, default is 'false')`
-* `embedded.postgresql.dockerImage` `(default is set to 'postgres:9.6.8')`
-** You can pick wanted version on https://hub.docker.com/r/library/postgres/tags/[dockerhub]
+* `embedded.postgresql.enabled` `(true|false, default is true)`
+* `embedded.postgresql.reuseContainer` `(true|false, default is false)`
+* `embedded.postgresql.dockerImage` `(default is 'postgres:13-alpine')`
+** Image versions on https://hub.docker.com/_/postgres?tab=tags[dockerhub]
 * `embedded.postgresql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.postgresql.database`
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
 * `embedded.postgresql.initScriptPath` `(default is null)`
+* `embedded.postgresql.startupLogCheckRegex` `(default is null)`
+* `embedded.postgresql.mountVolumes` `(default is empty list)`
 
 ==== Produces
 
@@ -32,4 +34,35 @@
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
 
-//TODO: example missing
+==== Example (Spring Boot)
+
+bootstrap-test.yml
+[source,yaml]
+----
+embedded:
+  postgresql:
+    enabled: true
+    docker-image: 'bitnami/postgresql:13.3.0'
+    wait-timeout-in-seconds: 40
+    command: '/opt/bitnami/scripts/postgresql/run.sh'
+    startupLogCheckRegex: '.*database system is ready to accept connections.*'
+    mountVolumes:
+      -
+        hostPath: 'pgdata'  # local directory to store database files
+        containerPath: '/bitnami/postgresql'  # /var/lib/postgresql/data for https://hub.docker.com/_/postgres
+        mode: READ_WRITE  # persist data locally between container restarts
+      -
+        hostPath: 'src/main/resources/my-postgresql.conf'  # local file
+        containerPath: '/bitnami/postgresql/conf/postgresql.conf' # /etc/postgresql/postgresql.conf for https://hub.docker.com/_/postgres
+        mode: READ_ONLY  # prevent container from changing file contents (default)
+----
+
+application-test.yml
+[source,yaml]
+----
+spring:
+  datasource:
+    url: "jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}"
+    username: ${embedded.postgresql.user}
+    password: ${embedded.postgresql.password}
+----

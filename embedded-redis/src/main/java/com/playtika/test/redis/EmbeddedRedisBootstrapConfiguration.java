@@ -1,31 +1,7 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020 Playtika
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package com.playtika.test.redis;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.FileUtils;
 import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
 import com.playtika.test.redis.wait.RedisStatusCheck;
 import lombok.RequiredArgsConstructor;
@@ -45,11 +21,11 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
-import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
@@ -65,6 +41,7 @@ public class EmbeddedRedisBootstrapConfiguration {
     public final static String REDIS_WAIT_STRATEGY_BEAN_NAME = "redisStartupCheckStrategy";
 
     private final ResourceLoader resourceLoader;
+    private final RedisProperties properties;
 
     @Bean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
     @ConditionalOnMissingBean(name = REDIS_WAIT_STRATEGY_BEAN_NAME)
@@ -82,25 +59,20 @@ public class EmbeddedRedisBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
     public GenericContainer redis(ConfigurableEnvironment environment,
-                                  RedisProperties properties,
                                   @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
 
         log.info("Starting Redis cluster. Docker image: {}", properties.getDockerImage());
 
-        prepareRedisConfFiles(properties);
-
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
-        Consumer<CreateContainerCmd> containerCmdModifier = cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN);
         GenericContainer redis =
                 new FixedHostPortGenericContainer(properties.getDockerImage())
                         .withFixedExposedPort(properties.getPort(), properties.getPort())
                         .withExposedPorts(properties.getPort())
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCreateContainerCmdModifier(containerCmdModifier)
-                        .withCopyFileToContainer(MountableFile.forClasspathResource("redis.conf"), "/data/redis.conf")
-                        .withCopyFileToContainer(MountableFile.forClasspathResource("nodes.conf"), "/data/nodes.conf")
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf()), "/data/redis.conf")
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy);
         redis = configureCommonsAndStart(redis, properties, log);
@@ -109,13 +81,16 @@ public class EmbeddedRedisBootstrapConfiguration {
         return redis;
     }
 
-    private void prepareRedisConfFiles(RedisProperties properties) throws Exception {
-        resolveTemplate(resourceLoader, "redis.conf", content -> content
+    private Path prepareRedisConf() throws IOException {
+        return FileUtils.resolveTemplateAsPath(resourceLoader, "redis.conf", content -> content
                 .replace("{{requirepass}}", properties.isRequirepass() ? "yes" : "no")
                 .replace("{{password}}", properties.isRequirepass() ? "requirepass " + properties.getPassword() : "")
                 .replace("{{clustered}}", properties.isClustered() ? "yes" : "no")
                 .replace("{{port}}", String.valueOf(properties.getPort())));
-        resolveTemplate(resourceLoader, "nodes.conf", content -> content
+    }
+
+    private Path prepareNodesConf() throws IOException {
+        return FileUtils.resolveTemplateAsPath(resourceLoader, "nodes.conf", content -> content
                 .replace("{{port}}", String.valueOf(properties.getPort()))
                 .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
     }

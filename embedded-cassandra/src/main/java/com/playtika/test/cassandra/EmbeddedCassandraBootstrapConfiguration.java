@@ -1,28 +1,6 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Playtika
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package com.playtika.test.cassandra;
 
+import com.playtika.test.common.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -35,6 +13,11 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.containers.delegate.CassandraDatabaseDelegate;
+import org.testcontainers.delegate.DatabaseDelegate;
+import org.testcontainers.ext.ScriptUtils;
+
+import javax.script.ScriptException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,7 +25,6 @@ import java.util.Map;
 import static com.playtika.test.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
 import static com.playtika.test.cassandra.CassandraProperties.DEFAULT_DATACENTER;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
-import static com.playtika.test.common.utils.FileUtils.resolveTemplate;
 
 @Slf4j
 @Configuration
@@ -61,13 +43,12 @@ public class EmbeddedCassandraBootstrapConfiguration {
 
         log.info("Starting Cassandra cluster. Docker image: {}", properties.dockerImage);
 
-        prepareCassandraInitScript(properties);
-
         CassandraContainer cassandra = new CassandraContainer<>(properties.dockerImage)
-                .withInitScript("cassandra-init.sql")
                 .withExposedPorts(properties.getPort());
 
         cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
+
+        initKeyspace(properties, cassandra);
 
         Map<String, Object> cassandraEnv = registerCassandraEnvironment(environment, cassandra, properties);
 
@@ -90,8 +71,16 @@ public class EmbeddedCassandraBootstrapConfiguration {
         return cassandraEnv;
     }
 
-    private void prepareCassandraInitScript(CassandraProperties properties) throws Exception {
-        resolveTemplate(resourceLoader, "cassandra-init.sql", content -> content
-                .replace("{{keyspaceName}}", properties.keyspaceName));
+    private void initKeyspace(CassandraProperties properties, CassandraContainer<?> cassandra) throws ScriptException {
+        String initScriptContent = prepareCassandraInitScript(properties);
+        try (DatabaseDelegate databaseDelegate = new CassandraDatabaseDelegate(cassandra)) {
+            ScriptUtils.executeDatabaseScript(databaseDelegate, "init.cql", initScriptContent);
+        }
+    }
+
+    private String prepareCassandraInitScript(CassandraProperties properties) {
+        return FileUtils.resolveTemplateAsString(resourceLoader, "cassandra-init.sql", content -> content
+                .replace("{{keyspaceName}}", properties.keyspaceName))
+                .replace("{{replicationFactor}}", Integer.toString(properties.replicationFactor));
     }
 }

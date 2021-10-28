@@ -1,27 +1,27 @@
 package com.playtika.test.influxdb;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = "embedded.influxdb.enabled=false", classes = {TestApplication.class})
 public class EmbeddedInfluxDBDisabledTest {
 
-    @Autowired
-    ConfigurableListableBeanFactory beanFactory;
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(
+                    EmbeddedInfluxDBBootstrapConfiguration.class));
 
     @Test
     public void contextLoads() {
-        String[] containers = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, GenericContainer.class);
-        assertThat(containers).isEmpty();
+        contextRunner
+                .withPropertyValues(
+                        "embedded.influxdb.enabled=false"
+                )
+                .run((context) -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Container.class));
     }
 
 }

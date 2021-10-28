@@ -1,15 +1,15 @@
 package com.playtika.test.keycloak.util;
 
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
-
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 public final class KeycloakClient {
 

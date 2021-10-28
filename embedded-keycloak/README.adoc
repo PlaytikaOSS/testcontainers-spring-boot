@@ -14,14 +14,14 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.keycloak.enabled` `(boolean, true|false, default is 'true')`
-* `embedded.keycloak.reuseContainer` `(boolean, true|false, default is 'false')`
-* `embedded.keycloak.dockerImage` `(String, default is set to 'jboss/keycloak:8.0.1')`
-** You can pick wanted version on dockerhub.
+* `embedded.keycloak.enabled` `(true|false, default is true)`
+* `embedded.keycloak.reuseContainer` `(true|false, default is false)`
+* `embedded.keycloak.dockerImage` `(default is 'jboss/keycloak:15.0.0')`
+** Image versions on https://hub.docker.com/r/jboss/keycloak/tags[dockerhub]
 * `embedded.keycloak.command` `(String[], default is '["-c", "standalone.xml", "-Dkeycloak.profile.feature.upload_scripts=enabled"]')`
-* `embedded.keycloak.admin-user` `(String, default is 'admin')`
-* `embedded.keycloak.admin-password` `(String, default is 'letmein')`
-* `embedded.keycloak.import-file` `(String, default is '')`
+* `embedded.keycloak.admin-user` `(default is 'admin')`
+* `embedded.keycloak.admin-password` `(default is 'letmein')`
+* `embedded.keycloak.import-file` `(default is '')`
 
 ==== Produces
 

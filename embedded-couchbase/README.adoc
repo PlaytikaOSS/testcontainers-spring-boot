@@ -14,12 +14,12 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.couchbase.enabled` `(true|false, default is 'true')`
-* `embedded.couchbase.reuseContainer` `(true|false, default is 'false')`
+* `embedded.couchbase.enabled` `(true|false, default is true)`
+* `embedded.couchbase.reuseContainer` `(true|false, default is false)`
 * `embedded.couchbase.services` `(comma separated list, default is 'INDEX,KV,QUERY,SEARCH')`
-* `embedded.couchbase.bucketRamMb` `(default is set to '100')`
-* `embedded.couchbase.dockerImage` `(default is set to 'couchbase/server:6.5.1')`
-** You can pick wanted version on https://hub.docker.com/r/library/couchbase/tags/[dockerhub]
+* `embedded.couchbase.bucketRamMb` `(default is '100')`
+* `embedded.couchbase.dockerImage` `(default is 'couchbase/server:7.0.0')`
+** Image versions on https://hub.docker.com/r/couchbase/server/tags[dockerhub]
 
 ==== Produces
 * `embedded.couchbase.bootstrapHttpDirectPort`

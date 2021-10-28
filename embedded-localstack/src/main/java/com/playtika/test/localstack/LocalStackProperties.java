@@ -1,14 +1,13 @@
 package com.playtika.test.localstack;
 
-import java.util.Collection;
-import java.util.Collections;
-
+import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
-import com.playtika.test.common.properties.CommonContainerProperties;
+import java.util.Collection;
+import java.util.Collections;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,6 +19,7 @@ public class LocalStackProperties extends CommonContainerProperties {
     public String defaultRegion = "us-east-1";
     public String hostname = "localhost";
     public String hostnameExternal = "localhost";
-    public String dockerImage = "localstack/localstack:0.10.8";
+    // https://hub.docker.com/r/localstack/localstack
+    public String dockerImage = "localstack/localstack:0.12.16";
     public boolean useSsl = false;
 }

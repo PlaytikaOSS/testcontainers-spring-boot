@@ -1,29 +1,5 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020 Playtika
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package com.playtika.test.neo4j;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -35,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -55,9 +32,8 @@ public class EmbeddedNeo4jBootstrapConfiguration {
                                 Neo4jProperties properties) {
         log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
 
-        Neo4jContainer neo4j = new Neo4jContainer<>(properties.dockerImage)
-                .withAdminPassword(properties.password)
-                .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN));
+        Neo4jContainer neo4j = new Neo4jContainer<>(DockerImageName.parse(properties.dockerImage).asCompatibleSubstituteFor("neo4j"))
+                .withAdminPassword(properties.password);
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;

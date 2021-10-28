@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>2.0.4-SNAPSHOT</version>
+        <version>2.0.17-SNAPSHOT</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <artifactId>embedded-clickhouse</artifactId>
 
     <properties>
-        <clickhouse-driver.version>0.2.4</clickhouse-driver.version>
+        <clickhouse-driver.version>0.3.1-patch</clickhouse-driver.version>
     </properties>
 
     <dependencies>

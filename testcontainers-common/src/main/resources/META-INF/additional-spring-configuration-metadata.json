@@ -11,6 +11,11 @@
       "name": "embedded.containers.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.containers.use-pull-always-policy",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
     }
   ],
   "hints": [
@@ -37,6 +42,19 @@
         {
           "value": "false",
           "description": "Disables all testcontainers."
+        }
+      ]
+    },
+    {
+      "name": "embedded.containers.use-pull-always-policy",
+      "values": [
+        {
+          "value": "true",
+          "description": "It is necessary to do an image pull before the start of the container."
+        },
+        {
+          "value": "false",
+          "description": "Do not need to do an image pull before the start of the container."
         }
       ]
     }

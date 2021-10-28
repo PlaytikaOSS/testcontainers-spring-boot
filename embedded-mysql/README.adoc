@@ -14,12 +14,12 @@
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.mysql.enabled` `(true|false, default is 'true')`
-* `embedded.mysql.reuseContainer` `(true|false, default is 'false')`
+* `embedded.mysql.enabled` `(true|false, default is true)`
+* `embedded.mysql.reuseContainer` `(true|false, default is false)`
 * `embedded.mysql.encoding` `(default is 'utf8mb4')`
 * `embedded.mysql.collation` `(default is 'utf8mb4_unicode_ci')`
-* `embedded.mysql.dockerImage` `(default is set to 'mysql:5.7.22')`
-** You can pick wanted version on https://hub.docker.com/r/library/mysql/tags/[dockerhub].
+* `embedded.mysql.dockerImage` `(default is 'mysql:8.0')`
+** Image versions on https://hub.docker.com/_/mysql?tab=tags[dockerhub]
 * `embedded.mysql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.mysql.initScriptPath` `(default is null)`
 

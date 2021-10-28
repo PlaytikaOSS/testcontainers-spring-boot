@@ -147,6 +147,7 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |===
 
 === Other specific container related properties
+[cols="a,a,a"]
 |===
 |Setting name | Default value |Description
 
@@ -172,7 +173,7 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 
 |embedded.{module-name}.filesToInclude
 | empty list
-a|List of files to include objects.
+|List of files to include objects.
 Each object should have two parameters:
 
  * `classpathResource` (path to local file)
@@ -185,6 +186,30 @@ embedded.redis.filesToInclude:
   classpathResource: "/my_local_file.txt"
   containerPath: "/etc/path_in_container.txt"
 ----
+
+|embedded.{module-name}.mountVolumes
+| empty list
+|List of mount volumes to persist between container restarts.
+Each object should have three parameters:
+
+ * `hostPath` (path to local file/directory)
+ * `containerPath` (path in container to mount file/directory onto)
+ * `mode` (access mode default *READ_ONLY*, or *READ_WRITE*)
+
+Example:
+[source,yaml]
+----
+embedded.postgresql.mountVolumes:
+  hostPath: "pgdata"
+  containerPath: "/var/lib/postgresql/data"
+  mode: READ_WRITE
+----
+
+|embedded.{module-name}.capabilities
+| empty list. `NET_ADMIN` is set for Aerospike, Couchbase, Elasticsearch, Kafka, Mariadb, Memsql, Minio, Mongodb, Mysql, Neo4j, Redis containers. NOTE: `NET_ADMIN` is needed for the `NetworkTestOperations` to work.
+|The Linux capabilities that should be enabled. You can disable all capabilities by providing empty value for this property.
+See: https://man7.org/linux/man-pages/man7/capabilities.7.html.
+Available values can be taken from `com.github.dockerjava.api.model.Capability` class.
 |===
 
 
@@ -237,6 +262,16 @@ embedded.redis.filesToInclude:
 === link:embedded-clickhouse/README.adoc[embedded-clickhouse]
 
 === link:embedded-pulsar/README.adoc[embedded-pulsar]
+
+=== link:embedded-vertica/README.adoc[embedded-vertica]
+
+=== link:embedded-prometheus/README.adoc[embedded-prometheus]
+
+=== link:embedded-grafana/README.adoc[embedded-grafana]
+
+=== link:embedded-consul/README.adoc[embedded-consul]
+
+=== link:embedded-artifactory/README.adoc[embedded-artifactory]
 
 == How to contribute
 

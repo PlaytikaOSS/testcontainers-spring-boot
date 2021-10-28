@@ -1,0 +1,31 @@
+name-template: $NEXT_PATCH_VERSION
+tag-template: $NEXT_PATCH_VERSION
+
+template: |
+  # Changes
+  $CHANGES
+
+# --------
+# NOTE: When adding new labels please also update required-labels.yml workflow.
+# --------
+categories:
+  - title: 💣️ Breaking changes
+    label: breaking-change
+
+  - title: 🚀 Features & Enhancements
+    labels:
+      - feature
+      - enhancement
+
+  - title: 🐞 Fixes
+    label: bug
+
+  - title: 📁 Dependencies updates
+    label: dependencies
+
+  - title: 📖 Documentation
+    label: documentation
+
+  - title: 🏡 Housekeeping
+    label: housekeeping
+

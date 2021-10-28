@@ -1,25 +1,3 @@
-/*
- * The MIT License (MIT)
- *
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package com.playtika.test.selenium;
 
 import com.google.common.net.InetAddresses;
@@ -31,12 +9,10 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -47,18 +23,23 @@ import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.DefaultRecordingFileFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.RecordingFileFactory;
-
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 
 @Slf4j
@@ -108,6 +89,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
                 ? new BrowserWebDriverContainer<>(imageName)
                 :  new BrowserWebDriverContainer<>();
 
+        container.setWaitStrategy(getWaitStrategy());
         container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
 
@@ -124,6 +106,19 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, container, properties.getVnc().getMode().convert(), recordingDirOrNull);
         log.info("Started Selenium server. Connection details: {}", seleniumEnv);
         return container;
+    }
+
+    //See: https://github.com/testcontainers/testcontainers-java/pull/4357
+    @Deprecated
+    private WaitStrategy getWaitStrategy() {
+        WaitStrategy logWaitStrategy = new LogMessageWaitStrategy()
+                .withRegEx(".*(RemoteWebDriver instances should connect to|Selenium Server is up and running).*\n")
+                .withStartupTimeout(Duration.of(60, SECONDS));
+
+        return new WaitAllStrategy()
+                .withStrategy(logWaitStrategy)
+                .withStrategy(new HostPortWaitStrategy())
+                .withStartupTimeout(Duration.of(60, SECONDS));
     }
 
     /**
