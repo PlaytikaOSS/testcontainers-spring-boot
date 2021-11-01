@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -48,7 +49,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
                     properties.getHost(),
                     properties.getPort()
                 )
-            );
+            ).waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"));
 
         container = configureCommonsAndStart(container, properties, log);
         registerPubsubEnvironment(container, environment, properties);

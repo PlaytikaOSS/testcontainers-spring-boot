@@ -3,6 +3,8 @@ package com.playtika.test.pubsub;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.playtika.test.pubsub.PubsubProperties.BASE_DOCKER_IMAGE;
 import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
@@ -86,6 +89,19 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
                 .hasSize(1)
                 .contains("pubSubTemplate");
         asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    @Test
+    public void shouldHaveContainerWithExpectedDefaultProperties() {
+        assertThat(beanFactory.getBean(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB))
+                .isNotNull()
+                .isInstanceOf(GenericContainer.class)
+                .satisfies(genericContainer -> {
+                    GenericContainer<?> container = (GenericContainer) genericContainer;
+                    assertThat(container.getExposedPorts()).containsExactly(8089);
+                    assertThat(container.getCommandParts())
+                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --project my-project-id --host-port=0.0.0.0:8089");
+                });
     }
 
     private void hasDependsOn(String beanName) {
