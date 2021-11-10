@@ -3,8 +3,6 @@ package com.playtika.test.pubsub;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +14,9 @@ import org.springframework.cloud.gcp.pubsub.support.AcknowledgeablePubsubMessage
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static com.playtika.test.pubsub.PubsubProperties.BASE_DOCKER_IMAGE;
 import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
