@@ -14,6 +14,7 @@ import org.springframework.cloud.gcp.pubsub.support.AcknowledgeablePubsubMessage
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
 
@@ -86,6 +87,19 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
                 .hasSize(1)
                 .contains("pubSubTemplate");
         asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    @Test
+    public void shouldHaveContainerWithExpectedDefaultProperties() {
+        assertThat(beanFactory.getBean(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB))
+                .isNotNull()
+                .isInstanceOf(GenericContainer.class)
+                .satisfies(genericContainer -> {
+                    GenericContainer<?> container = (GenericContainer) genericContainer;
+                    assertThat(container.getExposedPorts()).containsExactly(8089);
+                    assertThat(container.getCommandParts())
+                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --project my-project-id --host-port=0.0.0.0:8089");
+                });
     }
 
     private void hasDependsOn(String beanName) {
