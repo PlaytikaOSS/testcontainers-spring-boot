@@ -90,7 +90,6 @@ public class KafkaContainerConfiguration {
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
                 .withEmbeddedZookeeper()
-                .withEnv("KAFKA_BROKER_ID", "-1")
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
                 //see: https://github.com/wurstmeister/kafka-docker/blob/master/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
@@ -106,7 +105,7 @@ public class KafkaContainerConfiguration {
                                 "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
                                 "BROKER://0.0.0.0:9092"
                 )
-                .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "INTERNAL_PLAINTEXT")
+                .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "BROKER")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
                 .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getOffsetsTopicReplicationFactor()))
                 .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
