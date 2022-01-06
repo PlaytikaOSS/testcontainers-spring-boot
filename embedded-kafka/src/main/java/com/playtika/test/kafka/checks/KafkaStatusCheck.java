@@ -22,7 +22,7 @@ public class KafkaStatusCheck extends AbstractCommandWaitStrategy {
                 MIN_BROKERS_COUNT,
                 TIMEOUT_IN_SEC,
                 "-b",
-                String.format("localhost:%d", this.properties.getContainerBrokerPort())
+                String.format("localhost:%d", 9092)
         };
     }
 
