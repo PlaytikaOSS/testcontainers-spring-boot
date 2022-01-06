@@ -11,12 +11,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class OracleProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_ORACLE = "embeddedOracle";
     static final int ORACLE_PORT = 1521;
-    static final String ORACLE_DB = "xe";
+    static final String ORACLE_DB = "xepdb1";
 
-    String dockerImage = "oracleinanutshell/oracle-xe-11g";
+    String dockerImage = "gvenzl/oracle-xe:18.4.0-slim";
 
-    String user = "system";
-    String password = "oracle";
+    String user = "test";
+    String password = "test";
     String database = ORACLE_DB;
     /**
      * The SQL file path to execute after the container starts to initialize the database.
