@@ -17,7 +17,7 @@
 * `embedded.azurite.reuseContainer` `(true|false, default is false)`
 * `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite')`
 ** Image versions on https://hub.docker.com/_/microsoft-azure-storage-azurite
-* `embedded.azurite.port` `(default is 1000)`
+* `embedded.azurite.port` `(default is 10000)`
 
 Account name and account key are hardcoded as of https://github.com/Azure/Azurite#default-storage-account.
 
