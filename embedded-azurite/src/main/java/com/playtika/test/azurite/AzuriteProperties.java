@@ -12,11 +12,7 @@ public class AzuriteProperties extends CommonContainerProperties {
 
     static final String AZURITE_BEAN_NAME = "azurite";
 
-    /**
-     * Using the latest version on purpose here, because there also always exists always one version of Azure.
-     * If you want a fixed version, check https://hub.docker.com/_/microsoft-azure-storage-azurite
-     */
-    String dockerImageVersion = "latest";
+    String dockerImageVersion = "3.15.0";
 
     int port = 10000;
 }
