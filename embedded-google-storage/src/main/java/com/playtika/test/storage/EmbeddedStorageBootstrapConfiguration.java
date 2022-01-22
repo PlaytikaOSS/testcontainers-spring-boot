@@ -1,8 +1,6 @@
 package com.playtika.test.storage;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
-import java.io.IOException;
-import java.util.LinkedHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -19,6 +17,9 @@ import org.testcontainers.shaded.okhttp3.OkHttpClient;
 import org.testcontainers.shaded.okhttp3.Request;
 import org.testcontainers.shaded.okhttp3.RequestBody;
 import org.testcontainers.shaded.okhttp3.Response;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static java.lang.String.format;
@@ -67,7 +68,7 @@ public class EmbeddedStorageBootstrapConfiguration {
             String updateExternalUrlJson = "{"
                 + "\"externalUrl\": \"" + containerUrl + "\""
                 + "}";
-            
+
             Request request = new Request.Builder()
                 .url(modifyExternalUrlRequestUri)
                 .put(RequestBody.create(MediaType.get("application/json"), updateExternalUrlJson))

@@ -1,10 +1,11 @@
 package com.playtika.test.storage;
 
 import com.playtika.test.common.properties.CommonContainerProperties;
-import java.util.Collection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.Collection;
 
 import static java.util.Collections.emptyList;
 

@@ -4,9 +4,11 @@ import com.google.cloud.NoCredentials;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import java.util.Collection;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
+
+import java.util.Collection;
 
 @Slf4j
 public class StorageResourcesGenerator {

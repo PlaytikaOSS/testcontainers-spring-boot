@@ -5,12 +5,9 @@ import com.google.cloud.WriteChannel;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.playtika.test.storage.EmbeddedStorageBootstrapConfigurationTest.TestConfig;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -25,6 +22,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import static com.playtika.test.storage.StorageProperties.BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER;
 import static java.util.Arrays.asList;
@@ -66,7 +66,7 @@ public class EmbeddedStorageBootstrapConfigurationTest {
     @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.google.storage.scheme")).isEqualTo("http");
-        // host could be allocated dynamically 
+        // host could be allocated dynamically
         assertThat(environment.getProperty("embedded.google.storage.host")).isNotEmpty();
         // port is assigned dynamically
         assertThat(environment.getProperty("embedded.google.storage.port")).isNotEmpty();
@@ -129,7 +129,7 @@ public class EmbeddedStorageBootstrapConfigurationTest {
             .isNotNull()
             .isInstanceOf(GenericContainer.class)
             .satisfies(genericContainer -> {
-                GenericContainer<?> container = (GenericContainer) genericContainer;
+                GenericContainer<?> container = (GenericContainer<?>) genericContainer;
 
                 assertThat(container.getExposedPorts()).containsExactly(4443);
                 assertThat(container.getContainerInfo().getConfig().getEntrypoint())
