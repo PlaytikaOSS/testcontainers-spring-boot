@@ -41,5 +41,7 @@ public class StorageResourcesGenerator {
 
     private void createBucket(String bucketName) {
         storage.create(BucketInfo.newBuilder(bucketName).build());
+        
+        log.info("bucket {} created", bucketName);
     }
 }
