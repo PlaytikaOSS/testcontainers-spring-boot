@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -25,6 +26,8 @@ import static com.playtika.test.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_R
 @EnableConfigurationProperties(RabbitMQProperties.class)
 public class EmbeddedRabbitMQBootstrapConfiguration {
 
+    private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("rabbitmq:3.8-alpine");
+
     @Bean(name = BEAN_NAME_EMBEDDED_RABBITMQ, destroyMethod = "stop")
     public RabbitMQContainer rabbitmq(
             ConfigurableEnvironment environment,
@@ -32,13 +35,22 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         log.info("Starting RabbitMQ server. Docker image: {}", properties.getDockerImage());
 
         RabbitMQContainer rabbitMQ =
-                new RabbitMQContainer(properties.getDockerImage())
+                new RabbitMQContainer(getDockerImageName(properties))
                         .withAdminPassword(properties.getPassword())
                         .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
                         .withExposedPorts(properties.getPort(), properties.getHttpPort());
         rabbitMQ = (RabbitMQContainer) configureCommonsAndStart(rabbitMQ, properties, log);
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
         return rabbitMQ;
+    }
+
+    private static DockerImageName getDockerImageName(RabbitMQProperties properties) {
+        DockerImageName imageName = DockerImageName.parse(properties.getDockerImage());
+        if (imageName.isCompatibleWith(DEFAULT_IMAGE_NAME)) {
+            return imageName;
+        }
+
+        return imageName.asCompatibleSubstituteFor(DEFAULT_IMAGE_NAME);
     }
 
 
