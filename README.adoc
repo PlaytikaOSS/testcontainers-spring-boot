@@ -273,6 +273,8 @@ Available values can be taken from `com.github.dockerjava.api.model.Capability` 
 
 === link:embedded-artifactory/README.adoc[embedded-artifactory]
 
+=== link:embedded-azurite/README.adoc[embedded-azurite]
+
 == How to contribute
 
 === Flow

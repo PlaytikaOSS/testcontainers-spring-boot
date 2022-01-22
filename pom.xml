@@ -69,6 +69,7 @@
         <module>embedded-consul</module>
         <module>embedded-db2</module>
         <module>embedded-artifactory</module>
+        <module>embedded-azurite</module>
     </modules>
 
     <properties>

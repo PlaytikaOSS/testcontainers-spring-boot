@@ -1,0 +1,47 @@
+=== embedded-azurite
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-azurite</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+* `embedded.azurite.enabled` `(true|false, default is true)`
+* `embedded.azurite.reuseContainer` `(true|false, default is false)`
+* `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite')`
+** Image versions on https://hub.docker.com/_/microsoft-azure-storage-azurite
+* `embedded.azurite.port` `(default is 10000)`
+
+Account name and account key are hardcoded as of https://github.com/Azure/Azurite#default-storage-account.
+
+==== Produces
+
+* `embedded.minio.host`
+* `embedded.minio.port`
+* `embedded.minio.account-name`
+* `embedded.minio.account-key`
+* `embedded.minio.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `azure-spring-boot-starter-storage`)
+
+==== Example
+
+Use `com.azure.spring:azure-spring-boot-starter-storage` (see https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage)
+and configure your application context as follows:
+
+[source,yaml]
+./src/test/resources/application.yaml
+----
+azure:
+  storage:
+    account-name: ${embedded.azurite.account-name}
+    account-key: ${embedded.azurite.account-key}
+    blob-endpoint: ${embedded.azurite.blob-endpoint}
+----
+
+You can then access all beans from `azure-spring-boot-starter-storage`, i.e. `BlobServiceClientBuilder`.
