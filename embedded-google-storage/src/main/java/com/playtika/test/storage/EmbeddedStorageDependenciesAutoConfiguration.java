@@ -1,4 +1,4 @@
-package com.playtika.test.pubsub;
+package com.playtika.test.storage;
 
 import com.google.cloud.storage.Storage;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.playtika.test.pubsub.StorageProperties.BEAN_NAME_EMBEDDED_GOOGLE_STORAGE;
+import static com.playtika.test.storage.StorageProperties.BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER;
 
 @Configuration
 @AutoConfigureOrder
@@ -18,8 +18,9 @@ import static com.playtika.test.pubsub.StorageProperties.BEAN_NAME_EMBEDDED_GOOG
 @ConditionalOnClass(Storage.class)
 @ConditionalOnProperty(name = "embedded.google.storage.enabled", matchIfMissing = true)
 public class EmbeddedStorageDependenciesAutoConfiguration {
+
     @Bean
-    public static BeanFactoryPostProcessor storageDependencyPostProcessor() {
-        return new DependsOnPostProcessor(Storage.class, new String[]{BEAN_NAME_EMBEDDED_GOOGLE_STORAGE});
+    static BeanFactoryPostProcessor storageDependencyPostProcessor() {
+        return new DependsOnPostProcessor(Storage.class, new String[]{BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER});
     }
 }

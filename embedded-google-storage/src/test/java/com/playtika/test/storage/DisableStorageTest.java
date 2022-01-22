@@ -1,4 +1,4 @@
-package com.playtika.test.pubsub;
+package com.playtika.test.storage;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -7,7 +7,7 @@ import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DisablePubsubTest {
+public class DisableStorageTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
@@ -18,12 +18,12 @@ public class DisablePubsubTest {
     public void contextLoads() {
         contextRunner
                 .withPropertyValues(
-                        "embedded.google.pubsub.enabled=false"
+                        "embedded.google.storage.enabled=false"
                 )
                 .run((context) -> assertThat(context)
                         .hasNotFailed()
                         .doesNotHaveBean(Container.class)
-                        .doesNotHaveBean("pubsubTemplateDependencyPostProcessor"));
+                        .doesNotHaveBean("storageDependencyPostProcessor"));
     }
 
 }
