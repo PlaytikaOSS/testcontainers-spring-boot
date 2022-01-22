@@ -13,7 +13,7 @@
     <artifactId>embedded-neo4j</artifactId>
 
     <properties>
-        <neo4j-ogm.version>3.2.25</neo4j-ogm.version>
+        <neo4j-ogm.version>3.2.28</neo4j-ogm.version>
     </properties>
 
     <dependencies>
