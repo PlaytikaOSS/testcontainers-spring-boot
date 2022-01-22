@@ -53,7 +53,6 @@ public class EmbeddedStorageBootstrapConfigurationTest {
         Storage storage(
             @Value("${my-test-project.storage-url}") String storageUrl,
             @Value("${spring.cloud.gcp.project-id}") String projectId) {
-            log.info("TestConfig");
             return StorageOptions.newBuilder()
                 .setHost(storageUrl)
                 .setProjectId(projectId)
@@ -72,14 +71,6 @@ public class EmbeddedStorageBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.google.storage.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.google.storage.project-id")).isEqualTo("my-project-id-enabled");
         assertThat(environment.getProperty("embedded.google.storage.bucket-location")).isEqualTo("US-EAST1");
-        //
-        //        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[0].topic")).isEqualTo("topic0");
-        //        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[0].subscription")).isEqualTo
-        //        ("subscription0");
-        //
-        //        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].topic")).isEqualTo("topic1");
-        //        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].subscription")).isEqualTo
-        //        ("subscription1");
     }
 
     @Test
