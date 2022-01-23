@@ -51,10 +51,10 @@ public class EmbeddedStorageBootstrapConfigurationTest {
 
         @Bean
         Storage storage(
-            @Value("${my-test-project.storage-url}") String storageUrl,
+            @Value("${my-test-project.storage-host}") String storageHost,
             @Value("${spring.cloud.gcp.project-id}") String projectId) {
             return StorageOptions.newBuilder()
-                .setHost(storageUrl)
+                .setHost(storageHost)
                 .setProjectId(projectId)
                 .setCredentials(NoCredentials.getInstance())
                 .build()
