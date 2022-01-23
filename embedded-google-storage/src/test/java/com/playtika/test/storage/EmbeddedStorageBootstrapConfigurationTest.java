@@ -64,11 +64,11 @@ public class EmbeddedStorageBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.google.storage.scheme")).isEqualTo("http");
         // host could be allocated dynamically
         assertThat(environment.getProperty("embedded.google.storage.host")).isNotEmpty();
         // port is assigned dynamically
         assertThat(environment.getProperty("embedded.google.storage.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.storage.endpoint")).isNotEmpty();
         assertThat(environment.getProperty("embedded.google.storage.project-id")).isEqualTo("my-project-id-enabled");
         assertThat(environment.getProperty("embedded.google.storage.bucket-location")).isEqualTo("US-EAST1");
     }
