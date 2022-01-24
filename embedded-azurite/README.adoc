@@ -23,11 +23,11 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 
 ==== Produces
 
-* `embedded.minio.host`
-* `embedded.minio.port`
-* `embedded.minio.account-name`
-* `embedded.minio.account-key`
-* `embedded.minio.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `azure-spring-boot-starter-storage`)
+* `embedded.azurite.host`
+* `embedded.azurite.port`
+* `embedded.azurite.account-name`
+* `embedded.azurite.account-key`
+* `embedded.azurite.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `azure-spring-boot-starter-storage`)
 
 ==== Example
 
