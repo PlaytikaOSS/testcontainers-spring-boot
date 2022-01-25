@@ -14,7 +14,7 @@
     <artifactId>embedded-mariadb</artifactId>
 
     <properties>
-        <mariadb-driver.version>2.7.4</mariadb-driver.version>
+        <mariadb-driver.version>2.7.5</mariadb-driver.version>
     </properties>
 
     <dependencies>
