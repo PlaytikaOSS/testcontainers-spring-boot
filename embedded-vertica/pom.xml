@@ -13,7 +13,7 @@
     <artifactId>embedded-vertica</artifactId>
 
     <properties>
-        <vertica-jdbc.version>11.0.1-0</vertica-jdbc.version>
+        <vertica-jdbc.version>11.0.2-0</vertica-jdbc.version>
     </properties>
 
     <dependencies>
