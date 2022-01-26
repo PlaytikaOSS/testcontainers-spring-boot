@@ -17,7 +17,7 @@ public class StorageProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER = "embeddedGoogleStorageServer";
     public static final String BASE_DOCKER_IMAGE = "sergseven/fake-gcs-server:v3";
     /** default port exposed by the fake-gcs-server */
-    static final int PORT = 4443; 
+    static final int PORT = 4443;
     private String dockerImage = BASE_DOCKER_IMAGE;
     /** project id for storage */
     private String projectId = "my-project-id";
