@@ -1,4 +1,4 @@
-=== embedded-google-pubsub
+=== embedded-google-storage
 
 ==== Maven dependency
 
@@ -7,42 +7,54 @@
 ----
 <dependency>
     <groupId>com.playtika.testcontainers</groupId>
-    <artifactId>embedded-google-pubsub</artifactId>
+    <artifactId>embedded-google-storage</artifactId>
     <scope>test</scope>
 </dependency>
 ----
 
 ==== Consumes (via `bootstrap.properties`)
 
-* `embedded.google.pubsub.enabled` `(true|false, default is true)`
-* `embedded.google.pubsub.reuseContainer` `(true|false, default is false)`
-* `embedded.google.pubsub.dockerImage` `(default is 'google/cloud-sdk:351.0.0')`
-** Image versions on https://hub.docker.com/r/google/cloud-sdk/tags[dockerhub]
-* `embedded.google.pubsub.host` `(default is 0.0.0.0)`
-* `embedded.google.pubsub.port` `(default is 8089)`
-* `embedded.google.pubsub.project-id` `(default is my-project-id)`
-* Topics and subscriptions:
+* `embedded.google.storage.enabled` `(true|false, default is true)`
+* `embedded.google.storage.reuseContainer` `(true|false, default is false)`
+* `embedded.google.storage.dockerImage` `(default is 'fsouza/fake-gcs-server')`
+** Image versions on https://hub.docker.com/r/fsouza/fake-gcs-server/tags[dockerhub]
+* `embedded.google.storage.projectId` `(project id for storage, default is my-project-id)`
+* `embedded.google.storage.bucketLocation` `(location for buckets, default is US-CENTRAL1)`
+
+* Predefined buckets:
 +
 ```
- embedded.google.pubsub.topics-and-subscriptions[0].topic=topic0_name
- embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name
- embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name
- embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name
+ embedded.google.storage.buckets[0]=my-bucket0
+ embedded.google.storage.buckets[1]=my-bucket1
 ```
 
 ==== Produces
 
-* `embedded.google.pubsub.host`
-* `embedded.google.pubsub.port`
-* `embedded.google.pubsub.project-id`
+* `embedded.google.storage.host` 
+* `embedded.google.storage.port`
+* `embedded.google.storage.endpoint` (computed property `http://${host}:${port}` for convenient configuration) 
+* `embedded.google.storage.projectId`
+* `embedded.google.storage.bucketLocation`
 
 ==== Example
 
-To auto-configure `spring-cloud-gcp-starter-pubsub` use these properties in your test `application.properties`:
+To define your Storage service bean you can use this code snippet:
 
-./src/test/resources/application.properties
-[source,properties]
+[source,java]
 ----
-spring.cloud.gcp.project-id=${embedded.google.pubsub.project-id}
-spring.cloud.gcp.pubsub.emulatorHost=${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+    @Configuration
+    class StorageConfig {
+
+        @Bean
+        Storage storage(
+            @Value("${embedded.google.storage.endpoint}") String storageHost,
+            @Value("${embedded.google.storage.project-id}") String projectId) {
+            return StorageOptions.newBuilder()
+                .setHost(storageHost)
+                .setProjectId(projectId)
+                .setCredentials(NoCredentials.getInstance())
+                .build()
+                .getService();
+        }
+    }
 ----

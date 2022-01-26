@@ -39,27 +39,24 @@ public class EmbeddedStorageBootstrapConfiguration {
         log.info("Starting Google Cloud Fake Storage Server. Docker image: {}", properties.getDockerImage());
 
         GenericContainer<?> container = new GenericContainer<>(properties.getDockerImage())
-            .withExposedPorts(properties.getPort())
+            .withExposedPorts(StorageProperties.PORT)
             .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
                 "/bin/fake-gcs-server",
                 "-scheme", "http",
-                "-host", properties.getHost(),
-                "-port", String.valueOf(properties.getPort()),
-                "-event.pubsub-project-id", properties.getEventPubsubProjectId(),
-                "-event.pubsub-topic", properties.getEventPubsubTopic(),
-                "-event.object-prefix", properties.getEventPrefix(),
-                "-event.list", properties.getEventList()
+                "-host", "0.0.0.0",
+                "-port", String.valueOf(StorageProperties.PORT),
+                "-location", properties.getBucketLocation()
             ));
 
         container = configureCommonsAndStart(container, properties, log);
-        prepareContainerConfiguration(container, properties);
+        prepareContainerConfiguration(container);
         registerStorageEnvironment(container, environment, properties);
         return container;
     }
 
-    private void prepareContainerConfiguration(GenericContainer<?> container, StorageProperties properties) throws IOException {
+    private void prepareContainerConfiguration(GenericContainer<?> container) throws IOException {
         try {
-            String containerEndpoint = buildContainerEndpoint(container, properties);
+            String containerEndpoint = buildContainerEndpoint(container);
             String modifyExternalUrlRequestUri = format("%s%s", containerEndpoint, "/internal/config");
             log.info("Google Cloud Fake Storage Server with externalUrl={}", containerEndpoint);
 
@@ -93,8 +90,8 @@ public class EmbeddedStorageBootstrapConfiguration {
         StorageProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.google.storage.host", container.getContainerIpAddress());
-        map.put("embedded.google.storage.port", container.getMappedPort(properties.getPort()));
-        map.put("embedded.google.storage.endpoint", buildContainerEndpoint(container, properties));
+        map.put("embedded.google.storage.port", container.getMappedPort(StorageProperties.PORT));
+        map.put("embedded.google.storage.endpoint", buildContainerEndpoint(container));
         map.put("embedded.google.storage.project-id", properties.getProjectId());
         map.put("embedded.google.storage.bucket-location", properties.getBucketLocation());
 
@@ -112,10 +109,10 @@ public class EmbeddedStorageBootstrapConfiguration {
         return new StorageResourcesGenerator(endpoint, storageProperties);
     }
 
-    private String buildContainerEndpoint(GenericContainer<?> container, StorageProperties properties) {
+    private String buildContainerEndpoint(GenericContainer<?> container) {
         return format(
             "http://%s:%d",
             container.getContainerIpAddress(),
-            container.getMappedPort(properties.getPort()));
+            container.getMappedPort(StorageProperties.PORT));
     }
 }

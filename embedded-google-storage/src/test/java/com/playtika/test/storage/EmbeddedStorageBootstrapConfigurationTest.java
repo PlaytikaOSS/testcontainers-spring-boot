@@ -129,10 +129,7 @@ public class EmbeddedStorageBootstrapConfigurationTest {
                         "-scheme", "http",
                         "-host", "0.0.0.0",
                         "-port", "4443",
-                        "-event.pubsub-project-id", "",
-                        "-event.pubsub-topic", "",
-                        "-event.object-prefix", "",
-                        "-event.list", "finalize");
+                        "-location", "US-EAST1");
             });
     }
 
