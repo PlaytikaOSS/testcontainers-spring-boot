@@ -57,7 +57,7 @@ public class EmbeddedStorageBootstrapConfiguration {
     private void prepareContainerConfiguration(GenericContainer<?> container) throws IOException {
         try {
             String containerEndpoint = buildContainerEndpoint(container);
-            String modifyExternalUrlRequestUri = format("%s%s", containerEndpoint, "/internal/config");
+            String modifyExternalUrlRequestUri = format("%s%s", containerEndpoint, "/_internal/config");
             log.info("Google Cloud Fake Storage Server with externalUrl={}", containerEndpoint);
 
             String updateExternalUrlJson = "{"
