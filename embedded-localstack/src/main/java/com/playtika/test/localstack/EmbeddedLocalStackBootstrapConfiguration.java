@@ -36,10 +36,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         localStackContainer
             .withExposedPorts(properties.getEdgePort())
             .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
-            .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
             .withEnv("HOSTNAME", properties.getHostname())
-            .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
-            .withEnv("USE_SSL", String.valueOf(properties.isUseSsl()));
+            .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal());
 
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);
@@ -58,7 +56,6 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         map.put("embedded.localstack.host", host);
         map.put("embedded.localstack.accessKey", localStack.getAccessKey());
         map.put("embedded.localstack.secretKey", localStack.getSecretKey());
-        map.put("embedded.localstack.region", localStack.getRegion());
         String prefix = "embedded.localstack.";
         Integer mappedPort = localStack.getMappedPort(properties.getEdgePort());
         for (LocalStackContainer.Service service : properties.services) {

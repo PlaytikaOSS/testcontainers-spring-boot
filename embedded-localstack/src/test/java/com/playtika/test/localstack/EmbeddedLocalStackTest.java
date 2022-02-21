@@ -44,9 +44,6 @@ public class EmbeddedLocalStackTest {
     @Value("${embedded.localstack.SQS}")
     private String sqsEndpoint;
 
-    @Value("${embedded.localstack.region}")
-    private String region;
-
     @Value("${embedded.localstack.SQS.port}")
     private String sqsPort;
 
@@ -103,13 +100,12 @@ public class EmbeddedLocalStackTest {
         assertThat(environment.getProperty("embedded.localstack.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.accessKey")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.secretKey")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.localstack.region")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.S3")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.S3.port")).isNotEmpty();
     }
 
     private AwsClientBuilder.EndpointConfiguration getEndpointConfiguration(String endpoint) {
-        return new AwsClientBuilder.EndpointConfiguration(endpoint, region);
+        return new AwsClientBuilder.EndpointConfiguration(endpoint, "us-west-2");
     }
 
     private AWSCredentialsProvider getAwsCredentialsProvider() {
