@@ -1,6 +1,7 @@
 package com.playtika.test.azurite;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.LinkedHashMap;
 
@@ -24,10 +26,9 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 public class EmbeddedAzuriteBootstrapConfiguration {
 
     @Bean(name = AzuriteProperties.AZURITE_BEAN_NAME, destroyMethod = "stop")
-    public AzuriteContainer azurite(ConfigurableEnvironment environment,
+    public GenericContainer azurite(ConfigurableEnvironment environment,
                                     AzuriteProperties properties) {
-
-        AzuriteContainer container = new AzuriteContainer(properties.getDockerImageVersion())
+        GenericContainer container = new GenericContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort());
 
         configureCommonsAndStart(container, properties, log);
@@ -37,7 +38,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         return container;
     }
 
-    private void registerEnvironment(AzuriteContainer azurite,
+    private void registerEnvironment(GenericContainer azurite,
                                      ConfigurableEnvironment environment,
                                      AzuriteProperties properties) {
 
@@ -47,9 +48,9 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.azurite.host", host);
         map.put("embedded.azurite.port", mappedPort);
-        map.put("embedded.azurite.account-name", azurite.ACCOUNT_NAME);
-        map.put("embedded.azurite.account-key", azurite.ACCOUNT_KEY);
-        map.put("embedded.azurite.blob-endpoint", "http://" + host + ":" + mappedPort + "/" + azurite.ACCOUNT_NAME);
+        map.put("embedded.azurite.account-name", AzuriteProperties.ACCOUNT_NAME);
+        map.put("embedded.azurite.account-key", AzuriteProperties.ACCOUNT_KEY);
+        map.put("embedded.azurite.blob-endpoint", "http://" + host + ":" + mappedPort + "/" + AzuriteProperties.ACCOUNT_NAME);
 
         log.info("Started Azurite. Connection details: {}", map);
 

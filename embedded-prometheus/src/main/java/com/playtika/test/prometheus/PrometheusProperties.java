@@ -13,8 +13,12 @@ public class PrometheusProperties extends CommonContainerProperties {
     static final String PROMETHEUS_BEAN_NAME = "prometheus";
 
     boolean enabled = true;
-    // https://hub.docker.com/r/prom/prometheus
-    String dockerImage = "prom/prometheus:v2.28.1";
     String networkAlias = "prometheus";
     int port = 9090;
+
+    // https://hub.docker.com/r/prom/prometheus
+    @Override
+    public String getDefaultDockerImage() {
+        return "prom/prometheus:v2.28.1";
+    }
 }

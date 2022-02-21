@@ -13,7 +13,6 @@ public class ArtifactoryProperties extends CommonContainerProperties {
     static final String ARTIFACTORY_BEAN_NAME = "artifactory";
 
     boolean enabled = true;
-    String dockerImage = "releases-docker.jfrog.io/jfrog/artifactory-oss:7.25.6";
     String networkAlias = "artifactory";
     String username = "admin";
     String password = "password";
@@ -22,5 +21,10 @@ public class ArtifactoryProperties extends CommonContainerProperties {
 
     public ArtifactoryProperties() {
         setWaitTimeoutInSeconds(120);
+    }
+
+    @Override
+    public String getDefaultDockerImage() {
+        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.25.6";
     }
 }

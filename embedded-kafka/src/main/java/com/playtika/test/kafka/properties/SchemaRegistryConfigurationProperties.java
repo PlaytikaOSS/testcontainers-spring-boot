@@ -21,8 +21,6 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     public static final String USERNAME = "admin";
     public static final String PASSWORD = "letmein";
 
-    // https://hub.docker.com/r/confluentinc/cp-schema-registry
-    private String dockerImage = "confluentinc/cp-schema-registry:6.2.0";
     /**
      * The container internal port. Will be overwritten with mapped port.
      */
@@ -36,6 +34,12 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
 
     public boolean isBasicAuthenticationEnabled() {
         return authentication == BASIC;
+    }
+
+    // https://hub.docker.com/r/confluentinc/cp-schema-registry
+    @Override
+    public String getDefaultDockerImage() {
+        return "confluentinc/cp-schema-registry:6.2.0";
     }
 
     public enum AvroCompatibilityLevel {

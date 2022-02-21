@@ -16,7 +16,6 @@ public class AerospikeProperties extends CommonContainerProperties {
     static final String AEROSPIKE_BEAN_NAME = "aerospike";
 
     boolean enabled = true;
-    String dockerImage = "aerospike/aerospike-server:5.5.0.2";
     String namespace = "TEST";
     String host = "localhost";
     int port = 3000;
@@ -24,5 +23,10 @@ public class AerospikeProperties extends CommonContainerProperties {
 
     public AerospikeProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    @Override
+    public String getDefaultDockerImage() {
+        return "aerospike/aerospike-server:5.5.0.2";
     }
 }

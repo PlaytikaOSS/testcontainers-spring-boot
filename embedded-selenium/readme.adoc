@@ -16,7 +16,7 @@
 
 * `embedded.selenium.enabled` `(true|false, default is true)`
 * `embedded.selenium.browser` `(enum, FIREFOX|CHROMIUM, default is 'CHROMIUM')`
-* `embedded.selenium.image-name` `(Docker image like "selenium/standalone-chrome-debug:3.141.59")`
+* `embedded.selenium.docker-image` `(Docker image like "selenium/standalone-chrome-debug:3.141.59")`
 ** Image versions on https://hub.docker.com/u/selenium[dockerhub] repositories
 ** Prefix "standalone-" has a browser installed, suffix "-debug" additionally a VNC server for https://github.com/SeleniumHQ/docker-selenium[docker-selenium]
 * `embedded.selenium.vnc.mode` `RECORD_ALL | SKIP | RECORD_FAILING`

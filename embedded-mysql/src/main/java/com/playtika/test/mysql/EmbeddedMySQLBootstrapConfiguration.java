@@ -1,6 +1,7 @@
 package com.playtika.test.mysql;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -27,10 +28,9 @@ public class EmbeddedMySQLBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MYSQL, destroyMethod = "stop")
     public MySQLContainer mysql(ConfigurableEnvironment environment,
                                 MySQLProperties properties) {
-        log.info("Starting mysql server. Docker image: {}", properties.dockerImage);
 
         MySQLContainer mysql =
-                new MySQLContainer<>(properties.dockerImage)
+                new MySQLContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
                         .withUsername(properties.getUser())
                         .withDatabaseName(properties.getDatabase())

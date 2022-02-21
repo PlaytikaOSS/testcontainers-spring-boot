@@ -1,6 +1,7 @@
 package com.playtika.test.localstack;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -12,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -28,11 +28,9 @@ import static com.playtika.test.localstack.LocalStackProperties.BEAN_NAME_EMBEDD
 public class EmbeddedLocalStackBootstrapConfiguration {
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
-    public EmbeddedLocalStackContainer localStack(ConfigurableEnvironment environment,
+    public LocalStackContainer localStack(ConfigurableEnvironment environment,
                                                   LocalStackProperties properties) {
-        log.info("Starting Localstack server. Docker image: {}", properties.dockerImage);
-
-        EmbeddedLocalStackContainer localStackContainer = new EmbeddedLocalStackContainer(properties.dockerImage);
+        LocalStackContainer localStackContainer = new LocalStackContainer(ContainerUtils.getDockerImageName(properties));
         localStackContainer
             .withExposedPorts(properties.getEdgePort())
             .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
@@ -42,12 +40,12 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);
         }
-        localStackContainer = (EmbeddedLocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
+        localStackContainer = (LocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
         registerLocalStackEnvironment(localStackContainer, environment, properties);
         return localStackContainer;
     }
 
-    private void registerLocalStackEnvironment(EmbeddedLocalStackContainer localStack,
+    private void registerLocalStackEnvironment(LocalStackContainer localStack,
                                                ConfigurableEnvironment environment,
                                                LocalStackProperties properties) {
         String host = localStack.getContainerIpAddress();
@@ -69,14 +67,9 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         setSystemProperties(localStack);
     }
 
-    private static void setSystemProperties(EmbeddedLocalStackContainer localStack) {
+    private static void setSystemProperties(LocalStackContainer localStack) {
         System.setProperty("aws.accessKeyId", localStack.getAccessKey());
         System.setProperty("aws.secretKey", localStack.getAccessKey());
     }
 
-    private static class EmbeddedLocalStackContainer extends LocalStackContainer {
-        EmbeddedLocalStackContainer(final String dockerImageName) {
-            super(DockerImageName.parse(dockerImageName));
-        }
-    }
 }

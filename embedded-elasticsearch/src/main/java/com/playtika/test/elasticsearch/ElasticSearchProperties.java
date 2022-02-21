@@ -15,8 +15,6 @@ import java.util.List;
 @ConfigurationProperties("embedded.elasticsearch")
 public class ElasticSearchProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_ELASTIC_SEARCH = "embeddedElasticSearch";
-    // https://hub.docker.com/_/elasticsearch
-    String dockerImage = "docker.elastic.co/elasticsearch/elasticsearch:7.14.0";
 
     String clusterName = "test_cluster";
     String host = "localhost";
@@ -27,5 +25,11 @@ public class ElasticSearchProperties extends CommonContainerProperties {
 
     public ElasticSearchProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    // https://hub.docker.com/_/elasticsearch
+    @Override
+    public String getDefaultDockerImage() {
+        return "docker.elastic.co/elasticsearch/elasticsearch:7.14.0";
     }
 }

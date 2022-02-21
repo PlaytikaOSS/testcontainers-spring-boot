@@ -11,8 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxDBProperties extends CommonContainerProperties {
 
     static final String EMBEDDED_INFLUX_DB = "embeddedInfluxDB";
-    // https://hub.docker.com/_/influxdb
-    String dockerImage = "influxdb:2.0-alpine";
 
     String adminUser = "admin";
     String adminPassword = "password";
@@ -22,4 +20,10 @@ public class InfluxDBProperties extends CommonContainerProperties {
     String host = "localhost";
     String database = "db";
     int port = 8086;
+
+    // https://hub.docker.com/_/influxdb
+    @Override
+    public String getDefaultDockerImage() {
+        return "influxdb:2.0-alpine";
+    }
 }

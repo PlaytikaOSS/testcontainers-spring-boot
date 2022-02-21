@@ -1,5 +1,6 @@
 package com.playtika.test.cassandra;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.common.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +42,7 @@ public class EmbeddedCassandraBootstrapConfiguration {
     public CassandraContainer cassandra(ConfigurableEnvironment environment,
                                         CassandraProperties properties) throws Exception {
 
-        log.info("Starting Cassandra cluster. Docker image: {}", properties.dockerImage);
-
-        CassandraContainer cassandra = new CassandraContainer<>(properties.dockerImage)
+        CassandraContainer cassandra = new CassandraContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort());
 
         cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);

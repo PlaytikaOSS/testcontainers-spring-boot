@@ -30,7 +30,6 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH, destroyMethod = "stop")
     public ElasticsearchContainer elasticSearch(ConfigurableEnvironment environment,
                                                 ElasticSearchProperties properties) {
-        log.info("Starting ElasticSearch server. Docker image: {}", properties.dockerImage);
 
         ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties);
         elasticSearch = (ElasticsearchContainer) configureCommonsAndStart(elasticSearch, properties, log);

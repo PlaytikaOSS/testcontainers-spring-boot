@@ -1,6 +1,7 @@
 package com.playtika.test.clickhouse;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -12,12 +13,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.ClickHouseContainer;
 import org.testcontainers.shaded.com.google.common.base.Strings;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
-import static com.playtika.test.clickhouse.ClickHouseProperties.DEFAULT_DOCKER_IMAGE;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
@@ -29,30 +28,22 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 public class EmbeddedClickHouseBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_CLICK_HOUSE, destroyMethod = "stop")
-    public ConcreteClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
+    public ClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
                                                            ClickHouseProperties properties) {
-        log.info("Starting ClickHouse server. Docker image: {}", properties.getDockerImage());
-
-        DockerImageName dockerImageName = DockerImageName.parse(properties.dockerImage);
-
-        if (properties.asCompatibleImage) {
-            dockerImageName = dockerImageName.asCompatibleSubstituteFor(DEFAULT_DOCKER_IMAGE);
-        }
-
-        ConcreteClickHouseContainer clickHouseContainer = new ConcreteClickHouseContainer(dockerImageName);
+        ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties));
         String username = Strings.isNullOrEmpty(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
         String password = Strings.isNullOrEmpty(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
         clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
         clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", Strings.nullToEmpty(password));
 
-        clickHouseContainer = (ConcreteClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
+        clickHouseContainer = (ClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
 
         registerClickHouseEnvironment(clickHouseContainer, environment, properties, username, password);
 
         return clickHouseContainer;
     }
 
-    private void registerClickHouseEnvironment(ConcreteClickHouseContainer clickHouseContainer,
+    private void registerClickHouseEnvironment(ClickHouseContainer clickHouseContainer,
                                                ConfigurableEnvironment environment,
                                                ClickHouseProperties properties,
                                                String username, String password) {
@@ -72,9 +63,4 @@ public class EmbeddedClickHouseBootstrapConfiguration {
         environment.getPropertySources().addFirst(propertySource);
     }
 
-    private static class ConcreteClickHouseContainer extends ClickHouseContainer {
-        public ConcreteClickHouseContainer(DockerImageName dockerImageName) {
-            super(dockerImageName);
-        }
-    }
 }

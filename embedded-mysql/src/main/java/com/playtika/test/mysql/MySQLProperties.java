@@ -13,8 +13,7 @@ import java.util.Arrays;
 @ConfigurationProperties("embedded.mysql")
 public class MySQLProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MYSQL = "embeddedMySQL";
-    // https://hub.docker.com/_/mysql
-    String dockerImage = "mysql:8.0";
+
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";
 
@@ -31,5 +30,11 @@ public class MySQLProperties extends CommonContainerProperties {
 
     public MySQLProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    // https://hub.docker.com/_/mysql
+    @Override
+    public String getDefaultDockerImage() {
+        return "mysql:8.0";
     }
 }

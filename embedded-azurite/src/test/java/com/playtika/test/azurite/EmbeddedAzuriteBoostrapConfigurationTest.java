@@ -22,7 +22,7 @@ class EmbeddedAzuriteBoostrapConfigurationTest {
     @Test
     void accountName() {
         BlobServiceClient blobServiceClient = blobServiceClientBuilder.buildClient();
-        assertThat(blobServiceClient.getAccountName()).isEqualTo(AzuriteContainer.ACCOUNT_NAME);
+        assertThat(blobServiceClient.getAccountName()).isEqualTo(AzuriteProperties.ACCOUNT_NAME);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.playtika.test.prometheus;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -15,7 +16,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -45,7 +45,7 @@ public class EmbeddedPrometheusBootstrapConfiguration {
                                        WaitStrategy prometheusWaitStrategy) {
 
         GenericContainer container =
-                new GenericContainer(DockerImageName.parse(properties.getDockerImage()))
+                new GenericContainer(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias())

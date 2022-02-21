@@ -34,9 +34,6 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected int socketTimeoutMs = 5_000;
     protected int bufferSize = 64 * 1024;
 
-    // https://hub.docker.com/r/confluentinc/cp-kafka
-    // https://docs.confluent.io/platform/current/installation/versions-interoperability.html
-    protected String dockerImageVersion = "6.2.0";
     /**
      * Default Dockerfile USER since 6.0.0 (was root before)
      */
@@ -82,6 +79,13 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
         if (this.saslPlaintextBrokerPort == 0) {
             this.saslPlaintextBrokerPort = ContainerUtils.getAvailableMappingPort();
         }
+    }
+
+    // https://hub.docker.com/r/confluentinc/cp-kafka
+    // https://docs.confluent.io/platform/current/installation/versions-interoperability.html
+    @Override
+    public String getDefaultDockerImage() {
+        return "confluentinc/cp-kafka:6.2.0";
     }
 
     @AllArgsConstructor

@@ -1,6 +1,7 @@
 package com.playtika.test.mongodb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -35,7 +36,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
             MongodbProperties properties,
             MongodbStatusCheck mongodbStatusCheck) {
         GenericContainer mongodb =
-                new GenericContainer<>(properties.getDockerImage())
+                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
                         .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())

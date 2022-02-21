@@ -12,11 +12,14 @@ public class DynamoDBProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_DYNAMODB = "embeddedDynamoDb";
 
-    String dockerImage = "amazon/dynamodb-local:latest";
     String host = "localhost";
     int port = 8000;
 
     String accessKey = "n/a";
     String secretKey = "n/a";
 
+    @Override
+    public String getDefaultDockerImage() {
+        return "amazon/dynamodb-local:latest";
+    }
 }

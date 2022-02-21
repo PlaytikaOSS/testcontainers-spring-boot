@@ -13,8 +13,6 @@ public class OracleProperties extends CommonContainerProperties {
     static final int ORACLE_PORT = 1521;
     static final String ORACLE_DB = "xepdb1";
 
-    String dockerImage = "gvenzl/oracle-xe:18.4.0-slim";
-
     String user = "test";
     String password = "test";
     String database = ORACLE_DB;
@@ -22,4 +20,9 @@ public class OracleProperties extends CommonContainerProperties {
      * The SQL file path to execute after the container starts to initialize the database.
      */
     String initScriptPath;
+
+    @Override
+    public String getDefaultDockerImage() {
+        return "gvenzl/oracle-xe:18.4.0-slim";
+    }
 }

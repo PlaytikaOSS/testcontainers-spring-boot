@@ -21,8 +21,14 @@ import java.util.Map;
 
 @Validated
 @Data
-public class CommonContainerProperties {
+public abstract class CommonContainerProperties {
 
+    private String dockerImage = getDefaultDockerImage();
+
+    /**
+     * Overrides only version of the Docker image.
+     */
+    private String dockerImageVersion;
     /**
      * Maximum time in seconds until embedded container should have started.
      */
@@ -68,6 +74,8 @@ public class CommonContainerProperties {
     public Duration getTimeoutDuration() {
         return Duration.ofSeconds(waitTimeoutInSeconds);
     }
+
+    public abstract String getDefaultDockerImage();
 
     /**
      * Copy a local file or directory from the classpath into the container.
