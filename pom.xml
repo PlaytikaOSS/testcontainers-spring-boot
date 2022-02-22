@@ -286,6 +286,8 @@
                     <disableIfBranchMatches>master|develop</disableIfBranchMatches>
                     <fetchReferenceBranch>true</fetchReferenceBranch>
                     <referenceBranch>refs/remotes/origin/develop</referenceBranch>
+                    <buildUpstream>always</buildUpstream>
+                    <skipTestsForUpstreamModules>true</skipTestsForUpstreamModules>
                     <buildUpstreamMode>impacted</buildUpstreamMode>
                     <skipIfPathMatches>\.github[/\\].*|\.mvn[/\\].*|mvnw.*</skipIfPathMatches>
                     <!-- Ignores Readme changes in parent or any submodule-->
