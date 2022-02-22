@@ -286,8 +286,10 @@
                     <disableIfBranchMatches>master|develop</disableIfBranchMatches>
                     <fetchReferenceBranch>true</fetchReferenceBranch>
                     <referenceBranch>refs/remotes/origin/develop</referenceBranch>
+                    <buildUpstreamMode>impacted</buildUpstreamMode>
                     <skipIfPathMatches>\.github[/\\].*|\.mvn[/\\].*|mvnw.*</skipIfPathMatches>
-                    <excludePathsMatching>\*.adoc</excludePathsMatching>
+                    <!-- Ignores Readme changes in parent or any submodule-->
+                    <excludePathsMatching>(.*[/\\])?README.adoc</excludePathsMatching>
                 </configuration>
             </plugin>
         </plugins>
