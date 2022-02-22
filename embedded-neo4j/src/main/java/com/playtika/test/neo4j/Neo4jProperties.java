@@ -13,8 +13,7 @@ import java.util.Arrays;
 @ConfigurationProperties("embedded.neo4j")
 public class Neo4jProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
-    // https://hub.docker.com/_/neo4j
-    String dockerImage = "neo4j:4.3-community";
+
     String user = "neo4j";
     String password = "letmein";
     int httpsPort = 7473;
@@ -23,5 +22,11 @@ public class Neo4jProperties extends CommonContainerProperties {
 
     public Neo4jProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    // https://hub.docker.com/_/neo4j
+    @Override
+    public String getDefaultDockerImage() {
+        return "neo4j:4.3-community";
     }
 }

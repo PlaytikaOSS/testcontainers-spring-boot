@@ -15,8 +15,6 @@ public class MongodbProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_MONGODB = "embeddedMongodb";
 
-    // https://hub.docker.com/_/mongo
-    private String dockerImage = "mongo:5.0-focal";
     private String host = "localhost";
     /**
      * The container internal port. Will be overwritten with mapped port.
@@ -28,5 +26,11 @@ public class MongodbProperties extends CommonContainerProperties {
 
     public MongodbProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    // https://hub.docker.com/_/mongo
+    @Override
+    public String getDefaultDockerImage() {
+        return "mongo:5.0-focal";
     }
 }

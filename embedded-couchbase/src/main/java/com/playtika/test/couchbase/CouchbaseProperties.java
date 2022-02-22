@@ -24,9 +24,7 @@ public class CouchbaseProperties extends CommonContainerProperties {
             , CouchbaseService.KV
             , CouchbaseService.QUERY
             , CouchbaseService.SEARCH};
-    // https://hub.docker.com/_/couchbase   "couchbase:community-7.0.0"
-    // https://hub.docker.com/r/couchbase/server
-    String dockerImage = "couchbase/server:7.0.0";
+
     int bucketRamMb = 100;
     String bucketType = "couchbase";
 
@@ -48,5 +46,12 @@ public class CouchbaseProperties extends CommonContainerProperties {
 
     public String getCredentials() {
         return format("%s:%s", user, password);
+    }
+
+    // https://hub.docker.com/_/couchbase   "couchbase:community-7.0.0"
+    // https://hub.docker.com/r/couchbase/server
+    @Override
+    public String getDefaultDockerImage() {
+        return "couchbase/server:7.0.0";
     }
 }

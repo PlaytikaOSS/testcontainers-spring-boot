@@ -1,6 +1,7 @@
 package com.playtika.test.influxdb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -29,10 +30,7 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     @Bean(name = InfluxDBProperties.EMBEDDED_INFLUX_DB, destroyMethod = "stop")
     public ConcreteInfluxDbContainer influxdb(ConfigurableEnvironment environment,
                                               InfluxDBProperties properties) {
-        log.info("Starting influxDB server. Docker image: {}",
-                properties.dockerImage);
-
-        ConcreteInfluxDbContainer influxDBContainer = new ConcreteInfluxDbContainer(properties.dockerImage);
+        ConcreteInfluxDbContainer influxDBContainer = new ConcreteInfluxDbContainer(ContainerUtils.getDockerImageName(properties));
         influxDBContainer
                 .withAdmin(properties.getAdminUser())
                 .withAdminPassword(properties.getAdminPassword())
@@ -71,8 +69,8 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     }
 
     private static class ConcreteInfluxDbContainer extends InfluxDBContainer<ConcreteInfluxDbContainer> {
-        ConcreteInfluxDbContainer(final String dockerImageName) {
-            super(DockerImageName.parse(dockerImageName));
+        ConcreteInfluxDbContainer(final DockerImageName dockerImageName) {
+            super(dockerImageName);
             addExposedPort(INFLUXDB_PORT);
         }
     }

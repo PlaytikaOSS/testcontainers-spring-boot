@@ -19,11 +19,15 @@ public class SeleniumProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_SELENIUM_DRIVER = "embeddedSeleniumDriver";
 
 
-    private String imageName;
     private BrowserType browser = BrowserType.CHROMIUM;
     private List<String> arguments = new ArrayList<>();
 
     private Vnc vnc = new Vnc();
+
+    @Override
+    public String getDefaultDockerImage() {
+        return null;
+    }
 
     public FirefoxOptions apply(FirefoxOptions options) {
         options.addArguments(arguments);

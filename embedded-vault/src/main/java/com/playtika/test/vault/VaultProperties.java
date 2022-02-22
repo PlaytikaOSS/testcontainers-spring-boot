@@ -15,8 +15,6 @@ public class VaultProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_VAULT = "embeddedVault";
 
-    // https://hub.docker.com/_/vault
-    private String dockerImage = "vault:1.8.1";
     private String host = "localhost";
     /**
      * The container internal port. Will be overwritten with mapped port.
@@ -26,4 +24,9 @@ public class VaultProperties extends CommonContainerProperties {
     private String path = "secret/application";
     private final Map<String, String> secrets = new HashMap<>();
 
+    // https://hub.docker.com/_/vault
+    @Override
+    public String getDefaultDockerImage() {
+        return "vault:1.8.1";
+    }
 }

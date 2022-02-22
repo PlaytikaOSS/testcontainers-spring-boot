@@ -1,6 +1,7 @@
 package com.playtika.test.consul;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -29,9 +30,7 @@ public class EmbeddedConsulBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
     public GenericContainer consulContainer(ConfigurableEnvironment environment, ConsulProperties properties) {
-        log.info("Starting consul server. Docker image {}", properties.getDockerImage());
-
-        GenericContainer consul = new GenericContainer<>(properties.getDockerImage())
+        GenericContainer consul = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .waitingFor(
                         Wait.forHttp("/v1/status/leader")

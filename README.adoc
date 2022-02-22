@@ -151,6 +151,14 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |===
 |Setting name | Default value |Description
 
+|embedded.{module-name}.dockerImage
+|Depends on module
+|Full Docker image name for container setup. Most of the modules have default value already setup.
+
+|embedded.{module-name}.dockerImageVersion
+|N/A
+|Use this property if you want to override only Docker image's version.
+
 |embedded.{module-name}.waitTimeoutInSeconds
 |60
 |Waiting time for a container to start in seconds
@@ -161,7 +169,7 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 
 |embedded.{module-name}.reuseContainer
 |false
-|Enables a reuse container testcontainers feature.
+|Enables a reuse container Testcontainers feature. For more info please refer to: https://github.com/testcontainers/testcontainers-java/pull/2555 and https://github.com/testcontainers/testcontainers-java/pull/1781.
 
 |embedded.{module-name}.command
 |null

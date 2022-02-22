@@ -15,6 +15,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.images.ImagePullPolicy;
 import org.testcontainers.images.PullPolicy;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
@@ -28,11 +29,28 @@ import java.util.function.Consumer;
 @UtilityClass
 public class ContainerUtils {
 
-    public static final Duration DEFAULT_CONTAINER_WAIT_DURATION = Duration.ofSeconds(60);
+    public static DockerImageName getDockerImageName(CommonContainerProperties properties) {
+        DockerImageName customImage = DockerImageName.parse(properties.getDockerImage());
+        if (properties.getDockerImageVersion() != null) {
+            customImage = customImage.withTag(properties.getDockerImageVersion());
+        }
+        String defaultDockerImage = properties.getDefaultDockerImage();
+        if (defaultDockerImage == null) {
+            return customImage;
+        }
+        DockerImageName defaultImage = DockerImageName.parse(defaultDockerImage);
+        if (customImage.isCompatibleWith(defaultImage)) {
+            return customImage;
+        }
+        log.warn("Custom Docker image {} configured for the container. Note that it may not be compatible with the default Docker image {}.",
+                customImage, defaultImage);
+        return customImage.asCompatibleSubstituteFor(defaultImage);
+    }
 
     public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
                                                                CommonContainerProperties properties,
                                                                Logger logger) {
+        log.info("Starting container with Docker image: {}", container.getDockerImageName());
         GenericContainer<?> updatedContainer = container
                 .withStartupTimeout(properties.getTimeoutDuration())
                 .withReuse(properties.isReuseContainer())
@@ -81,7 +99,7 @@ public class ContainerUtils {
         String imageResponseCreated = null;
         try {
             InspectImageResponse inspectImageResponse = container.getDockerClient().inspectImageCmd(dockerImageName).exec();
-            if(inspectImageResponse != null) {
+            if (inspectImageResponse != null) {
                 imageResponseCreated = inspectImageResponse.getCreated();
                 return DateUtils.toDateAndTimeAgo(imageResponseCreated);
             } else {

@@ -158,6 +158,10 @@ public class MountVolumesTest {
 
     @ConfigurationProperties("embedded.postgresql")
     static class PostgreSQLContainerProperties extends CommonContainerProperties {
+        @Override
+        public String getDefaultDockerImage() {
+            return null;
+        }
     }
 
     @TestConfiguration
@@ -167,6 +171,10 @@ public class MountVolumesTest {
 
     @ConfigurationProperties("embedded.other")
     static class OtherContainerProperties extends CommonContainerProperties {
+        @Override
+        public String getDefaultDockerImage() {
+            return null;
+        }
     }
 
 }

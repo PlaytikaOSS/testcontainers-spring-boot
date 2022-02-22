@@ -1,6 +1,7 @@
 package com.playtika.test.rabbitmq;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.RabbitMQContainer;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -26,16 +26,13 @@ import static com.playtika.test.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_R
 @EnableConfigurationProperties(RabbitMQProperties.class)
 public class EmbeddedRabbitMQBootstrapConfiguration {
 
-    private static final DockerImageName DEFAULT_IMAGE_NAME = DockerImageName.parse("rabbitmq:3.8-alpine");
-
     @Bean(name = BEAN_NAME_EMBEDDED_RABBITMQ, destroyMethod = "stop")
     public RabbitMQContainer rabbitmq(
             ConfigurableEnvironment environment,
             RabbitMQProperties properties) {
-        log.info("Starting RabbitMQ server. Docker image: {}", properties.getDockerImage());
 
         RabbitMQContainer rabbitMQ =
-                new RabbitMQContainer(getDockerImageName(properties))
+                new RabbitMQContainer(ContainerUtils.getDockerImageName(properties))
                         .withAdminPassword(properties.getPassword())
                         .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
                         .withExposedPorts(properties.getPort(), properties.getHttpPort());
@@ -43,16 +40,6 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
         return rabbitMQ;
     }
-
-    private static DockerImageName getDockerImageName(RabbitMQProperties properties) {
-        DockerImageName imageName = DockerImageName.parse(properties.getDockerImage());
-        if (imageName.isCompatibleWith(DEFAULT_IMAGE_NAME)) {
-            return imageName;
-        }
-
-        return imageName.asCompatibleSubstituteFor(DEFAULT_IMAGE_NAME);
-    }
-
 
     private void registerRabbitMQEnvironment(RabbitMQContainer rabbitMQ,
                                              ConfigurableEnvironment environment,

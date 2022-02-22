@@ -13,7 +13,6 @@ import java.util.Arrays;
 @ConfigurationProperties("embedded.memsql")
 public class MemSqlProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
-    String dockerImage = "memsql/quickstart:minimal-7.0.5";
     String user = "root";
     String password = "";
     String database = "test_db";
@@ -23,5 +22,10 @@ public class MemSqlProperties extends CommonContainerProperties {
 
     public MemSqlProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    @Override
+    public String getDefaultDockerImage() {
+        return "memsql/quickstart:minimal-7.0.5";
     }
 }

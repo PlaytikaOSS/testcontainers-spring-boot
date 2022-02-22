@@ -1,6 +1,7 @@
 package com.playtika.test.couchbase;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -29,13 +30,11 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
     public CouchbaseContainer couchbase(ConfigurableEnvironment environment,
                                         CouchbaseProperties properties) {
-
-        log.info("Starting couchbase server. Docker image: {}", properties.dockerImage);
         BucketDefinition bucketDefinition = new BucketDefinition(properties.getBucket())
                 .withPrimaryIndex(true)
                 .withQuota(properties.getBucketRamMb());
 
-        CouchbaseContainer couchbase = new CouchbaseContainer(properties.dockerImage)
+        CouchbaseContainer couchbase = new CouchbaseContainer(ContainerUtils.getDockerImageName(properties))
                 .withBucket(bucketDefinition)
                 .withEnabledServices(properties.getServices())
                 .withCredentials(properties.getUser(), properties.getPassword());

@@ -15,8 +15,6 @@ public class MinioProperties extends CommonContainerProperties {
 
     static final String MINIO_BEAN_NAME = "minio";
 
-    // https://hub.docker.com/r/minio/minio
-    String dockerImage = "minio/minio:RELEASE.2021-08-05T22-01-19Z";
     String accessKey = "AKIAIOSFODNN7EXAMPLE";
     String secretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
     String userName = "root";
@@ -31,5 +29,11 @@ public class MinioProperties extends CommonContainerProperties {
 
     public MinioProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    // https://hub.docker.com/r/minio/minio
+    @Override
+    public String getDefaultDockerImage() {
+        return "minio/minio:RELEASE.2021-08-05T22-01-19Z";
     }
 }

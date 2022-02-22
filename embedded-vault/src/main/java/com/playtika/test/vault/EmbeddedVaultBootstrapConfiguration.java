@@ -1,6 +1,7 @@
 package com.playtika.test.vault;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -31,9 +32,8 @@ public class EmbeddedVaultBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_VAULT, destroyMethod = "stop")
     public VaultContainer vault(ConfigurableEnvironment environment, VaultProperties properties) {
-        log.info("Starting vault server. Docker image: {}", properties.getDockerImage());
 
-        VaultContainer vault = new VaultContainer<>(properties.getDockerImage())
+        VaultContainer vault = new VaultContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withVaultToken(properties.getToken())
                 .withExposedPorts(properties.getPort());
 

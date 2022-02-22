@@ -1,6 +1,7 @@
 package com.playtika.test.neo4j;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
 
@@ -30,9 +30,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
     public Neo4jContainer neo4j(ConfigurableEnvironment environment,
                                 Neo4jProperties properties) {
-        log.info("Starting neo4j server. Docker image: {}", properties.dockerImage);
-
-        Neo4jContainer neo4j = new Neo4jContainer<>(DockerImageName.parse(properties.dockerImage).asCompatibleSubstituteFor("neo4j"))
+        Neo4jContainer neo4j = new Neo4jContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withAdminPassword(properties.password);
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
         registerNeo4jEnvironment(neo4j, environment, properties);

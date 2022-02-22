@@ -1,6 +1,7 @@
 package com.playtika.test.minio;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -40,10 +41,9 @@ public class EmbeddedMinioBootstrapConfiguration {
     public GenericContainer minio(MinioWaitStrategy minioWaitStrategy,
                                   ConfigurableEnvironment environment,
                                   MinioProperties properties) {
-        log.info("Starting Minio server. Docker image: {}", properties.dockerImage);
 
         GenericContainer minio =
-                new GenericContainer<>(properties.dockerImage)
+                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.port)
                         .withEnv("MINIO_ACCESS_KEY", properties.accessKey)
                         .withEnv("MINIO_SECRET_KEY", properties.secretKey)

@@ -25,7 +25,6 @@ public class KeycloakProperties extends CommonContainerProperties {
     public static final String DEFAULT_AUTH_BASE_PATH = "/auth";
     public static final String DEFAULT_DB_VENDOR = "h2";
 
-    private String dockerImage = DEFAULT_KEYCLOAK_IMAGE;
     /**
      * The command string issued to the container.
      */
@@ -82,4 +81,9 @@ public class KeycloakProperties extends CommonContainerProperties {
      * Specify user's password to use to authenticate to the database via file input (alternative to DB_PASSWORD).
      */
     private String dbPasswordFile;
+
+    @Override
+    public String getDefaultDockerImage() {
+        return DEFAULT_KEYCLOAK_IMAGE;
+    }
 }

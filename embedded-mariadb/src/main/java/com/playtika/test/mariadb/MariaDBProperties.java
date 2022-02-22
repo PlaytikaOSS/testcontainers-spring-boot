@@ -14,8 +14,7 @@ import java.util.Arrays;
 @ConfigurationProperties("embedded.mariadb")
 public class MariaDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
-    // https://hub.docker.com/_/mariadb
-    String dockerImage = "mariadb:10.6-focal";
+
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";
 
@@ -33,5 +32,11 @@ public class MariaDBProperties extends CommonContainerProperties {
 
     public MariaDBProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+    }
+
+    // https://hub.docker.com/_/mariadb
+    @Override
+    public String getDefaultDockerImage() {
+        return "mariadb:10.6-focal";
     }
 }

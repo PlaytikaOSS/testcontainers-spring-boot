@@ -2,6 +2,7 @@ package com.playtika.test.dynamodb;
 
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -29,9 +30,8 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
     @Bean(name = DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
     public GenericContainer dynamoDb(ConfigurableEnvironment environment,
                                      DynamoDBProperties properties) {
-        log.info("Starting DynamoDb server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer container = new GenericContainer(properties.dockerImage)
+        GenericContainer container = new GenericContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.port)
                 .waitingFor(new HostPortWaitStrategy());
 

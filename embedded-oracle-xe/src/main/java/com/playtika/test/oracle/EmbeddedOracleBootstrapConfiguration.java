@@ -1,6 +1,7 @@
 package com.playtika.test.oracle;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -30,10 +31,9 @@ public class EmbeddedOracleBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")
     public OracleContainer oracle(ConfigurableEnvironment environment,
                                   OracleProperties properties) {
-        log.info("Starting oracle server. Docker image: {}", properties.dockerImage);
 
         OracleContainer oracle =
-                new OracleContainer(properties.dockerImage)
+                new OracleContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withInitScript(properties.initScriptPath);
