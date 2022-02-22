@@ -89,6 +89,7 @@
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
         <spotless-maven-plugin.version>2.20.0</spotless-maven-plugin.version>
+        <gitflow-incremental-builder.version>4.0.0</gitflow-incremental-builder.version>
 
         <!-- GPG -->
         <gpg.keyname>3EEF24C7</gpg.keyname>
@@ -275,6 +276,19 @@
                         <phase>compile</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.github.gitflow-incremental-builder</groupId>
+                <artifactId>gitflow-incremental-builder</artifactId>
+                <version>${gitflow-incremental-builder.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <disableIfBranchMatches>master|develop</disableIfBranchMatches>
+                    <fetchReferenceBranch>true</fetchReferenceBranch>
+                    <referenceBranch>refs/remotes/origin/develop</referenceBranch>
+                    <skipIfPathMatches>\.github[/\\].*|\.mvn[/\\].*|mvnw.*</skipIfPathMatches>
+                    <excludePathsMatching>\*.adoc</excludePathsMatching>
+                </configuration>
             </plugin>
         </plugins>
     </build>
