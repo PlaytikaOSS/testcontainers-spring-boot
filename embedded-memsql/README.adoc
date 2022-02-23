@@ -16,9 +16,10 @@
 
 * `embedded.memsql.enabled` `(true|false, default is true)`
 * `embedded.memsql.reuseContainer` `(true|false, default is false)`
-* `embedded.memsql.dockerImage` `(default is 'memsql/quickstart:minimal-7.0.5')`
-** Image versions on https://hub.docker.com/r/memsql/quickstart/tags[dockerhub]
+* `embedded.memsql.dockerImage` `(default is 'singlestore/cluster-in-a-box:centos-7.6.8-ad67e74046-4.0.3-1.13.4')`
+** Image versions on https://hub.docker.com/r/singlestore/cluster-in-a-box/tags[dockerhub]
 * `embedded.memsql.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.memsql.licenseKey` `(required licenseKey should be generated on https://www.singlestore.com/free/[singlestore])`
 
 ==== Produces
 
@@ -30,8 +31,8 @@
 
 ==== Notes
 
-* Images without "minimal" tag do no start within 30 secs, so they are unusable
 * There should be at least 1.5 GB of RAM available for memsql to start
 * You can enable debug logs for `com.playtika.test` category to troubleshoot issues
+* NetworkTestOperations are not supported currently.
 
 //TODO: example missing

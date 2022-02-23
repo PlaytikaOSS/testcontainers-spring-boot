@@ -8,19 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemSqlStatusCheck extends AbstractCommandWaitStrategy {
 
+    private final MemSqlProperties properties;
+
     @Override
     public String[] getCheckCommand() {
         return new String[]{
-                "mysql",
-                "-u",
-                "root",
-                "-h",
-                "127.0.0.1",
-                "-P",
-                "3306",
-                "--batch",
-                "-e",
-                "use test_db; SELECT 1;"
+                "memsql",
+                "-u" + properties.getUser(),
+                "-p" + properties.getPassword(),
+                "-h", properties.getHost(),
+                "-P", String.valueOf(properties.getPort()),
+                "-e", properties.getStatusCheck()
         };
     }
 }
