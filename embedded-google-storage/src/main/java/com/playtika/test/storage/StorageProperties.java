@@ -15,14 +15,17 @@ import static java.util.Collections.emptyList;
 public class StorageProperties extends CommonContainerProperties {
 
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER = "embeddedGoogleStorageServer";
-    public static final String BASE_DOCKER_IMAGE = "fsouza/fake-gcs-server";
     /** default port exposed by the fake-gcs-server */
     static final int PORT = 4443;
-    private String dockerImage = BASE_DOCKER_IMAGE;
     /** project id for storage */
     private String projectId = "my-project-id";
     /** location for buckets */
     private String bucketLocation = "US-CENTRAL1";
     /** list with predefined buckets to be created */
     private Collection<String> buckets = emptyList();
+
+    @Override
+    public String getDefaultDockerImage() {
+        return "fsouza/fake-gcs-server";
+    }
 }
