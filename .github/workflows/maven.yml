@@ -18,7 +18,7 @@ jobs:
       group: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha}}
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
        #needed for gitflow-incremental-builder
         with:
           fetch-depth: 0
