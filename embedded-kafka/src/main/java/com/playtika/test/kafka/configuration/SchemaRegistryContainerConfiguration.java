@@ -1,5 +1,6 @@
 package com.playtika.test.kafka.configuration;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.kafka.properties.SchemaRegistryConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
@@ -34,9 +34,7 @@ public class SchemaRegistryContainerConfiguration {
             @Value("${embedded.kafka.containerBrokerList}") String kafkaContainerBrokerList,
             Network network) {
 
-        log.info("Starting schema registry server. Docker image: {}", properties.getDockerImage());
-
-        GenericContainer schemaRegistry = new FixedHostPortGenericContainer<>(properties.getDockerImage())
+        GenericContainer schemaRegistry = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(SCHEMA_REGISTRY_HOST_NAME))
                 .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", "PLAINTEXT://" + kafkaContainerBrokerList)
                 .withEnv("SCHEMA_REGISTRY_HOST_NAME", SCHEMA_REGISTRY_HOST_NAME)

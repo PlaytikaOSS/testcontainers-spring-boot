@@ -1,6 +1,7 @@
 package com.playtika.test.pubsub;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +37,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
     public GenericContainer pubsub(ConfigurableEnvironment environment,
                                    PubsubProperties properties) {
-        log.info("Starting Google Cloud Pubsub emulator. Docker image: {}", properties.getDockerImage());
-
-        GenericContainer container = new GenericContainer(properties.getDockerImage())
+        GenericContainer container = new GenericContainer(ContainerUtils.getDockerImageName(properties))
             .withExposedPorts(properties.getPort())
             .withCommand(
                 "/bin/sh",

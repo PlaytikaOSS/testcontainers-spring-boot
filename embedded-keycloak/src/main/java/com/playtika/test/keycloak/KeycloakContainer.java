@@ -1,5 +1,6 @@
 package com.playtika.test.keycloak;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -20,7 +21,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     public KeycloakContainer(KeycloakProperties properties,
                              ResourceLoader resourceLoader) {
-        super(properties.getDockerImage());
+        super(ContainerUtils.getDockerImageName(properties));
         this.properties = properties;
         this.resourceLoader = resourceLoader;
     }

@@ -1,5 +1,6 @@
 package com.playtika.test.kafka.configuration;
 
+import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.kafka.KafkaTopicsConfigurer;
 import com.playtika.test.kafka.checks.KafkaStatusCheck;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
@@ -75,10 +76,7 @@ public class KafkaContainerConfiguration {
         // All properties: https://docs.confluent.io/platform/current/installation/configuration/
         // Kafka Broker properties: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 
-        String dockerImageVersion = kafkaProperties.getDockerImageVersion();
-        log.info("Starting kafka broker. Docker image version: {}", dockerImageVersion);
-
-        KafkaContainer kafka = new KafkaContainer(dockerImageVersion) {
+        KafkaContainer kafka = new KafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
             @Override
             public String getBootstrapServers() {
                 super.getBootstrapServers();

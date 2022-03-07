@@ -19,9 +19,6 @@ public class Db2Properties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_DB2 = "embeddedDb2";
 
     @NotBlank
-    String dockerImage = "ibmcom/db2";
-
-    @NotBlank
     String user = "db2inst1";
     @NotBlank
     String password = "foobar1234";
@@ -32,4 +29,9 @@ public class Db2Properties extends CommonContainerProperties {
 
     String startupLogCheckRegex;
     String initScriptPath;
+
+    @Override
+    public String getDefaultDockerImage() {
+        return "ibmcom/db2";
+    }
 }

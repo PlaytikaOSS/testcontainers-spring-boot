@@ -11,7 +11,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class VoltDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_VOLTDB = "embeddedVoltDb";
 
-    // https://hub.docker.com/r/voltdb/voltdb-community
-    String dockerImage = "voltdb/voltdb-community:9.2.1";
     int port = 21212;
+
+    // https://hub.docker.com/r/voltdb/voltdb-community
+    @Override
+    public String getDefaultDockerImage() {
+        return "voltdb/voltdb-community:9.2.1";
+    }
 }

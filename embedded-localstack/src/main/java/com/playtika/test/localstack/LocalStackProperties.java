@@ -18,6 +18,10 @@ public class LocalStackProperties extends CommonContainerProperties {
     public int edgePort = 4566;
     public String hostname = "localhost";
     public String hostnameExternal = "localhost";
+
     // https://hub.docker.com/r/localstack/localstack
-    public String dockerImage = "localstack/localstack:0.14.0";
+    @Override
+    public String getDefaultDockerImage() {
+        return "localstack/localstack:0.14.0";
+    }
 }

@@ -50,7 +50,12 @@ class ContainerUtilsTest {
         mountVolumes.add(new MountVolume("pgdata", "/var/lib/postgresql/data", BindMode.READ_WRITE));
         mountVolumes.add(new MountVolume("src/main/resources/my-postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY));
 
-        CommonContainerProperties commonContainerProperties = new CommonContainerProperties();
+        CommonContainerProperties commonContainerProperties = new CommonContainerProperties() {
+            @Override
+            public String getDefaultDockerImage() {
+                return null;
+            }
+        };
         commonContainerProperties.setCommand(command);
         commonContainerProperties.setReuseContainer(true);
         commonContainerProperties.setEnv(env);

@@ -19,8 +19,6 @@ public class KeycloakContainerFactory {
     private final ResourceLoader resourceLoader;
 
     public KeycloakContainer newKeycloakContainer() {
-        log.info("Starting Keycloak server. Docker image: {}", properties.getDockerImage());
-
         KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
 
         keycloak = (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);

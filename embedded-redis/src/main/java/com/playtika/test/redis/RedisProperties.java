@@ -16,8 +16,7 @@ import java.util.Arrays;
 @ConfigurationProperties("embedded.redis")
 public class RedisProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
-    // https://hub.docker.com/_/redis
-    public String dockerImage = "redis:6.2-alpine";
+
     public String user = "root";
     public String password = "passw";
     public String host = "localhost";
@@ -34,5 +33,11 @@ public class RedisProperties extends CommonContainerProperties {
         if (this.port == 0) {
             this.port = SocketUtils.findAvailableTcpPort(1000, 10000);
         }
+    }
+
+    // https://hub.docker.com/_/redis
+    @Override
+    public String getDefaultDockerImage() {
+        return "redis:6.2-alpine";
     }
 }

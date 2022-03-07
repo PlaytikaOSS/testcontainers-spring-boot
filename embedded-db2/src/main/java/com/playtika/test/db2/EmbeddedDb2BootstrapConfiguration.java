@@ -1,6 +1,7 @@
 package com.playtika.test.db2;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -30,9 +31,7 @@ public class EmbeddedDb2BootstrapConfiguration {
     @Bean(name = Db2Properties.BEAN_NAME_EMBEDDED_DB2, destroyMethod = "stop")
     public Db2Container db2(ConfigurableEnvironment environment,
                             Db2Properties properties) {
-        log.info("Starting db2 server. Docker image: {}", properties.getDockerImage());
-
-        Db2Container db2Container = new Db2Container(properties.getDockerImage())
+        Db2Container db2Container = new Db2Container(ContainerUtils.getDockerImageName(properties))
                 .withDatabaseName(properties.getDatabase())
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())

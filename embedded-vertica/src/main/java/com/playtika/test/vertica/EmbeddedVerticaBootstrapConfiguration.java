@@ -1,6 +1,7 @@
 package com.playtika.test.vertica;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -28,7 +29,6 @@ public class EmbeddedVerticaBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_VERTICA, destroyMethod = "stop")
     public GenericContainer embeddedVertica(ConfigurableEnvironment environment, VerticaProperties properties) {
-        log.info("Starting Vertica server. Docker image: {}", properties.getDockerImage());
 
         GenericContainer verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log);
 
@@ -42,7 +42,7 @@ public class EmbeddedVerticaBootstrapConfiguration {
         map.put("DATABASE_NAME", properties.getDatabase());
         map.put("DATABASE_PASSWORD", properties.getPassword());
 
-        return new GenericContainer(properties.getDockerImage())
+        return new GenericContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .withEnv(map)
                 .waitingFor(new HostPortWaitStrategy());

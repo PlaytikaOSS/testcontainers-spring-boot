@@ -11,10 +11,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CassandraProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_CASSANDRA = "embeddedCassandra";
     public static final String DEFAULT_DATACENTER = "datacenter1";
-    // https://hub.docker.com/_/cassandra
-    public String dockerImage = "cassandra:4.0";
+
     public String host = "localhost";
     public int port = 9042;
     public String keyspaceName = "embedded";
     public int replicationFactor = 1;
+
+    // https://hub.docker.com/_/cassandra
+    @Override
+    public String getDefaultDockerImage() {
+        return "cassandra:4.0";
+    }
 }

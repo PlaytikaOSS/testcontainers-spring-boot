@@ -1,6 +1,5 @@
 package com.playtika.test.kafka.properties;
 
-import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import static java.lang.String.format;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @ConfigurationProperties("embedded.zookeeper")
-public class ZookeeperConfigurationProperties extends CommonContainerProperties {
+public class ZookeeperConfigurationProperties {
     protected int zookeeperContainerPort = 2181;
     protected String zookeeperContainerHost = "localhost";
 

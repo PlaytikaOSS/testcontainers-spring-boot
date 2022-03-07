@@ -1,6 +1,7 @@
 package com.playtika.test.redis;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.common.utils.FileUtils;
 import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
 import com.playtika.test.redis.wait.RedisStatusCheck;
@@ -61,12 +62,10 @@ public class EmbeddedRedisBootstrapConfiguration {
     public GenericContainer redis(ConfigurableEnvironment environment,
                                   @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
 
-        log.info("Starting Redis cluster. Docker image: {}", properties.getDockerImage());
-
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
         GenericContainer redis =
-                new FixedHostPortGenericContainer(properties.getDockerImage())
+                new FixedHostPortGenericContainer(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
                         .withFixedExposedPort(properties.getPort(), properties.getPort())
                         .withExposedPorts(properties.getPort())
                         .withEnv("REDIS_USER", properties.getUser())

@@ -1,6 +1,7 @@
 package com.playtika.test.voltdb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -36,9 +37,8 @@ public class EmbeddedVoltDBBootstrapConfiguration {
     public GenericContainer voltDB(ConfigurableEnvironment environment,
                                    VoltDBProperties properties,
                                    VoltDBStatusCheck voltDbStatusCheck) {
-        log.info("Starting VoltDB server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer voltDB = new GenericContainer(properties.dockerImage)
+        GenericContainer voltDB = new GenericContainer(ContainerUtils.getDockerImageName(properties))
                 .withEnv("HOST_COUNT", "1")
                 .withExposedPorts(properties.port)
                 .waitingFor(voltDbStatusCheck);

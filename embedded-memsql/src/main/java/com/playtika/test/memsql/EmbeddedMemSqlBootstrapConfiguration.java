@@ -1,6 +1,7 @@
 package com.playtika.test.memsql;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -32,7 +33,7 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     @Bean
     @ConditionalOnMissingBean
     MemSqlStatusCheck memSqlStartupCheckStrategy(MemSqlProperties properties) {
-        return new MemSqlStatusCheck();
+        return new MemSqlStatusCheck(properties);
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
@@ -40,10 +41,12 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                                    MemSqlProperties properties,
                                    MemSqlStatusCheck memSqlStatusCheck,
                                    @Autowired(required = false) Network network) {
-        log.info("Starting memsql server. Docker image: {}", properties.dockerImage);
 
-        GenericContainer memsql = new GenericContainer<>(properties.dockerImage)
+        GenericContainer memsql = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
+                .withEnv("LICENSE_KEY", properties.getLicenseKey())
+                .withEnv("ROOT_PASSWORD", properties.getPassword())
+                .withEnv("START_AFTER_INIT", "Y")
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .waitingFor(memSqlStatusCheck);

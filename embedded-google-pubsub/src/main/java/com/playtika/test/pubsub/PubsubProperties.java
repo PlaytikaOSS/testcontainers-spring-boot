@@ -16,9 +16,13 @@ public class PubsubProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/google/cloud-sdk
     // Only the full image "latest" (or just the version number) and the much smaller "emulators" contain all components needed for testing pubsub
     public static final String BASE_DOCKER_IMAGE = "google/cloud-sdk:351.0.0";
-    private String dockerImage = BASE_DOCKER_IMAGE;
     private String host = "0.0.0.0";
     private int port = 8089;
     private String projectId = "my-project-id";
     private Collection<TopicAndSubscription> topicsAndSubscriptions = Collections.emptyList();
+
+    @Override
+    public String getDefaultDockerImage() {
+        return BASE_DOCKER_IMAGE;
+    }
 }

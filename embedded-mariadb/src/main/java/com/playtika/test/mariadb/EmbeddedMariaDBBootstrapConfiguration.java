@@ -1,6 +1,7 @@
 package com.playtika.test.mariadb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -27,10 +28,9 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
     public MariaDBContainer mariadb(ConfigurableEnvironment environment,
                                     MariaDBProperties properties) throws Exception {
-        log.info("Starting mariadb server. Docker image: {}", properties.dockerImage);
 
         MariaDBContainer mariadb =
-                new MariaDBContainer<>(properties.dockerImage)
+                new MariaDBContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
