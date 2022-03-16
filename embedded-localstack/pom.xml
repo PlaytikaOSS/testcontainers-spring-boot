@@ -14,7 +14,7 @@
     <version>2.1.1-SNAPSHOT</version>
 
     <properties>
-        <aws-java-sdk.version>1.12.146</aws-java-sdk.version>
+        <aws-java-sdk.version>1.12.179</aws-java-sdk.version>
     </properties>
 
     <dependencies>
