@@ -14,13 +14,10 @@ import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
-import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.Subscription.Builder;
 import com.google.pubsub.v1.Topic;
-import com.google.pubsub.v1.TopicName;
 import com.playtika.test.pubsub.TopicAndSubscription.DeadLetter;
-
 import io.grpc.ManagedChannel;
 import lombok.extern.slf4j.Slf4j;
 
