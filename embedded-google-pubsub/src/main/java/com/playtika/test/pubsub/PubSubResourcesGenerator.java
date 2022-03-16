@@ -11,11 +11,13 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminSettings;
+import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.ProjectTopicName;
-import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.Subscription;
+import com.google.pubsub.v1.Subscription.Builder;
 import com.google.pubsub.v1.Topic;
+import com.playtika.test.pubsub.TopicAndSubscription.DeadLetter;
 import io.grpc.ManagedChannel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +36,11 @@ public class PubSubResourcesGenerator {
     private final String projectId;
     private final Collection<TopicAndSubscription> topicAndSubscriptions;
 
-    public PubSubResourcesGenerator(ManagedChannel channel, String projectId, Collection<TopicAndSubscription> topicAndSubscriptions) throws IOException {
+    public PubSubResourcesGenerator(
+            ManagedChannel channel,
+            String projectId,
+            Collection<TopicAndSubscription> topicAndSubscriptions
+    ) throws IOException {
         this.projectId = projectId;
         this.topicAndSubscriptions = topicAndSubscriptions;
         channelProvider = FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
@@ -54,18 +60,29 @@ public class PubSubResourcesGenerator {
         createTopic(ts.getTopic());
 
         if (ts.getSubscription() != null) {
-            createSubscription(ts.getTopic(), ts.getSubscription());
+            createSubscription(ts.getTopic(), ts.getSubscription(), ts.getDeadLetter());
         }
     }
 
-    public Subscription createSubscription(String topicName, String subscriptionName) {
+    public Subscription createSubscription(String topicName, String subscriptionName, DeadLetter deadLetter) {
         ProjectTopicName topic = ProjectTopicName.of(projectId, topicName);
         ProjectSubscriptionName subscription = ProjectSubscriptionName.of(projectId, subscriptionName);
 
         try {
             log.info("Creating subscription: {}", subscription);
-            return subscriptionAdminClient
-                    .createSubscription(subscription, topic, PushConfig.getDefaultInstance(), 100);
+
+            Builder builder = Subscription.newBuilder()
+                    .setName(subscription.toString())
+                    .setTopic(topic.toString())
+                    .setAckDeadlineSeconds(100);
+            if (deadLetter != null) {
+                log.info("with DeadLetterPolicy [topic: {}, maxAttempts: {}]", deadLetter.getTopic(), deadLetter.getMaxAttempts());
+                ProjectTopicName dlqTopic = ProjectTopicName.of(projectId, deadLetter.getTopic());
+                builder.setDeadLetterPolicy(DeadLetterPolicy.newBuilder()
+                        .setMaxDeliveryAttempts(deadLetter.getMaxAttempts())
+                        .setDeadLetterTopic(dlqTopic.toString()));
+            }
+            return subscriptionAdminClient.createSubscription(builder.build());
         } catch (AlreadyExistsException e) {
             return subscriptionAdminClient.getSubscription(subscription);
         }
