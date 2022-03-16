@@ -76,7 +76,8 @@ public class PubSubResourcesGenerator {
 
             Builder builder = Subscription.newBuilder()
                     .setName(subscription.toString())
-                    .setTopic(topic.toString());
+                    .setTopic(topic.toString())
+                    .setAckDeadlineSeconds(100);
             if (deadLetter != null) {
                 log.info("with DeadLetterPolicy [topic: {}, maxAttempts: {}]", deadLetter.getTopic(), deadLetter.getMaxAttempts());
                 ProjectTopicName dlqTopic = ProjectTopicName.of(projectId, deadLetter.getTopic());
