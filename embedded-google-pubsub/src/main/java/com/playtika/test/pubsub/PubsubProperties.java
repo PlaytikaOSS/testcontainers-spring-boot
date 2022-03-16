@@ -15,7 +15,7 @@ public class PubsubProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB = "embeddedGooglePubsub";
     // https://hub.docker.com/r/google/cloud-sdk
     // Only the full image "latest" (or just the version number) and the much smaller "emulators" contain all components needed for testing pubsub
-    public static final String BASE_DOCKER_IMAGE = "google/cloud-sdk:351.0.0";
+    public static final String BASE_DOCKER_IMAGE = "google/cloud-sdk:375.0.0";
     private String host = "0.0.0.0";
     private int port = 8089;
     private String projectId = "my-project-id";
