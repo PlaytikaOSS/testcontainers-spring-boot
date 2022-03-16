@@ -16,7 +16,7 @@
 
 * `embedded.google.pubsub.enabled` `(true|false, default is true)`
 * `embedded.google.pubsub.reuseContainer` `(true|false, default is false)`
-* `embedded.google.pubsub.dockerImage` `(default is 'google/cloud-sdk:351.0.0')`
+* `embedded.google.pubsub.dockerImage` `(default is 'google/cloud-sdk:375.0.0')`
 ** Image versions on https://hub.docker.com/r/google/cloud-sdk/tags[dockerhub]
 * `embedded.google.pubsub.host` `(default is 0.0.0.0)`
 * `embedded.google.pubsub.port` `(default is 8089)`
@@ -28,6 +28,8 @@
  embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name
  embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name
  embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name
+ embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic=topic0_name
+ embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts=5
 ```
 
 ==== Produces

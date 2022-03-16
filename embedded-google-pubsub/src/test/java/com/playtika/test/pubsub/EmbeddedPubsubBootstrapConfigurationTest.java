@@ -1,6 +1,9 @@
 package com.playtika.test.pubsub;
 
+import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.Subscription;
+import com.google.pubsub.v1.TopicName;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -27,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = EmbeddedPubsubBootstrapConfigurationTest.TestConfiguration.class,
     properties = "embedded.google.pubsub.dockerImage=" + BASE_DOCKER_IMAGE + "-emulators") // much smaller image
 @ActiveProfiles("enabled")
-public class EmbeddedPubsubBootstrapConfigurationTest {
+class EmbeddedPubsubBootstrapConfigurationTest {
 
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
@@ -50,7 +53,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
-    public void propertiesAreAvailable() {
+    void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.google.pubsub.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.google.pubsub.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.google.pubsub.project-id")).isNotEmpty();
@@ -60,10 +63,12 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
 
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].topic")).isEqualTo("topic1");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].subscription")).isEqualTo("subscription1");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic")).isEqualTo("topic0");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts")).isEqualTo("10");
     }
 
     @Test
-    public void topicsAndSubscriptionsAreAvailable() {
+    void topicsAndSubscriptionsAreAvailable() {
         ProjectSubscriptionName subscription0 = ProjectSubscriptionName.of(projectId, "subscription0");
         ProjectSubscriptionName subscription1 = ProjectSubscriptionName.of(projectId, "subscription1");
 
@@ -72,7 +77,18 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldPublishAndConsumeMessage() {
+    void shouldHaveDeadLetterPolicySetUp() {
+        ProjectSubscriptionName subscription1 = ProjectSubscriptionName.of(projectId, "subscription1");
+        TopicName dlqTopic = TopicName.of(projectId, "topic0");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription1);
+        assertThat(subscription.getDeadLetterPolicy())
+                .isNotNull()
+                .returns(dlqTopic.toString(), DeadLetterPolicy::getDeadLetterTopic)
+                .returns(10, DeadLetterPolicy::getMaxDeliveryAttempts);
+    }
+
+    @Test
+    void shouldPublishAndConsumeMessage() {
         template.publish("topic0", "hi");
         List<AcknowledgeablePubsubMessage> messages = template.pull("subscription0", 1, false);
 
@@ -80,7 +96,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldSetupDependsOnForPubSubTemplate() {
+    void shouldSetupDependsOnForPubSubTemplate() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, PubSubTemplate.class);
         assertThat(beanNamesForType)
                 .as("pubSubTemplate should be present")
@@ -90,7 +106,7 @@ public class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldHaveContainerWithExpectedDefaultProperties() {
+    void shouldHaveContainerWithExpectedDefaultProperties() {
         assertThat(beanFactory.getBean(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB))
                 .isNotNull()
                 .isInstanceOf(GenericContainer.class)
