@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.testcontainers.utility.DockerImageName;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ContainerUtilsDockerImageNameTest {
 
@@ -78,6 +79,20 @@ public class ContainerUtilsDockerImageNameTest {
             assertThat(ContainerUtils.getDockerImageName(properties)).isEqualTo(DockerImageName.parse("my-custom-image:5.8.0"));
         });
     }
+
+    @Test
+    void noDockerImageWithNoDefaultDockerImage() {
+        contextRunner.withPropertyValues(
+        ).run((context) -> {
+            assertThat(context).hasNotFailed();
+            CommonContainerPropertiesNoDefault properties = context.getBean(CommonContainerPropertiesNoDefault.class);
+
+            assertThatThrownBy(() -> ContainerUtils.getDockerImageName(properties))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("Please specify dockerImage for the container.");
+        });
+    }
+
 
     @EnableConfigurationProperties
     @Configuration

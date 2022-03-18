@@ -23,7 +23,10 @@ import java.util.Map;
 @Data
 public abstract class CommonContainerProperties {
 
-    private String dockerImage = getDefaultDockerImage();
+    /**
+     * Specify custom Docker image for the container.
+     */
+    private String dockerImage;
 
     /**
      * Overrides only version of the Docker image.
@@ -75,6 +78,12 @@ public abstract class CommonContainerProperties {
         return Duration.ofSeconds(waitTimeoutInSeconds);
     }
 
+    /**
+     * Specify default Docker image that is used by org.testcontainers:xyz module,
+     * so that we can mark your custom image as a compatible with the default one.
+     * <p>
+     * For more details check {@link com.playtika.test.common.utils.ContainerUtils#getDockerImageName}.
+     */
     public abstract String getDefaultDockerImage();
 
     /**

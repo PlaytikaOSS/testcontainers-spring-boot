@@ -30,21 +30,30 @@ import java.util.function.Consumer;
 public class ContainerUtils {
 
     public static DockerImageName getDockerImageName(CommonContainerProperties properties) {
-        DockerImageName customImage = DockerImageName.parse(properties.getDockerImage());
-        if (properties.getDockerImageVersion() != null) {
-            customImage = customImage.withTag(properties.getDockerImageVersion());
+        String customImageName = properties.getDockerImage();
+        String defaultDockerImageName = properties.getDefaultDockerImage();
+        if (customImageName == null && defaultDockerImageName == null) {
+            throw new IllegalStateException("Please specify dockerImage for the container.");
         }
-        String defaultDockerImage = properties.getDefaultDockerImage();
-        if (defaultDockerImage == null) {
+        if (customImageName == null) {
+            return setupImage(defaultDockerImageName, properties);
+        }
+        DockerImageName customImage = setupImage(customImageName, properties);
+        if (defaultDockerImageName == null) {
             return customImage;
         }
-        DockerImageName defaultImage = DockerImageName.parse(defaultDockerImage);
-        if (customImage.isCompatibleWith(defaultImage)) {
-            return customImage;
-        }
+        DockerImageName defaultImage = DockerImageName.parse(defaultDockerImageName);
         log.warn("Custom Docker image {} configured for the container. Note that it may not be compatible with the default Docker image {}.",
                 customImage, defaultImage);
         return customImage.asCompatibleSubstituteFor(defaultImage);
+    }
+
+    private static DockerImageName setupImage(String imageName, CommonContainerProperties properties) {
+        DockerImageName image = DockerImageName.parse(imageName);
+        if (properties.getDockerImageVersion() != null) {
+            image = image.withTag(properties.getDockerImageVersion());
+        }
+        return image;
     }
 
     public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
