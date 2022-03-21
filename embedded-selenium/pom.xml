@@ -17,7 +17,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>selenium</artifactId>
-            <version>${testcontainers.version}</version>
         </dependency>
 
         <dependency>
