@@ -13,6 +13,10 @@
     
     <artifactId>embedded-db2</artifactId>
 
+    <properties>
+        <db2.jcc.version>11.5.7.0</db2.jcc.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
@@ -21,7 +25,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>db2</artifactId>
-            <version>${testcontainers.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -36,6 +39,7 @@
         <dependency>
             <groupId>com.ibm.db2</groupId>
             <artifactId>jcc</artifactId>
+            <version>${db2.jcc.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
