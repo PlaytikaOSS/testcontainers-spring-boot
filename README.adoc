@@ -283,6 +283,8 @@ Available values can be taken from `com.github.dockerjava.api.model.Capability` 
 
 === link:embedded-azurite/README.adoc[embedded-azurite]
 
+=== link:embedded-toxiproxy/README.adoc[embedded-toxiproxy]
+
 == How to contribute
 
 === Flow

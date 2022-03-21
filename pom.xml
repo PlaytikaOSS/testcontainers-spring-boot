@@ -70,6 +70,7 @@
         <module>embedded-db2</module>
         <module>embedded-artifactory</module>
         <module>embedded-azurite</module>
+        <module>embedded-toxiproxy</module>
     </modules>
 
     <properties>
