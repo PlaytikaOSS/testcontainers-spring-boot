@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>2.1.2-SNAPSHOT</version>
+        <version>2.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,6 @@
         <spring.cloud.gcp.version>1.2.8.RELEASE</spring.cloud.gcp.version>
         <equalsverifier.version>3.7.2</equalsverifier.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <db2.jcc.version>11.5.7.0</db2.jcc.version>
     </properties>
 
     <dependencyManagement>
@@ -56,8 +55,10 @@
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers</artifactId>
+                <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
@@ -65,9 +66,9 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.ibm.db2</groupId>
-                <artifactId>jcc</artifactId>
-                <version>${db2.jcc.version}</version>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-toxiproxy</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,0 +1,52 @@
+=== embedded-toxiproxy
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-toxiproxy</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.toxiproxy.enabled` `(true|false, default is 'false')` Enables ToxiProxy container.
+//* `embedded.{module}.toxiProxy.enabled` `(true|false, default is 'false')` Enables ToxiProxy proxy for specific module.
+* `embedded.toxiproxy.reuseContainer` `(true|false, default is 'false')`
+* `embedded.toxiproxy.dockerImage` `(default is set to 'ghcr.io/shopify/toxiproxy:2.4.0')`
+* `embedded.toxiproxy.waitTimeoutInSeconds` `(default is 60 seconds)`
+
+TIP: See other common container properties in `com.playtika.test.common.properties.CommonContainerProperties`.
+
+==== Produces
+
+* `embedded.toxiproxy.host`
+* `embedded.toxiproxy.controlPort`
+
+==== Example
+
+Create vanilla Toxiproxy proxy:
+
+[source,java]
+----
+@Value("${embedded.toxiproxy.host}")
+String host;
+
+@Value("${embedded.toxiproxy.controlPort}")
+int controlPort;
+
+// NOTE: {toxi-proxy-avail-port} must be in the range [8666; 8666 + 31] (these ports are exposed by default).
+ToxiproxyClient toxiproxyClient = new ToxiproxyClient(host, controlPort);
+Proxy proxy = toxiproxyClient.createProxy(
+                                          "my-service-proxy", // Name of the proxy
+                                          "0.0.0.0:{toxi-proxy-avail-port}", // Toxiproxy will listen on this address
+                                          "{my-service-host}:{my-service-port}"); // Your service is exposed at this address
+
+proxy.toxics()
+        .latency("latency", ToxicDirection.DOWNSTREAM, 1_100)
+        .setJitter(100);
+----
