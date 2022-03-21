@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -22,11 +22,8 @@ import java.util.Map;
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
-@ConditionalOnProperty(value = "embedded.toxiproxy.enabled", havingValue = "true", matchIfMissing = false)
+@Conditional(ToxiProxyCondition.class)
 @EnableConfigurationProperties(ToxiProxyProperties.class)
-//TODO: enable when at least one container enables toxiproxy
-// embedded.toxiproxy.enabled || embedded.{module}.toxiproxy.enabled
-//@ConditionalOnProperty(value = "embedded.*.toxiproxy.enabled", havingValue = "true", matchIfMissing = false)
 public class EmbeddedToxiProxyBootstrapConfiguration {
 
     private static final String TOXIPROXY_NETWORK_ALIAS = "toxiproxy";
