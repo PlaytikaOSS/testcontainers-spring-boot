@@ -195,8 +195,7 @@ public class KafkaContainerConfiguration {
     public KafkaTopicsConfigurer kafkaConfigurer(
             GenericContainer kafka,
             KafkaConfigurationProperties kafkaProperties,
-            ZookeeperConfigurationProperties zookeeperProperties
-    ) {
+            ZookeeperConfigurationProperties zookeeperProperties) {
         return new KafkaTopicsConfigurer(kafka, zookeeperProperties, kafkaProperties);
     }
 

@@ -24,7 +24,7 @@ class EmbeddedSchemaRegistryTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     void schemasTopicAvailable() throws Exception {
-        assertThatTopicExists("_schemas");
+        assertThatTopicExists("_schemas", 1);
     }
 
     @Test
