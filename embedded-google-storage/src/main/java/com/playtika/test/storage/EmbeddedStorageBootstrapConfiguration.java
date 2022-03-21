@@ -1,6 +1,7 @@
 package com.playtika.test.storage;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.test.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -36,9 +37,7 @@ public class EmbeddedStorageBootstrapConfiguration {
     GenericContainer<?> storageServer(
         ConfigurableEnvironment environment,
         StorageProperties properties) throws IOException {
-        log.info("Starting Google Cloud Fake Storage Server. Docker image: {}", properties.getDockerImage());
-
-        GenericContainer<?> container = new GenericContainer<>(properties.getDockerImage())
+        GenericContainer<?> container = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
             .withExposedPorts(StorageProperties.PORT)
             .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
                 "/bin/fake-gcs-server",
