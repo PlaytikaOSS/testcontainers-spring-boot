@@ -13,10 +13,6 @@
 
     <artifactId>embedded-mariadb</artifactId>
 
-    <properties>
-        <mariadb-driver.version>2.7.5</mariadb-driver.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
@@ -25,13 +21,11 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>${mariadb-driver.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mariadb</artifactId>
-            <version>${testcontainers.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
