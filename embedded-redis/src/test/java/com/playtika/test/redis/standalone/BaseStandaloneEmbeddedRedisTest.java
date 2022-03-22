@@ -32,9 +32,12 @@ public abstract class BaseStandaloneEmbeddedRedisTest extends BaseEmbeddedRedisT
     public void shouldEmulateLatency() throws Exception {
         ValueOperations<String, String> ops = template.opsForValue();
 
+        assertThat(durationOf(() -> ops.get("any")))
+                .isLessThan(100L);
+
         redisNetworkTestOperations.withNetworkLatency(ofMillis(1000),
                 () -> assertThat(durationOf(() -> ops.get("any")))
-                        .isGreaterThan(1000L)
+                        .isGreaterThanOrEqualTo(1000L)
         );
 
         assertThat(durationOf(() -> ops.get("any")))
