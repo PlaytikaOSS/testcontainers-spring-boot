@@ -1,6 +1,7 @@
 package com.playtika.test.kafka;
 
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.KafkaConfigurationProperties.TopicConfiguration;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
@@ -37,17 +38,23 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
     @Test
     @DisplayName("creates topics on startup")
     public void shouldAutoCreateTopic() throws Exception {
-        assertThatTopicExists("topic1");
+        assertThatTopicExists("topic1", 1);
+        assertThatTopicExists("topic3", 2);
     }
 
     @Test
     @DisplayName("allows to create other topics")
     public void shouldCreateTopic() throws Exception {
         String topicToCreate = "topicToCreate";
+        int defaultPartitions = 1;
+        String topicToCreate1 = "topicToCreate1";
+        int customPartitions = 2;
 
-        kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate));
+        kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate),
+                                           Collections.singletonList(new TopicConfiguration(topicToCreate1, customPartitions)));
 
-        assertThatTopicExists(topicToCreate);
+        assertThatTopicExists(topicToCreate, defaultPartitions);
+        assertThatTopicExists(topicToCreate1, customPartitions);
     }
 
     @Test

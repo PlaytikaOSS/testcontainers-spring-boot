@@ -40,6 +40,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected String dockerUser = "appuser";
 
     protected Collection<String> topicsToCreate = Collections.emptyList();
+    protected Collection<TopicConfiguration> topicsConfiguration = Collections.emptyList();
     Collection<String> secureTopics = Collections.emptyList();
 
     // https://github.com/apache/kafka/blob/trunk/config/server.properties
@@ -95,6 +96,14 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     public static final class FileSystemBind {
         private boolean enabled = false;
         private String dataFolder = "target/embedded-kafka-data";
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static final class TopicConfiguration {
+        private String topic;
+        private int partitions;
     }
 
     @SuppressWarnings("unused")
