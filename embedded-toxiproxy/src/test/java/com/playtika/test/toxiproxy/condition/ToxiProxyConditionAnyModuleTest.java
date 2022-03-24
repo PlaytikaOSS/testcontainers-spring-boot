@@ -1,14 +1,13 @@
-package com.playtika.test.toxiproxy;
+package com.playtika.test.toxiproxy.condition;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ToxiProxyConditionTest {
+class ToxiProxyConditionAnyModuleTest {
 
     static final String BEAN = "beanEnabledByToxiProxyCondition";
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -53,10 +52,10 @@ class ToxiProxyConditionTest {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @Conditional(ToxiProxyCondition.class)
     static class TestConfig {
 
         @Bean(name = BEAN)
+        @ConditionalOnToxiProxyEnabled
         String beanEnabledByToxiProxyCondition() {
             return "beanEnabledByToxiProxyCondition";
         }

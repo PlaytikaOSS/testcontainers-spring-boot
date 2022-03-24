@@ -4,6 +4,7 @@ import com.aerospike.client.AerospikeClient;
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -12,7 +13,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -25,6 +25,7 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -45,7 +46,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     }
 
     @Bean
-    @Conditional(AerospikeToxiProxyProxyEnabled.class)
+    @ConditionalOnToxiProxyEnabled(module = "aerospike")
     ToxiproxyContainer.ContainerProxy aerospikeContainerProxy(ToxiproxyContainer toxiproxyContainer,
                                                               GenericContainer aerospike,
                                                               AerospikeProperties properties,
@@ -69,7 +70,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     public GenericContainer aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                       ConfigurableEnvironment environment,
                                       AerospikeProperties properties,
-                                      Network network) {
+                                      Optional<Network> network) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(aerospikeWaitStrategy)
                 .withStrategy(new HostPortWaitStrategy())
@@ -77,7 +78,6 @@ public class EmbeddedAerospikeBootstrapConfiguration {
 
         GenericContainer aerospike =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                        .withNetwork(network)
                         .withExposedPorts(properties.port)
                         // see https://github.com/aerospike/aerospike-server.docker/blob/master/aerospike.template.conf
                         .withEnv("NAMESPACE", properties.namespace)
@@ -85,6 +85,9 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
                         .waitingFor(waitStrategy);
+        if (network.isPresent()) {
+            aerospike.withNetwork(network.get());
+        }
         String featureKey = properties.featureKey;
         if (featureKey != null) {
             // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/master/aerospike.template.conf
