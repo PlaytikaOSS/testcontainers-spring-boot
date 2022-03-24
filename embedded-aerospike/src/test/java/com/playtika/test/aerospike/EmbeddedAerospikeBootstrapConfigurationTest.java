@@ -11,14 +11,13 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 import static java.time.Duration.ofMillis;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTest {
 
     @Test
-    public void shouldSave() throws Exception {
+    public void shouldSave() {
         Key key = new Key(namespace, SET, "key1");
         Bin bin = new Bin("mybin", "myvalue");
         client.put(policy, key, bin);
@@ -30,17 +29,17 @@ public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTe
     }
 
     @Test
-    public void shouldSetupDependsOnForAerospikeClient() throws Exception {
+    public void shouldSetupDependsOnForAerospikeClient() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, AerospikeClient.class);
         assertThat(beanNamesForType)
                 .as("AerospikeClient should be present")
-                .hasSize(1)
-                .contains("aerospikeClient");
-        asList(beanNamesForType).forEach(this::hasDependsOn);
+                .isNotEmpty()
+                .contains("aerospikeClient", "aerospikeToxicClient");
+        assertThat(beanNamesForType).allSatisfy(this::hasDependsOn);
     }
 
     @Test
-    public void shouldAddLatency() throws Exception {
+    public void shouldAddLatency() {
         aerospikeTestOperations.addNetworkLatencyForResponses(ofMillis(1000));
 
         long total = getExecutionTimeOfOperation();

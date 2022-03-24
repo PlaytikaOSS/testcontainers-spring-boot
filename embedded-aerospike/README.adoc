@@ -1,5 +1,8 @@
 === embedded-aerospike
 
+TIP: This module provides integration with https://github.com/Shopify/toxiproxy[ToxiProxy] out of the box.
+ToxiProxy is a great tool for simulating network conditions, meaning that you can test your application's resiliency.
+
 ==== Maven dependency
 
 .pom.xml
@@ -20,6 +23,7 @@
 ** You can pick wanted version on https://hub.docker.com/r/library/aerospike/tags/[dockerhub]
 * `embedded.aerospike.featureKey` `(base64 of a feature-key-file https://docs.aerospike.com/docs/reference/configuration/index.html#feature-key-file, default is null) is only required for the EE image`
 * `embedded.aerospike.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.aerospike.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-aerospike` container.
 *  https://mvnrepository.com/artifact/com.aerospike/aerospike-client[aerospike client library]
 
 ==== Produces
@@ -27,10 +31,122 @@
 * `embedded.aerospike.host`
 * `embedded.aerospike.port`
 * `embedded.aerospike.namespace`
-* Bean `NetworkTestOperations aerospikeNetworkTestOperations`
+* `embedded.aerospike.toxiproxy.host`
+* `embedded.aerospike.toxiproxy.port`
 * Bean `AerospikeTestOperations aerospikeTestOperations`
+* Bean `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`
+* *[Deprecated]* Bean `NetworkTestOperations aerospikeNetworkTestOperations`. Instead use `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`.
 
-//TODO: example missing
+==== Example
 
-//TODO: add example of NetworkTestOperations
-//TODO: add example of AerospikeTestOperations
+===== Create vanilla client
+
+Create vanilla client pointed directly to Aerospike server using properties provided by `embedded-aerospike`:
+
+[source,java]
+----
+@Bean(destroyMethod = "close")
+public AerospikeClient aerospikeClient(@Value("${embedded.aerospike.host}") String host,
+                                       @Value("${embedded.aerospike.port}") int port) {
+    ClientPolicy clientPolicy = new ClientPolicy();
+    return new AerospikeClient(clientPolicy, host, port);
+}
+----
+
+===== Create vanilla client with ToxiProxy
+You can also create client pointed at ToxiProxy TCP proxy:
+
+. Provide properties:
++
+--
+.`src/test/resources/bootstrap.properties`
+[source,properties]
+----
+embedded.toxiproxy.proxies.aerospike.enabled=true
+----
+
+--
+
+. Create vanilla client
++
+--
+[source,java]
+----
+@Bean(destroyMethod = "close")
+public AerospikeClient aerospikeToxicClient(@Value("${embedded.aerospike.toxiproxy.host}") String host,
+                                            @Value("${embedded.aerospike.toxiproxy.port}") int port) {
+    ClientPolicy clientPolicy = new ClientPolicy();
+    return new AerospikeClient(clientPolicy, host, port);
+}
+----
+--
+
+. Test
++
+--
+[source,java]
+----
+    @Value("${embedded.aerospike.namespace}")
+    String namespace;
+
+    @Autowired
+    ToxiproxyContainer.ContainerProxy aerospikeContainerProxy;
+
+    @Qualifier("aerospikeToxicClient")
+    @Autowired
+    AerospikeClient aerospikeToxicClient;
+
+    @Test
+    void addsLatency() throws Exception {
+        Policy policy = new Policy();
+        policy.setTimeout(200);
+        Key key = new Key(namespace, "any", "any");
+        Record record = aerospikeToxicClient.get(policy, key);
+
+        aerospikeContainerProxy.toxics()
+                .latency("latency", ToxicDirection.DOWNSTREAM, 1_100)
+                .setJitter(100);
+
+        assertThatThrownBy(() -> aerospikeToxicClient.get(policy, key))
+                .isInstanceOf(AerospikeException.Timeout.class);
+
+        aerospikeContainerProxy.toxics()
+                .get("latency").remove();
+
+        record = aerospikeToxicClient.get(policy, key);
+
+    }
+----
+--
+
+===== Setup for spring-data-aerospike-starter
+
+https://github.com/aerospike-community/spring-data-aerospike-starters
+
+
+To configure starter for `spring-data-aerospike` without ToxiProxy provide the following properties:
+
+.`src/test/resources/bootstrap.properties`
+[source,properties]
+----
+spring.aerospike.hosts=${embedded.aerospike.host}:${embedded.aerospike.port}
+spring.data.aerospike.namespace=${embedded.aerospike.namespace}
+----
+
+To configure starter for `spring-data-aerospike` *with* ToxiProxy provide the following properties:
+
+.`src/test/resources/bootstrap.properties`
+[source,properties]
+----
+embedded.toxiproxy.proxies.aerospike.enabled=true
+spring.aerospike.hosts=${embedded.aerospike.toxiproxy.host}:${embedded.aerospike.toxiproxy.port}
+spring.data.aerospike.namespace=${embedded.aerospike.namespace}
+----
+
+To manipulate ToxiProxy inject the following bean into your tests:
+
+[source,java]
+----
+@Autowired
+ToxiproxyContainer.ContainerProxy aerospikeContainerProxy;
+----

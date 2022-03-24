@@ -42,5 +42,9 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
     </dependencies>
 </project>
