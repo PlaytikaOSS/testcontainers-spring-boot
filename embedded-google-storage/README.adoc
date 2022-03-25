@@ -21,11 +21,11 @@
 * `embedded.google.storage.projectId` `(project id for storage, default is my-project-id)`
 * `embedded.google.storage.bucketLocation` `(location for buckets, default is US-CENTRAL1)`
 
-* Predefined buckets:
+* `embedded.google.storage.buckets` `creates buckets of with 'name' on startup:`
 +
 ```
- embedded.google.storage.buckets[0]=my-bucket0
- embedded.google.storage.buckets[1]=my-bucket1
+ embedded.google.storage.buckets[0].name=my-bucket0
+ embedded.google.storage.buckets[1].name=my-bucket1
 ```
 
 ==== Produces

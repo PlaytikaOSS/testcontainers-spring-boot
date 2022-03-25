@@ -4,6 +4,7 @@ import com.google.cloud.NoCredentials;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.playtika.test.storage.StorageProperties.BucketProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +15,7 @@ import java.util.Collection;
 public class StorageResourcesGenerator {
 
     private final Storage storage;
-    private final Collection<String> buckets;
+    private final Collection<BucketProperties> buckets;
 
 
     StorageResourcesGenerator(String storageHostUrl, StorageProperties storageProperties) {
@@ -39,9 +40,9 @@ public class StorageResourcesGenerator {
         log.info("Creating buckets done.");
     }
 
-    private void createBucket(String bucketName) {
-        storage.create(BucketInfo.newBuilder(bucketName).build());
+    private void createBucket(BucketProperties bucket) {
+        storage.create(BucketInfo.newBuilder(bucket.name).build());
 
-        log.info("bucket {} created", bucketName);
+        log.info("bucket {} created", bucket.name);
     }
 }

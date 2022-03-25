@@ -22,10 +22,15 @@ public class StorageProperties extends CommonContainerProperties {
     /** location for buckets */
     private String bucketLocation = "US-CENTRAL1";
     /** list with predefined buckets to be created */
-    private Collection<String> buckets = emptyList();
+    private Collection<BucketProperties> buckets = emptyList();
 
     @Override
     public String getDefaultDockerImage() {
         return "fsouza/fake-gcs-server";
+    }
+
+    @Data
+    static class BucketProperties {
+        String name;
     }
 }
