@@ -126,6 +126,7 @@ public class EmbeddedStorageBootstrapConfigurationTest {
                 assertThat(container.getContainerInfo().getConfig().getEntrypoint())
                     .containsExactly(
                         "/bin/fake-gcs-server",
+                        "-backend", "memory",
                         "-scheme", "http",
                         "-host", "0.0.0.0",
                         "-port", "4443",

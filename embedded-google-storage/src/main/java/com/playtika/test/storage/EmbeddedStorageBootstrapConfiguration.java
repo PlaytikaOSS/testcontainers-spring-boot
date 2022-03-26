@@ -43,6 +43,7 @@ public class EmbeddedStorageBootstrapConfiguration {
             .withExposedPorts(StorageProperties.PORT)
             .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
                 "/bin/fake-gcs-server",
+                "-backend", "memory",
                 "-scheme", "http",
                 "-host", "0.0.0.0",
                 "-port", String.valueOf(StorageProperties.PORT),
