@@ -3,7 +3,8 @@ package com.playtika.test.kafka;
 import com.playtika.test.common.utils.ThrowingRunnable;
 import com.playtika.test.kafka.camel.samples.SampleProductionRouteContext;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -11,6 +12,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.assertj.core.util.Lists;
@@ -25,11 +27,11 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         properties = {
                 "embedded.kafka.topicsToCreate=secureTopic,topic1,topic2,topic3,camelTopic",
+                "embedded.kafka.topicsConfiguration[0].topic=topic3",
+                "embedded.kafka.topicsConfiguration[0].partitions=2",
                 "embedded.kafka.secureTopics=secureTopic",
                 "embedded.kafka.schema-registry.enabled=true"
         },
@@ -234,10 +238,15 @@ public abstract class AbstractEmbeddedKafkaTest {
         return Paths.get(classesPath).getParent().getParent();
     }
 
-    protected void assertThatTopicExists(String topicName) throws Exception {
-        ListTopicsResult result = adminClient.listTopics();
-        Set<String> topics = result.names().get(10, TimeUnit.SECONDS);
-        assertThat(topics).contains(topicName);
+    protected void assertThatTopicExists(String topicName, int partitions) throws Exception {
+        DescribeTopicsResult describeTopics = adminClient.describeTopics(Collections.singletonList(topicName));
+        Map<String, KafkaFuture<TopicDescription>>  topicNameValues = describeTopics.topicNameValues();
+
+        assertThat(topicNameValues).containsKey(topicName);
+        TopicDescription topicDescription = topicNameValues.get(topicName).get(5, TimeUnit.SECONDS);
+
+        assertThat(topicDescription).isNotNull();
+        assertThat(topicDescription.partitions().size()).isEqualTo(partitions);
     }
 
     @Configuration

@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.toxi-proxy")
+@ConfigurationProperties("embedded.toxiproxy")
 public class ToxiProxyProperties extends CommonContainerProperties {
 
     public ToxiProxyProperties() {

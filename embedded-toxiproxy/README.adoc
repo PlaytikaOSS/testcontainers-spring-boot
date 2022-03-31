@@ -1,5 +1,11 @@
 === embedded-toxiproxy
 
+Convenient and simple to use wrapper for ToxiProxy:
+
+- https://github.com/Shopify/toxiproxy
+- https://github.com/testcontainers/testcontainers-java/tree/master/modules/toxiproxy.
+
+
 ==== Maven dependency
 
 .pom.xml
@@ -15,7 +21,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.toxiproxy.enabled` `(true|false, default is 'false')` Enables ToxiProxy container.
-//* `embedded.{module}.toxiProxy.enabled` `(true|false, default is 'false')` Enables ToxiProxy proxy for specific module.
+* `embedded.toxiproxy.proxies.{module}.enabled` `(true|false, default is 'false')` Enables ToxiProxy proxy for specific module.
 * `embedded.toxiproxy.reuseContainer` `(true|false, default is 'false')`
 * `embedded.toxiproxy.dockerImage` `(default is set to 'ghcr.io/shopify/toxiproxy:2.4.0')`
 * `embedded.toxiproxy.waitTimeoutInSeconds` `(default is 60 seconds)`
@@ -29,7 +35,18 @@ TIP: See other common container properties in `com.playtika.test.common.properti
 
 ==== Example
 
-Create vanilla Toxiproxy proxy:
+By default ToxiProxy container is disabled. There are two ways to enable it:
+
+. Add `embedded.toxiproxy.enabled=true` to your `src/test/resources/bootstrap.properties`.
+Enables creation of the container with ToxiProxy TCP proxy. Next step is to <<_create_vanilla_proxy>>.
+
+. Add `embedded.toxiproxy.proxies.{module}.enabled` to your `src/test/resources/bootstrap.properties`.
+Enables both creation of the container with ToxiProxy TCP proxy and a proxy to your `{module}`.
+Please check that this module has already built-in support for ToxiProxy, otherwise you will need to create proxy manually.
+For the modules that have built-in proxy creation please refer to the documentation of the module.
+
+
+===== Create vanilla proxy
 
 [source,java]
 ----
@@ -39,11 +56,11 @@ String host;
 @Value("${embedded.toxiproxy.controlPort}")
 int controlPort;
 
-// NOTE: {toxi-proxy-avail-port} must be in the range [8666; 8666 + 31] (these ports are exposed by default).
 ToxiproxyClient toxiproxyClient = new ToxiproxyClient(host, controlPort);
 Proxy proxy = toxiproxyClient.createProxy(
-                                          "my-service-proxy", // Name of the proxy
-                                          "0.0.0.0:{toxi-proxy-avail-port}", // Toxiproxy will listen on this address
+                                          "my-service-proxy", // Name of the proxy, any that you like
+                                          // NOTE: {toxi-proxy-avail-port} must be in the range [8666; 8666 + 31] (these ports are exposed by default).
+                                          "0.0.0.0:{toxi-proxy-avail-port}", // Toxiproxy will listen on this address.
                                           "{my-service-host}:{my-service-port}"); // Your service is exposed at this address
 
 proxy.toxics()

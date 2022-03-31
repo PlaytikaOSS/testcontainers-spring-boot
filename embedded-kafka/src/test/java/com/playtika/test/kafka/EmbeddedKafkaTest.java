@@ -1,6 +1,7 @@
 package com.playtika.test.kafka;
 
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
+import com.playtika.test.kafka.properties.KafkaConfigurationProperties.TopicConfiguration;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
@@ -31,23 +32,27 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
 
     @Autowired
     protected KafkaTopicsConfigurer kafkaTopicsConfigurer;
-//    @Autowired
-//    protected NetworkTestOperations kafkaNetworkTestOperations;
 
     @Test
     @DisplayName("creates topics on startup")
     public void shouldAutoCreateTopic() throws Exception {
-        assertThatTopicExists("topic1");
+        assertThatTopicExists("topic1", 1);
+        assertThatTopicExists("topic3", 2);
     }
 
     @Test
     @DisplayName("allows to create other topics")
     public void shouldCreateTopic() throws Exception {
         String topicToCreate = "topicToCreate";
+        int defaultPartitions = 1;
+        String topicToCreate1 = "topicToCreate1";
+        int customPartitions = 2;
 
-        kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate));
+        kafkaTopicsConfigurer.createTopics(Collections.singletonList(topicToCreate),
+                                           Collections.singletonList(new TopicConfiguration(topicToCreate1, customPartitions)));
 
-        assertThatTopicExists(topicToCreate);
+        assertThatTopicExists(topicToCreate, defaultPartitions);
+        assertThatTopicExists(topicToCreate1, customPartitions);
     }
 
     @Test
@@ -71,23 +76,6 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
     }
-
-//    @Disabled("RHEL image doesn't support to simply install tc")
-//    @Test
-//    @DisplayName("allows to emulate latency on send")
-//    public void shouldEmulateLatencyOnSend() throws Exception {
-//        kafkaNetworkTestOperations
-//                .withNetworkLatency(
-//                        ofMillis(1000),
-//                        () -> assertThat(durationOf(() -> sendMessage("topic3", "abc0")))
-//                                .isGreaterThan(1000L));
-//
-//        assertThat(durationOf(() -> sendMessage("topic3", "abc1")))
-//                .isLessThan(200L);
-//
-//        assertThat(consumeMessages("topic3"))
-//                .containsExactly("abc0", "abc1");
-//    }
 
     @AfterAll
     public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties, TestInfo testInfo) throws Exception {
