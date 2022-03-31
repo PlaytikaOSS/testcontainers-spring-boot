@@ -5,7 +5,10 @@ import com.playtika.test.kafka.KafkaTopicsConfigurer;
 import com.playtika.test.kafka.checks.KafkaStatusCheck;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
+import com.playtika.test.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,6 +20,7 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
@@ -30,16 +34,19 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
+import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME;
+import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_SASL_TOXI_PROXY_BEAN_NAME;
 import static java.lang.String.format;
-import static org.testcontainers.containers.KafkaContainer.KAFKA_PORT;
 
 @Slf4j
 @Configuration
+@AutoConfigureAfter(EmbeddedToxiProxyBootstrapConfiguration.class)
 @ConditionalOnProperty(value = "embedded.kafka.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(value = {KafkaConfigurationProperties.class, ZookeeperConfigurationProperties.class})
 public class KafkaContainerConfiguration {
@@ -58,6 +65,52 @@ public class KafkaContainerConfiguration {
     @ConditionalOnMissingBean
     public KafkaStatusCheck kafkaStartupCheckStrategy(KafkaConfigurationProperties kafkaProperties) {
         return new KafkaStatusCheck(kafkaProperties);
+    }
+
+    @Bean(name = KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
+    @ConditionalOnToxiProxyEnabled(module = "kafka")
+    ToxiproxyContainer.ContainerProxy kafkaContainerPlainTextProxy(ToxiproxyContainer toxiproxyContainer,
+                                                                   GenericContainer kafka,
+                                                                   KafkaConfigurationProperties properties,
+                                                                   ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy plainTextProxy =
+                toxiproxyContainer.getProxy(kafka, properties.getBrokerPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        String plaintextToxiProxyBrokerList =
+                format("%s:%d", plainTextProxy.getContainerIpAddress(), plainTextProxy.getProxyPort());
+        map.put("embedded.kafka.toxiproxy.brokerList", plaintextToxiProxyBrokerList);
+        map.put("embedded.kafka.toxiproxy.proxyName", plainTextProxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaPlainToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Kafka ToxiProxy plain-text connection details {}", map);
+
+        return plainTextProxy;
+    }
+
+    @Bean(name = KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
+    @ConditionalOnToxiProxyEnabled(module = "kafka")
+    ToxiproxyContainer.ContainerProxy kafkaContainerSaslProxy(ToxiproxyContainer toxiproxyContainer,
+                                                              GenericContainer kafka,
+                                                              KafkaConfigurationProperties properties,
+                                                              ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy saslProxy =
+                toxiproxyContainer.getProxy(kafka, properties.getSaslPlaintextBrokerPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        String saslToxiProxyBrokerList =
+                format("%s:%d", saslProxy.getContainerIpAddress(), saslProxy.getProxyPort());
+        map.put("embedded.kafka.toxiproxy.saslPlaintext.brokerList", saslToxiProxyBrokerList);
+        map.put("embedded.kafka.toxiproxy.saslPlaintext.proxyName", saslProxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaSaslToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Kafka ToxiProxy SASL connection details {}", map);
+
+        return saslProxy;
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
@@ -79,7 +132,6 @@ public class KafkaContainerConfiguration {
         KafkaContainer kafka = new KafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
             @Override
             public String getBootstrapServers() {
-                super.getBootstrapServers();
                 return "EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort) + "," +
                         "EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort) + "," +
                         "INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort;
@@ -117,7 +169,7 @@ public class KafkaContainerConfiguration {
                 .withCopyFileToContainer(MountableFile.forClasspathResource("kafka_server_jaas.conf"), "/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_OPTS", "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_GC_LOG_OPTS", "-Dnogclog")
-                .withExposedPorts(kafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort, KAFKA_PORT)
+                .withExposedPorts(kafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort)
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")

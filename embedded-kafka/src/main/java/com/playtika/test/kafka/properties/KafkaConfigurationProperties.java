@@ -2,7 +2,6 @@ package com.playtika.test.kafka.properties;
 
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
-import com.playtika.test.common.utils.ContainerUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import javax.annotation.PostConstruct;
 import javax.validation.constraints.AssertTrue;
 
 import java.util.Arrays;
@@ -23,14 +21,16 @@ import java.util.Collections;
 public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     public static final String KAFKA_BEAN_NAME = "kafka";
+    public static final String KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME = "kafkaPlainTextContainerProxy";
+    public static final String KAFKA_SASL_TOXI_PROXY_BEAN_NAME = "kafkaSaslContainerProxy";
     public static final String KAFKA_USER = "alice";
     public static final String KAFKA_PASSWORD = "alice-secret";
 
     protected String brokerList;
     protected String containerBrokerList;
-    protected int brokerPort = 0;
-    protected int containerBrokerPort = 0;
-    protected int saslPlaintextBrokerPort = 0;
+    protected int brokerPort = 9093;
+    protected int containerBrokerPort = 9094;
+    protected int saslPlaintextBrokerPort = 9095;
     protected int socketTimeoutMs = 5_000;
     protected int bufferSize = 64 * 1024;
 
@@ -61,25 +61,6 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     public KafkaConfigurationProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
-    }
-
-    /**
-     * Kafka container port will be assigned automatically if free port is available.
-     * Override this only if you are sure that specified port is free.
-     */
-    @PostConstruct
-    private void init() {
-        if (this.brokerPort == 0) {
-            this.brokerPort = ContainerUtils.getAvailableMappingPort();
-        }
-
-        if (this.containerBrokerPort == 0) {
-            this.containerBrokerPort = ContainerUtils.getAvailableMappingPort();
-        }
-
-        if (this.saslPlaintextBrokerPort == 0) {
-            this.saslPlaintextBrokerPort = ContainerUtils.getAvailableMappingPort();
-        }
     }
 
     // https://hub.docker.com/r/confluentinc/cp-kafka

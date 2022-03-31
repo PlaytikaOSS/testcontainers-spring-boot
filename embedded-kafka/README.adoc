@@ -1,5 +1,8 @@
 === embedded-kafka
 
+TIP: This module provides integration with https://github.com/Shopify/toxiproxy[ToxiProxy] out of the box.
+ToxiProxy is a great tool for simulating network conditions, meaning that you can test your application's resiliency.
+
 ==== Maven dependency
 
 .pom.xml
@@ -28,6 +31,7 @@
 * `embedded.kafka.schema-registry.port` `(default is 8081)`
 * `embedded.kafka.schema-registry.avroCompatibilityLevel` `(NONE|BACKWARD|BACKWARD_TRANSITIVE|FORWARD|FORWARD_TRANSITIVE|FULL|FULL_TRANSITIVE, default is BACKWARD)`
 * `embedded.kafka.schema-registry.authentication` `(NONE|BASIC, default is NONE)`
+* `embedded.toxiproxy.proxies.kafka.enabled` Enables creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-kafka` container.
 
 ==== Filesystem bindings
 
@@ -50,6 +54,10 @@ By default, to your projects `target` folder. You can configure binding using pr
 * `embedded.kafka.schema-registry.port`
 * `embedded.kafka.schema-registry.username`
 * `embedded.kafka.schema-registry.password`
+* `embedded.kafka.toxiproxy.brokerList`
+* `embedded.kafka.toxiproxy.saslPlaintext.brokerList`
+* Bean `ToxiproxyContainer.ContainerProxy kafkaPlainTextContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy kafkaSaslContainerProxy`
 
 ==== Using `SASL_PLAINTEXT`
 

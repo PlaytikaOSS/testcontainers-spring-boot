@@ -32,8 +32,6 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
 
     @Autowired
     protected KafkaTopicsConfigurer kafkaTopicsConfigurer;
-//    @Autowired
-//    protected NetworkTestOperations kafkaNetworkTestOperations;
 
     @Test
     @DisplayName("creates topics on startup")
@@ -78,23 +76,6 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
     }
-
-//    @Disabled("RHEL image doesn't support to simply install tc")
-//    @Test
-//    @DisplayName("allows to emulate latency on send")
-//    public void shouldEmulateLatencyOnSend() throws Exception {
-//        kafkaNetworkTestOperations
-//                .withNetworkLatency(
-//                        ofMillis(1000),
-//                        () -> assertThat(durationOf(() -> sendMessage("topic3", "abc0")))
-//                                .isGreaterThan(1000L));
-//
-//        assertThat(durationOf(() -> sendMessage("topic3", "abc1")))
-//                .isLessThan(200L);
-//
-//        assertThat(consumeMessages("topic3"))
-//                .containsExactly("abc0", "abc1");
-//    }
 
     @AfterAll
     public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties, TestInfo testInfo) throws Exception {
