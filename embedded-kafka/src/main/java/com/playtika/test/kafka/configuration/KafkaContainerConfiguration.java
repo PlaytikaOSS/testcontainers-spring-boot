@@ -8,6 +8,8 @@ import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import com.playtika.test.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
 import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,7 +35,9 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -70,11 +74,10 @@ public class KafkaContainerConfiguration {
     @Bean(name = KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
     @ConditionalOnToxiProxyEnabled(module = "kafka")
     ToxiproxyContainer.ContainerProxy kafkaContainerPlainTextProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                   GenericContainer kafka,
                                                                    KafkaConfigurationProperties properties,
                                                                    ConfigurableEnvironment environment) {
         ToxiproxyContainer.ContainerProxy plainTextProxy =
-                toxiproxyContainer.getProxy(kafka, properties.getBrokerPort());
+                toxiproxyContainer.getProxy(KAFKA_HOST_NAME, properties.getToxiProxyContainerBrokerPort());
 
         Map<String, Object> map = new LinkedHashMap<>();
 
@@ -93,11 +96,10 @@ public class KafkaContainerConfiguration {
     @Bean(name = KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
     @ConditionalOnToxiProxyEnabled(module = "kafka")
     ToxiproxyContainer.ContainerProxy kafkaContainerSaslProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              GenericContainer kafka,
                                                               KafkaConfigurationProperties properties,
                                                               ConfigurableEnvironment environment) {
         ToxiproxyContainer.ContainerProxy saslProxy =
-                toxiproxyContainer.getProxy(kafka, properties.getSaslPlaintextBrokerPort());
+                toxiproxyContainer.getProxy(KAFKA_HOST_NAME, properties.getToxiProxySaslPlaintextContainerBrokerPort());
 
         Map<String, Object> map = new LinkedHashMap<>();
 
@@ -119,11 +121,17 @@ public class KafkaContainerConfiguration {
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties,
             ConfigurableEnvironment environment,
-            Network network) {
+            Network network,
+            @Autowired(required = false) @Qualifier(KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
+                    ToxiproxyContainer.ContainerProxy plainTextProxy,
+            @Autowired(required = false) @Qualifier(KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
+                    ToxiproxyContainer.ContainerProxy saslProxy) {
 
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
         int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
+        int toxiProxyKafkaInternalPort = kafkaProperties.getToxiProxyContainerBrokerPort();
+        int toxiProxySaslPlaintextKafkaInternalPort = kafkaProperties.getToxiProxySaslPlaintextContainerBrokerPort();
 
         // Map properties to env variables: https://docs.confluent.io/platform/current/installation/docker/config-reference.html#confluent-ak-configuration
         // All properties: https://docs.confluent.io/platform/current/installation/configuration/
@@ -132,9 +140,19 @@ public class KafkaContainerConfiguration {
         KafkaContainer kafka = new KafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
             @Override
             public String getBootstrapServers() {
-                return "EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort) + "," +
-                        "EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort) + "," +
-                        "INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort;
+                List<String> servers = new ArrayList<>();
+                servers.add("EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort));
+                servers.add("EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort));
+                servers.add("INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort);
+
+                if (plainTextProxy != null) {
+                    servers.add("TOXIPROXY_INTERNAL_PLAINTEXT://" + getHost() + ":" + plainTextProxy.getProxyPort());
+                }
+                if (saslProxy != null) {
+                    servers.add("TOXIPROXY_INTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + saslProxy.getProxyPort());
+                }
+
+                return String.join(",", servers);
             }
         }
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
@@ -147,12 +165,16 @@ public class KafkaContainerConfiguration {
                         "EXTERNAL_PLAINTEXT:PLAINTEXT," +
                                 "EXTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
                                 "INTERNAL_PLAINTEXT:PLAINTEXT," +
-                                "BROKER:PLAINTEXT"
+                                "BROKER:PLAINTEXT," +
+                                "TOXIPROXY_INTERNAL_PLAINTEXT:PLAINTEXT," +
+                                "TOXIPROXY_INTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT"
                 )
                 .withEnv("KAFKA_LISTENERS",
                         "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + "," +
                                 "EXTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaExternalPort + "," +
                                 "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
+                                "TOXIPROXY_INTERNAL_PLAINTEXT://0.0.0.0:" + toxiProxyKafkaInternalPort + "," +
+                                "TOXIPROXY_INTERNAL_SASL_PLAINTEXT://0.0.0.0:" + toxiProxySaslPlaintextKafkaInternalPort + "," +
                                 "BROKER://0.0.0.0:9092"
                 )
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "BROKER")
