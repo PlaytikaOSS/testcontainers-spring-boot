@@ -1,0 +1,60 @@
+=== embedded-google-storage
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-google-storage</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.google.storage.enabled` `(true|false, default is true)`
+* `embedded.google.storage.reuseContainer` `(true|false, default is false)`
+* `embedded.google.storage.dockerImage` `(default is 'fsouza/fake-gcs-server')`
+** Image versions on https://hub.docker.com/r/fsouza/fake-gcs-server/tags[dockerhub]
+* `embedded.google.storage.projectId` `(project id for storage, default is my-project-id)`
+* `embedded.google.storage.bucketLocation` `(location for buckets, default is US-CENTRAL1)`
+
+* `embedded.google.storage.buckets` `creates buckets of with 'name' on startup:`
++
+```
+ embedded.google.storage.buckets[0].name=my-bucket0
+ embedded.google.storage.buckets[1].name=my-bucket1
+```
+
+==== Produces
+
+* `embedded.google.storage.host` 
+* `embedded.google.storage.port`
+* `embedded.google.storage.endpoint` (computed property `http://${host}:${port}` for convenient configuration) 
+* `embedded.google.storage.projectId`
+* `embedded.google.storage.bucketLocation`
+
+==== Example
+
+To define your Storage service bean you can use this code snippet:
+
+[source,java]
+----
+    @Configuration
+    class StorageConfig {
+
+        @Bean
+        Storage storage(
+            @Value("${embedded.google.storage.endpoint}") String storageHost,
+            @Value("${embedded.google.storage.project-id}") String projectId) {
+            return StorageOptions.newBuilder()
+                .setHost(storageHost)
+                .setProjectId(projectId)
+                .setCredentials(NoCredentials.getInstance())
+                .build()
+                .getService();
+        }
+    }
+----

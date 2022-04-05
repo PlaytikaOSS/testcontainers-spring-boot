@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>testcontainers-spring-boot-parent</artifactId>
+        <groupId>com.playtika.testcontainers</groupId>
+        <version>2.1.6-SNAPSHOT</version>
+        <relativePath>../testcontainers-spring-boot-parent</relativePath>
+    </parent>
+
+    <artifactId>embedded-google-storage</artifactId>
+
+    <properties>
+        <google-cloud-storage.version>2.4.4</google-cloud-storage.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <version>${google-cloud-storage.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

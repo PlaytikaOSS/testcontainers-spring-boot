@@ -54,6 +54,7 @@
         <module>embedded-rabbitmq</module>
         <module>embedded-minio</module>
         <module>embedded-google-pubsub</module>
+        <module>embedded-google-storage</module>
         <module>embedded-influxdb</module>
         <module>embedded-vault</module>
         <module>embedded-oracle-xe</module>

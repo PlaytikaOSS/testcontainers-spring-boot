@@ -253,6 +253,8 @@ Available values can be taken from `com.github.dockerjava.api.model.Capability` 
 
 === link:embedded-google-pubsub/README.adoc[embedded-google-pubsub]
 
+=== link:embedded-google-storage/README.adoc[embedded-google-storage]
+
 === link:embedded-keycloak/README.adoc[embedded-keycloak]
 
 === link:embedded-influxdb/README.adoc[embedded-influxdb]

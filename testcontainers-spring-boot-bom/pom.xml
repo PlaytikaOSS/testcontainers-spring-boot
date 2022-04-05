@@ -175,6 +175,11 @@
                 <artifactId>embedded-azurite</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-google-storage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
