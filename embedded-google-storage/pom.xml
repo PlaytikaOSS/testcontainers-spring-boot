@@ -14,7 +14,7 @@
     <artifactId>embedded-google-storage</artifactId>
 
     <properties>
-        <google-cloud-storage.version>2.4.4</google-cloud-storage.version>
+        <google-cloud-storage.version>2.6.0</google-cloud-storage.version>
     </properties>
 
     <dependencies>
