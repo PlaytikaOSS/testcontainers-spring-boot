@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.util.StringUtils;
 import org.testcontainers.containers.ClickHouseContainer;
-import org.testcontainers.shaded.com.google.common.base.Strings;
 
 import java.util.LinkedHashMap;
 
@@ -31,10 +31,10 @@ public class EmbeddedClickHouseBootstrapConfiguration {
     public ClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
                                                            ClickHouseProperties properties) {
         ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties));
-        String username = Strings.isNullOrEmpty(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
-        String password = Strings.isNullOrEmpty(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
+        String username = !StringUtils.hasLength(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
+        String password = !StringUtils.hasLength(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
         clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
-        clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", Strings.nullToEmpty(password));
+        clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", password == null ? "" : password);
 
         clickHouseContainer = (ClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
 

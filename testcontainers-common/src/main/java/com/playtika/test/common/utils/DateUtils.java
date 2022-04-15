@@ -1,7 +1,7 @@
 package com.playtika.test.common.utils;
 
 
-import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -57,7 +57,7 @@ public class DateUtils {
         if (isoFormattedDate == null) {
             return null;
         }
-        if (StringUtils.isBlank(isoFormattedDate)) {
+        if (!StringUtils.hasText(isoFormattedDate)) {
             return "";
         }
         try {

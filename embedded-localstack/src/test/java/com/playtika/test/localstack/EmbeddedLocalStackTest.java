@@ -20,9 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.DockerClientFactory;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
@@ -51,29 +49,29 @@ public class EmbeddedLocalStackTest {
     private ConfigurableEnvironment environment;
 
     @Test
-    public void shouldStartS3() throws IOException {
+    public void shouldStartS3() {
         AmazonS3 s3 = AmazonS3ClientBuilder
                 .standard()
                 .withEndpointConfiguration(getEndpointConfiguration(s3Endpoint))
                 .withCredentials(getAwsCredentialsProvider())
                 .build();
 
-        final String bucketName = "foo";
+        String bucketName = "foo";
         s3.createBucket(bucketName);
         s3.putObject(bucketName, "bar", "baz");
 
-        final List<Bucket> buckets = s3.listBuckets();
-        final Optional<Bucket> maybeBucket = buckets.stream().filter(b -> b.getName().equals(bucketName)).findFirst();
+        List<Bucket> buckets = s3.listBuckets();
+        Optional<Bucket> maybeBucket = buckets.stream().filter(b -> b.getName().equals(bucketName)).findFirst();
         assertThat(maybeBucket).isPresent();
 
-        final Bucket bucket = maybeBucket.get();
+        Bucket bucket = maybeBucket.get();
         assertThat(bucketName).isEqualTo(bucket.getName());
 
-        final ObjectListing objectListing = s3.listObjects(bucketName);
+        ObjectListing objectListing = s3.listObjects(bucketName);
         assertThat(objectListing.getObjectSummaries()).hasSize(1);
-        final S3Object object = s3.getObject(bucketName, "bar");
-        final String content = IOUtils.toString(object.getObjectContent(), StandardCharsets.UTF_8);
-        assertThat(content).isEqualTo("baz");
+
+        S3Object object = s3.getObject(bucketName, "bar");
+        assertThat(object.getObjectContent()).asString(StandardCharsets.UTF_8).isEqualTo("baz");
     }
 
     @Test
@@ -89,7 +87,7 @@ public class EmbeddedLocalStackTest {
                                        contains("http://" + DockerClientFactory.instance().dockerHostIpAddress() + ":" + sqsPort);
 
         sqs.sendMessage(fooQueueUrl, "test");
-        final long messageCount = sqs.receiveMessage(fooQueueUrl).getMessages().stream()
+        long messageCount = sqs.receiveMessage(fooQueueUrl).getMessages().stream()
                                      .filter(message -> message.getBody().equals("test"))
                                      .count();
         assertThat(messageCount).isEqualTo(1);
