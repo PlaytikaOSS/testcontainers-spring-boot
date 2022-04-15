@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.util.StringUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -19,7 +20,6 @@ import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
-import static org.testcontainers.shaded.com.google.common.base.Strings.isNullOrEmpty;
 
 @Slf4j
 @Configuration
@@ -41,7 +41,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withInitScript(properties.initScriptPath);
 
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
-        if (!isNullOrEmpty(startupLogCheckRegex)) {
+        if (StringUtils.hasLength(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
                 .withRegEx(startupLogCheckRegex);
             postgresql.setWaitStrategy(waitStrategy);

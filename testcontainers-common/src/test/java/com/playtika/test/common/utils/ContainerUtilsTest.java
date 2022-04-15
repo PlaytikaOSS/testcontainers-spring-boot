@@ -13,10 +13,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +41,10 @@ class ContainerUtilsTest {
     @Test
     void configureCommonsAndStart() {
         String[] command = {"/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done"};
-        Map<String, String> env = ImmutableMap.of(
-                "TEST_ENV_VAR", "VALUE_TEST",
-                "TEST_ENV_VAR_2", "some other value");
+        Map<String, String> env = new HashMap<>();
+        env.put("TEST_ENV_VAR", "VALUE_TEST");
+        env.put("TEST_ENV_VAR_2", "some other value");
+
         String classpathResource = "/log4j2.xml";
         String containerPath = "/etc/my_copied_file";
         List<MountVolume> mountVolumes = new ArrayList<>();

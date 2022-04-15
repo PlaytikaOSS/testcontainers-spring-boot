@@ -8,9 +8,9 @@ import lombok.Value;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
+import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -76,7 +76,7 @@ public class AerospikeTestOperations {
     }
 
     private List<ScanJob> getScanJobs(String stdout) {
-        if (StringUtils.isBlank(stdout)) {
+        if (!StringUtils.hasText(stdout)) {
             return Collections.emptyList();
         }
         return Arrays.stream(stdout.replaceAll("\n", "").split(";"))

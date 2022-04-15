@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Db2Container;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -18,7 +19,6 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import java.util.LinkedHashMap;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
-import static org.testcontainers.shaded.com.google.common.base.Strings.isNullOrEmpty;
 
 @Slf4j
 @Configuration
@@ -38,7 +38,7 @@ public class EmbeddedDb2BootstrapConfiguration {
                 .withInitScript(properties.getInitScriptPath());
 
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
-        if (!isNullOrEmpty(startupLogCheckRegex)) {
+        if (StringUtils.hasLength(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
                     .withRegEx(startupLogCheckRegex);
             db2Container.setWaitStrategy(waitStrategy);
