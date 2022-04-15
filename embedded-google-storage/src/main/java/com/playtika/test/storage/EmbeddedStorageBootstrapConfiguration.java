@@ -14,11 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.shaded.okhttp3.MediaType;
-import org.testcontainers.shaded.okhttp3.OkHttpClient;
-import org.testcontainers.shaded.okhttp3.Request;
-import org.testcontainers.shaded.okhttp3.RequestBody;
-import org.testcontainers.shaded.okhttp3.Response;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -57,33 +52,11 @@ public class EmbeddedStorageBootstrapConfiguration {
     }
 
     private void prepareContainerConfiguration(GenericContainer<?> container) throws IOException {
-        try {
-            String containerEndpoint = buildContainerEndpoint(container);
-            String modifyExternalUrlRequestUri = format("%s%s", containerEndpoint, "/_internal/config");
-            log.info("Google Cloud Fake Storage Server with externalUrl={}", containerEndpoint);
+        String containerEndpoint = buildContainerEndpoint(container);
 
-            String updateExternalUrlJson = "{"
-                + "\"externalUrl\": \"" + containerEndpoint + "\""
-                + "}";
-
-            Request request = new Request.Builder()
-                .url(modifyExternalUrlRequestUri)
-                .put(RequestBody.create(MediaType.get("application/json"), updateExternalUrlJson))
-                .build();
-
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(request).execute();
-
-            if (response.code() != 200) {
-                log.error(
-                    "error updating Google Cloud Fake Storage Server with external url, response status code {} != 200 message {}",
-                    response.code(),
-                    response.message());
-            }
-        } catch (Exception e) {
-            log.error("error updating Google Cloud Fake Storage Server with external host", e);
-            throw e;
-        }
+        log.info("Google Cloud Fake Storage Server with externalUrl={}", containerEndpoint);
+        new GoogleCloudStorageHttpClient()
+                .sendUpdateConfigRequest(containerEndpoint);
     }
 
     private void registerStorageEnvironment(
