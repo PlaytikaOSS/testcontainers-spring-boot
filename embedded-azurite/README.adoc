@@ -27,21 +27,24 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 * `embedded.azurite.port`
 * `embedded.azurite.account-name`
 * `embedded.azurite.account-key`
-* `embedded.azurite.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `azure-spring-boot-starter-storage`)
+* `embedded.azurite.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-blob`)
 
 ==== Example
 
-Use `com.azure.spring:azure-spring-boot-starter-storage` (see https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage)
+Use `com.azure.spring:spring-cloud-azure-starter-storage-blob` (see https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage)
 and configure your application context as follows:
 
 [source,yaml]
 ./src/test/resources/application.yaml
 ----
-azure:
-  storage:
-    account-name: ${embedded.azurite.account-name}
-    account-key: ${embedded.azurite.account-key}
-    blob-endpoint: ${embedded.azurite.blob-endpoint}
+spring:
+  cloud:
+    azure:
+      storage:
+        blob:
+          account-name: ${embedded.azurite.account-name}
+          account-key: ${embedded.azurite.account-key}
+          blob-endpoint: ${embedded.azurite.blob-endpoint}
 ----
 
-You can then access all beans from `azure-spring-boot-starter-storage`, i.e. `BlobServiceClientBuilder`.
+You can then access all beans from `spring-cloud-azure-starter-storage-blob`, i.e. `BlobServiceClientBuilder`.

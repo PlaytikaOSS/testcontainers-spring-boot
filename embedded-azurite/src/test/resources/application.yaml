@@ -1,5 +1,8 @@
-azure:
-  storage:
-    account-name: ${embedded.azurite.account-name}
-    account-key: ${embedded.azurite.account-key}
-    blob-endpoint: ${embedded.azurite.blob-endpoint}
+spring:
+  cloud:
+    azure:
+      storage:
+        blob:
+          account-name: ${embedded.azurite.account-name}
+          account-key: ${embedded.azurite.account-key}
+          blob-endpoint: ${embedded.azurite.blob-endpoint}

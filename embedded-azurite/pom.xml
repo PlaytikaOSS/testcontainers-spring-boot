@@ -13,14 +13,12 @@
     <artifactId>embedded-azurite</artifactId>
 
     <properties>
-        <azure.version>3.14.0</azure.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.azure.spring</groupId>
-            <artifactId>azure-spring-boot-starter-storage</artifactId>
-            <version>${azure.version}</version>
+            <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
