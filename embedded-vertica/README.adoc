@@ -17,7 +17,7 @@
 * `embedded.vertica.enabled` `(true|false, default is true)`
 * `embedded.vertica.reuseContainer` `(true|false, default is false)`
 * `embedded.vertica.dockerImage` `(default is 'vertica/vertica-ce:11.1.0-0')`
-** Image versions on https://hub.docker.com/r/jbfavre/vertica/tags[dockerhub]
+** Image versions on https://hub.docker.com/r/vertica/vertica-ce[dockerhub]
 * `embedded.vertica.waitTimeoutInSeconds` `(default is 60 seconds)`
 
 ==== Produces
