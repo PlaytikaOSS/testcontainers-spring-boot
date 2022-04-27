@@ -13,15 +13,14 @@ public class VerticaProperties extends CommonContainerProperties {
 
     String host = "localhost";
     Integer port = 5433;
-    String database = "docker";
+    String database = "VMart";
     String user = "dbadmin";
     String password = "";
 
-    // https://hub.docker.com/r/jbfavre/vertica 9.2
+    // https://hub.docker.com/r/vertica/vertica-ce
     // https://github.com/vertica/vertica-kubernetes
-    // https://hub.docker.com/r/verticadocker/vertica-k8s
     @Override
     public String getDefaultDockerImage() {
-        return "jbfavre/vertica:9.2.0-7_debian-8";
+        return "vertica/vertica-ce:11.1.0-0";
     }
 }
