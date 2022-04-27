@@ -3,12 +3,10 @@ package com.playtika.test.kafka;
 import eu.rekawek.toxiproxy.model.Toxic;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.SneakyThrows;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,6 @@ import java.util.concurrent.Future;
 
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_SASL_TOXI_PROXY_BEAN_NAME;
-import static java.util.Collections.singleton;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
 import static org.apache.kafka.common.config.SaslConfigs.SASL_JAAS_CONFIG;
@@ -72,8 +69,6 @@ public class ToxiProxyEmbeddedKafkaTest extends EmbeddedKafkaTest {
             kafkaProducer.close(Duration.ZERO);
             kafkaProducer = null;
         }
-        seekToEnd("topic3", getKafkaConsumerConfiguration());
-        seekToEnd(SECURE_TOPIC, saslKafkaConsumerConfiguration());
     }
 
     @SneakyThrows
@@ -107,7 +102,6 @@ public class ToxiProxyEmbeddedKafkaTest extends EmbeddedKafkaTest {
                 .containsExactlyInAnyOrder("abc0", "abc1", "abc2");
     }
 
-    @Disabled("TODO: akovalov fix me")
     @Test
     @DisplayName("allows to emulate disconnect on send")
     public void shouldEmulateDisconnect() throws Exception {
@@ -136,17 +130,11 @@ public class ToxiProxyEmbeddedKafkaTest extends EmbeddedKafkaTest {
     @Test
     @DisplayName("toxi proxy does not affect clients connected directly")
     public void toxiProxyDoesNotAffectDirectClient() throws Exception {
-        kafkaProducer = new KafkaProducer<>(toxiProxyKafkaProducerConfiguration());
-
-        assertThat(durationOf(() -> kafkaProducer.send(new ProducerRecord<>("topic3", "abc0")).get()))
-                .isLessThan(500L);
-
         kafkaPlainTextProxy.setConnectionCut(true);
 
-        kafkaProducer.send(new ProducerRecord<>("topic3", "abc1"));
-        sendMessage("topic3", "abc2");
+        sendMessage("topic3", "abc0");
 
-        assertThat(consumeMessages("topic3")).containsExactlyInAnyOrder("abc0", "abc2");
+        assertThat(consumeMessages("topic3")).containsExactly("abc0");
     }
 
     @Test
@@ -176,18 +164,11 @@ public class ToxiProxyEmbeddedKafkaTest extends EmbeddedKafkaTest {
     @Test
     @DisplayName("toxi proxy does not affect SASL-Plaintext clients connected directly")
     public void toxiProxyDoesNotAffectDirectSaslClient() throws Exception {
-        kafkaProducer = new KafkaProducer<>(toxiProxySaslKafkaProducerConfiguration());
-
-        assertThat(durationOf(() -> kafkaProducer.send(new ProducerRecord<>(SECURE_TOPIC, "abc0")).get()))
-                .isLessThan(500L);
-
         kafkaSaslProxy.setConnectionCut(true);
 
-        kafkaProducer.send(new ProducerRecord<>(SECURE_TOPIC, "abc1"));
-        sendMessage(SECURE_TOPIC, "abc2", saslKafkaProducerConfiguration());
+        sendMessage(SECURE_TOPIC, "abc0", saslKafkaProducerConfiguration());
 
-        assertThat(consumeMessages(SECURE_TOPIC, saslKafkaConsumerConfiguration()))
-                .containsExactlyInAnyOrder("abc0", "abc2");
+        assertThat(consumeMessages(SECURE_TOPIC, saslKafkaConsumerConfiguration())).containsExactly("abc0");
     }
 
     private Map<String, Object> toxiProxyKafkaProducerConfiguration() {
@@ -236,12 +217,5 @@ public class ToxiProxyEmbeddedKafkaTest extends EmbeddedKafkaTest {
                 "password=\"" + kafkaPassword + "\";"
         );
         return conf;
-    }
-
-    private void seekToEnd(String topic, Map<String, Object> conf) {
-        try (KafkaConsumer<String, String> consumer = createConsumer(topic, conf)) {
-            consumer.subscribe(singleton(topic));
-            consumer.poll(Duration.ofMillis(100));
-        }
     }
 }
