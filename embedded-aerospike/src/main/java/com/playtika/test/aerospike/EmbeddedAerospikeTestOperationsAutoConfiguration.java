@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 
+import java.time.Instant;
 import java.util.Collections;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
@@ -45,10 +46,26 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue="true", matchIfMissing = true)
     public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
-                                                           AerospikeProperties properties) {
-        return new ExpiredDocumentsCleaner(client, properties.getNamespace());
+                                                                    AerospikeProperties properties) {
+        return new AerospikeExpiredDocumentsCleaner(client, properties.getNamespace());
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue="false", matchIfMissing = false)
+    public ExpiredDocumentsCleaner disabledExpiredDocumentsCleaner() {
+        return new ExpiredDocumentsCleaner() {
+            @Override
+            public void cleanExpiredDocumentsBefore(long millis) {
+                throw new UnsupportedOperationException("Expired documents cleaner is disabled. Change property embedded.aerospike.time-travel.enabled to enable it.");
+            }
+
+            @Override
+            public void cleanExpiredDocumentsBefore(Instant expireTime) {
+                throw new UnsupportedOperationException("Expired documents cleaner is disabled. Change property embedded.aerospike.time-travel.enabled to enable it.");
+            }
+        };
     }
 
     @Bean

@@ -21,7 +21,7 @@ public class DisableAerospikeTest {
                 .withPropertyValues(
                         "embedded.aerospike.enabled=false"
                 )
-                .run((context) -> assertThat(context)
+                .run(context -> assertThat(context)
                         .hasNotFailed()
                         .doesNotHaveBean(Container.class)
                         .doesNotHaveBean("aerospikeClientDependencyPostProcessor"));
