@@ -84,9 +84,4 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
         return new AerospikeTestOperations(expiredDocumentsCleaner, aerospikeNetworkTestOperations, aerospike);
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public AerospikeTimeTravelService aerospikeTimeTravelService(AerospikeTestOperations aerospikeTestOperations) {
-        return new AerospikeTimeTravelService(aerospikeTestOperations);
-    }
 }
