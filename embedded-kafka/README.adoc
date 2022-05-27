@@ -19,7 +19,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.kafka.enabled` `(true|false, default is true)`
 * `embedded.kafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
 * `embedded.kafka.secureTopics` (subset of `embedded.kafka.topicsToCreate` that should be secured with ACLs)
-* `embedded.kafka.dockerImageVersion` `(default '6.2.0' provides Kafka 2.8)`
+* `embedded.kafka.dockerImageVersion` `(default '6.2.4' provides Kafka 2.8)`
 ** Image versions on https://hub.docker.com/r/confluentinc/cp-kafka/tags[dockerhub]
 ** https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility[Confluent Platform and Apache Kafka Compatibility]
 * `embedded.kafka.dockerUser` `(default 'appuser' since Confluent Platform 6.0.0)`
