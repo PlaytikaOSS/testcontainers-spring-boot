@@ -288,7 +288,7 @@
                 <version>${gitflow-incremental-builder.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <disableIfBranchMatches>master|develop</disableIfBranchMatches>
+                    <disableIfBranchMatches>develop</disableIfBranchMatches>
                     <fetchReferenceBranch>true</fetchReferenceBranch>
                     <referenceBranch>refs/remotes/origin/develop</referenceBranch>
                     <buildUpstream>always</buildUpstream>

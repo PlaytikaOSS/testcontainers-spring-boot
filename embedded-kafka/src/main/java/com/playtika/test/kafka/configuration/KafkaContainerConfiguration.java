@@ -159,7 +159,7 @@ public class KafkaContainerConfiguration {
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
                 .withEmbeddedZookeeper()
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
-                //see: https://github.com/wurstmeister/kafka-docker/blob/master/README.md
+                //see: https://github.com/wurstmeister/kafka-docker/blob/develop/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
                 .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
                         "EXTERNAL_PLAINTEXT:PLAINTEXT," +

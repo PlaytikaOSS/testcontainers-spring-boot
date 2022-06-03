@@ -1,6 +1,6 @@
 = Data services library
 
-https://codecov.io/gh/Playtika/testcontainers-spring-boot[image:https://codecov.io/gh/testcontainers/testcontainers-spring-boot/branch/master/graph/badge.svg[codecov]]
+https://codecov.io/gh/Playtika/testcontainers-spring-boot[image:https://codecov.io/gh/testcontainers/testcontainers-spring-boot/branch/develop/graph/badge.svg[codecov]]
 https://www.codacy.com/app/PlaytikaCodacy/testcontainers-spring-boot?utm_source=github.com&utm_medium=referral&utm_content=testcontainers/testcontainers-spring-boot&utm_campaign=Badge_Grade[image:https://api.codacy.com/project/badge/Grade/add0d68eb8e040a1833a8f457189af7b[Codacy Badge]]
 https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot[image:https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot/badge.svg[Maven Central]]
 
@@ -291,11 +291,10 @@ Available values can be taken from `com.github.dockerjava.api.model.Capability` 
 
 === Flow
 
-* There are 2 branches in project: `master` and `develop`
 * You need to fork project and create branch from `develop`
 * You do not need to update project version in `pom.xml` files, this will be done by release job
 * Once finished - create pull request to `develop` from your fork, pass review and wait for merge
-* On release, ci job will merge `develop` into `master` and remove snapshot + publish artifacts into public maven repo
+* On release, ci job will update to next release version + publish artifacts to the Maven Central
 
 === Checklist for contributing new module
 
@@ -311,10 +310,9 @@ Available values can be taken from `com.github.dockerjava.api.model.Capability` 
 ** example of usage
 
 == Release
-* Release build is done using https://github.com/aleksandr-m/gitflow-maven-plugin[gitflow-maven-plugin]
+//* Release build is done using https://github.com/aleksandr-m/gitflow-maven-plugin[gitflow-maven-plugin]
 * Release is done per each major change, critical bug
 * Release can be done by contributor request
 * Contacts to start release:
-** mailto:obevzenko@playtika.com[obevzenko@playtika.com]
-** mailto:ivasylyev@playtika.com[ivasylyev@playtika.com]
+** mailto:sstus@playtika.com[sstus@playtika.com]
 ** mailto:asmirnova@playtika.com[asmirnova@playtika.com]
