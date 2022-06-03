@@ -22,11 +22,11 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Update version
-        run: ./mvnw versions:set -DnewVersion=${{ github.event.release.tag_name }}
+#      - name: Update version
+#        run: ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.release.tag_name }}
 
       - name: Publish to the Maven Central Repository
-        run: ./mvnw --batch-mode --no-transfer-progress deploy -DskipTests
+        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -Ddocker.cleanup.skip=true -P ossrh -DskipTests deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
