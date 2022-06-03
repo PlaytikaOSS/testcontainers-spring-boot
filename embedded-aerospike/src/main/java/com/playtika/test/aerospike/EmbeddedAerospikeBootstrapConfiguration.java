@@ -79,7 +79,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         GenericContainer aerospike =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.port)
-                        // see https://github.com/aerospike/aerospike-server.docker/blob/master/aerospike.template.conf
+                        // see https://github.com/aerospike/aerospike-server.docker/blob/develop/aerospike.template.conf
                         .withEnv("NAMESPACE", properties.namespace)
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
@@ -90,7 +90,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         }
         String featureKey = properties.featureKey;
         if (featureKey != null) {
-            // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/master/aerospike.template.conf
+            // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/develop/aerospike.template.conf
             aerospike
                 .withEnv("FEATURES", featureKey)
                 .withEnv("FEATURE_KEY_FILE", "env-b64:FEATURES");

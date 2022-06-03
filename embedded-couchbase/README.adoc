@@ -23,9 +23,9 @@
 
 ==== Produces
 * `embedded.couchbase.bootstrapHttpDirectPort`
-** NOTE: this property is also produced as System property for https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java[couchbase java client]
+** NOTE: this property is also produced as System property for https://github.com/couchbase/couchbase-jvm-core/blob/develop/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java[couchbase java client]
 * `embedded.couchbase.bootstrapCarrierDirectPort`
-** NOTE: this property is also produced as System property for https://github.com/couchbase/couchbase-jvm-core/blob/master/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java[couchbase java client]
+** NOTE: this property is also produced as System property for https://github.com/couchbase/couchbase-jvm-core/blob/develop/src/main/java/com/couchbase/client/core/env/DefaultCoreEnvironment.java[couchbase java client]
 * `embedded.couchbase.host`
 * `embedded.couchbase.bucket`
 * `embedded.couchbase.user`

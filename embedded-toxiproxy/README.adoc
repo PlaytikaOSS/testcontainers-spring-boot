@@ -3,7 +3,7 @@
 Convenient and simple to use wrapper for ToxiProxy:
 
 - https://github.com/Shopify/toxiproxy
-- https://github.com/testcontainers/testcontainers-java/tree/master/modules/toxiproxy.
+- https://github.com/testcontainers/testcontainers-java/tree/develop/modules/toxiproxy.
 
 
 ==== Maven dependency
