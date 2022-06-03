@@ -1,8 +1,11 @@
 name: Publish to the Maven Central Repository
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to be released
+        required: true
 
 jobs:
   publish:
@@ -10,6 +13,25 @@ jobs:
     steps:
 
       - uses: actions/checkout@v3
+
+      - name: Validate ${{ github.event.inputs.version }} release exists
+        uses: actions/github-script@v2
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+              const response = await github.repos.listReleases({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              if (!response) {
+                  throw new Error(`There are no available releases`);
+              }
+              for (const release of response.data) {
+                  if (release.name === "${{ github.event.inputs.version }}") {
+                      return
+                  }
+              }
+              throw new Error(`Release ${{ github.event.inputs.version }} is not available`);
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -22,8 +44,13 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-#      - name: Update version
-#        run: ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.release.tag_name }}
+      - name: Update version
+        run: |
+          ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.inputs.version }} versions:commit
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git commit -m "Release ${{ github.event.inputs.version }}"
+          git push
 
       - name: Publish to the Maven Central Repository
         run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -Ddocker.cleanup.skip=true -P ossrh -DskipTests deploy
@@ -31,3 +58,9 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Publish release on GitHub
+        uses: test-room-7/action-publish-release-drafts@v0
+        with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            tag-name: ${{ github.event.inputs.version }}
