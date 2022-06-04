@@ -49,7 +49,7 @@ jobs:
           ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.inputs.version }} versions:commit
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          git commit -m "Release ${{ github.event.inputs.version }}"
+          git commit -m "Release ${{ github.event.inputs.version }}" -a
           git push
 
       - name: Publish to the Maven Central Repository
