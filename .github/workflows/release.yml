@@ -13,6 +13,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
 
       - name: Validate ${{ github.event.inputs.version }} release exists
         uses: actions/github-script@v2
@@ -47,9 +49,9 @@ jobs:
       - name: Update version
         run: |
           ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.inputs.version }} versions:commit
-          git config user.name "Aloren"
-          git config user.email "zminyty@gmail.com"
-          git commit -m "Release ${{ github.event.inputs.version }}" -a
+          git config user.name "jenkins"
+          git config user.email "jenkins@playtika.com"
+          git commit -m -a "Release ${{ github.event.inputs.version }}"
           git push
 
       - name: Publish to the Maven Central Repository
