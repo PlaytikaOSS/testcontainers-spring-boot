@@ -1,0 +1,34 @@
+name: Validate release TEST
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to be released
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Validate ${{ github.event.inputs.version }} release exists
+        uses: actions/github-script@v2
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+              const response = await github.repos.listReleases({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              if (!response) {
+                  throw new Error(`There are no available releases`);
+              }
+              for (const release of response.data) {
+                  if (release.name === ${{ github.event.inputs.version }}) {
+                      return
+                  }
+              }
+              throw new Error(`Release $${{ github.event.inputs.version }} is not available`);
