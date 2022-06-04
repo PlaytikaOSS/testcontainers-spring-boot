@@ -27,7 +27,7 @@ jobs:
                   throw new Error(`There are no available releases`);
               }
               for (const release of response.data) {
-                  if (release.name === "${{ github.event.inputs.version" }}) {
+                  if (release.name === "${{ github.event.inputs.version }}") {
                       return
                   }
               }
