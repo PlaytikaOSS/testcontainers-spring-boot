@@ -47,8 +47,8 @@ jobs:
       - name: Update version
         run: |
           ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.inputs.version }} versions:commit
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
+          git config user.name "Aloren"
+          git config user.email "zminyty@gmail.com"
           git commit -m "Release ${{ github.event.inputs.version }}" -a
           git push
 
