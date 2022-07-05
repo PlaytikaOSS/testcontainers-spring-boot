@@ -33,6 +33,6 @@ public class MemSqlProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "singlestore/cluster-in-a-box:centos-7.6.8-ad67e74046-4.0.3-1.13.4";
+        return "singlestore/cluster-in-a-box:alma-7.8.7-b1ce5aefd0-4.0.7-1.13.8";
     }
 }
