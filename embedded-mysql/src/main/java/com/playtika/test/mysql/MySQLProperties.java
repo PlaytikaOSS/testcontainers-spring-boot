@@ -35,6 +35,6 @@ public class MySQLProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/mysql
     @Override
     public String getDefaultDockerImage() {
-        return "mysql:8.0";
+        return "mysql:8.0-debian";
     }
 }
