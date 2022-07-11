@@ -74,6 +74,12 @@ public abstract class CommonContainerProperties {
      */
     private List<Capability> capabilities = new ArrayList<>();
 
+    /**
+     * Tmpfs mount configuration.
+     */
+    @Valid
+    private TmpFs tmpFs = new TmpFs();
+
     public Duration getTimeoutDuration() {
         return Duration.ofSeconds(waitTimeoutInSeconds);
     }
@@ -93,6 +99,7 @@ public abstract class CommonContainerProperties {
     @NoArgsConstructor
     @Data
     @With
+    @Validated
     public static class CopyFileProperties {
         @NotBlank
         String classpathResource;
@@ -107,6 +114,7 @@ public abstract class CommonContainerProperties {
     @NoArgsConstructor
     @Data
     @With
+    @Validated
     public static class MountVolume {
         @NotBlank
         String hostPath;
@@ -114,5 +122,36 @@ public abstract class CommonContainerProperties {
         String containerPath;
         @NotNull
         BindMode mode = BindMode.READ_ONLY;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Validated
+    public static class TmpFs {
+
+        /**
+         * A list of container directories which should be replaced by tmpfs mounts, and their corresponding mount options.
+         */
+        @Valid
+        List<TmpFsMount> mounts = new ArrayList<>();
+
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Data
+        @Validated
+        public static class TmpFsMount {
+
+            /**
+             * Folder that should be replaced by tmpfs mount.
+             */
+            @NotBlank
+            String folder;
+
+            /**
+             * Mount options.
+             */
+            String options = "";
+        }
     }
 }

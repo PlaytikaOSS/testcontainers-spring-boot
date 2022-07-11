@@ -1,0 +1,9 @@
+embedded:
+  mariadb:
+    database: maria_db
+    user: maria
+    password: maria
+    tmp-fs:
+      mounts:
+        - folder: /var/lib/mysql
+          options: rw
