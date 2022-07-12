@@ -17,7 +17,7 @@ jobs:
           token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
 
       - name: Validate ${{ github.event.inputs.version }} release exists
-        uses: actions/github-script@v2
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
