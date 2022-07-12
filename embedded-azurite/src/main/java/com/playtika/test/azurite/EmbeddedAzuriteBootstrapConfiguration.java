@@ -43,7 +43,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                                      AzuriteProperties properties) {
 
         Integer mappedPort = azurite.getMappedPort(properties.getPort());
-        String host = azurite.getContainerIpAddress();
+        String host = azurite.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.azurite.host", host);

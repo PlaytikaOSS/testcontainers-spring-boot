@@ -44,7 +44,7 @@ spring:
         blob:
           account-name: ${embedded.azurite.account-name}
           account-key: ${embedded.azurite.account-key}
-          blob-endpoint: ${embedded.azurite.blob-endpoint}
+          endpoint: ${embedded.azurite.blob-endpoint}
 ----
 
 You can then access all beans from `spring-cloud-azure-starter-storage-blob`, i.e. `BlobServiceClientBuilder`.

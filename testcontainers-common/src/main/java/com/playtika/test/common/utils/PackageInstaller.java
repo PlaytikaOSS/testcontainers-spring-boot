@@ -8,8 +8,12 @@ import org.testcontainers.containers.GenericContainer;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * Instead use ToxiPoxy.
+ */
 @Slf4j
 @RequiredArgsConstructor
+@Deprecated
 public abstract class PackageInstaller {
 
     private final InstallPackageProperties properties;

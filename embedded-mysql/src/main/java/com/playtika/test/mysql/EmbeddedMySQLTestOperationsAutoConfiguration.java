@@ -19,6 +19,10 @@ import java.util.Collections;
 
 import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 
+/**
+ * Instead use ToxiProxy.
+ */
+@Deprecated
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnBean({MySQLProperties.class})
