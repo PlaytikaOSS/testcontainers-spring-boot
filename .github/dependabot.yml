@@ -10,5 +10,7 @@ updates:
         update-types: ["version-update:semver-patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
+    labels:
+      - "housekeeping"
     schedule:
       interval: "monthly"
