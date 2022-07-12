@@ -23,7 +23,9 @@ import java.net.ServerSocket;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @UtilityClass
@@ -66,6 +68,12 @@ public class ContainerUtils {
                 .withLogConsumer(containerLogsConsumer(logger))
                 .withImagePullPolicy(resolveImagePullPolicy(properties))
                 .withEnv(properties.getEnv());
+
+        if (!properties.getTmpFs().getMounts().isEmpty()) {
+            Map<String, String> tmpFsMapping = properties.getTmpFs().getMounts().stream()
+                    .collect(Collectors.toMap(e -> e.getFolder(), e -> e.getOptions()));
+            updatedContainer.withTmpFs(tmpFsMapping);
+        }
 
         for (CopyFileProperties fileToCopy : properties.getFilesToInclude()) {
             MountableFile mountableFile = MountableFile.forClasspathResource(fileToCopy.getClasspathResource());
