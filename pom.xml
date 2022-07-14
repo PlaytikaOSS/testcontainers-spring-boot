@@ -72,6 +72,7 @@
         <module>embedded-artifactory</module>
         <module>embedded-azurite</module>
         <module>embedded-toxiproxy</module>
+        <module>embedded-mssqlserver</module>
     </modules>
 
     <properties>

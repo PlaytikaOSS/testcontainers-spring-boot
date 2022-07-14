@@ -172,6 +172,11 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-mssqlserver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-azurite</artifactId>
                 <version>${project.version}</version>
             </dependency>
