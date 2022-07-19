@@ -28,8 +28,8 @@ do not allow to set those parameters.
 
 ==== Produces
 
-* `embedded.db2.host`
-* `embedded.db2.port`
-* `embedded.db2.database`
-* `embedded.db2.user`
-* `embedded.db2.password`
+* `embedded.mssqlserver.host`
+* `embedded.mssqlserver.port`
+* `embedded.mssqlserver.database`
+* `embedded.mssqlserver.user`
+* `embedded.mssqlserver.password`
