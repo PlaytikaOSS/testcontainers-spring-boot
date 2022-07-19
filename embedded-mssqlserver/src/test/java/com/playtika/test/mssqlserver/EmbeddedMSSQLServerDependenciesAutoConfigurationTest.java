@@ -7,8 +7,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.containers.MSSQLServerContainer;
-import org.testcontainers.containers.MSSQLServerContainerProvider;
 
 import java.util.Map;
 

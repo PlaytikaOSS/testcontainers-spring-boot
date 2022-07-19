@@ -14,7 +14,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
