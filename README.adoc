@@ -111,16 +111,16 @@ embedded.kafka.topicsToCreate=some_topic
 ./src/test/resources/application.properties
 [source,properties]
 ----
-embedded.containers.forceShutdown=true //default is false
+embedded.containers.forceShutdown=true #default is false
 ----
 NOTE: Otherwise, it will be shutdown with delay, see https://github.com/testcontainers/moby-ryuk
 
-=== Disables all embedded containers
+=== Disable all embedded containers
 
 ./src/test/resources/bootstrap.properties
 [source,properties]
 ----
-embedded.containers.enabled=true //default is true
+embedded.containers.enabled=true #default is true
 ----
 NOTE: If you setup, for example  embedded.kafka.enabled + embedded.containers.enabled, result will be same as using AND between two booleans.
 
@@ -218,6 +218,22 @@ embedded.postgresql.mountVolumes:
 |The Linux capabilities that should be enabled. You can disable all capabilities by providing empty value for this property.
 See: https://man7.org/linux/man-pages/man7/capabilities.7.html.
 Available values can be taken from `com.github.dockerjava.api.model.Capability` class.
+
+|embedded.{module-name}.tmpFs.mounts
+| empty list
+| A list of container directories which should be replaced by tmpfs mounts, and their corresponding mount options. Check https://docs.docker.com/storage/tmpfs/[TmpFs mount docs].
+
+For example, for MariaDb:
+[source,yaml]
+----
+embedded:
+  mariadb:
+    tmp-fs:
+      mounts:
+        - folder: /var/lib/mysql
+          options: rw
+----
+
 |===
 
 

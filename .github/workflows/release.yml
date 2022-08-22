@@ -17,11 +17,11 @@ jobs:
           token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
 
       - name: Validate ${{ github.event.inputs.version }} release exists
-        uses: actions/github-script@v2
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-              const response = await github.repos.listReleases({
+              const response = await github.rest.repos.listReleases({
                 owner: context.repo.owner,
                 repo: context.repo.repo
               });

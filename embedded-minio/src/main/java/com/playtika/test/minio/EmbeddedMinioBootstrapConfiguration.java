@@ -44,15 +44,13 @@ public class EmbeddedMinioBootstrapConfiguration {
 
         GenericContainer minio =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                        .withExposedPorts(properties.port)
-                        .withEnv("MINIO_ACCESS_KEY", properties.accessKey)
-                        .withEnv("MINIO_SECRET_KEY", properties.secretKey)
-                        .withEnv("MINIO_USERNAME", properties.userName)
-                        .withEnv("MINIO_GROUPNAME", properties.groupName)
-                        .withEnv("MINIO_REGION", properties.region)
+                        .withExposedPorts(properties.port, properties.consolePort)
+                        .withEnv("MINIO_ROOT_USER", properties.accessKey)
+                        .withEnv("MINIO_ROOT_PASSWORD", properties.secretKey)
+                        .withEnv("MINIO_SITE_REGION", properties.region)
                         .withEnv("MINIO_WORM", properties.worm)
                         .withEnv("MINIO_BROWSER", properties.browser)
-                        .withCommand("server", properties.directory)
+                        .withCommand("server", properties.directory, "--console-address", ":" + properties.consolePort)
                         .waitingFor(minioWaitStrategy);
 
         minio = configureCommonsAndStart(minio, properties, log);
@@ -63,12 +61,10 @@ public class EmbeddedMinioBootstrapConfiguration {
     private void registerEnvironment(GenericContainer container,
                                      ConfigurableEnvironment environment,
                                      MinioProperties properties) {
-        Integer mappedPort = container.getMappedPort(properties.port);
-        String host = container.getContainerIpAddress();
-
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.minio.host", host);
-        map.put("embedded.minio.port", mappedPort);
+        map.put("embedded.minio.host", container.getHost());
+        map.put("embedded.minio.port", container.getMappedPort(properties.port));
+        map.put("embedded.minio.consolePort", container.getMappedPort(properties.consolePort));
         map.put("embedded.minio.accessKey", properties.accessKey);
         map.put("embedded.minio.secretKey", properties.secretKey);
         map.put("embedded.minio.region", properties.region);
