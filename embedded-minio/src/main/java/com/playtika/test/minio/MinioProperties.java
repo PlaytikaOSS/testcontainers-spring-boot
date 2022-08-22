@@ -17,8 +17,6 @@ public class MinioProperties extends CommonContainerProperties {
 
     String accessKey = "AKIAIOSFODNN7EXAMPLE";
     String secretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
-    String userName = "root";
-    String groupName = "root";
     String region = "";
     String worm = "off";
     String browser = "on";
@@ -26,6 +24,7 @@ public class MinioProperties extends CommonContainerProperties {
 
     String host = "localhost";
     int port = 9000;
+    int consolePort = 9001;
 
     public MinioProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
@@ -34,6 +33,6 @@ public class MinioProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/minio/minio
     @Override
     public String getDefaultDockerImage() {
-        return "minio/minio:RELEASE.2021-08-05T22-01-19Z";
+        return "minio/minio:RELEASE.2022-08-13T21-54-44Z";
     }
 }

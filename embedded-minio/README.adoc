@@ -15,12 +15,10 @@
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.minio.enabled` `(true|false, default is true)`
 * `embedded.minio.reuseContainer` `(true|false, default is false)`
-* `embedded.minio.dockerImage` `(default is 'minio/minio:RELEASE.2021-08-05T22-01-19Z')`
+* `embedded.minio.dockerImage` `(default is 'minio/minio:RELEASE.2022-08-13T21-54-44Z')`
 ** Image versions on https://hub.docker.com/r/minio/minio/tags[dockerhub]
 * `embedded.minio.accessKey` `(default is 'AKIAIOSFODNN7EXAMPLE")`
 * `embedded.minio.secretKey` `(default is 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
-* `embedded.minio.userName` `(default is 'minio')`
-* `embedded.minio.groupName`  `(default is 'minio')`
 * `embedded.minio.region`  `(default is '')`
 * `embedded.minio.worm`  `(on|off, default is 'off')`
 * `embedded.minio.browser`  `(on|off, default is 'on')`
@@ -30,6 +28,7 @@
 
 * `embedded.minio.host`
 * `embedded.minio.port`
+* `embedded.minio.consolePort`
 * `embedded.minio.accessKey`
 * `embedded.minio.secretKey`
 * `embedded.minio.region`
