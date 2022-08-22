@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -102,10 +103,13 @@ public class EmbeddedMinioBootstrapConfigurationTest {
                 @Value("${embedded.minio.accessKey}") String accessKey,
                 @Value("${embedded.minio.secretKey}") String secretKey,
                 @Value("${embedded.minio.region}") String region) {
-            return MinioClient.builder()
-                              .endpoint("http://localhost", port, false)
-                              .credentials(accessKey, secretKey)
-                              .build();
+            MinioClient.Builder minio = MinioClient.builder()
+                    .endpoint("http://localhost", port, false)
+                    .credentials(accessKey, secretKey);
+            if (StringUtils.hasText(region)) {
+                minio.region(region);
+            }
+            return minio.build();
         }
     }
 }
