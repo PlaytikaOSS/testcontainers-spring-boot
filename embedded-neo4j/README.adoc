@@ -24,6 +24,7 @@
 
 * `embedded.neo4j.user`
 * `embedded.neo4j.password`
+* `embedded.neo4j.host`
 * `embedded.neo4j.httpsPort`
 * `embedded.neo4j.httpPort`
 * `embedded.neo4j.boltPort`
