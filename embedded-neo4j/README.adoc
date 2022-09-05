@@ -16,7 +16,7 @@
 
 * `embedded.neo4j.enabled` `(true|false, default is true)`
 * `embedded.neo4j.reuseContainer` `(true|false, default is false)`
-* `embedded.neo4j.dockerImage` `(default is 'neo4j:4.3-community')`
+* `embedded.neo4j.dockerImage` `(default is 'neo4j:4.4-community')`
 ** Image versions on https://hub.docker.com/_/neo4j?tab=tags[dockerhub]
 * `embedded.neo4j.waitTimeoutInSeconds` `(default is 60 seconds)`
 
