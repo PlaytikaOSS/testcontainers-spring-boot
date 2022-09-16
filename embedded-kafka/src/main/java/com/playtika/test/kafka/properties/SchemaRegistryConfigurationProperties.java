@@ -39,7 +39,7 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     // https://hub.docker.com/r/confluentinc/cp-schema-registry
     @Override
     public String getDefaultDockerImage() {
-        return "confluentinc/cp-schema-registry:6.2.0";
+        return "confluentinc/cp-schema-registry:7.2.0";
     }
 
     public enum AvroCompatibilityLevel {

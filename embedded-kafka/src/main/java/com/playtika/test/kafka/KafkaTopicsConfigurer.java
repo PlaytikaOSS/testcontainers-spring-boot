@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import static com.playtika.test.common.utils.ContainerUtils.executeInContainer;
+import static com.playtika.test.kafka.configuration.KafkaContainerConfiguration.KAFKA_HOST_NAME;
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;
 
 @Slf4j
@@ -59,7 +61,8 @@ public class KafkaTopicsConfigurer {
     private void createTopic(TopicConfiguration topicConfiguration) {
         String topic = topicConfiguration.getTopic();
         int partitions = topicConfiguration.getPartitions();
-        String[] createTopicCmd = getCreateTopicCmd(topic, partitions, zookeeperProperties.getZookeeperConnect());
+        String containerBrokerList = format("%s:%d", KAFKA_HOST_NAME, kafkaProperties.getInternalBrokerPort());
+        String[] createTopicCmd = getCreateTopicCmd(topic, partitions, containerBrokerList);
         Container.ExecResult execResult = executeInContainer(this.kafka, createTopicCmd);
         log.debug("Topic={} creation cmd='{}' execResult={}", topic, createTopicCmd, execResult);
     }
@@ -80,14 +83,14 @@ public class KafkaTopicsConfigurer {
         }
     }
 
-    private String[] getCreateTopicCmd(String topicName, int partitions, String kafkaZookeeperConnect) {
+    private String[] getCreateTopicCmd(String topicName, int partitions, String kafkaContainerBrokerList) {
         return new String[]{
                 "kafka-topics",
                 "--create", "--topic", topicName,
                 "--partitions", String.valueOf(partitions),
                 "--replication-factor", "1",
                 "--if-not-exists",
-                "--zookeeper", kafkaZookeeperConnect
+                "--bootstrap-server", kafkaContainerBrokerList
         };
     }
 

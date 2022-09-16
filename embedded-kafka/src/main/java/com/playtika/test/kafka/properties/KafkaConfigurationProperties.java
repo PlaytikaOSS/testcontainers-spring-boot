@@ -28,6 +28,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     protected String brokerList;
     protected String containerBrokerList;
+    protected int internalBrokerPort = 9092;
     protected int brokerPort = 9093;
     protected int containerBrokerPort = 9094;
     protected int saslPlaintextBrokerPort = 9095;
@@ -69,7 +70,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     // https://docs.confluent.io/platform/current/installation/versions-interoperability.html
     @Override
     public String getDefaultDockerImage() {
-        return "confluentinc/cp-kafka:6.2.4";
+        return "confluentinc/cp-kafka:7.2.0";
     }
 
     @AllArgsConstructor
