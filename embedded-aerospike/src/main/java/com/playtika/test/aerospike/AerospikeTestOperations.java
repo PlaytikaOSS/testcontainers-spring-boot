@@ -70,7 +70,7 @@ public class AerospikeTestOperations {
      */
     @SneakyThrows
     public List<ScanJob> getScans() {
-        Container.ExecResult execResult = aerospikeContainer.execInContainer("asinfo", "-v", "scan-list");
+        Container.ExecResult execResult = aerospikeContainer.execInContainer("asinfo", "-v", "scan-show");
         String stdout = execResult.getStdout();
         return getScanJobs(stdout);
     }
