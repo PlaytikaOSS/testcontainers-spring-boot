@@ -14,7 +14,7 @@
     <artifactId>embedded-mysql</artifactId>
 
     <properties>
-        <mysql-driver.version>8.0.28</mysql-driver.version>
+        <mysql-driver.version>8.0.30</mysql-driver.version>
     </properties>
 
     <dependencies>
