@@ -1,0 +1,27 @@
+=== embedded-victoriametrics
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-victoriametrics</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.victoriametrics.enabled` `(true|false, default is true)`
+* `embedded.victoriametrics.reuseContainer` `(true|false, default is false)`
+* `embedded.victoriametrics.dockerImage` `(default is 'victoriametrics/victoria-metrics:v1.80.0')`
+** Image versions on https://hub.docker.com/r/victoriametrics/victoria-metrics/tags[dockerhub]
+* `embedded.victoriametrics.networkAlias` `(default is 'victoriametrics')`
+
+
+==== Produces
+
+* `embedded.victoriametrics.host`
+* `embedded.victoriametrics.port`
