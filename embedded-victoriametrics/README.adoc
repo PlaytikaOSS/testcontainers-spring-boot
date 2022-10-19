@@ -1,5 +1,8 @@
 === embedded-victoriametrics
 
+TIP: This module provides integration with https://github.com/Shopify/toxiproxy[ToxiProxy] out of the box.
+ToxiProxy is a great tool for simulating network conditions, meaning that you can test your application's resiliency.
+
 ==== Maven dependency
 
 .pom.xml
@@ -17,6 +20,7 @@
 * `embedded.victoriametrics.enabled` `(true|false, default is true)`
 * `embedded.victoriametrics.reuseContainer` `(true|false, default is false)`
 * `embedded.victoriametrics.dockerImage` `(default is 'victoriametrics/victoria-metrics:v1.80.0')`
+* `embedded.toxiproxy.proxies.victoriametrics.enabled` - enables creation of the VictoriaMetrics container with ToxiProxy
 ** Image versions on https://hub.docker.com/r/victoriametrics/victoria-metrics/tags[dockerhub]
 * `embedded.victoriametrics.networkAlias` `(default is 'victoriametrics')`
 
@@ -25,3 +29,15 @@
 
 * `embedded.victoriametrics.host`
 * `embedded.victoriametrics.port`
+* `embedded.victoriametrics.toxiproxy.host`
+* `embedded.victoriametrics.toxiproxy.port`
+
+==== ToxiProxy
+
+To manipulate ToxiProxy inject the following bean into your tests:
+
+[source,java]
+----
+@Autowired
+ToxiproxyContainer.ContainerProxy victoriaMetricsContainerProxy;
+----
