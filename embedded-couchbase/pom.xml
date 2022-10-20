@@ -14,7 +14,7 @@
     <artifactId>embedded-couchbase</artifactId>
 
     <properties>
-        <couchbase-java-client-3.x.version>3.2.6</couchbase-java-client-3.x.version>
+        <couchbase-java-client-3.x.version>3.3.4</couchbase-java-client-3.x.version>
         <okhttp.version>4.9.3</okhttp.version>
     </properties>
 
