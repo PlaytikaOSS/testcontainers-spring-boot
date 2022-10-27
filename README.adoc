@@ -302,6 +302,8 @@ embedded:
 
 === link:embedded-toxiproxy/README.adoc[embedded-toxiproxy]
 
+=== link:embedded-nats/README.adoc[embedded-nats]
+
 == How to contribute
 
 === Flow
