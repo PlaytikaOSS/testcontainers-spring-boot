@@ -1,0 +1,74 @@
+=== embedded-nats
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-nats</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.nats.enabled` `(true|false, default is true)`
+* `embedded.nats.reuseContainer` `(true|false, default is false)`
+* `embedded.nats.dockerImage` `(default is 'nats:2.9')`
+** Image versions on https://hub.docker.com/_/nats/tags[dockerhub]
+* `embedded.toxiproxy.proxies.nats.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-nats` container.
+
+
+==== Produces
+
+* `embedded.nats.host`
+* `embedded.nats.port`
+* `embedded.nats.httpMonitorPort`
+* `embedded.nats.routeConnectionsPort`
+* `embedded.nats.toxiproxy.host`
+* `embedded.nats.toxiproxy.port`
+
+* Bean `ToxiproxyContainer.ContainerProxy natsContainerProxy`
+
+==== Notes
+
+Nats container has no security enabled, you can use any credentials.
+
+===== Create client with ToxiProxy
+You can also create client pointed at ToxiProxy TCP proxy:
+
+. Provide properties:
++
+--
+.`src/test/resources/bootstrap.properties`
+[source,properties]
+----
+embedded.toxiproxy.proxies.nats.enabled=true
+----
+--
+
+===== To manipulate ToxiProxy inject the following bean into your tests:
+
+[source,java]
+----
+@Autowired
+ToxiproxyContainer.ContainerProxy natsContainerProxy;
+----
+
+
+==== Create Nats client
+--
+[source,java]
+----
+@Bean(destroyMethod = "close")
+public Connection natsConnection(@Value("${embedded.nats.host}") String host,
+                                 @Value("${embedded.nats.port}") int port) {
+    Options options = new Options.Builder()
+            .server(String.format("nats://%s:%s", host, port))
+            .build();
+    return Nats.connect(options);
+}
+----
+--

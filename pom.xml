@@ -74,6 +74,7 @@
         <module>embedded-toxiproxy</module>
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
+        <module>embedded-nats</module>
     </modules>
 
     <properties>
