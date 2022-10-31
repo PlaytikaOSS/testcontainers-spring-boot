@@ -1,0 +1,2 @@
+com.playtika.test.kafka.configuration.EmbeddedKafkaTestOperationsAutoConfiguration
+com.playtika.test.kafka.configuration.camel.EmbeddedKafkaCamelAutoConfiguration

@@ -1,0 +1,2 @@
+com.playtika.test.mariadb.EmbeddedMariaDBTestOperationsAutoConfiguration
+com.playtika.test.mariadb.EmbeddedMariaDBDependenciesAutoConfiguration
