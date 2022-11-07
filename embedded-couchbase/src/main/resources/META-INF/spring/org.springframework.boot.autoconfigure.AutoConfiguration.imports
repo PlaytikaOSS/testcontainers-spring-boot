@@ -1,0 +1,2 @@
+com.playtika.test.couchbase.EmbeddedCouchbaseTestOperationsAutoConfiguration
+com.playtika.test.couchbase.EmbeddedCouchbaseDependenciesAutoConfiguration
