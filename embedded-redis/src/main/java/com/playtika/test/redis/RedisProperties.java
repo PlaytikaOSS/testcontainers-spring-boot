@@ -31,7 +31,7 @@ public class RedisProperties extends CommonContainerProperties {
     @PostConstruct
     public void init() {
         if (this.port == 0) {
-            this.port = SocketUtils.findAvailableTcpPort(1000, 10000);
+            this.port = SocketUtils.findAvailableTcpPort(1025, 10000);
         }
     }
 
