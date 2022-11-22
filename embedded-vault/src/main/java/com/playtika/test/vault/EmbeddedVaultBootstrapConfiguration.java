@@ -16,6 +16,7 @@ import org.testcontainers.vault.VaultContainer;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.vault.VaultProperties.BEAN_NAME_EMBEDDED_VAULT;
@@ -45,6 +46,15 @@ public class EmbeddedVaultBootstrapConfiguration {
             vault.withSecretInVault(properties.getPath(), secrets[0], Arrays.copyOfRange(secrets, 1, secrets.length));
         }
 
+        if (properties.isCasEnabled()) {
+            log.info("Enabling cas for mount secret");
+            vault.withInitCommand("write secret/config cas_required=true");
+        }
+
+        if (!properties.getCasEnabledForSubPaths().isEmpty()) {
+            enableCasForSubPaths(properties.getCasEnabledForSubPaths(), vault);
+        }
+
         vault = (VaultContainer) configureCommonsAndStart(vault, properties, log);
         registerVaultEnvironment(vault, environment, properties);
         return vault;
@@ -63,5 +73,15 @@ public class EmbeddedVaultBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedVaultInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+    }
+
+
+    private void enableCasForSubPaths(List<String> subPaths, VaultContainer vault) {
+        for (String subPath : subPaths) {
+            if (!subPath.isEmpty()) {
+                log.info("Vault: Enabling cas for sub path {}", subPath);
+                vault.withInitCommand("kv metadata put -cas-required=true secret/" + subPath);
+            }
+        }
     }
 }

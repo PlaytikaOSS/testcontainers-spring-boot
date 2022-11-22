@@ -23,6 +23,8 @@
 * `embedded.vault.token` `(default is '00000000-0000-0000-0000-000000000000')`
 * `embedded.vault.path` `(default is 'secret/application')`
 * `embedded.vault.secrets` `(Map, default is empty)`
+* `embedded.vault.cas-enabled` `(true|false, default is false, enables Check and Set operations for mount)`
+* `embedded.vault.cas-enabled-for-sub-paths` `(enables cas for specified, example: sub-paths sub-path1, sub-path2)`
 
 ==== Produces
 
