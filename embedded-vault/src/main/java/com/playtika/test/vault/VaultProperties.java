@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -23,6 +25,8 @@ public class VaultProperties extends CommonContainerProperties {
     private String token = "00000000-0000-0000-0000-000000000000";
     private String path = "secret/application";
     private final Map<String, String> secrets = new HashMap<>();
+    private boolean casEnabled = false;
+    private List<String> casEnabledForSubPaths = new ArrayList<>();
 
     // https://hub.docker.com/_/vault
     @Override
