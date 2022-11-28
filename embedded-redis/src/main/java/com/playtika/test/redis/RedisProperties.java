@@ -5,7 +5,7 @@ import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import javax.annotation.PostConstruct;
 
@@ -31,7 +31,7 @@ public class RedisProperties extends CommonContainerProperties {
     @PostConstruct
     public void init() {
         if (this.port == 0) {
-            this.port = SocketUtils.findAvailableTcpPort(1025, 10000);
+            this.port = TestSocketUtils.findAvailableTcpPort();
         }
     }
 
