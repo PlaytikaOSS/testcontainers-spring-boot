@@ -36,7 +36,7 @@ public class EmbeddedRedisTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller redisPackageInstaller(
             InstallPackageProperties redisPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer redis
+            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis
     ) {
         return new ApkPackageInstaller(redisPackageProperties, redis);
     }
@@ -44,7 +44,7 @@ public class EmbeddedRedisTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "redisNetworkTestOperations")
     public NetworkTestOperations redisNetworkTestOperations(
-            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer redis
+            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis
     ) {
         return new DefaultNetworkTestOperations(redis);
     }

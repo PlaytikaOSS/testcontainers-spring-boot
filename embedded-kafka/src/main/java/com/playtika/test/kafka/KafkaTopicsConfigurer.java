@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.toMap;
 public class KafkaTopicsConfigurer {
     private static final int DEFAULT_PARTITION_COUNT = 1;
 
-    private final GenericContainer kafka;
+    private final GenericContainer<?> kafka;
     private final ZookeeperConfigurationProperties zookeeperProperties;
     private final KafkaConfigurationProperties kafkaProperties;
 

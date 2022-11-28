@@ -10,7 +10,7 @@ public class EmbeddedConsulBootstrapConfigurationBaseTest {
     protected ConfigurableEnvironment environment;
 
     @Autowired
-    protected GenericContainer consulContainer;
+    protected GenericContainer<?> consulContainer;
 
     protected ConsulClient buildClient() {
         return new ConsulClient(consulContainer.getHost(), consulContainer.getFirstMappedPort());

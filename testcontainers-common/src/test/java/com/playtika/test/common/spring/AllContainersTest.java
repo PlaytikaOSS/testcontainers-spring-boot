@@ -16,9 +16,9 @@ import static org.mockito.Mockito.verify;
 class AllContainersTest {
 
     @Mock
-    GenericContainer c1;
+    GenericContainer<?> c1;
     @Mock
-    GenericContainer c2;
+    GenericContainer<?> c2;
 
     @Test
     void testContainersStoppedOnDestroy() {
