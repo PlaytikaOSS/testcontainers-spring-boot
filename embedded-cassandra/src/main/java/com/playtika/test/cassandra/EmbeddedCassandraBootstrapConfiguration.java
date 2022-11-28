@@ -58,7 +58,7 @@ public class EmbeddedCassandraBootstrapConfiguration {
     static Map<String, Object> registerCassandraEnvironment(ConfigurableEnvironment environment,
                                                             CassandraContainer cassandra,
                                                             CassandraProperties properties) {
-        String host = cassandra.getContainerIpAddress();
+        String host = cassandra.getHost();
         Integer mappedPort = cassandra.getMappedPort(properties.getPort());
         LinkedHashMap<String, Object> cassandraEnv = new LinkedHashMap<>();
         cassandraEnv.put("embedded.cassandra.port", mappedPort);

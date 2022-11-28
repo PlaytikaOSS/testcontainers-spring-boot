@@ -63,7 +63,7 @@ public class EmbeddedPrometheusBootstrapConfiguration {
                                      PrometheusProperties properties) {
 
         Integer mappedPort = prometheus.getMappedPort(properties.port);
-        String host = prometheus.getContainerIpAddress();
+        String host = prometheus.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.prometheus.host", host);

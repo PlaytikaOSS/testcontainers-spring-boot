@@ -62,7 +62,7 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
                                      ArtifactoryProperties properties) {
 
         Integer mappedPort = artifactory.getMappedPort(properties.generalPort);
-        String host = artifactory.getContainerIpAddress();
+        String host = artifactory.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.artifactory.host", host);

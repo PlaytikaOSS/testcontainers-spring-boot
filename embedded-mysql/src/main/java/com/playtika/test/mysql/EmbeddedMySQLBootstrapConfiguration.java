@@ -49,7 +49,7 @@ public class EmbeddedMySQLBootstrapConfiguration {
                                           ConfigurableEnvironment environment,
                                           MySQLProperties properties) {
         Integer mappedPort = mysql.getMappedPort(properties.port);
-        String host = mysql.getContainerIpAddress();
+        String host = mysql.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.mysql.port", mappedPort);

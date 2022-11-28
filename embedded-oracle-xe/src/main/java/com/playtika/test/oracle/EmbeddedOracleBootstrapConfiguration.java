@@ -46,7 +46,7 @@ public class EmbeddedOracleBootstrapConfiguration {
                                            ConfigurableEnvironment environment,
                                            OracleProperties properties) {
         Integer mappedPort = oracle.getMappedPort(ORACLE_PORT);
-        String host = oracle.getContainerIpAddress();
+        String host = oracle.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.oracle.port", mappedPort);
