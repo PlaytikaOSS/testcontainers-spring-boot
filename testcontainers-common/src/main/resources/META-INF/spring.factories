@@ -1,9 +1,6 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
  com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration
 
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
- com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration
-
 org.springframework.boot.diagnostics.FailureAnalyzer=\
  com.playtika.test.common.spring.NoDockerPresenceMarkerFailureAnalyser,\
  com.playtika.test.common.spring.DockerNotPresentFailureAnalyser

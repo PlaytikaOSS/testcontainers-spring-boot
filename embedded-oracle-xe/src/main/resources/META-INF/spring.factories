@@ -1,5 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.playtika.test.oracle.EmbeddedOracleBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.playtika.test.oracle.EmbeddedOracleDependenciesAutoConfiguration

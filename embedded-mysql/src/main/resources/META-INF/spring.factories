@@ -1,6 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.playtika.test.mysql.EmbeddedMySQLBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.playtika.test.mysql.EmbeddedMySQLTestOperationsAutoConfiguration,\
-  com.playtika.test.mysql.EmbeddedMySQLDependenciesAutoConfiguration

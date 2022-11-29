@@ -2,7 +2,7 @@ package com.playtika.test.mysql;
 
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -14,12 +14,11 @@ import javax.sql.DataSource;
 
 import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 
-@Configuration
+@AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
 @AutoConfigureOrder
 @ConditionalOnClass(DataSource.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(name = "embedded.mysql.enabled", matchIfMissing = true)
-@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
 public class EmbeddedMySQLDependenciesAutoConfiguration {
 
     @Configuration
