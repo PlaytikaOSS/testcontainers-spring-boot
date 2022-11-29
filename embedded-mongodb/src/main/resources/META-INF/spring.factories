@@ -1,6 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 com.playtika.test.mongodb.EmbeddedMongodbBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.mongodb.EmbeddedMongodbTestOperationsAutoConfiguration,\
-com.playtika.test.mongodb.EmbeddedMongodbDependenciesAutoConfiguration

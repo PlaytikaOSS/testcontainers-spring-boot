@@ -1,5 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 com.playtika.test.rabbitmq.EmbeddedRabbitMQBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.rabbitmq.EmbeddedRabbitMQDependenciesAutoConfiguration

@@ -6,13 +6,13 @@ import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
  * Instead use ToxiProxy.
  */
 @Deprecated
-@Configuration
+@AutoConfiguration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnBean({MySQLProperties.class})
 @ConditionalOnProperty(value = "embedded.mysql.enabled", matchIfMissing = true)

@@ -4,6 +4,7 @@ import com.aerospike.client.AerospikeClient;
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 
 @Slf4j
-@Configuration
+@AutoConfiguration
 @AutoConfigureOrder
 @ConditionalOnClass(AerospikeClient.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")

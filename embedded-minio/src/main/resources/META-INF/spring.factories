@@ -1,5 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 com.playtika.test.minio.EmbeddedMinioBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.minio.EmbeddedMinioTestOperationsAutoConfiguration
