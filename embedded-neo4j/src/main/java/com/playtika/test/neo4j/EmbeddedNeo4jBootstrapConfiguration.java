@@ -43,7 +43,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
         Integer httpsPort = neo4j.getMappedPort(properties.httpsPort);
         Integer httpPort = neo4j.getMappedPort(properties.httpPort);
         Integer boltPort = neo4j.getMappedPort(properties.boltPort);
-        String host = neo4j.getContainerIpAddress();
+        String host = neo4j.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.neo4j.httpsPort", httpsPort);

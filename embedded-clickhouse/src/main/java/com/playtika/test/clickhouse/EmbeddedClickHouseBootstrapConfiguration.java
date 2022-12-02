@@ -48,7 +48,7 @@ public class EmbeddedClickHouseBootstrapConfiguration {
                                                ClickHouseProperties properties,
                                                String username, String password) {
         Integer mappedPort = clickHouseContainer.getMappedPort(properties.port);
-        String host = clickHouseContainer.getContainerIpAddress();
+        String host = clickHouseContainer.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.clickhouse.schema", "default");

@@ -58,7 +58,7 @@ public class EmbeddedDb2BootstrapConfiguration {
                                         ConfigurableEnvironment environment,
                                         Db2Properties properties) {
         Integer mappedPort = db2Container.getMappedPort(Db2Container.DB2_PORT);
-        String host = db2Container.getContainerIpAddress();
+        String host = db2Container.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.db2.port", mappedPort);

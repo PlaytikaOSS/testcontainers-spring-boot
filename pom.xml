@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>2.2.9</version>
+    <version>2.2.12</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -73,6 +73,8 @@
         <module>embedded-azurite</module>
         <module>embedded-toxiproxy</module>
         <module>embedded-mssqlserver</module>
+        <module>embedded-victoriametrics</module>
+        <module>embedded-nats</module>
     </modules>
 
     <properties>

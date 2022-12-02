@@ -1,0 +1,3 @@
+com.playtika.test.elasticsearch.EmbeddedElasticSearchTestOperationsAutoConfiguration
+com.playtika.test.elasticsearch.EmbeddedElasticSearchDependenciesAutoConfiguration
+com.playtika.test.elasticsearch.EmbeddedElasticSearchRestClientDependenciesAutoConfiguration

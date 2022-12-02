@@ -1,0 +1,2 @@
+com.playtika.test.mongodb.EmbeddedMongodbTestOperationsAutoConfiguration
+com.playtika.test.mongodb.EmbeddedMongodbDependenciesAutoConfiguration

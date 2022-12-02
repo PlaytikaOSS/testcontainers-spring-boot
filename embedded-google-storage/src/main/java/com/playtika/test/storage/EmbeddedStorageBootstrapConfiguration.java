@@ -64,7 +64,7 @@ public class EmbeddedStorageBootstrapConfiguration {
         ConfigurableEnvironment environment,
         StorageProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.google.storage.host", container.getContainerIpAddress());
+        map.put("embedded.google.storage.host", container.getHost());
         map.put("embedded.google.storage.port", container.getMappedPort(StorageProperties.PORT));
         map.put("embedded.google.storage.endpoint", buildContainerEndpoint(container));
         map.put("embedded.google.storage.project-id", properties.getProjectId());
@@ -87,7 +87,7 @@ public class EmbeddedStorageBootstrapConfiguration {
     private String buildContainerEndpoint(GenericContainer<?> container) {
         return format(
             "http://%s:%d",
-            container.getContainerIpAddress(),
+            container.getHost(),
             container.getMappedPort(StorageProperties.PORT));
     }
 }

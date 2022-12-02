@@ -1,0 +1,2 @@
+com.playtika.test.memsql.EmbeddedMemSqlTestOperationsAutoConfiguration
+com.playtika.test.memsql.EmbeddedMemSqlDependenciesAutoConfiguration

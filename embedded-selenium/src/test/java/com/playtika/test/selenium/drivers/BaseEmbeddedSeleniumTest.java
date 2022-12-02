@@ -3,6 +3,7 @@ package com.playtika.test.selenium.drivers;
 import com.playtika.test.selenium.DockerHostname;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +43,7 @@ public abstract class BaseEmbeddedSeleniumTest {
     public void seleniumLinkShouldWorkAndPropertiesAreAvailable() {
         RemoteWebDriver driver = container.getWebDriver();
         getIndexPage(driver);
-        driver.findElementByLinkText("Test Link").click();
+        driver.findElement(By.linkText("Test Link")).click();
         assertThat(driver.getTitle()).isEqualTo("Test Link Page");
 
         assertThat(environment.getProperty("embedded.selenium.port")).isNotEmpty();

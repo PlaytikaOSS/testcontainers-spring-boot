@@ -57,7 +57,7 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
                                         ConfigurableEnvironment environment,
                                         MSSQLServerProperties properties) {
         Integer mappedPort = mssqlServerContainer.getMappedPort(MSSQLServerContainer.MS_SQL_SERVER_PORT);
-        String host = mssqlServerContainer.getContainerIpAddress();
+        String host = mssqlServerContainer.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.mssqlserver.port", mappedPort);

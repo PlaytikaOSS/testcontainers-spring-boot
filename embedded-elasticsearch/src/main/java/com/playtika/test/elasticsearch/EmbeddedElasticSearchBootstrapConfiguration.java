@@ -42,7 +42,7 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
                                                   ElasticSearchProperties properties) {
         Integer httpPort = elasticSearch.getMappedPort(properties.httpPort);
         Integer transportPort = elasticSearch.getMappedPort(properties.transportPort);
-        String host = elasticSearch.getContainerIpAddress();
+        String host = elasticSearch.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.elasticsearch.clusterName", properties.clusterName);

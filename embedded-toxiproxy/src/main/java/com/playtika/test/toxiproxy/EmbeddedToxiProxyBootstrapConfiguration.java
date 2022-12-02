@@ -50,7 +50,7 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
     private void registerEnvironment(ToxiproxyContainer container,
                                      ConfigurableEnvironment environment) {
         Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.toxiproxy.host", container.getContainerIpAddress());
+        map.put("embedded.toxiproxy.host", container.getHost());
         map.put("embedded.toxiproxy.controlPort", container.getControlPort());
 
         log.info("Started ToxiProxy server. Connection details {}", map);
