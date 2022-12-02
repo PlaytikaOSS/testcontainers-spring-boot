@@ -15,7 +15,7 @@
 
     <properties>
         <couchbase-java-client-3.x.version>3.2.6</couchbase-java-client-3.x.version>
-        <okhttp.version>4.9.3</okhttp.version>
+        <okhttp.version>4.10.0</okhttp.version>
     </properties>
 
     <dependencies>
