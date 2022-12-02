@@ -62,7 +62,7 @@ public class SchemaRegistryContainerConfiguration {
     private void registerSchemaRegistryEnvironment(GenericContainer schemaRegistry, ConfigurableEnvironment environment,
                                                    SchemaRegistryConfigurationProperties properties) {
 
-        String host = schemaRegistry.getContainerIpAddress();
+        String host = schemaRegistry.getHost();
         Integer port = schemaRegistry.getMappedPort(properties.getPort());
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();

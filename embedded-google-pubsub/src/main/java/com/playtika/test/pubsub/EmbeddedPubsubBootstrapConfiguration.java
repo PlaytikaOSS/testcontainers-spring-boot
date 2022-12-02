@@ -60,7 +60,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
                                            PubsubProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.google.pubsub.port", container.getMappedPort(properties.getPort()));
-        map.put("embedded.google.pubsub.host", container.getContainerIpAddress());
+        map.put("embedded.google.pubsub.host", container.getHost());
         map.put("embedded.google.pubsub.project-id", properties.getProjectId());
 
         log.info("Started Google Cloud Pubsub emulator. Connection details: {}, ", map);
@@ -73,7 +73,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
     public ManagedChannel managedChannel(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub, PubsubProperties properties) {
         return ManagedChannelBuilder
-            .forAddress(pubsub.getContainerIpAddress(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
+            .forAddress(pubsub.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
             .build();
     }
 

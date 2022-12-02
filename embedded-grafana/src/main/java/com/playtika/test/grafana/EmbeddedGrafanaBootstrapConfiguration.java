@@ -64,7 +64,7 @@ public class EmbeddedGrafanaBootstrapConfiguration {
                                      GrafanaProperties properties) {
 
         Integer mappedPort = grafana.getMappedPort(properties.port);
-        String host = grafana.getContainerIpAddress();
+        String host = grafana.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.grafana.host", host);

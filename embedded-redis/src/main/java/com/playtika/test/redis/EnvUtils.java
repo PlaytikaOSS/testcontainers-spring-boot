@@ -12,7 +12,7 @@ import java.util.Map;
 class EnvUtils {
     static Map<String, Object> registerRedisEnvironment(ConfigurableEnvironment environment, GenericContainer redis,
                                                         RedisProperties properties, int port) {
-        String host = redis.getContainerIpAddress();
+        String host = redis.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.redis.port", port);

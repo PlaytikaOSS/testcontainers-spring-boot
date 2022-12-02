@@ -62,7 +62,7 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                                            ConfigurableEnvironment environment,
                                            MemSqlProperties properties) {
         Integer mappedPort = memsql.getMappedPort(properties.port);
-        String host = memsql.getContainerIpAddress();
+        String host = memsql.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.memsql.port", mappedPort);

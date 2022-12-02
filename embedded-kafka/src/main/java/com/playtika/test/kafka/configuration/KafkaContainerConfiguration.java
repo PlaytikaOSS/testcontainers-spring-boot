@@ -243,7 +243,7 @@ public class KafkaContainerConfiguration {
                                           KafkaConfigurationProperties kafkaProperties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
-        String host = kafka.getContainerIpAddress();
+        String host = kafka.getHost();
         Integer mappedBrokerPort = kafka.getMappedPort(kafkaProperties.getBrokerPort());
         String kafkaBrokerList = format("%s:%d", host, mappedBrokerPort);
         map.put("embedded.kafka.brokerList", kafkaBrokerList);

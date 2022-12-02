@@ -62,7 +62,7 @@ public class EmbeddedVaultBootstrapConfiguration {
 
     private void registerVaultEnvironment(VaultContainer vault, ConfigurableEnvironment environment, VaultProperties properties) {
         Integer mappedPort = vault.getMappedPort(properties.getPort());
-        String host = vault.getContainerIpAddress();
+        String host = vault.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.vault.host", host);

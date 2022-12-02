@@ -52,7 +52,7 @@ public class EmbeddedVoltDBBootstrapConfiguration {
                                            ConfigurableEnvironment environment,
                                            VoltDBProperties properties) {
         Integer mappedPort = voltDB.getMappedPort(properties.port);
-        String host = voltDB.getContainerIpAddress();
+        String host = voltDB.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 

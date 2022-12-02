@@ -51,7 +51,7 @@ public class EmbeddedConsulBootstrapConfiguration {
     private void registerConsulEnvironment(GenericContainer consul, ConfigurableEnvironment environment,
                                            ConsulProperties properties) {
         Integer mappedPort = consul.getMappedPort(properties.getPort());
-        String host = consul.getContainerIpAddress();
+        String host = consul.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.consul.port", mappedPort);

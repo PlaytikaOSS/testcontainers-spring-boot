@@ -104,7 +104,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                                               ConfigurableEnvironment environment,
                                               AerospikeProperties properties) {
         Integer mappedPort = aerospike.getMappedPort(properties.port);
-        String host = aerospike.getContainerIpAddress();
+        String host = aerospike.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.aerospike.host", host);

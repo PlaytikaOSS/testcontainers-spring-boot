@@ -56,7 +56,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
 
     private void registerMongodbEnvironment(GenericContainer mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {
         Integer mappedPort = mongodb.getMappedPort(properties.getPort());
-        String host = mongodb.getContainerIpAddress();
+        String host = mongodb.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.mongodb.port", mappedPort);

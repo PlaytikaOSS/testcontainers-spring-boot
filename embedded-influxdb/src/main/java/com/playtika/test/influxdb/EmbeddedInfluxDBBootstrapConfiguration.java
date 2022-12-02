@@ -51,7 +51,7 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                                            ConfigurableEnvironment environment,
                                            InfluxDBProperties properties) {
         Integer mappedPort = influx.getMappedPort(properties.getPort());
-        String host = influx.getContainerIpAddress();
+        String host = influx.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.influxdb.port", mappedPort);
