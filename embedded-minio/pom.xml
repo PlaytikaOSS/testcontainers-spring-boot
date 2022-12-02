@@ -15,7 +15,7 @@
     <properties>
         <minio.version>8.4.6</minio.version>
         <!-- Manage an OkHttp version supported by MinIO -->
-        <okhttp.version>4.9.3</okhttp.version>
+        <okhttp.version>4.10.0</okhttp.version>
     </properties>
 
     <dependencies>
