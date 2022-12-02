@@ -48,7 +48,7 @@ public class EmbeddedLocalStackBootstrapConfiguration {
     private void registerLocalStackEnvironment(LocalStackContainer localStack,
                                                ConfigurableEnvironment environment,
                                                LocalStackProperties properties) {
-        String host = localStack.getContainerIpAddress();
+        String host = localStack.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.localstack.host", host);

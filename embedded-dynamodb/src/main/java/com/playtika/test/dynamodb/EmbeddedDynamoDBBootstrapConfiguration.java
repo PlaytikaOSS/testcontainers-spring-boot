@@ -45,7 +45,7 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
                                              ConfigurableEnvironment environment,
                                              DynamoDBProperties properties) {
         Integer mappedPort = container.getMappedPort(properties.port);
-        String host = container.getContainerIpAddress();
+        String host = container.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.dynamodb.port", mappedPort);

@@ -50,7 +50,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                             ConfigurableEnvironment environment,
                                             MariaDBProperties properties) {
         Integer mappedPort = mariadb.getMappedPort(properties.port);
-        String host = mariadb.getContainerIpAddress();
+        String host = mariadb.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.mariadb.port", mappedPort);

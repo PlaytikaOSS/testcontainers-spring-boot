@@ -52,7 +52,7 @@ public class EmbeddedVerticaBootstrapConfiguration {
                                             ConfigurableEnvironment environment,
                                             VerticaProperties properties) {
         Integer mappedPort = verticaContainer.getMappedPort(properties.getPort());
-        String host = verticaContainer.getContainerIpAddress();
+        String host = verticaContainer.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.vertica.port", mappedPort);

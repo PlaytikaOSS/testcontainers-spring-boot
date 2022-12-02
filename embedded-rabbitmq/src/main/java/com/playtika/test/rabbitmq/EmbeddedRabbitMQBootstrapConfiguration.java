@@ -46,7 +46,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                                              RabbitMQProperties properties) {
         Integer mappedPort = rabbitMQ.getMappedPort(properties.getPort());
         Integer mappedHttpPort = rabbitMQ.getMappedPort(properties.getHttpPort());
-        String host = rabbitMQ.getContainerIpAddress();
+        String host = rabbitMQ.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.rabbitmq.port", mappedPort);

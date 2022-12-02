@@ -56,7 +56,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                                                ConfigurableEnvironment environment,
                                                PostgreSQLProperties properties) {
         Integer mappedPort = postgresql.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT);
-        String host = postgresql.getContainerIpAddress();
+        String host = postgresql.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.postgresql.port", mappedPort);
