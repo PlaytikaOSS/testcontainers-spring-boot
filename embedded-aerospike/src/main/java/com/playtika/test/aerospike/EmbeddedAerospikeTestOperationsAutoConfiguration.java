@@ -40,7 +40,7 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller aerospikePackageInstaller(
             InstallPackageProperties aerospikePackageProperties,
-            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer aerospike
+            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike
     ) {
         return new AptGetPackageInstaller(aerospikePackageProperties, aerospike);
     }
@@ -71,7 +71,7 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "aerospikeNetworkTestOperations")
     public NetworkTestOperations aerospikeNetworkTestOperations(
-            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer aerospike
+            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike
     ) {
         return new DefaultNetworkTestOperations(aerospike);
     }
@@ -80,7 +80,7 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     @ConditionalOnMissingBean
     public AerospikeTestOperations aerospikeTestOperations(ExpiredDocumentsCleaner expiredDocumentsCleaner,
                                                            NetworkTestOperations aerospikeNetworkTestOperations,
-                                                           @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer aerospike) {
+                                                           @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike) {
         return new AerospikeTestOperations(expiredDocumentsCleaner, aerospikeNetworkTestOperations, aerospike);
     }
 

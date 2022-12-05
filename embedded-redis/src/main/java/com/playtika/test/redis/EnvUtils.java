@@ -10,7 +10,7 @@ import java.util.Map;
 
 @UtilityClass
 class EnvUtils {
-    static Map<String, Object> registerRedisEnvironment(ConfigurableEnvironment environment, GenericContainer redis,
+    static Map<String, Object> registerRedisEnvironment(ConfigurableEnvironment environment, GenericContainer<?> redis,
                                                         RedisProperties properties, int port) {
         String host = redis.getHost();
 

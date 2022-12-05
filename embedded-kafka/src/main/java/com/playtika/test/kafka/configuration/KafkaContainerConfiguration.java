@@ -116,7 +116,7 @@ public class KafkaContainerConfiguration {
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer kafka(
+    public GenericContainer<?> kafka(
             KafkaStatusCheck kafkaStatusCheck,
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties,
@@ -238,7 +238,7 @@ public class KafkaContainerConfiguration {
         }
     }
 
-    private void registerKafkaEnvironment(GenericContainer kafka,
+    private void registerKafkaEnvironment(GenericContainer<?> kafka,
                                           ConfigurableEnvironment environment,
                                           KafkaConfigurationProperties kafkaProperties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -267,7 +267,7 @@ public class KafkaContainerConfiguration {
 
     @Bean
     public KafkaTopicsConfigurer kafkaConfigurer(
-            GenericContainer kafka,
+            GenericContainer<?> kafka,
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties) {
         return new KafkaTopicsConfigurer(kafka, zookeeperProperties, kafkaProperties);

@@ -31,11 +31,11 @@ import static com.playtika.test.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MON
 public class EmbeddedMongodbBootstrapConfiguration {
 
     @Bean(value = BEAN_NAME_EMBEDDED_MONGODB, destroyMethod = "stop")
-    public GenericContainer mongodb(
+    public GenericContainer<?> mongodb(
             ConfigurableEnvironment environment,
             MongodbProperties properties,
             MongodbStatusCheck mongodbStatusCheck) {
-        GenericContainer mongodb =
+        GenericContainer<?> mongodb =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
                         .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
@@ -54,7 +54,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
         return new MongodbStatusCheck();
     }
 
-    private void registerMongodbEnvironment(GenericContainer mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {
+    private void registerMongodbEnvironment(GenericContainer<?> mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {
         Integer mappedPort = mongodb.getMappedPort(properties.getPort());
         String host = mongodb.getHost();
 

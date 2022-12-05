@@ -31,7 +31,7 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller kafkaPackageInstaller(InstallPackageProperties kafkaPackageProperties,
-                                                  @Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
+                                                  @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) {
         return new YumPackageInstaller(kafkaPackageProperties, kafka);
     }
 
@@ -39,7 +39,7 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
 // This bean is commented, so that users that expect NetworkTestOperations in the tests are notified that this is not supported anymore.
 //    @Bean
 //    @ConditionalOnMissingBean(name = "kafkaNetworkTestOperations")
-//    public NetworkTestOperations kafkaNetworkTestOperations(@Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) {
+//    public NetworkTestOperations kafkaNetworkTestOperations(@Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) {
 //        return new DefaultNetworkTestOperations(kafka);
 //    }
 }

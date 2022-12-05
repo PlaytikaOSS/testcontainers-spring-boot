@@ -36,7 +36,7 @@ public class EmbeddedMariaDBTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller mariadbPackageInstaller(
             InstallPackageProperties mariadbPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer mariadb
+            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer<?> mariadb
     ) {
         return new AptGetPackageInstaller(mariadbPackageProperties, mariadb);
     }
@@ -44,7 +44,7 @@ public class EmbeddedMariaDBTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "mariadbNetworkTestOperations")
     public NetworkTestOperations mariadbNetworkTestOperations(
-            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer mariadb
+            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer<?> mariadb
     ) {
         return new DefaultNetworkTestOperations(mariadb);
     }

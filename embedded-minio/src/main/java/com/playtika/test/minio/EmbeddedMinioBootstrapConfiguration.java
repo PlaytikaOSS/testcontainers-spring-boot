@@ -38,11 +38,11 @@ public class EmbeddedMinioBootstrapConfiguration {
     }
 
     @Bean(name = MINIO_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer minio(MinioWaitStrategy minioWaitStrategy,
+    public GenericContainer<?> minio(MinioWaitStrategy minioWaitStrategy,
                                   ConfigurableEnvironment environment,
                                   MinioProperties properties) {
 
-        GenericContainer minio =
+        GenericContainer<?> minio =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.port, properties.consolePort)
                         .withEnv("MINIO_ROOT_USER", properties.accessKey)
@@ -58,7 +58,7 @@ public class EmbeddedMinioBootstrapConfiguration {
         return minio;
     }
 
-    private void registerEnvironment(GenericContainer container,
+    private void registerEnvironment(GenericContainer<?> container,
                                      ConfigurableEnvironment environment,
                                      MinioProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();

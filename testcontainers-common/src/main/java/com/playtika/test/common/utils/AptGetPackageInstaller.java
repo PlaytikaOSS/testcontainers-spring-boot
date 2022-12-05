@@ -6,7 +6,7 @@ import org.testcontainers.containers.GenericContainer;
 
 public class AptGetPackageInstaller extends PackageInstaller {
 
-    public AptGetPackageInstaller(InstallPackageProperties properties, GenericContainer container) {
+    public AptGetPackageInstaller(InstallPackageProperties properties, GenericContainer<?> container) {
         super(properties, container);
     }
 

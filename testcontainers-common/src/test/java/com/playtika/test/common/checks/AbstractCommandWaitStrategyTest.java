@@ -24,7 +24,7 @@ public class AbstractCommandWaitStrategyTest {
     }
 
     private void startContainerWithWaitStrategy(WaitStrategy waitStrategy) {
-        new GenericContainer("alpine:latest")
+        new GenericContainer<>("alpine:latest")
                 .withCommand("/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done")
                 .waitingFor(waitStrategy)
                 .withStartupTimeout(Duration.ofSeconds(15))

@@ -5,7 +5,7 @@ import org.testcontainers.containers.GenericContainer;
 
 public class ApkPackageInstaller extends PackageInstaller {
 
-    public ApkPackageInstaller(InstallPackageProperties properties, GenericContainer container) {
+    public ApkPackageInstaller(InstallPackageProperties properties, GenericContainer<?> container) {
         super(properties, container);
     }
 

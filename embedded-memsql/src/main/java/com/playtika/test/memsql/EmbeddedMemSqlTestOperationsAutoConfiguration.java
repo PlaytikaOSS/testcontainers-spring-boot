@@ -31,7 +31,7 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller memsqlPackageInstaller(
             InstallPackageProperties memsqlPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer memsql
+            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql
     ) {
         return new YumPackageInstaller(memsqlPackageProperties, memsql);
     }
@@ -41,7 +41,7 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
 //    @Bean
 //    @ConditionalOnMissingBean(name = "memsqlNetworkTestOperations")
 //    public NetworkTestOperations memsqlNetworkTestOperations(
-//            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer memsql
+//            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql
 //    ) {
 //        return new DefaultNetworkTestOperations(memsql);
 //    }

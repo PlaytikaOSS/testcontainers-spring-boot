@@ -29,8 +29,8 @@ import static com.playtika.test.consul.ConsulProperties.BEAN_NAME_EMBEDDED_CONSU
 public class EmbeddedConsulBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
-    public GenericContainer consulContainer(ConfigurableEnvironment environment, ConsulProperties properties) {
-        GenericContainer consul = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+    public GenericContainer<?> consulContainer(ConfigurableEnvironment environment, ConsulProperties properties) {
+        GenericContainer<?> consul = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .waitingFor(
                         Wait.forHttp("/v1/status/leader")
@@ -48,7 +48,7 @@ public class EmbeddedConsulBootstrapConfiguration {
         return consul;
     }
 
-    private void registerConsulEnvironment(GenericContainer consul, ConfigurableEnvironment environment,
+    private void registerConsulEnvironment(GenericContainer<?> consul, ConfigurableEnvironment environment,
                                            ConsulProperties properties) {
         Integer mappedPort = consul.getMappedPort(properties.getPort());
         String host = consul.getHost();

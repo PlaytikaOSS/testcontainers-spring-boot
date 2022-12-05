@@ -39,12 +39,12 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     }
 
     @Bean(name = GrafanaProperties.GRAFANA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer grafana(ConfigurableEnvironment environment,
+    public GenericContainer<?> grafana(ConfigurableEnvironment environment,
                                     GrafanaProperties properties,
                                     WaitStrategy grafanaWaitStrategy) {
 
-        GenericContainer container =
-                new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> container =
+                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withEnv("GF_SECURITY_ADMIN_USER", properties.getUsername())
                         .withEnv("GF_SECURITY_ADMIN_PASSWORD", properties.getPassword())
                         .withExposedPorts(properties.getPort())
@@ -59,7 +59,7 @@ public class EmbeddedGrafanaBootstrapConfiguration {
         return container;
     }
 
-    private void registerEnvironment(GenericContainer grafana,
+    private void registerEnvironment(GenericContainer<?> grafana,
                                      ConfigurableEnvironment environment,
                                      GrafanaProperties properties) {
 
