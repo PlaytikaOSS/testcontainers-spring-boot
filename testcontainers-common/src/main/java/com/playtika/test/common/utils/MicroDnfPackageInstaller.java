@@ -5,7 +5,7 @@ import org.testcontainers.containers.GenericContainer;
 
 public class MicroDnfPackageInstaller extends PackageInstaller {
 
-    public MicroDnfPackageInstaller(InstallPackageProperties properties, GenericContainer container) {
+    public MicroDnfPackageInstaller(InstallPackageProperties properties, GenericContainer<?> container) {
         super(properties, container);
     }
 

@@ -184,7 +184,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
      * @param container
      * @return
      */
-    public String getHostName(GenericContainer container) {
+    public String getHostName(GenericContainer<?> container) {
         // unfortunately host.docker.internal only works for mac and windows :(
         // and we need to work out the hostname for linux.
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);

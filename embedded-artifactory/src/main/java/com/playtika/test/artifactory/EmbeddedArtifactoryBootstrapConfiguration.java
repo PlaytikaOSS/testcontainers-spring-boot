@@ -39,12 +39,12 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
     }
 
     @Bean(name = ArtifactoryProperties.ARTIFACTORY_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer artifactory(ConfigurableEnvironment environment,
+    public GenericContainer<?> artifactory(ConfigurableEnvironment environment,
                                         ArtifactoryProperties properties,
                                         WaitStrategy artifactoryWaitStrategy) {
 
-        GenericContainer container =
-                new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> container =
+                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getRestApiPort(), properties.getGeneralPort())
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias())
@@ -57,7 +57,7 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
         return container;
     }
 
-    private void registerEnvironment(GenericContainer artifactory,
+    private void registerEnvironment(GenericContainer<?> artifactory,
                                      ConfigurableEnvironment environment,
                                      ArtifactoryProperties properties) {
 

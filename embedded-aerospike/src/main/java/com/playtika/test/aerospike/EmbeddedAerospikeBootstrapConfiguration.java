@@ -48,7 +48,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "aerospike")
     ToxiproxyContainer.ContainerProxy aerospikeContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              GenericContainer aerospike,
+                                                              GenericContainer<?> aerospike,
                                                               AerospikeProperties properties,
                                                               ConfigurableEnvironment environment) {
         ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(aerospike, properties.port);
@@ -67,7 +67,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
 
 
     @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
+    public GenericContainer<?> aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                       ConfigurableEnvironment environment,
                                       AerospikeProperties properties,
                                       Optional<Network> network) {
@@ -76,7 +76,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                 .withStrategy(new HostPortWaitStrategy())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
-        GenericContainer aerospike =
+        GenericContainer<?> aerospike =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.port)
                         // see https://github.com/aerospike/aerospike-server.docker/blob/develop/aerospike.template.conf
@@ -100,7 +100,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         return aerospike;
     }
 
-    private void registerAerospikeEnvironment(GenericContainer aerospike,
+    private void registerAerospikeEnvironment(GenericContainer<?> aerospike,
                                               ConfigurableEnvironment environment,
                                               AerospikeProperties properties) {
         Integer mappedPort = aerospike.getMappedPort(properties.port);

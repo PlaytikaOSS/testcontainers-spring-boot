@@ -23,7 +23,7 @@ public class AerospikeTestOperations {
 
     private final ExpiredDocumentsCleaner expiredDocumentsCleaner;
     private final NetworkTestOperations networkTestOperations;
-    private final GenericContainer aerospikeContainer;
+    private final GenericContainer<?> aerospikeContainer;
 
     /**
      * @deprecated instead use {@link NetworkTestOperations} directly.

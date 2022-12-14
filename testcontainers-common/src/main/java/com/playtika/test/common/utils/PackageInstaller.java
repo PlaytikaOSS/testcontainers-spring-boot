@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct;
 public abstract class PackageInstaller {
 
     private final InstallPackageProperties properties;
-    private final GenericContainer container;
+    private final GenericContainer<?> container;
 
     protected abstract void install(String packageToInstall);
 

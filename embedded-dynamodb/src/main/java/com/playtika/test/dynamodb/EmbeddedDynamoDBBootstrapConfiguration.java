@@ -28,10 +28,10 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 public class EmbeddedDynamoDBBootstrapConfiguration {
 
     @Bean(name = DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
-    public GenericContainer dynamoDb(ConfigurableEnvironment environment,
+    public GenericContainer<?> dynamoDb(ConfigurableEnvironment environment,
                                      DynamoDBProperties properties) {
 
-        GenericContainer container = new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> container = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.port)
                 .waitingFor(new HostPortWaitStrategy());
 
@@ -41,7 +41,7 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
         return container;
     }
 
-    private void registerDynamodbEnvironment(GenericContainer container,
+    private void registerDynamodbEnvironment(GenericContainer<?> container,
                                              ConfigurableEnvironment environment,
                                              DynamoDBProperties properties) {
         Integer mappedPort = container.getMappedPort(properties.port);

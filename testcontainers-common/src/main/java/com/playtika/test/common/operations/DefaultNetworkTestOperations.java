@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultNetworkTestOperations implements NetworkTestOperations {
-    private final GenericContainer targetContainer;
+    private final GenericContainer<?> targetContainer;
 
     @Override
     public void addNetworkLatencyForResponses(Duration delay) {

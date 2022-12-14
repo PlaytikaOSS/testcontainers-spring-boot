@@ -31,7 +31,7 @@ public class EmbeddedMinioTestOperationsAutoConfiguration {
     @Bean
     PackageInstaller minioPackageInstaller(
             InstallPackageProperties minioPackageProperties,
-            @Qualifier(MINIO_BEAN_NAME) GenericContainer minio
+            @Qualifier(MINIO_BEAN_NAME) GenericContainer<?> minio
     ) {
         return new MicroDnfPackageInstaller(minioPackageProperties, minio);
     }
@@ -41,7 +41,7 @@ public class EmbeddedMinioTestOperationsAutoConfiguration {
 //    @Bean
 //    @ConditionalOnMissingBean(name = "minioNetworkTestOperations")
 //    public NetworkTestOperations minioNetworkTestOperations(
-//            @Qualifier(MINIO_BEAN_NAME) GenericContainer minio
+//            @Qualifier(MINIO_BEAN_NAME) GenericContainer<?> minio
 //    ) {
 //        return new DefaultNetworkTestOperations(minio);
 //    }

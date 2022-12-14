@@ -35,9 +35,9 @@ public class EmbeddedPubsubBootstrapConfiguration {
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL = "embeddedGooglePubsubManagedChannel";
 
     @Bean(name = PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
-    public GenericContainer pubsub(ConfigurableEnvironment environment,
+    public GenericContainer<?> pubsub(ConfigurableEnvironment environment,
                                    PubsubProperties properties) {
-        GenericContainer container = new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> container = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
             .withExposedPorts(properties.getPort())
             .withCommand(
                 "/bin/sh",
@@ -55,7 +55,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
         return container;
     }
 
-    private void registerPubsubEnvironment(GenericContainer container,
+    private void registerPubsubEnvironment(GenericContainer<?> container,
                                            ConfigurableEnvironment environment,
                                            PubsubProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -71,7 +71,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
-    public ManagedChannel managedChannel(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer pubsub, PubsubProperties properties) {
+    public ManagedChannel managedChannel(@Qualifier(PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub, PubsubProperties properties) {
         return ManagedChannelBuilder
             .forAddress(pubsub.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
             .build();

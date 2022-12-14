@@ -26,9 +26,9 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 public class EmbeddedAzuriteBootstrapConfiguration {
 
     @Bean(name = AzuriteProperties.AZURITE_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer azurite(ConfigurableEnvironment environment,
+    public GenericContainer<?> azurite(ConfigurableEnvironment environment,
                                     AzuriteProperties properties) {
-        GenericContainer container = new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> container = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort());
 
         configureCommonsAndStart(container, properties, log);
@@ -38,7 +38,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         return container;
     }
 
-    private void registerEnvironment(GenericContainer azurite,
+    private void registerEnvironment(GenericContainer<?> azurite,
                                      ConfigurableEnvironment environment,
                                      AzuriteProperties properties) {
 
