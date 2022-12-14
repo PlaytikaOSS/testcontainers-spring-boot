@@ -36,7 +36,7 @@ public class EmbeddedCouchbaseTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller couchbasePackageInstaller(
             InstallPackageProperties couchbasePackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer couchbase
+            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer<?> couchbase
     ) {
         return new AptGetPackageInstaller(couchbasePackageProperties, couchbase);
     }
@@ -44,7 +44,7 @@ public class EmbeddedCouchbaseTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "couchbaseNetworkTestOperations")
     public NetworkTestOperations couchbaseNetworkTestOperations(
-            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer couchbase
+            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer<?> couchbase
     ) {
         return new DefaultNetworkTestOperations(couchbase);
     }

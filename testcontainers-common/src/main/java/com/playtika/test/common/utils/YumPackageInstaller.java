@@ -6,7 +6,7 @@ import org.testcontainers.containers.GenericContainer;
 
 public class YumPackageInstaller extends PackageInstaller {
 
-    public YumPackageInstaller(InstallPackageProperties properties, GenericContainer container) {
+    public YumPackageInstaller(InstallPackageProperties properties, GenericContainer<?> container) {
         super(properties, container);
     }
 

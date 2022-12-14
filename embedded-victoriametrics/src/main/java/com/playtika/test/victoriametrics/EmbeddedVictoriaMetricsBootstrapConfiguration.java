@@ -46,7 +46,7 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "victoriametrics")
     public ToxiproxyContainer.ContainerProxy victoriaMetricsContainerProxy(ToxiproxyContainer toxiproxy,
-                                                                           GenericContainer victoriametrics,
+                                                                           GenericContainer<?> victoriametrics,
                                                                            VictoriaMetricsProperties properties,
                                                                            ConfigurableEnvironment environment) {
         ToxiproxyContainer.ContainerProxy proxy = toxiproxy.getProxy(victoriametrics, properties.getPort());
@@ -64,13 +64,13 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     }
 
     @Bean(name = VictoriaMetricsProperties.VICTORIA_METRICS_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer victoriaMetrics(ConfigurableEnvironment environment,
+    public GenericContainer<?> victoriaMetrics(ConfigurableEnvironment environment,
                                             VictoriaMetricsProperties properties,
                                             WaitStrategy victoriaMetricsWaitStrategy,
                                             Optional<Network> network) {
 
-        GenericContainer victoriaMetrics =
-                new GenericContainer(getDockerImageName(properties))
+        GenericContainer<?> victoriaMetrics =
+                new GenericContainer<>(getDockerImageName(properties))
                         .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias())
@@ -85,7 +85,7 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
         return victoriaMetrics;
     }
 
-    private void registerEnvironment(GenericContainer victoriaMetrics,
+    private void registerEnvironment(GenericContainer<?> victoriaMetrics,
                                      ConfigurableEnvironment environment,
                                      VictoriaMetricsProperties properties) {
 

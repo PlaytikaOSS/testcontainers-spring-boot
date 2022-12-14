@@ -40,12 +40,12 @@ public class EmbeddedPrometheusBootstrapConfiguration {
     }
 
     @Bean(name = PrometheusProperties.PROMETHEUS_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer prometheus(ConfigurableEnvironment environment,
+    public GenericContainer<?> prometheus(ConfigurableEnvironment environment,
                                        PrometheusProperties properties,
                                        WaitStrategy prometheusWaitStrategy) {
 
-        GenericContainer container =
-                new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> container =
+                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias())
@@ -58,7 +58,7 @@ public class EmbeddedPrometheusBootstrapConfiguration {
         return container;
     }
 
-    private void registerEnvironment(GenericContainer prometheus,
+    private void registerEnvironment(GenericContainer<?> prometheus,
                                      ConfigurableEnvironment environment,
                                      PrometheusProperties properties) {
 

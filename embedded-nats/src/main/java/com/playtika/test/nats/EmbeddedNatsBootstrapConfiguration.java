@@ -40,7 +40,7 @@ public class EmbeddedNatsBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "nats")
     ToxiproxyContainer.ContainerProxy natsContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer natsContainer,
+                                                              @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
                                                               NatsProperties properties,
                                                               ConfigurableEnvironment environment) {
         ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(natsContainer, properties.getClientPort());
@@ -58,7 +58,7 @@ public class EmbeddedNatsBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_NATS, destroyMethod = "stop")
-    public GenericContainer natsContainer(ConfigurableEnvironment environment,
+    public GenericContainer<?> natsContainer(ConfigurableEnvironment environment,
                                           NatsProperties properties,
                                           Optional<Network> network) {
 
@@ -66,7 +66,7 @@ public class EmbeddedNatsBootstrapConfiguration {
                 .withStrategy(new HostPortWaitStrategy())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
-        GenericContainer natsContainer = new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> natsContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getClientPort(), properties.getHttpMonitorPort(), properties.getRouteConnectionsPort())
                 .waitingFor(waitStrategy);
 
@@ -80,7 +80,7 @@ public class EmbeddedNatsBootstrapConfiguration {
         return natsContainer;
     }
 
-    private void registerNatsEnvironment(GenericContainer natsContainer,
+    private void registerNatsEnvironment(GenericContainer<?> natsContainer,
                                            ConfigurableEnvironment environment,
                                            NatsProperties properties) {
         Integer clientMappedPort = natsContainer.getMappedPort(properties.getClientPort());

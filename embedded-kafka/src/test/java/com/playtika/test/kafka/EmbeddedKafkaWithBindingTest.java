@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EmbeddedKafkaWithBindingTest extends EmbeddedKafkaTest {
 
     @AfterAll
-    public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties, @Qualifier(KAFKA_BEAN_NAME) GenericContainer kafka) throws Exception {
+    public static void afterAll(@Autowired KafkaConfigurationProperties kafkaProperties, @Autowired ZookeeperConfigurationProperties zookeeperProperties, @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) throws Exception {
         Path projectDir = projectDir();
         Path zookeeperDataFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getDataFolder());
         Path zookeeperTxnLogsFolder = projectDir.resolve(zookeeperProperties.getFileSystemBind().getTxnLogsFolder());

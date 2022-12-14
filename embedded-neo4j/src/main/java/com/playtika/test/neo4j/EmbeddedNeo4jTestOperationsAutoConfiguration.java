@@ -36,7 +36,7 @@ public class EmbeddedNeo4jTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller neo4jPackageInstaller(
             InstallPackageProperties neo4jPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer neo4j
+            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer<?> neo4j
     ) {
         return new AptGetPackageInstaller(neo4jPackageProperties, neo4j);
     }
@@ -44,7 +44,7 @@ public class EmbeddedNeo4jTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "neo4jNetworkTestOperations")
     public NetworkTestOperations neo4jNetworkTestOperations(
-            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer neo4j
+            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer<?> neo4j
     ) {
         return new DefaultNetworkTestOperations(neo4j);
     }

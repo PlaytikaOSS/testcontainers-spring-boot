@@ -34,11 +34,11 @@ public class EmbeddedVoltDBBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_VOLTDB, destroyMethod = "stop")
-    public GenericContainer voltDB(ConfigurableEnvironment environment,
+    public GenericContainer<?> voltDB(ConfigurableEnvironment environment,
                                    VoltDBProperties properties,
                                    VoltDBStatusCheck voltDbStatusCheck) {
 
-        GenericContainer voltDB = new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> voltDB = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withEnv("HOST_COUNT", "1")
                 .withExposedPorts(properties.port)
                 .waitingFor(voltDbStatusCheck);
@@ -48,7 +48,7 @@ public class EmbeddedVoltDBBootstrapConfiguration {
         return voltDB;
     }
 
-    private void registerVoltDBEnvironment(GenericContainer voltDB,
+    private void registerVoltDBEnvironment(GenericContainer<?> voltDB,
                                            ConfigurableEnvironment environment,
                                            VoltDBProperties properties) {
         Integer mappedPort = voltDB.getMappedPort(properties.port);

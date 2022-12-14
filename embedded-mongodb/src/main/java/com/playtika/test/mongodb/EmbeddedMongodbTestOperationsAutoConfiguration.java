@@ -36,7 +36,7 @@ public class EmbeddedMongodbTestOperationsAutoConfiguration {
     @Bean
     PackageInstaller mongodbPackageInstaller(
             InstallPackageProperties mongodbPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer mongodb
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb
     ) {
         return new AptGetPackageInstaller(mongodbPackageProperties, mongodb);
     }
@@ -44,7 +44,7 @@ public class EmbeddedMongodbTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "mongodbNetworkTestOperations")
     public NetworkTestOperations mongodbNetworkTestOperations(
-            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer mongodb
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb
     ) {
         return new DefaultNetworkTestOperations(mongodb);
     }

@@ -37,12 +37,12 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
-    public GenericContainer memsql(ConfigurableEnvironment environment,
+    public GenericContainer<?> memsql(ConfigurableEnvironment environment,
                                    MemSqlProperties properties,
                                    MemSqlStatusCheck memSqlStatusCheck,
                                    @Autowired(required = false) Network network) {
 
-        GenericContainer memsql = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> memsql = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
                 .withEnv("LICENSE_KEY", properties.getLicenseKey())
                 .withEnv("ROOT_PASSWORD", properties.getPassword())
@@ -58,7 +58,7 @@ public class EmbeddedMemSqlBootstrapConfiguration {
         return memsql;
     }
 
-    private void registerMemSqlEnvironment(GenericContainer memsql,
+    private void registerMemSqlEnvironment(GenericContainer<?> memsql,
                                            ConfigurableEnvironment environment,
                                            MemSqlProperties properties) {
         Integer mappedPort = memsql.getMappedPort(properties.port);

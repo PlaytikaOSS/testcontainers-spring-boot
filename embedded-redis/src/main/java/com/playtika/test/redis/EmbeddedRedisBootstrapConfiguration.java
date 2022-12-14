@@ -59,12 +59,12 @@ public class EmbeddedRedisBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
-    public GenericContainer redis(ConfigurableEnvironment environment,
+    public GenericContainer<?> redis(ConfigurableEnvironment environment,
                                   @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
 
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
-        GenericContainer redis =
+        GenericContainer<?> redis =
                 new FixedHostPortGenericContainer(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
                         .withFixedExposedPort(properties.getPort(), properties.getPort())
                         .withExposedPorts(properties.getPort())

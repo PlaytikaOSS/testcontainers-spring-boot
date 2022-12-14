@@ -28,27 +28,27 @@ import static com.playtika.test.vertica.VerticaProperties.BEAN_NAME_EMBEDDED_VER
 public class EmbeddedVerticaBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_VERTICA, destroyMethod = "stop")
-    public GenericContainer embeddedVertica(ConfigurableEnvironment environment, VerticaProperties properties) {
+    public GenericContainer<?> embeddedVertica(ConfigurableEnvironment environment, VerticaProperties properties) {
 
-        GenericContainer verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log);
+        GenericContainer<?> verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log);
 
         registerVerticaEnvironment(verticaContainer, environment, properties);
 
         return verticaContainer;
     }
 
-    private GenericContainer createContainer(VerticaProperties properties) {
+    private GenericContainer<?> createContainer(VerticaProperties properties) {
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         map.put("DATABASE_NAME", properties.getDatabase());
         map.put("DATABASE_PASSWORD", properties.getPassword());
 
-        return new GenericContainer(ContainerUtils.getDockerImageName(properties))
+        return new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .withEnv(map)
                 .waitingFor(new HostPortWaitStrategy());
     }
 
-    private void registerVerticaEnvironment(GenericContainer verticaContainer,
+    private void registerVerticaEnvironment(GenericContainer<?> verticaContainer,
                                             ConfigurableEnvironment environment,
                                             VerticaProperties properties) {
         Integer mappedPort = verticaContainer.getMappedPort(properties.getPort());

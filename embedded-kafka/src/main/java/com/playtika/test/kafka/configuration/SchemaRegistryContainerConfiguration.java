@@ -28,13 +28,13 @@ public class SchemaRegistryContainerConfiguration {
     public static final String SCHEMA_REGISTRY_HOST_NAME = "schema-registry.testcontainer.docker";
 
     @Bean(name = SCHEMA_REGISTRY_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer schemaRegistry(
+    public GenericContainer<?> schemaRegistry(
             ConfigurableEnvironment environment,
             SchemaRegistryConfigurationProperties properties,
             @Value("${embedded.kafka.containerBrokerList}") String kafkaContainerBrokerList,
             Network network) {
 
-        GenericContainer schemaRegistry = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> schemaRegistry = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(SCHEMA_REGISTRY_HOST_NAME))
                 .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", "PLAINTEXT://" + kafkaContainerBrokerList)
                 .withEnv("SCHEMA_REGISTRY_HOST_NAME", SCHEMA_REGISTRY_HOST_NAME)
@@ -59,7 +59,7 @@ public class SchemaRegistryContainerConfiguration {
         return schemaRegistry;
     }
 
-    private void registerSchemaRegistryEnvironment(GenericContainer schemaRegistry, ConfigurableEnvironment environment,
+    private void registerSchemaRegistryEnvironment(GenericContainer<?> schemaRegistry, ConfigurableEnvironment environment,
                                                    SchemaRegistryConfigurationProperties properties) {
 
         String host = schemaRegistry.getHost();
