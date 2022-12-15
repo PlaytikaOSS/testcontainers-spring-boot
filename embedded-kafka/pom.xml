@@ -14,7 +14,7 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>3.16.0</camel.version>
+        <camel.version>3.19.0</camel.version>
         <!-- https://spring.io/projects/spring-kafka#kafka-client-compatibility Confluent Platform 6.2 provides Kafka 2.8 -->
         <kafka-clients.version>3.1.0</kafka-clients.version>
         <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
