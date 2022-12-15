@@ -16,12 +16,12 @@
 
 * `embedded.influxdb.enabled` `(true|false, default is true)`
 * `embedded.influxdb.reuseContainer` `(true|false, default is false)`
-* `embedded.influxdb.dockerImage` `(default is 'influxdb:2.0-alpine')`
+* `embedded.influxdb.dockerImage` `(default is 'influxdb:2.5-alpine')`
 ** Image versions on https://hub.docker.com/_/influxdb?tab=tags[dockerhub]
 * `embedded.influxdb.admin-user` `(default is 'admin')`
 * `embedded.influxdb.admin-password` `(default is 'admin')`
-* `embedded.influxdb.user` `(default is 'user')`
-* `embedded.influxdb.password` `(default is 'password')`
+* `embedded.influxdb.user` `(default is 'any-user')`
+* `embedded.influxdb.password` `(default is 'any-password')`
 * `embedded.influxdb.enable-http-auth` `(true|false, default is true)`
 * `embedded.influxdb.host` `(default is 'localhost')`
 * `embedded.influxdb.port` `(int, default is '8086')`
