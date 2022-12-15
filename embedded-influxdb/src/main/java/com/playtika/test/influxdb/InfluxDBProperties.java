@@ -15,8 +15,8 @@ public class InfluxDBProperties extends CommonContainerProperties {
     String adminUser = "admin";
     String adminPassword = "password";
     boolean enableHttpAuth = true;
-    String user = "any";
-    String password = "any";
+    String user = "any-user";
+    String password = "any-password";
     String host = "localhost";
     String database = "db";
     int port = 8086;
@@ -24,6 +24,6 @@ public class InfluxDBProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/influxdb
     @Override
     public String getDefaultDockerImage() {
-        return "influxdb:2.0-alpine";
+        return "influxdb:2.5-alpine";
     }
 }
