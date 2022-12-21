@@ -2,14 +2,16 @@ package com.playtika.test.redis;
 
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
+import com.playtika.test.common.utils.TcpPortAvailableUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.SocketUtils;
 
 import javax.annotation.PostConstruct;
 
 import java.util.Arrays;
+
+import static com.playtika.test.common.utils.TcpPortAvailableUtils.PORT_RANGE_MIN;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -31,7 +33,7 @@ public class RedisProperties extends CommonContainerProperties {
     @PostConstruct
     public void init() {
         if (this.port == 0) {
-            this.port = SocketUtils.findAvailableTcpPort(1025, 50000);
+            this.port = TcpPortAvailableUtils.findAvailableTcpPort(PORT_RANGE_MIN, 50000);
         }
     }
 
