@@ -12,7 +12,6 @@ public class DisabledElasticSearchTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
                     EmbeddedElasticSearchBootstrapConfiguration.class,
-                    EmbeddedElasticSearchTestOperationsAutoConfiguration.class,
                     EmbeddedElasticSearchRestClientDependenciesAutoConfiguration.class));
 
     @Test
