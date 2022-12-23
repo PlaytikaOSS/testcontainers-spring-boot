@@ -19,9 +19,8 @@ import com.google.pubsub.v1.Subscription.Builder;
 import com.google.pubsub.v1.Topic;
 import com.playtika.test.pubsub.TopicAndSubscription.DeadLetter;
 import io.grpc.ManagedChannel;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.util.Collection;

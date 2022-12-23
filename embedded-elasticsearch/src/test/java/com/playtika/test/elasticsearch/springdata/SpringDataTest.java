@@ -4,7 +4,6 @@ import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.elasticsearch.ElasticSearchProperties;
 import com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
 import org.assertj.core.data.Offset;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -69,15 +68,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
 
     @Test
     public void shouldSetupDependsOnForNewClient() {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Client.class);
-        if (beanNamesForType.length > 0) {
-            assertThat(beanNamesForType)
-                    .as("New client should be present")
-                    .hasSize(1)
-                    .contains("elasticsearchClient");
-            asList(beanNamesForType).forEach(this::hasDependsOn);
-        }
-        beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
 
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)

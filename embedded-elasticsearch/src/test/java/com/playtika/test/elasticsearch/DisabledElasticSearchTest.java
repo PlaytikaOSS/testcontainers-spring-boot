@@ -13,7 +13,6 @@ public class DisabledElasticSearchTest {
             .withConfiguration(AutoConfigurations.of(
                     EmbeddedElasticSearchBootstrapConfiguration.class,
                     EmbeddedElasticSearchTestOperationsAutoConfiguration.class,
-                    EmbeddedElasticSearchDependenciesAutoConfiguration.class,
                     EmbeddedElasticSearchRestClientDependenciesAutoConfiguration.class));
 
     @Test

@@ -3,11 +3,10 @@ package com.playtika.test.redis;
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.utils.TcpPortAvailableUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import javax.annotation.PostConstruct;
 
 import java.util.Arrays;
 

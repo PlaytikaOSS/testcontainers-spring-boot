@@ -8,6 +8,7 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.playtika.test.dynamodb.springdata.DynamoDBConfig;
 import com.playtika.test.dynamodb.springdata.User;
 import com.playtika.test.dynamodb.springdata.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
 
 import java.util.List;
 
