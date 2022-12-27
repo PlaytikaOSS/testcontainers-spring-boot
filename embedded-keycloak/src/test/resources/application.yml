@@ -2,6 +2,11 @@ spring:
   output:
     ansi:
       enabled: always
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${embedded.keycloak.host}:${embedded.keycloak.http-port}/auth/realms/${testing.keycloak.realm}
 
 logging:
   level:
