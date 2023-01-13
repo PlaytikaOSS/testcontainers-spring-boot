@@ -19,7 +19,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 
 * `embedded.aerospike.enabled` `(true|false, default is 'true')`
 * `embedded.aerospike.reuseContainer` `(true|false, default is 'false')`
-* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server:5.7.0.25')`
+* `embedded.aerospike.dockerImage` `(default is set to 'aerospike:ce-6.2.0.2')`
 ** You can pick wanted version on https://hub.docker.com/r/library/aerospike/tags/[dockerhub]
 * `embedded.aerospike.featureKey` `(base64 of a feature-key-file https://docs.aerospike.com/docs/reference/configuration/index.html#feature-key-file, default is null) is only required for the EE image`
 * `embedded.aerospike.waitTimeoutInSeconds` `(default is 60 seconds)`
