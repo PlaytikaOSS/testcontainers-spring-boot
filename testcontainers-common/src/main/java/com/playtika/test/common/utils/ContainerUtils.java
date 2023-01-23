@@ -6,6 +6,7 @@ import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.CopyFileProperties;
 import com.playtika.test.common.properties.CommonContainerProperties.MountVolume;
+import com.playtika.test.common.properties.CommonContainerProperties.TmpFs.TmpFsMount;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class ContainerUtils {
 
         if (!properties.getTmpFs().getMounts().isEmpty()) {
             Map<String, String> tmpFsMapping = properties.getTmpFs().getMounts().stream()
-                    .collect(Collectors.toMap(e -> e.getFolder(), e -> e.getOptions()));
+                    .collect(Collectors.toMap(TmpFsMount::getFolder, TmpFsMount::getOptions));
             updatedContainer.withTmpFs(tmpFsMapping);
         }
 
