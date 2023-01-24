@@ -13,7 +13,7 @@
     <artifactId>embedded-voltdb</artifactId>
 
     <properties>
-        <voltdbclient.version>11.4.2</voltdbclient.version>
+        <voltdbclient.version>12.1.0</voltdbclient.version>
     </properties>
 
     <dependencies>
