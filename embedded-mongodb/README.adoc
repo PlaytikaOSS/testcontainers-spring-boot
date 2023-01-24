@@ -16,7 +16,7 @@
 
 * `embedded.mongodb.enabled` `(true|false, default is true)`
 * `embedded.mongodb.reuseContainer` `(true|false, default is false)`
-* `embedded.mongodb.dockerImage` `(default is 'mongo:5.0-focal')`
+* `embedded.mongodb.dockerImage` `(default is '5.0.14-focal')`
 ** Image versions on https://hub.docker.com/_/mongo?tab=tags[dockerhub]
 * `embedded.mongodb.host` `(default is localhost)`
 * `embedded.mongodb.port` `(default is 27017)`
