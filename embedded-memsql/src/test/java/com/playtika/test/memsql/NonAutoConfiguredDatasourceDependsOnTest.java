@@ -34,7 +34,7 @@ public class NonAutoConfiguredDatasourceDependsOnTest {
 
     @Test
     public void shouldConnectToMemSql() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("MemSQL");
+        assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("SingleStoreDB");
     }
 
     @Test

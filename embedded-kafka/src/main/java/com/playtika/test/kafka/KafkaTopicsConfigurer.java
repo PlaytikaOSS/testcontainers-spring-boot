@@ -6,10 +6,9 @@ import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-
-import javax.annotation.PostConstruct;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,15 +21,15 @@ import static java.util.stream.Collectors.toMap;
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-public class KafkaTopicsConfigurer {
+public class KafkaTopicsConfigurer implements InitializingBean {
     private static final int DEFAULT_PARTITION_COUNT = 1;
 
     private final GenericContainer<?> kafka;
     private final ZookeeperConfigurationProperties zookeeperProperties;
     private final KafkaConfigurationProperties kafkaProperties;
 
-    @PostConstruct
-    void configure() {
+    @Override
+    public void afterPropertiesSet() {
         createTopics(this.kafkaProperties.getTopicsToCreate(), this.kafkaProperties.getTopicsConfiguration());
         restrictTopics(KafkaConfigurationProperties.KAFKA_USER, this.kafkaProperties.getSecureTopics());
     }

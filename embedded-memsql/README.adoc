@@ -16,8 +16,8 @@
 
 * `embedded.memsql.enabled` `(true|false, default is true)`
 * `embedded.memsql.reuseContainer` `(true|false, default is false)`
-* `embedded.memsql.dockerImage` `(default is 'singlestore/cluster-in-a-box:alma-7.8.14-8b65b22706-4.0.7-1.13.13')`
-** Image versions on https://hub.docker.com/r/singlestore/cluster-in-a-box/tags[dockerhub]
+* `embedded.memsql.dockerImage` `(default is 'ghcr.io/singlestore-labs/singlestoredb-dev:0.2.2')`
+** Image versions on https://github.com/singlestore-labs/singlestoredb-dev-image[gitHub]
 * `embedded.memsql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.memsql.licenseKey` `(required licenseKey should be generated on https://www.singlestore.com/free/[singlestore])`
 
