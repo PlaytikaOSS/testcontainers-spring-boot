@@ -6,13 +6,12 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.playtika.test.storage.StorageProperties.BucketProperties;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Collection;
 
 @Slf4j
-public class StorageResourcesGenerator {
+public class StorageResourcesGenerator implements InitializingBean {
 
     private final Storage storage;
     private final Collection<BucketProperties> buckets;
@@ -32,9 +31,8 @@ public class StorageResourcesGenerator {
             .getService();
     }
 
-
-    @PostConstruct
-    protected void init() {
+    @Override
+    public void afterPropertiesSet() {
         log.info("Creating buckets.");
         buckets.forEach(this::createBucket);
         log.info("Creating buckets done.");
