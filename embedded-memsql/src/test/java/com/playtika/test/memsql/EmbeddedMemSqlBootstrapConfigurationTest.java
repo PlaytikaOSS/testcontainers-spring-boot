@@ -41,7 +41,7 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
 
     @Test
     public void shouldConnectToMemSQL() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("MemSQL");
+        assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("SingleStoreDB");
         jdbcTemplate.execute("create table foo (id int primary key);");
         jdbcTemplate.execute("insert into foo values (1), (2), (3);");
         assertThat(jdbcTemplate.queryForList("select * from foo")).hasSize(3);
