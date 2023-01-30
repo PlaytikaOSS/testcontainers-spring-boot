@@ -1,5 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.playtika.test.db2.EmbeddedDb2BootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.playtika.test.db2.EmbeddedDb2DependenciesAutoConfiguration

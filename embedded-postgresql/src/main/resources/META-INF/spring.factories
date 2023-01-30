@@ -1,5 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.playtika.test.postgresql.EmbeddedPostgreSQLBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.playtika.test.postgresql.EmbeddedPostgreSQLDependenciesAutoConfiguration

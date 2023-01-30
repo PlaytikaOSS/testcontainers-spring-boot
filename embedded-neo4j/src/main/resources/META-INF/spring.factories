@@ -1,6 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 com.playtika.test.neo4j.EmbeddedNeo4jBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.neo4j.EmbeddedNeo4jTestOperationsAutoConfiguration,\
-com.playtika.test.neo4j.EmbeddedNeo4jDependenciesAutoConfiguration

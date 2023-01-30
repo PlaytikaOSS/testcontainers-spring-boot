@@ -1,9 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
 com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfiguration
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.playtika.test.elasticsearch.EmbeddedElasticSearchTestOperationsAutoConfiguration,\
-com.playtika.test.elasticsearch.EmbeddedElasticSearchDependenciesAutoConfiguration,\
-com.playtika.test.elasticsearch.EmbeddedElasticSearchRestClientDependenciesAutoConfiguration
-
-

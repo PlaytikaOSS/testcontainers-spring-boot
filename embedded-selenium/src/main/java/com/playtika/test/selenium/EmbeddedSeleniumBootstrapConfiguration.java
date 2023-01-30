@@ -9,21 +9,15 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BrowserWebDriverContainer;
-import org.testcontainers.containers.Container;
-import org.testcontainers.containers.ContainerLaunchException;
-import org.testcontainers.containers.DefaultRecordingFileFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.RecordingFileFactory;
+import org.testcontainers.containers.*;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
@@ -44,9 +38,8 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 
 @Slf4j
-@Configuration
+@AutoConfiguration(after = DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.selenium.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(SeleniumProperties.class)
 @RequiredArgsConstructor
@@ -91,7 +84,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         }
         BrowserWebDriverContainer container = isNotBlank(properties.getDockerImage())
                 ? new BrowserWebDriverContainer<>(ContainerUtils.getDockerImageName(properties))
-                :  new BrowserWebDriverContainer<>();
+                : new BrowserWebDriverContainer<>();
 
         container.setWaitStrategy(getWaitStrategy());
         container.withCapabilities(capabilities);
@@ -147,6 +140,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
     /**
      * Users can redefine this to create other strategies of saving
      * vnc recordings
+     *
      * @return
      */
     @Bean
@@ -179,8 +173,9 @@ public class EmbeddedSeleniumBootstrapConfiguration {
 
     /**
      * Implementation partly based upon
-     *
+     * <p>
      * https://stackoverflow.com/questions/22944631/how-to-get-the-ip-address-of-the-docker-host-from-inside-a-docker-container
+     *
      * @param container
      * @return
      */
@@ -189,7 +184,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         // and we need to work out the hostname for linux.
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
-            return  "host.docker.internal";
+            return "host.docker.internal";
         } else if (OS.indexOf("win") >= 0) {
             return "host.docker.internal";
         } else if (OS.indexOf("nux") >= 0) {
@@ -204,7 +199,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
                 return DOCKER_FOR_LINUX_STATIC_IP;
             }
             String hostIpAddress = execResult.getStdout();
-            if(isValidIpAddress(hostIpAddress)) {
+            if (isValidIpAddress(hostIpAddress)) {
                 return hostIpAddress;
             } else {
                 return DOCKER_FOR_LINUX_STATIC_IP;

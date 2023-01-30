@@ -2,7 +2,7 @@ package com.playtika.test.clickhouse;
 
 import com.playtika.test.common.spring.DependsOnPostProcessor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -13,12 +13,11 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
-@Configuration
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @AutoConfigureOrder
 @ConditionalOnClass(DataSource.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(name = "embedded.clickhouse.enabled", havingValue = "true", matchIfMissing = true)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class EmbeddedClickHouseDependenciesAutoConfiguration {
 
     @Configuration

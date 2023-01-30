@@ -1,4 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
   com.playtika.test.keycloak.EmbeddedKeycloakBootstrapConfiguration
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.playtika.test.keycloak.EmbeddedKeycloakDependenciesAutoConfiguration

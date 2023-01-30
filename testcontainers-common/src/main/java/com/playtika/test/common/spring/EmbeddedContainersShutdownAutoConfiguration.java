@@ -3,11 +3,11 @@ package com.playtika.test.common.spring;
 import com.playtika.test.common.properties.TestcontainersProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.testcontainers.containers.GenericContainer;
 
@@ -19,7 +19,7 @@ import static java.util.Collections.emptyList;
 //TODO: Drop this workaround after proper fix available https://github.com/spring-cloud/spring-cloud-commons/issues/752
 
 @Slf4j
-@Configuration
+@AutoConfiguration
 @AutoConfigureOrder(value = Ordered.LOWEST_PRECEDENCE)
 @ConditionalOnProperty(prefix = "embedded.containers", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(TestcontainersProperties.class)
