@@ -14,7 +14,7 @@
     <artifactId>embedded-mssqlserver</artifactId>
 
     <properties>
-        <mssql-jdbc.version>12.1.0.jre11-preview</mssql-jdbc.version>
+        <mssql-jdbc.version>12.2.0.jre11</mssql-jdbc.version>
     </properties>
 
     <dependencies>
