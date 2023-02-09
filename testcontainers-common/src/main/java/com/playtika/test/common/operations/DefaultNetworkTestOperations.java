@@ -32,6 +32,7 @@ public class DefaultNetworkTestOperations implements NetworkTestOperations {
             addNetworkLatencyForResponses(delay);
             runnable.run();
         } catch (Exception e) {
+            log.error("Failed trying to add network latency", e);
             throw new RuntimeException(e);
         } finally {
             removeNetworkLatencyForResponses();
@@ -44,6 +45,7 @@ public class DefaultNetworkTestOperations implements NetworkTestOperations {
             addNetworkLatencyForResponses(delay);
             return callable.call();
         } catch (Exception e) {
+            log.error("Failed trying to add network latency", e);
             throw new RuntimeException(e);
         } finally {
             removeNetworkLatencyForResponses();
