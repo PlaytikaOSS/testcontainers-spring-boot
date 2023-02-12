@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>2.2.14</version>
+        <version>2.3.1</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <artifactId>embedded-postgresql</artifactId>
 
     <properties>
-        <postgresql-driver.version>42.5.1</postgresql-driver.version>
+        <postgresql-driver.version>42.5.3</postgresql-driver.version>
     </properties>
 
     <dependencies>

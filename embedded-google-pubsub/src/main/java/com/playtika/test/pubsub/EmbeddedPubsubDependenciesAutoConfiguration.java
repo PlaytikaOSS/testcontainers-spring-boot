@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Bean;
 import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 
 @AutoConfiguration
-@ImportAutoConfiguration(classes = {GcpContextAutoConfiguration.class, GcpPubSubEmulatorAutoConfiguration.class, GcpPubSubAutoConfiguration.class})
 @AutoConfigureOrder
+@ImportAutoConfiguration(classes = {GcpContextAutoConfiguration.class, GcpPubSubEmulatorAutoConfiguration.class, GcpPubSubAutoConfiguration.class})
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnClass(PubSubTemplate.class)
 @ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)

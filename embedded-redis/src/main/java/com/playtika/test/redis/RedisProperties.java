@@ -6,6 +6,7 @@ import com.playtika.test.common.utils.TcpPortAvailableUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Arrays;
@@ -15,7 +16,7 @@ import static com.playtika.test.common.utils.TcpPortAvailableUtils.PORT_RANGE_MI
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.redis")
-public class RedisProperties extends CommonContainerProperties {
+public class RedisProperties extends CommonContainerProperties implements InitializingBean {
     public static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
 
     public String user = "root";
@@ -29,8 +30,8 @@ public class RedisProperties extends CommonContainerProperties {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
     }
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void afterPropertiesSet() {
         if (this.port == 0) {
             this.port = TcpPortAvailableUtils.findAvailableTcpPort(PORT_RANGE_MIN, 50000);
         }

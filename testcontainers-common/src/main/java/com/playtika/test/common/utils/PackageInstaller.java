@@ -4,6 +4,7 @@ import com.playtika.test.common.properties.InstallPackageProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
@@ -13,14 +14,18 @@ import org.testcontainers.containers.GenericContainer;
 @Slf4j
 @RequiredArgsConstructor
 @Deprecated
-public abstract class PackageInstaller {
+public abstract class PackageInstaller implements InitializingBean {
 
     private final InstallPackageProperties properties;
     private final GenericContainer<?> container;
 
     protected abstract void install(String packageToInstall);
 
-    @PostConstruct
+    @Override
+    public void afterPropertiesSet() {
+        installPackages();
+    }
+
     protected void installPackages() {
         String dockerImageName = container.getDockerImageName();
         String containerName = container.getContainerInfo().getName();

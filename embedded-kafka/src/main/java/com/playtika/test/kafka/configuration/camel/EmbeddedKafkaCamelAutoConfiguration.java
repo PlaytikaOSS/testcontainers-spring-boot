@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Bean;
 import static com.playtika.test.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 
 @AutoConfiguration(afterName = "org.apache.camel.spring.boot.CamelAutoConfiguration")
-@ImportAutoConfiguration(classes = { CamelAutoConfiguration.class })
 @AutoConfigureOrder
+@ImportAutoConfiguration(classes = { CamelAutoConfiguration.class })
 @ConditionalOnClass(CamelContext.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(value = {"embedded.kafka.enabled"}, havingValue = "true", matchIfMissing = true)

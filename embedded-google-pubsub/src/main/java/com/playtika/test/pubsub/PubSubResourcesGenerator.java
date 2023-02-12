@@ -19,14 +19,14 @@ import com.google.pubsub.v1.Subscription.Builder;
 import com.google.pubsub.v1.Topic;
 import com.playtika.test.pubsub.TopicAndSubscription.DeadLetter;
 import io.grpc.ManagedChannel;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.io.IOException;
 import java.util.Collection;
 
 @Slf4j
-public class PubSubResourcesGenerator {
+public class PubSubResourcesGenerator implements InitializingBean {
 
     private final TransportChannelProvider channelProvider;
     private final CredentialsProvider credentialsProvider;
@@ -48,8 +48,8 @@ public class PubSubResourcesGenerator {
         subscriptionAdminClient = subscriptionAdminClient();
     }
 
-    @PostConstruct
-    protected void init() {
+    @Override
+    public void afterPropertiesSet() {
         log.info("Creating topics and subscriptions.");
         topicAndSubscriptions.forEach(this::createTopicAndSubscription);
         log.info("Creating topics and subscriptions created.");

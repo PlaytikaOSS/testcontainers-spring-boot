@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -77,7 +78,7 @@ public class EmbeddedDynamoDBBootstrapConfigurationTest {
     @EnableAutoConfiguration
     @Configuration
     @Import(DynamoDBConfig.class)
-    static class TestConfiguration {
+    static class TestConfiguration implements InitializingBean {
 
         @Autowired
         private AmazonDynamoDB amazonDynamoDB;
@@ -85,7 +86,11 @@ public class EmbeddedDynamoDBBootstrapConfigurationTest {
         @Autowired
         private DynamoDBMapper mapper;
 
-        @PostConstruct
+        @Override
+        public void afterPropertiesSet() throws Exception {
+            setupTable();
+        }
+
         void setupTable() throws InterruptedException {
 
             CreateTableRequest ctr = mapper.generateCreateTableRequest(User.class)
