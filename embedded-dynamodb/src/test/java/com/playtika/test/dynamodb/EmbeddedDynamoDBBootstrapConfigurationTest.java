@@ -8,7 +8,6 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.playtika.test.dynamodb.springdata.DynamoDBConfig;
 import com.playtika.test.dynamodb.springdata.User;
 import com.playtika.test.dynamodb.springdata.UserRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

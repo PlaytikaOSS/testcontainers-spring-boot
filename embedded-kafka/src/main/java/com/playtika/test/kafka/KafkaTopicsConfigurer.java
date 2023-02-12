@@ -3,7 +3,6 @@ package com.playtika.test.kafka;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.test.kafka.properties.KafkaConfigurationProperties.TopicConfiguration;
 import com.playtika.test.kafka.properties.ZookeeperConfigurationProperties;
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

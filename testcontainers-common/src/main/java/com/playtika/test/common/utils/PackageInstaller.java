@@ -1,7 +1,6 @@
 package com.playtika.test.common.utils;
 
 import com.playtika.test.common.properties.InstallPackageProperties;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
