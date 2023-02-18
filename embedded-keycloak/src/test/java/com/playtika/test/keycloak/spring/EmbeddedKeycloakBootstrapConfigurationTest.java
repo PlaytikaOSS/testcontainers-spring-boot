@@ -3,11 +3,10 @@ package com.playtika.test.keycloak.spring;
 import com.playtika.test.keycloak.KeycloakContainer;
 import com.playtika.test.keycloak.util.KeyCloakToken;
 import org.junit.jupiter.api.Test;
-import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,11 +15,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
-import static com.playtika.test.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
 import static com.playtika.test.keycloak.KeycloakProperties.DEFAULT_REALM;
 import static com.playtika.test.keycloak.util.KeycloakClient.newKeycloakClient;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -48,18 +45,6 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldSetupDependsOnForKeycloakSecurityContext() {
-        String[] beanNamesForType = beanFactory
-                .getBeanNamesForType(KeycloakClientRequestFactory.class);
-
-        assertThat(beanNamesForType)
-                .as("KeycloakClientRequestFactory should be present")
-                .hasSize(1);
-
-        asList(beanNamesForType).forEach(this::hasDependsOn);
-    }
-
-    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
                 .isEqualTo(format("http://%s:%d/auth", keycloakContainer.getHost(),
@@ -76,13 +61,6 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     public void shouldGetMasterRealmInfoFromKeycloak() {
         String realmInfo = newKeycloakClient(environment).getRealmInfo(DEFAULT_REALM).getRealm();
         assertThat(realmInfo).isEqualTo(DEFAULT_REALM);
-    }
-
-    private void hasDependsOn(String beanName) {
-        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-                .isNotNull()
-                .isNotEmpty()
-                .contains(BEAN_NAME_EMBEDDED_KEYCLOAK);
     }
 
     private String callSecuredPingEndpoint() {
