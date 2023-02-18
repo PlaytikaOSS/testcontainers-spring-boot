@@ -1,21 +1,15 @@
 package com.playtika.test.elasticsearch.springdata;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.elasticsearch.ElasticSearchProperties;
 import com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
-import org.assertj.core.data.Offset;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestClient;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
-import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,9 +21,6 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
 
-    @Autowired
-    private NetworkTestOperations elasticsearchNetworkTestOperations;
-
     @Test
     public void springDataShouldWork() {
         String key = "test::1";
@@ -40,19 +31,6 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
         TestDocument testDocument = saveDocument(key, value);
 
         assertThat(documentRepository.findById(key).get()).isEqualTo(testDocument);
-    }
-
-    //TODO: Need to figure out how to test this properly
-    @Test
-    @Disabled("TODO: Need to figure out how to test this properly")
-    public void shouldEmulateNetworkLatency() throws Exception {
-        elasticsearchNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> documentRepository.findById("abc")))
-                        .isCloseTo(1000L, Offset.offset(100L))
-        );
-
-        assertThat(durationOf(() -> documentRepository.findById("abc")))
-                .isLessThan(40L);
     }
 
     @Test
@@ -69,15 +47,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
 
     @Test
     public void shouldSetupDependsOnForNewClient() {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Client.class);
-        if (beanNamesForType.length > 0) {
-            assertThat(beanNamesForType)
-                    .as("New client should be present")
-                    .hasSize(1)
-                    .contains("elasticsearchClient");
-            asList(beanNamesForType).forEach(this::hasDependsOn);
-        }
-        beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
 
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
@@ -99,11 +69,5 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
         TestDocument testDocument = new TestDocument(key, value);
         documentRepository.save(testDocument);
         return testDocument;
-    }
-
-    private static long durationOf(Callable<?> op) throws Exception {
-        long start = System.currentTimeMillis();
-        op.call();
-        return System.currentTimeMillis() - start;
     }
 }

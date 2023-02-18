@@ -1,7 +1,6 @@
 package com.playtika.test.keycloak.vanilla;
 
 import com.playtika.test.keycloak.EmbeddedKeycloakBootstrapConfiguration;
-import com.playtika.test.keycloak.EmbeddedKeycloakDependenciesAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -12,9 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DisableKeycloakTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(
-                    EmbeddedKeycloakBootstrapConfiguration.class,
-                    EmbeddedKeycloakDependenciesAutoConfiguration.class));
+            .withConfiguration(AutoConfigurations.of(EmbeddedKeycloakBootstrapConfiguration.class));
 
     @Test
     public void contextLoads() {

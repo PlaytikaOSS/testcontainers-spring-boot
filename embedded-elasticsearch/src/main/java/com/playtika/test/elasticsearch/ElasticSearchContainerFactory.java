@@ -15,6 +15,7 @@ class ElasticSearchContainerFactory {
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
+                .withEnv("xpack.security.enabled", "false")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
                 .waitingFor(getCompositeWaitStrategy(properties));
     }
