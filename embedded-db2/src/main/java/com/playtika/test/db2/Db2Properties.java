@@ -1,14 +1,13 @@
 package com.playtika.test.db2;
 
 import com.playtika.test.common.properties.CommonContainerProperties;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 @Validated
