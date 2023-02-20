@@ -14,7 +14,7 @@
     <artifactId>embedded-aerospike</artifactId>
 
     <properties>
-        <aerospike-client.version>6.1.6</aerospike-client.version>
+        <aerospike-client.version>6.1.7</aerospike-client.version>
         <joda-time.version>2.12.2</joda-time.version>
     </properties>
 
