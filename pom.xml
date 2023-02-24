@@ -50,7 +50,6 @@
         <module>embedded-postgresql</module>
         <module>embedded-elasticsearch</module>
         <module>embedded-dynamodb</module>
-        <module>embedded-voltdb</module>
         <module>embedded-rabbitmq</module>
         <module>embedded-minio</module>
         <module>embedded-google-pubsub</module>
