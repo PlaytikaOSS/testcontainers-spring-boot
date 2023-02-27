@@ -22,6 +22,7 @@
 ** Image versions on https://hub.docker.com/_/mysql?tab=tags[dockerhub]
 * `embedded.mysql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.mysql.initScriptPath` `(default is null)`
+* `embedded.toxiproxy.proxies.mysql.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-mysql` container.
 
 ==== Produces
 
@@ -30,5 +31,8 @@
 * `embedded.mysql.schema`
 * `embedded.mysql.user`
 * `embedded.mysql.password`
+* `embedded.mysql.toxiproxy.host`
+* `embedded.mysql.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy mysqlContainerProxy`
 
 // TODO: missing example

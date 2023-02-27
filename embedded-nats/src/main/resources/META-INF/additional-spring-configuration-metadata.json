@@ -14,11 +14,11 @@
       "values": [
         {
           "value": "true",
-          "description": "Enables configuration of VoltDB server on startup."
+          "description": "Enables configuration of NATS server on startup."
         },
         {
           "value": "false",
-          "description": "Disabled configuration of VoltDB server on startup."
+          "description": "Disabled configuration of NATS server on startup."
         }
       ]
     }

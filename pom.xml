@@ -90,7 +90,7 @@
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
         <spotless-maven-plugin.version>2.33.0</spotless-maven-plugin.version>
         <gitflow-incremental-builder.version>4.3.0</gitflow-incremental-builder.version>
@@ -107,6 +107,12 @@
     </properties>
 
     <profiles>
+        <profile>
+            <id>skip-docker-clean</id>
+            <properties>
+                <docker.cleanup.skip>true</docker.cleanup.skip>
+            </properties>
+        </profile>
         <profile>
             <id>sonar</id>
             <build>

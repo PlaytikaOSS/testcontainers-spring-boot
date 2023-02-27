@@ -2,7 +2,9 @@ package com.playtika.test.db2;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,12 +15,17 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Db2Container;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.test.db2.Db2Properties.BEAN_NAME_EMBEDDED_DB2;
 
 @Slf4j
 @Configuration
@@ -28,14 +35,36 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 @EnableConfigurationProperties(Db2Properties.class)
 public class EmbeddedDb2BootstrapConfiguration {
 
-    @Bean(name = Db2Properties.BEAN_NAME_EMBEDDED_DB2, destroyMethod = "stop")
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "db2")
+    ToxiproxyContainer.ContainerProxy db2ContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                        @Qualifier(BEAN_NAME_EMBEDDED_DB2) Db2Container db2,
+                                                        ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(db2, Db2Container.DB2_PORT);
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.db2.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.db2.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.db2.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedDb2ToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started DB2 ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
+    @Bean(name = BEAN_NAME_EMBEDDED_DB2, destroyMethod = "stop")
     public Db2Container db2(ConfigurableEnvironment environment,
-                            Db2Properties properties) {
+                            Db2Properties properties,
+                            Optional<Network> network) {
         Db2Container db2Container = new Db2Container(ContainerUtils.getDockerImageName(properties))
                 .withDatabaseName(properties.getDatabase())
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())
                 .withInitScript(properties.getInitScriptPath());
+
+        network.ifPresent(db2Container::withNetwork);
 
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
         if (StringUtils.hasLength(startupLogCheckRegex)) {

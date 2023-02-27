@@ -18,8 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(
-        classes = AutoConfiguredDatasourceDependsOnTest.TestConfiguration.class
-        , properties = "spring.profiles.active=enabled"
+        classes = AutoConfiguredDatasourceDependsOnTest.TestConfiguration.class,
+        properties = {
+                "spring.profiles.active=enabled",
+                "embedded.toxiproxy.proxies.mariadb.enabled=true"
+        }
 )
 public class AutoConfiguredDatasourceDependsOnTest {
 
