@@ -22,6 +22,8 @@
 * `embedded.mssqlserver.acceptLicence` `(default is 'false')`
 * `embedded.mssqlserver.startupLogCheckRegex`
 * `embedded.mssqlserver.initScriptPath`
+* `embedded.toxiproxy.proxies.mssqlserver.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-mssqlserver` container.
+
 
 The username and database name can intentionally not be supplied to this module, because the MS SQL Server images
 do not allow to set those parameters.
@@ -33,3 +35,6 @@ do not allow to set those parameters.
 * `embedded.mssqlserver.database`
 * `embedded.mssqlserver.user`
 * `embedded.mssqlserver.password`
+* `embedded.mssqlserver.toxiproxy.host`
+* `embedded.mssqlserver.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy mssqlserverContainerProxy`

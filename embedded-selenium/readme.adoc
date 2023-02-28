@@ -21,6 +21,8 @@
 ** Prefix "standalone-" has a browser installed, suffix "-debug" additionally a VNC server for https://github.com/SeleniumHQ/docker-selenium[docker-selenium]
 * `embedded.selenium.vnc.mode` `RECORD_ALL | SKIP | RECORD_FAILING`
 * `embedded.selenium.vnc.recording-dir` `a file location`
+* `embedded.toxiproxy.proxies.selenium.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-selenium` container.
+
 
 ==== Produces
 
@@ -30,6 +32,9 @@
 * `embedded.selenium.vnc.port` (mapped HTTP port)
 * `embedded.selenium.vnc.username`
 * `embedded.selenium.vnc.password`
+* `embedded.selenium.toxiproxy.host`
+* `embedded.selenium.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy seleniumContainerProxy`
 
 ==== Example
 

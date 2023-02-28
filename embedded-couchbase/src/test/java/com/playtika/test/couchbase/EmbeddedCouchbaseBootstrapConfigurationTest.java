@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         properties = {
                 "spring.profiles.active=enabled",
                 "spring.main.allow-bean-definition-overriding=true",
-                "embedded.couchbase.install.enabled=true"
+                "embedded.toxiproxy.proxies.couchbase.enabled=true"
         })
 public abstract class EmbeddedCouchbaseBootstrapConfigurationTest {
 

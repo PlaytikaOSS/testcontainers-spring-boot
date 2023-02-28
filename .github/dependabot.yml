@@ -2,6 +2,7 @@ version: 2
 updates:
   - package-ecosystem: "maven"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 50
@@ -10,6 +11,23 @@ updates:
         update-types: ["version-update:semver-patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
+    labels:
+      - "housekeeping"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "springboot3"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 50
+    ignore:
+      - dependency-name: "com.amazonaws:*"
+        update-types: [ "version-update:semver-patch" ]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "springboot3"
     labels:
       - "housekeeping"
     schedule:

@@ -1,6 +1,5 @@
 package com.playtika.test.aerospike;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -12,7 +11,11 @@ import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -22,24 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AerospikeTestOperations {
 
     private final ExpiredDocumentsCleaner expiredDocumentsCleaner;
-    private final NetworkTestOperations networkTestOperations;
     private final GenericContainer<?> aerospikeContainer;
-
-    /**
-     * @deprecated instead use {@link NetworkTestOperations} directly.
-     */
-    @Deprecated
-    public void addNetworkLatencyForResponses(java.time.Duration millis) {
-        networkTestOperations.addNetworkLatencyForResponses(millis);
-    }
-
-    /**
-     * @deprecated instead use {@link NetworkTestOperations} directly.
-     */
-    @Deprecated
-    public void removeNetworkLatencyForResponses() {
-        networkTestOperations.removeNetworkLatencyForResponses();
-    }
 
     public void addDuration(Duration duration) {
         timeTravel(DateTime.now().plus(duration).plusMinutes(1));

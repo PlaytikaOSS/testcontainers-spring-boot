@@ -25,6 +25,8 @@
 * `embedded.postgresql.initScriptPath` `(default is null)`
 * `embedded.postgresql.startupLogCheckRegex` `(default is null)`
 * `embedded.postgresql.mountVolumes` `(default is empty list)`
+* `embedded.toxiproxy.proxies.postgresql.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-postgresql` container.
+
 
 ==== Produces
 
@@ -33,6 +35,9 @@
 * `embedded.postgresql.schema`
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
+* `embedded.postgresql.toxiproxy.host`
+* `embedded.postgresql.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy postgresqlContainerProxy`
 
 ==== Example (Spring Boot)
 

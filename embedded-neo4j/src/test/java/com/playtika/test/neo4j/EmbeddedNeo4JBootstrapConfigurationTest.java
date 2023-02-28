@@ -1,6 +1,6 @@
 package com.playtika.test.neo4j;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;
@@ -16,19 +16,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
-import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(
         classes = EmbeddedNeo4JBootstrapConfigurationTest.TestConfiguration.class,
-        properties = "embedded.neo4j.install.enabled=true"
+        properties = {
+                "embedded.toxiproxy.proxies.neo4j.enabled=true"
+        }
 )
 @ActiveProfiles("enabled")
 public class EmbeddedNeo4JBootstrapConfigurationTest {
@@ -43,7 +45,7 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    NetworkTestOperations neo4jNetworkTestOperations;
+    ToxiproxyContainer.ContainerProxy neo4jContainerProxy;
 
     @Configuration
     @EnableAutoConfiguration
@@ -79,10 +81,14 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Test
     public void shouldEmulateLatency() throws Exception {
-        neo4jNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> personRepository.findByName("any")))
-                        .isGreaterThan(1000L)
-        );
+
+        neo4jContainerProxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 1000);
+
+
+        assertThat(durationOf(() -> personRepository.findByName("any")))
+                        .isGreaterThan(1000L);
+
+        neo4jContainerProxy.toxics().get("latency").remove();
 
         assertThat(durationOf(() -> personRepository.findByName("any")))
                 .isLessThan(100L);

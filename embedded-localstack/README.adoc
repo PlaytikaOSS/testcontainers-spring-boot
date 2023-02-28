@@ -22,6 +22,8 @@
 * `embedded.localstack.hostname` `(default is 'localhost')`
 * `embedded.localstack.hostnameExternal` `(default is 'localhost')`
 * `embedded.localstack.edgePort` `(default is '4566')`
+* `embedded.toxiproxy.proxies.localstack.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-localstack` container.
+
 
 ==== Produces
 
@@ -30,5 +32,8 @@
 * `embedded.localstack.secretKey`
 * `embedded.localstack.{service}` (service endpoint for connection)
 * `embedded.localstack.{service}.port` (mapped port for connection)
+* `embedded.localstack.toxiproxy.host`
+* `embedded.localstack.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy localstackContainerProxy`
 
 // TODO: missing example

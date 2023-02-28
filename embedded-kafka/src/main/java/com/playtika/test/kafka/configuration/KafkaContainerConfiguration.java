@@ -88,7 +88,7 @@ public class KafkaContainerConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedKafkaPlainToxiProxyInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-        log.info("Kafka ToxiProxy plain-text connection details {}", map);
+        log.info("Started Kafka ToxiProxy plain-text connection details {}", map);
 
         return plainTextProxy;
     }

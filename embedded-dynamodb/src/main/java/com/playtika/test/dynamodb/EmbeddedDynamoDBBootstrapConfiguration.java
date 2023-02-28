@@ -3,7 +3,9 @@ package com.playtika.test.dynamodb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,11 +15,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.test.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB;
 
 @Slf4j
 @Configuration
@@ -27,18 +34,41 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 @EnableConfigurationProperties(DynamoDBProperties.class)
 public class EmbeddedDynamoDBBootstrapConfiguration {
 
-    @Bean(name = DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
-    public GenericContainer<?> dynamoDb(ConfigurableEnvironment environment,
-                                     DynamoDBProperties properties) {
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "dynamodb")
+    ToxiproxyContainer.ContainerProxy dynamodbContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                             @Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> dynamoDb,
+                                                             DynamoDBProperties properties,
+                                                             ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(dynamoDb, properties.getPort());
 
-        GenericContainer<?> container = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.port)
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.dynamodb.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.dynamodb.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.dynamodb.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedDynamoDBToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started DynamoDB ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
+    @Bean(name = BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")
+    public GenericContainer<?> dynamoDb(ConfigurableEnvironment environment,
+                                        DynamoDBProperties properties,
+                                        Optional<Network> network) {
+
+        GenericContainer<?> dynamodbContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+                .withExposedPorts(properties.getPort())
                 .waitingFor(new HostPortWaitStrategy());
 
-        container = configureCommonsAndStart(container, properties, log);
+        network.ifPresent(dynamodbContainer::withNetwork);
 
-        registerDynamodbEnvironment(container, environment, properties);
-        return container;
+        dynamodbContainer = configureCommonsAndStart(dynamodbContainer, properties, log);
+
+        registerDynamodbEnvironment(dynamodbContainer, environment, properties);
+        return dynamodbContainer;
     }
 
     private void registerDynamodbEnvironment(GenericContainer<?> container,

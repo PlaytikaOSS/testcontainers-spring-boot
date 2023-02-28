@@ -2,7 +2,9 @@ package com.playtika.test.localstack;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,9 +14,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.localstack.LocalStackProperties.BEAN_NAME_EMBEDDED_LOCALSTACK;
@@ -26,16 +32,40 @@ import static com.playtika.test.localstack.LocalStackProperties.BEAN_NAME_EMBEDD
 @ConditionalOnProperty(name = "embedded.localstack.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(LocalStackProperties.class)
 public class EmbeddedLocalStackBootstrapConfiguration {
+
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "localstack")
+    ToxiproxyContainer.ContainerProxy localstackContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                          @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
+                                                          LocalStackProperties properties,
+                                                          ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(localStack, properties.getEdgePort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.localstack.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.localstack.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.localstack.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedLocalstackToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Localstack ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
     public LocalStackContainer localStack(ConfigurableEnvironment environment,
-                                                  LocalStackProperties properties) {
+                                          LocalStackProperties properties,
+                                          Optional<Network> network) {
         LocalStackContainer localStackContainer = new LocalStackContainer(ContainerUtils.getDockerImageName(properties));
         localStackContainer
-            .withExposedPorts(properties.getEdgePort())
-            .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
-            .withEnv("HOSTNAME", properties.getHostname())
-            .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal());
+                .withExposedPorts(properties.getEdgePort())
+                .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
+                .withEnv("HOSTNAME", properties.getHostname())
+                .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal());
+
+        network.ifPresent(localStackContainer::withNetwork);
 
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);

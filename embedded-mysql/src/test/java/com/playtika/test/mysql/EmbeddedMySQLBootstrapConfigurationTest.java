@@ -1,6 +1,6 @@
 package com.playtika.test.mysql;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -16,13 +16,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import javax.sql.DataSource;
 
 import java.util.concurrent.Callable;
 
 import static com.playtika.test.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
-import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         classes = EmbeddedMySQLBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
                 "spring.profiles.active=enabled",
-                "embedded.mysql.install.enabled=true",
-                "embedded.mysql.init-script-path=initScript.sql"
+                "embedded.mysql.init-script-path=initScript.sql",
+                "embedded.toxiproxy.proxies.mysql.enabled=true"
         })
 public class EmbeddedMySQLBootstrapConfigurationTest {
 
@@ -46,7 +46,7 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
     ConfigurableEnvironment environment;
 
     @Autowired
-    NetworkTestOperations mysqlNetworkTestOperations;
+    ToxiproxyContainer.ContainerProxy mysqlContainerProxy;
 
     @Test
     public void shouldConnectToMySQL() throws Exception {
@@ -63,13 +63,17 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
 
     @Test
     public void shouldEmulateLatency() throws Exception {
+
         jdbcTemplate.execute("CREATE TABLE operator(id INT, name VARCHAR(64));");
         jdbcTemplate.execute("insert into operator (id, name) values (1, 'test');");
 
-        mysqlNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
-                        .isCloseTo(1000L, Offset.offset(100L))
-        );
+
+        mysqlContainerProxy.toxics().latency("latency", ToxicDirection.UPSTREAM, 1000);
+
+        assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
+                .isCloseTo(1000L, Offset.offset(100L));
+
+        mysqlContainerProxy.toxics().get("latency").remove();
 
         assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
                 .isLessThan(100L);
