@@ -60,7 +60,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedAerospikeToxiProxyInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-        log.info("Aerospike ToxiProxy connection details {}", map);
+        log.info("Started Aerospike ToxiProxy connection details {}", map);
 
         return proxy;
     }
@@ -85,9 +85,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
                         .waitingFor(waitStrategy);
-        if (network.isPresent()) {
-            aerospike.withNetwork(network.get());
-        }
+        network.ifPresent(aerospike::withNetwork);
         String featureKey = properties.featureKey;
         if (featureKey != null) {
             // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/develop/aerospike.template.conf

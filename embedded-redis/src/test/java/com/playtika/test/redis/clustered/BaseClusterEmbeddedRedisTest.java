@@ -20,7 +20,8 @@ import static java.lang.String.format;
 @SpringBootTest(
         classes = BaseClusterEmbeddedRedisTest.TestConfiguration.class,
         properties = {
-                "embedded.redis.clustered=true"
+                "embedded.redis.clustered=true",
+                "embedded.toxiproxy.proxies.redis.enabled=true"
         }
 )
 public abstract class BaseClusterEmbeddedRedisTest extends BaseEmbeddedRedisTest {

@@ -22,6 +22,8 @@
 * `embedded.redis.clustered` `(true|false, default is false)`
 ** If `true` Redis is started in cluster mode
 * `embedded.redis.requirepass` `(true|false, default is true)`
+* `embedded.toxiproxy.proxies.redis.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-redis` container.
+
 
 ==== Produces
 
@@ -29,5 +31,8 @@
 * `embedded.redis.port`
 * `embedded.redis.user`
 * `embedded.redis.password`
+* `embedded.redis.toxiproxy.host`
+* `embedded.redis.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy redisContainerProxy`
 
 //TODO: example missing

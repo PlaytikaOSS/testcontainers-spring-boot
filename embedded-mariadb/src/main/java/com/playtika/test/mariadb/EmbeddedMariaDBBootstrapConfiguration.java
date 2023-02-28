@@ -2,7 +2,9 @@ package com.playtika.test.mariadb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,8 +14,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
@@ -25,9 +31,31 @@ import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MAR
 @ConditionalOnProperty(name = "embedded.mariadb.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MariaDBProperties.class)
 public class EmbeddedMariaDBBootstrapConfiguration {
+
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "mariadb")
+    ToxiproxyContainer.ContainerProxy mariadbContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadbContainer,
+                                                            MariaDBProperties properties,
+                                                            ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(mariadbContainer, properties.getPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.mariadb.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.mariadb.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.mariadb.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedMariadbToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started MariaDB ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
     public MariaDBContainer mariadb(ConfigurableEnvironment environment,
-                                    MariaDBProperties properties) throws Exception {
+                                    MariaDBProperties properties,
+                                    Optional<Network> network) throws Exception {
 
         MariaDBContainer mariadb =
                 new MariaDBContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -39,8 +67,11 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                 "--character-set-server=" + properties.getEncoding(),
                                 "--collation-server=" + properties.getCollation(),
                                 "--max_allowed_packet=" + properties.getMaxAllowedPacket())
-                        .withExposedPorts(properties.port)
-                        .withInitScript(properties.initScriptPath);
+                        .withExposedPorts(properties.getPort())
+                        .withInitScript(properties.getInitScriptPath());
+
+        network.ifPresent(mariadb::withNetwork);
+
         mariadb = (MariaDBContainer) configureCommonsAndStart(mariadb, properties, log);
         registerMariadbEnvironment(mariadb, environment, properties);
         return mariadb;
@@ -49,7 +80,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     private void registerMariadbEnvironment(MariaDBContainer mariadb,
                                             ConfigurableEnvironment environment,
                                             MariaDBProperties properties) {
-        Integer mappedPort = mariadb.getMappedPort(properties.port);
+        Integer mappedPort = mariadb.getMappedPort(properties.getPort());
         String host = mariadb.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();

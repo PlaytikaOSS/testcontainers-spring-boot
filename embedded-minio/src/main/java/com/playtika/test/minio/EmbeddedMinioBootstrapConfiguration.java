@@ -2,7 +2,9 @@ package com.playtika.test.minio;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,10 +14,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.playtika.test.common.utils.ContainerUtils.*;
+import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.minio.MinioProperties.MINIO_BEAN_NAME;
 
 @Slf4j
@@ -37,22 +43,44 @@ public class EmbeddedMinioBootstrapConfiguration {
         return new DefaultMinioWaitStrategy(properties);
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "minio")
+    ToxiproxyContainer.ContainerProxy minioContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                          @Qualifier(MINIO_BEAN_NAME) GenericContainer<?> minio,
+                                                          ConfigurableEnvironment environment,
+                                                          MinioProperties properties) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(minio, properties.getPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.minio.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.minio.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.minio.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedMinioToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Minio ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = MINIO_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> minio(MinioWaitStrategy minioWaitStrategy,
-                                  ConfigurableEnvironment environment,
-                                  MinioProperties properties) {
+                                     ConfigurableEnvironment environment,
+                                     MinioProperties properties,
+                                     Optional<Network> network) {
 
         GenericContainer<?> minio =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                        .withExposedPorts(properties.port, properties.consolePort)
-                        .withEnv("MINIO_ROOT_USER", properties.accessKey)
-                        .withEnv("MINIO_ROOT_PASSWORD", properties.secretKey)
-                        .withEnv("MINIO_SITE_REGION", properties.region)
-                        .withEnv("MINIO_WORM", properties.worm)
-                        .withEnv("MINIO_BROWSER", properties.browser)
-                        .withCommand("server", properties.directory, "--console-address", ":" + properties.consolePort)
+                        .withExposedPorts(properties.getPort(), properties.getConsolePort())
+                        .withEnv("MINIO_ROOT_USER", properties.getAccessKey())
+                        .withEnv("MINIO_ROOT_PASSWORD", properties.getSecretKey())
+                        .withEnv("MINIO_SITE_REGION", properties.getRegion())
+                        .withEnv("MINIO_WORM", properties.getWorm())
+                        .withEnv("MINIO_BROWSER", properties.getBrowser())
+                        .withCommand("server", properties.getDirectory(), "--console-address", ":" + properties.getConsolePort())
                         .waitingFor(minioWaitStrategy);
 
+        network.ifPresent(minio::withNetwork);
         minio = configureCommonsAndStart(minio, properties, log);
         registerEnvironment(minio, environment, properties);
         return minio;

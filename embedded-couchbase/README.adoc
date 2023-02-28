@@ -20,6 +20,8 @@
 * `embedded.couchbase.bucketRamMb` `(default is '100')`
 * `embedded.couchbase.dockerImage` `(default is 'couchbase/server:7.0.0')`
 ** Image versions on https://hub.docker.com/r/couchbase/server/tags[dockerhub]
+* `embedded.toxiproxy.proxies.couchbase.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-couchbase` container.
+
 
 ==== Produces
 * `embedded.couchbase.bootstrapHttpDirectPort`
@@ -30,6 +32,9 @@
 * `embedded.couchbase.bucket`
 * `embedded.couchbase.user`
 * `embedded.couchbase.password`
+* `embedded.couchbase.toxiproxy.host`
+* `embedded.couchbase.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy couchbaseContainerProxy`
 
 ==== Notes
 

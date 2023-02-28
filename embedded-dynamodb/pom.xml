@@ -22,6 +22,10 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.derjust</groupId>
             <artifactId>spring-data-dynamodb</artifactId>
             <version>${spring-data-dynamodb.version}</version>

@@ -2,8 +2,10 @@ package com.playtika.test.cassandra;
 
 import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.common.utils.FileUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,6 +16,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.delegate.CassandraDatabaseDelegate;
 import org.testcontainers.delegate.DatabaseDelegate;
 import org.testcontainers.ext.ScriptUtils;
@@ -22,6 +26,7 @@ import javax.script.ScriptException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
 import static com.playtika.test.cassandra.CassandraProperties.DEFAULT_DATACENTER;
@@ -38,19 +43,38 @@ public class EmbeddedCassandraBootstrapConfiguration {
 
     private final ResourceLoader resourceLoader;
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "cassandra")
+    ToxiproxyContainer.ContainerProxy cassandraContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                               @Qualifier(BEAN_NAME_EMBEDDED_CASSANDRA) CassandraContainer cassandra,
+                                                               CassandraProperties properties,
+                                                               ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(cassandra, properties.getPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.cassandra.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.cassandra.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.cassandra.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedCassandraToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Cassandra ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")
     public CassandraContainer cassandra(ConfigurableEnvironment environment,
-                                        CassandraProperties properties) throws Exception {
+                                        CassandraProperties properties,
+                                        Optional<Network> network) throws Exception {
 
         CassandraContainer cassandra = new CassandraContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort());
 
+        network.ifPresent(cassandra::withNetwork);
         cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
-
         initKeyspace(properties, cassandra);
-
         Map<String, Object> cassandraEnv = registerCassandraEnvironment(environment, cassandra, properties);
-
         log.info("Started Cassandra. Connection details: {}", cassandraEnv);
         return cassandra;
     }

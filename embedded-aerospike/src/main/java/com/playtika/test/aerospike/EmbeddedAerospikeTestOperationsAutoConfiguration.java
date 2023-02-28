@@ -1,8 +1,6 @@
 package com.playtika.test.aerospike;
 
 import com.aerospike.client.AerospikeClient;
-import com.playtika.test.common.operations.DefaultNetworkTestOperations;
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.common.properties.InstallPackageProperties;
 import com.playtika.test.common.utils.AptGetPackageInstaller;
 import com.playtika.test.common.utils.PackageInstaller;
@@ -17,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import java.time.Instant;
-import java.util.Collections;
 
 import static com.playtika.test.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
 
@@ -30,28 +27,24 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     @Bean
     @ConfigurationProperties("embedded.aerospike.install")
     public InstallPackageProperties aerospikePackageProperties() {
-        InstallPackageProperties properties = new InstallPackageProperties();
-        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
-        return properties;
+        return new InstallPackageProperties();
     }
 
     @Bean
-    public PackageInstaller aerospikePackageInstaller(
-            InstallPackageProperties aerospikePackageProperties,
-            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike
-    ) {
+    public PackageInstaller aerospikePackageInstaller(InstallPackageProperties aerospikePackageProperties,
+                                                      @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike) {
         return new AptGetPackageInstaller(aerospikePackageProperties, aerospike);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue="true", matchIfMissing = true)
+    @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue = "true", matchIfMissing = true)
     public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
-                                                                    AerospikeProperties properties) {
+                                                           AerospikeProperties properties) {
         return new AerospikeExpiredDocumentsCleaner(client, properties.getNamespace());
     }
 
     @Bean
-    @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue="false", matchIfMissing = false)
+    @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue = "false", matchIfMissing = false)
     public ExpiredDocumentsCleaner disabledExpiredDocumentsCleaner() {
         return new ExpiredDocumentsCleaner() {
             @Override
@@ -67,19 +60,10 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "aerospikeNetworkTestOperations")
-    public NetworkTestOperations aerospikeNetworkTestOperations(
-            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike
-    ) {
-        return new DefaultNetworkTestOperations(aerospike);
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public AerospikeTestOperations aerospikeTestOperations(ExpiredDocumentsCleaner expiredDocumentsCleaner,
-                                                           NetworkTestOperations aerospikeNetworkTestOperations,
                                                            @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike) {
-        return new AerospikeTestOperations(expiredDocumentsCleaner, aerospikeNetworkTestOperations, aerospike);
+        return new AerospikeTestOperations(expiredDocumentsCleaner, aerospike);
     }
 
 }

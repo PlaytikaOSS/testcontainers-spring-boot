@@ -20,6 +20,7 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,9 +41,9 @@ public class EmbeddedNatsBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "nats")
     ToxiproxyContainer.ContainerProxy natsContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
-                                                              NatsProperties properties,
-                                                              ConfigurableEnvironment environment) {
+                                                         @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
+                                                         NatsProperties properties,
+                                                         ConfigurableEnvironment environment) {
         ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(natsContainer, properties.getClientPort());
 
         Map<String, Object> map = new LinkedHashMap<>();
@@ -59,20 +60,18 @@ public class EmbeddedNatsBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_NATS, destroyMethod = "stop")
     public GenericContainer<?> natsContainer(ConfigurableEnvironment environment,
-                                          NatsProperties properties,
-                                          Optional<Network> network) {
-
+                                             NatsProperties properties,
+                                             Optional<Network> network) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(new HostPortWaitStrategy())
                 .withStartupTimeout(properties.getTimeoutDuration());
 
         GenericContainer<?> natsContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getClientPort(), properties.getHttpMonitorPort(), properties.getRouteConnectionsPort())
+                .withCopyFileToContainer(MountableFile.forClasspathResource("nats-server.conf"), "/nats-server.conf")
                 .waitingFor(waitStrategy);
 
-        if (network.isPresent()) {
-            natsContainer.withNetwork(network.get());
-        }
+        network.ifPresent(natsContainer::withNetwork);
 
         natsContainer = configureCommonsAndStart(natsContainer, properties, log);
 
@@ -81,8 +80,8 @@ public class EmbeddedNatsBootstrapConfiguration {
     }
 
     private void registerNatsEnvironment(GenericContainer<?> natsContainer,
-                                           ConfigurableEnvironment environment,
-                                           NatsProperties properties) {
+                                         ConfigurableEnvironment environment,
+                                         NatsProperties properties) {
         Integer clientMappedPort = natsContainer.getMappedPort(properties.getClientPort());
         Integer httpMonitorMappedPort = natsContainer.getMappedPort(properties.getHttpMonitorPort());
         Integer routeConnectionsMappedPort = natsContainer.getMappedPort(properties.getRouteConnectionsPort());

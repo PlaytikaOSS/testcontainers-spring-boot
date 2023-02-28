@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest(
         properties = {
-                "embedded.mongodb.install.enabled=true",
                 "embedded.mongodb.username=root",
                 "embedded.mongodb.password=letmein",
                 "spring.data.mongodb.host=${embedded.mongodb.host}",

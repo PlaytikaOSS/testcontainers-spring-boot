@@ -18,6 +18,8 @@
 * `embedded.dynamodb.reuseContainer` `(true|false, default is false)`
 * `embedded.dynamodb.dockerImage` `(default is 'amazon/dynamodb-local:latest')`
 ** Image versions on https://hub.docker.com/r/amazon/dynamodb-local/tags[dockerhub]
+* `embedded.toxiproxy.proxies.dynamodb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-dynamodb` container.
+
 
 ==== Produces
 
@@ -25,6 +27,9 @@
 * `embedded.dynamodb.port`
 * `embedded.dynamodb.accessKey`
 * `embedded.dynamodb.secretKey`
+* `embedded.dynamodb.toxiproxy.host`
+* `embedded.dynamodb.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy dynamodbContainerProxy`
 
 
 //TODO: example missing

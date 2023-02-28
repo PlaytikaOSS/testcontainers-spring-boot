@@ -108,6 +108,12 @@
 
     <profiles>
         <profile>
+            <id>skip-docker-clean</id>
+            <properties>
+                <docker.cleanup.skip>true</docker.cleanup.skip>
+            </properties>
+        </profile>
+        <profile>
             <id>sonar</id>
             <build>
                 <plugins>

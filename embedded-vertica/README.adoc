@@ -19,6 +19,8 @@
 * `embedded.vertica.dockerImage` `(default is 'vertica/vertica-ce:11.1.0-0')`
 ** Image versions on https://hub.docker.com/r/vertica/vertica-ce[dockerhub]
 * `embedded.vertica.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.vertica.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-vertica` container.
+
 
 ==== Produces
 
@@ -27,6 +29,9 @@
 * `embedded.vertica.database` `(default is 'docker')`
 * `embedded.vertica.user` `(default is 'dbadmin')`
 * `embedded.vertica.password` `(default is "")`
+* `embedded.vertica.toxiproxy.host`
+* `embedded.vertica.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy verticaContainerProxy`
 
 ==== Notes
 
