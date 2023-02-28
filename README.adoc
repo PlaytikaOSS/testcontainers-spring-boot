@@ -304,6 +304,8 @@ embedded:
 
 === link:embedded-nats/README.adoc[embedded-nats]
 
+=== link:embedded-k3s/README.adoc[embedded-k3s]
+
 == How to contribute
 
 === Flow
