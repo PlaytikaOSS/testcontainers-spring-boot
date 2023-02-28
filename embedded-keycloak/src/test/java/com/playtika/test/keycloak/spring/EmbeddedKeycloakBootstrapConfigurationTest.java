@@ -62,7 +62,7 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
-                .isEqualTo(format("http://%s:%d/auth", keycloakContainer.getHost(),
+                .isEqualTo(format("http://%s:%d/", keycloakContainer.getHost(),
                         keycloakContainer.getHttpPort()));
 
         assertThat(environment.getProperty("embedded.keycloak.host"))

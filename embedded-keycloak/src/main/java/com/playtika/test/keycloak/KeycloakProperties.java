@@ -12,18 +12,15 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     public static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
 
-    public static final String[] DEFAULT_COMMAND = {
-        "-b 0.0.0.0",
-        "-c standalone.xml"
-    };
+    public static final String[] DEFAULT_COMMAND = {"start-dev --import-realm"};
 
-    // https://hub.docker.com/r/jboss/keycloak
-    public static final String DEFAULT_KEYCLOAK_IMAGE = "jboss/keycloak:15.0.0";
+    // https://quay.io/keycloak/keycloak:21.0.0
+    public static final String DEFAULT_KEYCLOAK_IMAGE = "quay.io/keycloak/keycloak:21.0.0";
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
-    public static final String DEFAULT_AUTH_BASE_PATH = "/auth";
-    public static final String DEFAULT_DB_VENDOR = "h2";
+    public static final String DEFAULT_AUTH_BASE_PATH = "/";
+    public static final String DEFAULT_DB_VENDOR = "dev-mem";
 
     /**
      * The command string issued to the container.
