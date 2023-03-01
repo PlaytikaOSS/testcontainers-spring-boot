@@ -74,6 +74,7 @@
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>
+        <module>embedded-k3s</module>
     </modules>
 
     <properties>
