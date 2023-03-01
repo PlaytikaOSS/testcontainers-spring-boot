@@ -28,12 +28,13 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     @Override
     protected void configure() {
-        withEnv("KEYCLOAK_HTTP_PORT", String.valueOf(DEFAULT_HTTP_PORT_INTERNAL));
-        withEnv("KEYCLOAK_USER", properties.getAdminUser());
-        withEnv("KEYCLOAK_PASSWORD", properties.getAdminPassword());
+        withEnv("HTTP_ENABLED", String.valueOf(true));
+        withEnv("HTTP_PORT", String.valueOf(DEFAULT_HTTP_PORT_INTERNAL));
+        withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
+        withEnv("KEYCLOAK_ADMIN", properties.getAdminUser());
+        withEnv("KEYCLOAK_ADMIN_PASSWORD", properties.getAdminPassword());
         withDB();
         withCommand(properties.getCommand());
-        withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
         waitingFor(waitForListeningPort());
         withImportFile(properties.getImportFile());
     }
@@ -53,28 +54,28 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     private void withDBVendor() {
         String dbVendor = properties.getDbVendor();
         if (dbVendor != null) {
-            withEnv("DB_VENDOR", dbVendor);
+            withEnv("DB", dbVendor);
         }
     }
 
     private void withDBAddr() {
         String dbAddr = properties.getDbAddr();
         if (dbAddr != null) {
-            withEnv("DB_ADDR", dbAddr);
+            withEnv("DB_URL_HOST", dbAddr);
         }
     }
 
     private void withDBPort() {
         String dbPort = properties.getDbPort();
         if (dbPort != null) {
-            withEnv("DB_PORT", dbPort);
+            withEnv("DB_URL_PORT", dbPort);
         }
     }
 
     private void withDBDatabase() {
         String dbDatabase = properties.getDbDatabase();
         if (dbDatabase != null) {
-            withEnv("DB_DATABASE", dbDatabase);
+            withEnv("DB_URL_DATABASE", dbDatabase);
         }
     }
 
@@ -88,7 +89,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     private void withDBUser() {
         String dbUser = properties.getDbUser();
         if (dbUser != null) {
-            withEnv("DB_USER", dbUser);
+            withEnv("DB_USERNAME", dbUser);
         }
     }
 
@@ -120,12 +121,11 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
         checkExists(importFile);
 
-        String importFileInContainer = "/tmp/" + importFile;
+        String importFileInContainer = "/opt/keycloak/data/import/" + importFile;
         withCopyFileToContainer(
                 MountableFile.forClasspathResource(importFile),
                 importFileInContainer
         );
-        withEnv("KEYCLOAK_IMPORT", importFileInContainer);
     }
 
     private void checkExists(String importFile) {
