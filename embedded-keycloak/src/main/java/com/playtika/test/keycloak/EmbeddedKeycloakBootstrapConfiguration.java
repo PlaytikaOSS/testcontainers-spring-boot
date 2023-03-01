@@ -71,7 +71,6 @@ public class EmbeddedKeycloakBootstrapConfiguration {
      */
     @Bean(name = BEAN_NAME_EMBEDDED_KEYCLOAK, destroyMethod = "stop")
     public KeycloakContainer keycloakContainer(KeycloakContainerFactory factory) {
-        log.info("Detected keycloak-spring-boot-adapter, ");
         return requireNonNull(factory).newKeycloakContainer();
     }
 }

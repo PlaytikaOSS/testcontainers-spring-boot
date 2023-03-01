@@ -112,11 +112,6 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
-                <artifactId>embedded-voltdb</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-mysql</artifactId>
                 <version>${project.version}</version>
             </dependency>
