@@ -1,0 +1,49 @@
+=== embedded-k3s
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-k3s</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.k3s.enabled` `(true|false, default is true)`
+* `embedded.k3s.reuseContainer` `(true|false, default is false)`
+* `embedded.k3s.dockerImage` `(default is 'rancher/k3s:v1.24.10-k3s1')`
+** Image versions on https://hub.docker.com/r/rancher/k3s/tags[dockerhub]
+* `embedded.k3s.port` `(int, default is '6443')`
+
+==== Produces
+
+* `embedded.k3s.kubeconfig` Kubeconfig for Kubernetes client
+* Bean `K3Container embeddedK3s`
+
+==== Example for configuring client
+
+You have few options for choosing client:
+
+https://github.com/kubernetes-client/java[Official Java client]
+
+[source,java]
+----
+@Bean(destroyMethod = "close")
+public ApiClient kubernetesClient(@Value("${embedded.k3s.kubeconfig}") String kubeconfig) {
+    return Config.fromConfig(new StringReader(kubeConfigYaml));
+}
+----
+
+https://github.com/fabric8io/kubernetes-client[Fabric8 Java Client]
+[source,java]
+----
+@Bean(destroyMethod = "close")
+public KubernetesClient kubernetesClient(@Value("${embedded.k3s.kubeconfig}") String kubeconfig) {
+    return new KubernetesClientBuilder().withConfig(Config.from(kubeconfig)).build();
+}
+----
