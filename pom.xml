@@ -93,7 +93,7 @@
         <maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <spotless-maven-plugin.version>2.33.0</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>2.34.0</spotless-maven-plugin.version>
         <gitflow-incremental-builder.version>4.4.0</gitflow-incremental-builder.version>
 
         <!-- GPG -->
