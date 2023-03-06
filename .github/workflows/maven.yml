@@ -5,9 +5,13 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ develop, springboot3 ]
+    branches:
+      - develop
+      - support/2.3.X
   pull_request:
-    branches: [ develop, springboot3 ]
+    branches:
+      - develop
+      - support/2.3.X
 
 jobs:
   build-jdk8:
