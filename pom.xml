@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>2.3.2</version>
+    <version>3.0.0-RC2</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -50,7 +50,6 @@
         <module>embedded-postgresql</module>
         <module>embedded-elasticsearch</module>
         <module>embedded-dynamodb</module>
-        <module>embedded-voltdb</module>
         <module>embedded-rabbitmq</module>
         <module>embedded-minio</module>
         <module>embedded-google-pubsub</module>
@@ -75,14 +74,15 @@
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>
+        <module>embedded-k3s</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
         <maven.enforcer.plugin.version>3.2.1</maven.enforcer.plugin.version>
@@ -108,6 +108,12 @@
     </properties>
 
     <profiles>
+        <profile>
+            <id>skip-docker-clean</id>
+            <properties>
+                <docker.cleanup.skip>true</docker.cleanup.skip>
+            </properties>
+        </profile>
         <profile>
             <id>sonar</id>
             <build>
@@ -291,7 +297,7 @@
                 <version>${gitflow-incremental-builder.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <disableIfBranchMatches>develop</disableIfBranchMatches>
+                    <disableIfBranchMatches>develop|springboot3</disableIfBranchMatches>
                     <fetchReferenceBranch>true</fetchReferenceBranch>
                     <referenceBranch>refs/remotes/origin/develop</referenceBranch>
                     <buildUpstream>always</buildUpstream>

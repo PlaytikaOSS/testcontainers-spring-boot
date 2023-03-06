@@ -4,6 +4,7 @@ import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -15,7 +16,6 @@ import org.springframework.context.annotation.Primary;
 @SpringBootTest(
         classes = BaseAerospikeTest.TestConfiguration.class,
         properties = {
-                "embedded.aerospike.install.enabled=true",
                 "embedded.toxiproxy.proxies.aerospike.enabled=true"
         }
 )
@@ -31,6 +31,10 @@ public abstract class BaseAerospikeTest {
 
     @Autowired
     AerospikeClient client;
+
+    @Qualifier("aerospikeToxicClient")
+    @Autowired
+    AerospikeClient aerospikeToxicClient;
 
     @Autowired
     WritePolicy policy;

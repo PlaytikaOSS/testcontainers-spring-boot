@@ -2,7 +2,9 @@ package com.playtika.test.couchbase;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,10 +13,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
@@ -27,9 +33,29 @@ import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class EmbeddedCouchbaseBootstrapConfiguration {
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "couchbase")
+    ToxiproxyContainer.ContainerProxy couchbaseContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                              @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) CouchbaseContainer couchbase,
+                                                              ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(couchbase, couchbase.getBootstrapHttpDirectPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.couchbase.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.couchbase.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.couchbase.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedCouchbaseToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Couchbase ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
     public CouchbaseContainer couchbase(ConfigurableEnvironment environment,
-                                        CouchbaseProperties properties) {
+                                        CouchbaseProperties properties,
+                                        Optional<Network> network) {
         BucketDefinition bucketDefinition = new BucketDefinition(properties.getBucket())
                 .withPrimaryIndex(true)
                 .withQuota(properties.getBucketRamMb());
@@ -39,6 +65,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
                 .withEnabledServices(properties.getServices())
                 .withCredentials(properties.getUser(), properties.getPassword());
 
+        network.ifPresent(couchbase::withNetwork);
         couchbase = (CouchbaseContainer) configureCommonsAndStart(couchbase, properties, log);
 
         registerCouchbaseEnvironment(couchbase, environment, properties);

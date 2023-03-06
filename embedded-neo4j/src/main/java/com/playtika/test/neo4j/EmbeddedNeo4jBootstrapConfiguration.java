@@ -2,7 +2,9 @@ package com.playtika.test.neo4j;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,8 +14,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
@@ -26,12 +32,35 @@ import static com.playtika.test.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class EmbeddedNeo4jBootstrapConfiguration {
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "neo4j")
+    ToxiproxyContainer.ContainerProxy neo4jContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                          @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) Neo4jContainer neo4j,
+                                                          Neo4jProperties properties,
+                                                          ConfigurableEnvironment environment) {
+
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(neo4j, properties.getBoltPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.neo4j.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.neo4j.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.neo4j.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedNeo4jToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Neo4j ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
 
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
     public Neo4jContainer neo4j(ConfigurableEnvironment environment,
-                                Neo4jProperties properties) {
+                                Neo4jProperties properties,
+                                Optional<Network> network) {
         Neo4jContainer neo4j = new Neo4jContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withAdminPassword(properties.password);
+
+        network.ifPresent(neo4j::withNetwork);
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
         registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;

@@ -2,14 +2,13 @@ package com.playtika.test.kafka.properties;
 
 import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import javax.validation.constraints.AssertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;

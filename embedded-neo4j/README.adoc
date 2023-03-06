@@ -19,6 +19,8 @@
 * `embedded.neo4j.dockerImage` `(default is 'neo4j:4.4-community')`
 ** Image versions on https://hub.docker.com/_/neo4j?tab=tags[dockerhub]
 * `embedded.neo4j.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.neo4j.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-neo4j` container.
+
 
 ==== Produces
 
@@ -28,5 +30,8 @@
 * `embedded.neo4j.httpsPort`
 * `embedded.neo4j.httpPort`
 * `embedded.neo4j.boltPort`
+* `embedded.neo4j.toxiproxy.host`
+* `embedded.neo4j.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy neo4jContainerProxy`
 
 //TODO: example missing

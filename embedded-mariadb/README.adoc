@@ -23,6 +23,8 @@
 * `embedded.mariadb.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.mariadb.maxAllowedPacket` `(default is '16777216')`
 * `embedded.mariadb.initScriptPath` `(default is null)`
+* `embedded.toxiproxy.proxies.mariadb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-mariadb` container.
+
 
 ==== Produces
 
@@ -31,6 +33,9 @@
 * `embedded.mariadb.schema`
 * `embedded.mariadb.user`
 * `embedded.mariadb.password`
+* `embedded.mariadb.toxiproxy.host`
+* `embedded.mariadb.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy mariadbContainerProxy`
 
 
 //TODO: example missing

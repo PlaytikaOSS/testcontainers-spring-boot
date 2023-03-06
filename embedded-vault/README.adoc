@@ -25,12 +25,17 @@
 * `embedded.vault.secrets` `(Map, default is empty)`
 * `embedded.vault.cas-enabled` `(true|false, default is false, enables Check and Set operations for mount)`
 * `embedded.vault.cas-enabled-for-sub-paths` `(enables cas for specified, example: sub-paths sub-path1, sub-path2)`
+* `embedded.toxiproxy.proxies.vault.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-vault` container.
+
 
 ==== Produces
 
 * `embedded.vault.host`
 * `embedded.vault.port` (mapped HTTP port)
 * `embedded.vault.token`
+* `embedded.vault.toxiproxy.host`
+* `embedded.vault.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy vaultContainerProxy`
 
 ==== Example
 

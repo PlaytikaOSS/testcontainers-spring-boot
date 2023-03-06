@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.playtika.testcontainers</groupId>
         <artifactId>testcontainers-spring-boot</artifactId>
-        <version>2.3.2</version>
+        <version>3.0.0-RC2</version>
     </parent>
 
     <packaging>pom</packaging>
@@ -112,11 +112,6 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
-                <artifactId>embedded-voltdb</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-mysql</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -193,6 +188,16 @@
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-victoriametrics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-nats</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-k3s</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
