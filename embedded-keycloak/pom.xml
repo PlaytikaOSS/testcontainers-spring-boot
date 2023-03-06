@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>2.3.2</version>
+        <version>3.0.0-RC2</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -21,20 +21,15 @@
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
 
         <!-- using vanilla Keycloak -->
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
-            <version>${keycloak.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- if using with Spring -->
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-spring-security-adapter</artifactId>
             <version>${keycloak.version}</version>
             <scope>provided</scope>
             <optional>true</optional>
@@ -59,6 +54,11 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

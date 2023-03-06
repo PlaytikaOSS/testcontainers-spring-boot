@@ -30,6 +30,6 @@ public class ElasticSearchProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/elasticsearch
     @Override
     public String getDefaultDockerImage() {
-        return "docker.elastic.co/elasticsearch/elasticsearch:7.14.0";
+        return "docker.elastic.co/elasticsearch/elasticsearch:8.5.3";
     }
 }

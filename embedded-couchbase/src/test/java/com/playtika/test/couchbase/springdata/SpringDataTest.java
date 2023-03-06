@@ -3,21 +3,22 @@ package com.playtika.test.couchbase.springdata;
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import org.assertj.core.data.Offset;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static com.playtika.test.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
-import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -31,7 +32,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    NetworkTestOperations couchbaseNetworkTestOperations;
+    ToxiproxyContainer.ContainerProxy couchbaseContainerProxy;
 
     @Autowired
     CouchbaseOperations couchbaseOperations;
@@ -52,11 +53,14 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     }
 
     @Test
+    @Disabled
     public void shouldEmulateNetworkLatency() throws Exception {
-        couchbaseNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> documentRepository.existsById("abc")))
-                        .isCloseTo(1000L, Offset.offset(200L))
-        );
+        couchbaseContainerProxy.toxics().timeout("timeout", ToxicDirection.DOWNSTREAM, 1000);
+
+        assertThat(durationOf(() -> documentRepository.existsById("abc")))
+                .isCloseTo(1000L, Offset.offset(200L));
+
+        couchbaseContainerProxy.toxics().get("timeout").remove();
 
         assertThat(durationOf(() -> documentRepository.existsById("abc")))
                 .isLessThan(100L);

@@ -21,6 +21,8 @@
 * `embedded.grafana.networkAlias` `(default is 'grafana')`
 * `embedded.grafana.username` `(default is 'admin')`
 * `embedded.grafana.password` `(default is 'password')`
+* `embedded.toxiproxy.proxies.grafana.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-grafana` container.
+
 
 ==== Produces
 
@@ -28,3 +30,6 @@
 * `embedded.grafana.port`
 * `embedded.grafana.username`
 * `embedded.grafana.password`
+* `embedded.grafana.toxiproxy.host`
+* `embedded.grafana.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy grafanaContainerProxy`

@@ -17,7 +17,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.*;
+import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.containers.Container;
+import org.testcontainers.containers.ContainerLaunchException;
+import org.testcontainers.containers.DefaultRecordingFileFactory;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.RecordingFileFactory;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
@@ -32,6 +38,7 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -72,12 +79,11 @@ public class EmbeddedSeleniumBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_SELENIUM, destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public BrowserWebDriverContainer selenium(
-            ConfigurableEnvironment environment,
-            SeleniumProperties properties,
-            MutableCapabilities capabilities,
-            @Deprecated @Value("${embedded.selenium.imageName:#{null}}") String deprImageName
-    ) {
+    public BrowserWebDriverContainer selenium(ConfigurableEnvironment environment,
+                                              SeleniumProperties properties,
+                                              MutableCapabilities capabilities,
+                                              @Deprecated @Value("${embedded.selenium.imageName:#{null}}") String deprImageName,
+                                              Optional<Network> network) {
 
         if (deprImageName != null) {
             throw new IllegalArgumentException("`embedded.selenium.imageName` property is deprecated. Please replace `embedded.selenium.imageName` property with `embedded.selenium.dockerImage` property.");
@@ -89,7 +95,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         container.setWaitStrategy(getWaitStrategy());
         container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
-
+        network.ifPresent(container::withNetwork);
         File recordingDirOrNull = null;
         if (properties.getVnc().getMode().convert() != BrowserWebDriverContainer.VncRecordingMode.SKIP) {
             recordingDirOrNull = getOrCreateTempDir(properties.getVnc().getRecordingDir());

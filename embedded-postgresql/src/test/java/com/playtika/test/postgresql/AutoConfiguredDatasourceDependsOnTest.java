@@ -21,7 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AutoConfiguredDatasourceDependsOnTest {
 
     @ActiveProfiles("enabled")
-    @SpringBootTest(classes = TestApplication.class)
+    @SpringBootTest(classes = TestApplication.class,
+            properties = {
+                    "embedded.toxiproxy.proxies.postgresql.enabled=true"
+            }
+    )
     @DisplayName("Default AutoConfigured Datasource")
     @Nested
     class TestDefaults {

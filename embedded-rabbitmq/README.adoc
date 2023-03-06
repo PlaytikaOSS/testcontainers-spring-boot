@@ -21,6 +21,8 @@
 * `embedded.rabbitmq.dockerImage` `(default is 'rabbitmq:3.8-alpine')`
 ** Image versions on https://hub.docker.com/_/rabbitmq?tab=tags[dockerhub]
 * `embedded.rabbitmq.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.rabbitmq.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-rabbitmq` container.
+
 
 ==== Produces
 
@@ -30,5 +32,8 @@
 * `embedded.rabbitmq.password`
 * `embedded.rabbitmq.vhost`
 * `embedded.rabbitmq.httpPort`
+* `embedded.rabbitmq.toxiproxy.host`
+* `embedded.rabbitmq.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy rabbitmqContainerProxy`
 
 //TODO: example missing

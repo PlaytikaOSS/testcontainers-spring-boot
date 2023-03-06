@@ -116,8 +116,8 @@
       "name": "embedded.keycloak.docker-image",
       "values": [
         {
-          "value": "jboss/keycloak:8.0.1",
-          "description": "Default Keycloak image in version 8.0.1. Ref https://hub.docker.com/r/jboss/keycloak for further info."
+          "value": "quay.io/keycloak/keycloak:21.0.0",
+          "description": "Default Keycloak image in version 21.0.0. Ref https://quay.io/keycloak/keycloak:21.0.0 for further info."
         }
       ]
     }

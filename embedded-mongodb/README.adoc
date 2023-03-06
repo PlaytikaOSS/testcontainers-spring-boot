@@ -23,6 +23,8 @@
 * `embedded.mongodb.username`
 * `embedded.mongodb.password`
 * `embedded.mongodb.database` `(default is test)`
+* `embedded.toxiproxy.proxies.mongodb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-mongodb` container.
+
 
 ==== Produces
 
@@ -31,6 +33,9 @@
 * `embedded.mongodb.username`
 * `embedded.mongodb.password`
 * `embedded.mongodb.database`
+* `embedded.mongodb.toxiproxy.host`
+* `embedded.mongodb.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy mongodbContainerProxy`
 
 ==== Example
 

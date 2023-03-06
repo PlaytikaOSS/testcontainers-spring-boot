@@ -22,8 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest(classes = EmbeddedMemSqlBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
-                "spring.profiles.active=enabled",
-                "embedded.memsql.install.enabled=true"
+                "spring.profiles.active=enabled"
         })
 public class EmbeddedMemSqlBootstrapConfigurationTest {
 

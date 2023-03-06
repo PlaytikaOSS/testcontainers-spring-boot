@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>2.3.2</version>
+        <version>3.0.0-RC2</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -17,6 +17,10 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>

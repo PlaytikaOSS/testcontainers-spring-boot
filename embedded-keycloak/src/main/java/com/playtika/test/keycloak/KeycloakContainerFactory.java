@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
+import org.testcontainers.containers.Network;
 
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 
@@ -17,9 +19,12 @@ public class KeycloakContainerFactory {
     private final ConfigurableEnvironment environment;
     private final KeycloakProperties properties;
     private final ResourceLoader resourceLoader;
+    private final Optional<Network> network;
 
     public KeycloakContainer newKeycloakContainer() {
         KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
+
+        network.ifPresent(keycloak::withNetwork);
 
         keycloak = (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);
         registerKeycloakEnvironment(keycloak);

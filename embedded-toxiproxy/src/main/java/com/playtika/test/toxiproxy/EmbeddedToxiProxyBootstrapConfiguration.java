@@ -31,7 +31,9 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
     @Bean
     @ConditionalOnMissingBean(Network.class)
     Network toxiproxyNetwork() {
-        return Network.newNetwork();
+        Network network = Network.newNetwork();
+        log.info("Created docker Network with id={}", network.getId());
+        return network;
     }
 
     @Bean(name = "toxiproxy", destroyMethod = "stop")

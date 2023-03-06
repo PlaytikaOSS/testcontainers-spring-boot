@@ -12,7 +12,7 @@ public class ToxiProxyProperties extends CommonContainerProperties {
 
     public ToxiProxyProperties() {
         //we override here the default one that is used by org.testcontainers:toxiproxy module
-        this.setDockerImage("ghcr.io/shopify/toxiproxy:2.4.0");
+        this.setDockerImage("ghcr.io/shopify/toxiproxy:2.5.0");
     }
 
     @Override

@@ -20,6 +20,8 @@
 ** Image versions on https://www.docker.elastic.co/r/elasticsearch[docker.elastic.co]
 * `embedded.elasticsearch.indices` `(indices to create, no indices are created by default)`
 * `embedded.elasticsearch.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.elasticsearch.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-elasticsearch` container.
+
 
 ==== Produces
 
@@ -27,6 +29,9 @@
 * `embedded.elasticsearch.host`
 * `embedded.elasticsearch.httpPort`
 * `embedded.elasticsearch.transportPort`
+* `embedded.elasticsearch.toxiproxy.host`
+* `embedded.elasticsearch.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy elasticsearchContainerProxy`
 
 
 ==== Example

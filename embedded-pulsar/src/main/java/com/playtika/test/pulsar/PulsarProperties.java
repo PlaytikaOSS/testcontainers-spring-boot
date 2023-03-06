@@ -11,6 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class PulsarProperties extends CommonContainerProperties {
     public static final String EMBEDDED_PULSAR = "embeddedPulsar";
 
+    int brokerPort = 6650;
+
     // https://hub.docker.com/r/apachepulsar/pulsar
     @Override
     public String getDefaultDockerImage() {

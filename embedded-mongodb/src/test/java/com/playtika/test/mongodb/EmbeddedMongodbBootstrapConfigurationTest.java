@@ -1,6 +1,6 @@
 package com.playtika.test.mongodb;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.data.Offset;
@@ -12,21 +12,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import static java.time.Duration.ofMillis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(
         properties = {
-                "embedded.mongodb.install.enabled=true",
-                "spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}"
+                "spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.toxiproxy.port}/${embedded.mongodb.database}",
+                "embedded.toxiproxy.proxies.mongodb.enabled=true"
         }
-        ,classes = EmbeddedMongodbBootstrapConfigurationTest.TestConfiguration.class
+        , classes = EmbeddedMongodbBootstrapConfigurationTest.TestConfiguration.class
 )
 public class EmbeddedMongodbBootstrapConfigurationTest {
 
@@ -37,7 +37,7 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
     ConfigurableEnvironment environment;
 
     @Autowired
-    NetworkTestOperations mongodbNetworkTestOperations;
+    ToxiproxyContainer.ContainerProxy mongodbContainerProxy;
 
     @Test
     public void shouldSaveAndGet() {
@@ -50,10 +50,12 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
 
     @Test
     public void shouldEmulateLatency() throws Exception {
-        mongodbNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
-                        .isCloseTo(1000L, Offset.offset(100L))
-        );
+        mongodbContainerProxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 1000);
+
+        assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
+                        .isCloseTo(1000L, Offset.offset(100L));
+
+        mongodbContainerProxy.toxics().get("latency").remove();
 
         assertThat(durationOf(() -> mongoTemplate.findById("any", Foo.class)))
                 .isLessThan(100L);

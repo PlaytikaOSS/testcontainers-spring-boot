@@ -26,6 +26,8 @@
 * `embedded.influxdb.host` `(default is 'localhost')`
 * `embedded.influxdb.port` `(int, default is '8086')`
 * `embedded.influxdb.database` `(default is 'db')`
+* `embedded.toxiproxy.proxies.influxdb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-influxdb` container.
+
 
 ==== Produces
 
@@ -34,6 +36,9 @@
 * `embedded.influxdb.password`
 * `embedded.influxdb.port` (mapped HTTP port)
 * `embedded.influxdb.user`
+* `embedded.influxdb.toxiproxy.host`
+* `embedded.influxdb.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy influxdbContainerProxy`
 
 ==== Example
 
