@@ -18,6 +18,8 @@
 * `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite')`
 ** Image versions on https://hub.docker.com/_/microsoft-azure-storage-azurite
 * `embedded.azurite.port` `(default is 10000)`
+* `embedded.toxiproxy.proxies.azurite.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-azurite` container.
+
 
 Account name and account key are hardcoded as of https://github.com/Azure/Azurite#default-storage-account.
 
@@ -28,7 +30,9 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 * `embedded.azurite.account-name`
 * `embedded.azurite.account-key`
 * `embedded.azurite.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-blob`)
-
+* `embedded.azurite.toxiproxy.host`
+* `embedded.azurite.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy azuriteContainerProxy`
 ==== Example
 
 Use `com.azure.spring:spring-cloud-azure-starter-storage-blob` (see https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage)

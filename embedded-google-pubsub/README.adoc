@@ -21,6 +21,9 @@
 * `embedded.google.pubsub.host` `(default is 0.0.0.0)`
 * `embedded.google.pubsub.port` `(default is 8089)`
 * `embedded.google.pubsub.project-id` `(default is my-project-id)`
+* `embedded.toxiproxy.proxies.google.pubsub.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-google-pubsub` container.
+
+
 * Topics and subscriptions:
 +
 ```
@@ -37,6 +40,9 @@
 * `embedded.google.pubsub.host`
 * `embedded.google.pubsub.port`
 * `embedded.google.pubsub.project-id`
+* `embedded.google.pubsub.toxiproxy.host`
+* `embedded.google.pubsub.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy googlePubSubContainerProxy`
 
 ==== Example
 

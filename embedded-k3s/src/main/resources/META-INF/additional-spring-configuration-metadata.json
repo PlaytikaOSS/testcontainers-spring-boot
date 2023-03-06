@@ -1,0 +1,35 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.k3s.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.k3s.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of k3s on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of k3s on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.k3s.docker-image",
+      "values": [
+        {
+          "value": "rancher/k3s:v1.24.10-k3s1",
+          "description": "Latest 1.24.x version. Ref https://hub.docker.com/r/rancher/k3s/tags?page=1&name=v1.24 for further info."
+        }
+      ]
+    }
+  ]
+}

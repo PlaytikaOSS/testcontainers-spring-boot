@@ -1,7 +1,7 @@
 package com.playtika.test.redis.standalone;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
 import com.playtika.test.redis.BaseEmbeddedRedisTest;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +11,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.concurrent.Callable;
 
 import static com.playtika.test.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
-import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         classes = BaseStandaloneEmbeddedRedisTest.TestConfiguration.class,
-        properties = "embedded.redis.install.enabled=true"
+        properties = {
+                "embedded.toxiproxy.proxies.redis.enabled=true"
+        }
 )
 public abstract class BaseStandaloneEmbeddedRedisTest extends BaseEmbeddedRedisTest {
 
     @Autowired
-    NetworkTestOperations redisNetworkTestOperations;
+    ToxiproxyContainer.ContainerProxy redisContainerProxy;
 
     @Test
     public void shouldEmulateLatency() throws Exception {
@@ -35,10 +37,14 @@ public abstract class BaseStandaloneEmbeddedRedisTest extends BaseEmbeddedRedisT
         assertThat(durationOf(() -> ops.get("any")))
                 .isLessThan(100L);
 
-        redisNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> ops.get("any")))
-                        .isGreaterThanOrEqualTo(1000L)
-        );
+        redisContainerProxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 1000);
+
+
+                assertThat(durationOf(() -> ops.get("any")))
+                        .isGreaterThanOrEqualTo(1000L);
+
+        redisContainerProxy.toxics()
+                .get("latency").remove();
 
         assertThat(durationOf(() -> ops.get("any")))
                 .isLessThan(100L);

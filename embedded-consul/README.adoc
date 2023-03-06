@@ -18,6 +18,8 @@
 * `embedded.consul.configurationFile` `(path for the consul configuration file to be mounted, relative to the resources folder, default is 'null')`
 * `embedded.consul.dockerImage` `(default is 'consul:1.10')`
 ** Image versions on https://hub.docker.com/_/consul?tab=tags[dockerhub]
+* `embedded.toxiproxy.proxies.consul.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-consul` container.
+
 
 Example spring configuration:
 
@@ -38,3 +40,6 @@ embedded:
 
 * `embedded.consul.host`
 * `embedded.consul.port`
+* `embedded.consul.toxiproxy.host`
+* `embedded.consul.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy consulContainerProxy`

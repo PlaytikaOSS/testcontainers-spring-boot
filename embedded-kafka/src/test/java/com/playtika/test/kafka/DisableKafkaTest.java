@@ -29,7 +29,6 @@ public class DisableKafkaTest {
                 )
                 .run((context) -> assertThat(context)
                         .hasNotFailed()
-                        .doesNotHaveBean("kafkaNetworkTestOperations")
                         .doesNotHaveBean("kafka")
                         .doesNotHaveBean("schema-registry"));
     }

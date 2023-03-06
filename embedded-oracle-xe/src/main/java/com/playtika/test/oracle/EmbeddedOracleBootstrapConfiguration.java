@@ -2,7 +2,9 @@ package com.playtika.test.oracle;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,9 +13,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.oracle.OracleProperties.BEAN_NAME_EMBEDDED_ORACLE;
@@ -28,15 +34,37 @@ import static com.playtika.test.oracle.OracleProperties.ORACLE_PORT;
 @EnableConfigurationProperties(OracleProperties.class)
 public class EmbeddedOracleBootstrapConfiguration {
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "oracle")
+    ToxiproxyContainer.ContainerProxy oracleContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                           @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle,
+                                                           ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(oracle, ORACLE_PORT);
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.oracle.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.oracle.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.oracle.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedOracleToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Oracle ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")
     public OracleContainer oracle(ConfigurableEnvironment environment,
-                                  OracleProperties properties) {
+                                  OracleProperties properties,
+                                  Optional<Network> network) {
 
         OracleContainer oracle =
                 new OracleContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withInitScript(properties.initScriptPath);
+
+        network.ifPresent(oracle::withNetwork);
         oracle = (OracleContainer) configureCommonsAndStart(oracle, properties, log);
         registerOracleEnvironment(oracle, environment, properties);
         return oracle;

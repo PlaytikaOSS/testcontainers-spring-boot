@@ -22,11 +22,16 @@
 * `embedded.oracle.user` `(default is 'system')`
 * `embedded.oracle.password` `(default is 'oracle')`
 * `embedded.oracle.initScriptPath` `(default is null)`
+* `embedded.toxiproxy.proxies.oracle.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-oracle` container.
+
 
 ==== Produces
 
 * `embedded.oracle.host`
 * `embedded.oracle.port` (mapped TCP port)
 * `embedded.oracle.database` (set to 'xe')
+* `embedded.oracle.toxiproxy.host`
+* `embedded.oracle.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy oracleContainerProxy`
 
 // TODO: missing example

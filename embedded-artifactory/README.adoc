@@ -21,6 +21,7 @@
 * `embedded.artifactory.networkAlias` `(default is 'artifactory')`
 * `embedded.artifactory.username` `(default is 'admin')`
 * `embedded.artifactory.password` `(default is 'password')`
+* `embedded.toxiproxy.proxies.artifactory.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-artifactory` container.
 
 ==== Produces
 
@@ -28,3 +29,6 @@
 * `embedded.artifactory.port`
 * `embedded.artifactory.username`
 * `embedded.artifactory.password`
+* `embedded.artifactory.toxiproxy.host`
+* `embedded.artifactory.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy artifactoryContainerProxy`
