@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - develop
-      - springboot3
+      - support/2.3.X
 
 jobs:
   update_release_draft:

@@ -297,7 +297,7 @@
                 <version>${gitflow-incremental-builder.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <disableIfBranchMatches>develop|springboot3</disableIfBranchMatches>
+                    <disableIfBranchMatches>develop|support/2.3.X</disableIfBranchMatches>
                     <fetchReferenceBranch>true</fetchReferenceBranch>
                     <referenceBranch>refs/remotes/origin/develop</referenceBranch>
                     <buildUpstream>always</buildUpstream>
