@@ -27,6 +27,8 @@
  embedded.google.storage.buckets[0].name=my-bucket0
  embedded.google.storage.buckets[1].name=my-bucket1
 ```
+* `embedded.toxiproxy.proxies.google.storage.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-google-storage` container.
+
 
 ==== Produces
 
@@ -35,6 +37,9 @@
 * `embedded.google.storage.endpoint` (computed property `http://${host}:${port}` for convenient configuration) 
 * `embedded.google.storage.projectId`
 * `embedded.google.storage.bucketLocation`
+* `embedded.google.storage.toxiproxy.host`
+* `embedded.google.storage.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy googleStorageContainerProxy`
 
 ==== Example
 

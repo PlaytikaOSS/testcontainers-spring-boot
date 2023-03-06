@@ -29,7 +29,6 @@
 * `embedded.nats.routeConnectionsPort`
 * `embedded.nats.toxiproxy.host`
 * `embedded.nats.toxiproxy.port`
-
 * Bean `ToxiproxyContainer.ContainerProxy natsContainerProxy`
 
 ==== Notes

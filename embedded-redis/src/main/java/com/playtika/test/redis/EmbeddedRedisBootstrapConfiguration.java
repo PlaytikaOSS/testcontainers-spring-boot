@@ -5,6 +5,7 @@ import com.playtika.test.common.utils.ContainerUtils;
 import com.playtika.test.common.utils.FileUtils;
 import com.playtika.test.redis.wait.DefaultRedisClusterWaitStrategy;
 import com.playtika.test.redis.wait.RedisStatusCheck;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,15 +17,20 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.test.redis.EnvUtils.registerRedisEnvironment;
@@ -58,9 +64,30 @@ public class EmbeddedRedisBootstrapConfiguration {
         return new DefaultRedisClusterWaitStrategy(properties);
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "redis")
+    ToxiproxyContainer.ContainerProxy redisContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                              @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis,
+                                                              RedisProperties properties,
+                                                              ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(redis, properties.getPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.redis.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.redis.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.redis.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedRedisToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Redis ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
     public GenericContainer<?> redis(ConfigurableEnvironment environment,
-                                  @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy) throws Exception {
+                                     @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy,
+                                     Optional<Network> network) throws Exception {
 
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
@@ -74,6 +101,7 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy);
+        network.ifPresent(redis::withNetwork);
         redis = configureCommonsAndStart(redis, properties, log);
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.getPort());
         log.info("Started Redis cluster. Connection details: {}", redisEnv);

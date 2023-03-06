@@ -1,6 +1,6 @@
 package com.playtika.test.mariadb;
 
-import com.playtika.test.common.operations.NetworkTestOperations;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -16,13 +16,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import javax.sql.DataSource;
 
 import java.util.concurrent.Callable;
 
 import static com.playtika.test.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
-import static java.time.Duration.ofMillis;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         classes = EmbeddedMariaDBBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
                 "spring.profiles.active=enabled",
-                "embedded.mariadb.install.enabled=true",
-                "embedded.mariadb.init-script-path=initScript.sql"
+                "embedded.mariadb.init-script-path=initScript.sql",
+                "embedded.toxiproxy.proxies.mariadb.enabled=true"
         })
 public class EmbeddedMariaDBBootstrapConfigurationTest {
 
@@ -46,7 +46,7 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
     ConfigurableEnvironment environment;
 
     @Autowired
-    NetworkTestOperations mariadbNetworkTestOperations;
+    ToxiproxyContainer.ContainerProxy mariadbContainerProxy;
 
     @Test
     public void shouldConnectToMariaDB() throws Exception {
@@ -66,10 +66,12 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
         jdbcTemplate.execute("CREATE TABLE operator(id INT, name VARCHAR(64));");
         jdbcTemplate.execute("insert into operator (id, name) values (1, 'test');");
 
-        mariadbNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-                () -> assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
-                        .isCloseTo(1000L, Offset.offset(100L))
-        );
+        mariadbContainerProxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 1000);
+
+        assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
+                .isCloseTo(1000L, Offset.offset(100L));
+
+        mariadbContainerProxy.toxics().get("latency").remove();
 
         assertThat(durationOf(() -> jdbcTemplate.queryForList("select name from operator", String.class)))
                 .isLessThan(100L);

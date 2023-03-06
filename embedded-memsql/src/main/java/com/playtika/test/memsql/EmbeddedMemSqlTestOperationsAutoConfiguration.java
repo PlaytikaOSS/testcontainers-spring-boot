@@ -23,9 +23,7 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
     @Bean
     @ConfigurationProperties("embedded.memsql.install")
     public InstallPackageProperties memsqlPackageProperties() {
-        InstallPackageProperties properties = new InstallPackageProperties();
-//        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
-        return properties;
+        return new InstallPackageProperties();
     }
 
     @Bean
@@ -35,14 +33,4 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
     ) {
         return new YumPackageInstaller(memsqlPackageProperties, memsql);
     }
-
-// Current image doesn't support `tc` command, since memsql is currently based on centos with yum package manager. `iproute2` package is not available here.
-// This bean is commented, so that users that expect NetworkTestOperations in the tests are notified that this is not supported anymore.
-//    @Bean
-//    @ConditionalOnMissingBean(name = "memsqlNetworkTestOperations")
-//    public NetworkTestOperations memsqlNetworkTestOperations(
-//            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql
-//    ) {
-//        return new DefaultNetworkTestOperations(memsql);
-//    }
 }

@@ -1,6 +1,7 @@
 package com.playtika.test.minio;
 
 import com.playtika.test.common.utils.ThrowingRunnable;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         classes = EmbeddedMinioBootstrapConfigurationTest.MinioTestConfiguration.class,
-        properties = "embedded.minio.install.enabled=true"
+        properties = {
+                "embedded.toxiproxy.proxies.minio.enabled=true"
+        }
 )
 public class EmbeddedMinioBootstrapConfigurationTest {
 
@@ -33,8 +37,11 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     @Autowired
     private MinioClient minioClient;
 
-//    @Autowired
-//    NetworkTestOperations minioNetworkTestOperations;
+    @Autowired
+    private MinioClient minioToxiProxyClient;
+
+    @Autowired
+    ToxiproxyContainer.ContainerProxy minioContainerProxy;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -52,13 +59,20 @@ public class EmbeddedMinioBootstrapConfigurationTest {
         assertThat(content).isEqualTo("Hello Minio!");
     }
 
-//    @Test
-//    public void latencyIsSlower() {
-//        minioNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-//            () -> assertThat(durationOf(() -> writeFileToMinio("example.txt", getFilePath("example.txt"))))
-//                .isGreaterThan(1000L)
-//        );
-//    }
+    @Test
+    public void latencyIsSlower() throws Exception {
+        minioContainerProxy.toxics().latency("latency", ToxicDirection.UPSTREAM, 1000);
+
+        assertThat(durationOf(() ->
+                minioToxiProxyClient.uploadObject(UploadObjectArgs.builder()
+                        .bucket(BUCKET)
+                        .object("example.txt")
+                        .filename(getFilePath("example.txt"))
+                        .build())))
+                .isGreaterThan(1000L);
+
+        minioContainerProxy.toxics().get("latency").remove();
+    }
 
     @Test
     public void noLatencyIsFaster() throws Exception {
@@ -100,6 +114,21 @@ public class EmbeddedMinioBootstrapConfigurationTest {
         @Bean
         public MinioClient minioClient(
                 @Value("${embedded.minio.port}") int port,
+                @Value("${embedded.minio.accessKey}") String accessKey,
+                @Value("${embedded.minio.secretKey}") String secretKey,
+                @Value("${embedded.minio.region}") String region) {
+            MinioClient.Builder minio = MinioClient.builder()
+                    .endpoint("http://localhost", port, false)
+                    .credentials(accessKey, secretKey);
+            if (StringUtils.hasText(region)) {
+                minio.region(region);
+            }
+            return minio.build();
+        }
+
+        @Bean
+        public MinioClient minioToxiProxyClient(
+                @Value("${embedded.minio.toxiproxy.port}") int port,
                 @Value("${embedded.minio.accessKey}") String accessKey,
                 @Value("${embedded.minio.secretKey}") String secretKey,
                 @Value("${embedded.minio.region}") String region) {

@@ -2,7 +2,9 @@ package com.playtika.test.influxdb;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,13 +14,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.InfluxDBContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.test.influxdb.InfluxDBProperties.EMBEDDED_INFLUX_DB;
 
 @Slf4j
 @Configuration
@@ -27,9 +34,31 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 @ConditionalOnProperty(name = "embedded.influxdb.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(InfluxDBProperties.class)
 public class EmbeddedInfluxDBBootstrapConfiguration {
-    @Bean(name = InfluxDBProperties.EMBEDDED_INFLUX_DB, destroyMethod = "stop")
+
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "influxdb")
+    ToxiproxyContainer.ContainerProxy influxdbContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                             @Qualifier(EMBEDDED_INFLUX_DB) ConcreteInfluxDbContainer influxdb,
+                                                             InfluxDBProperties properties,
+                                                             ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(influxdb, properties.getPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.influxdb.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.influxdb.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.influxdb.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedInfluxDBToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started InfluxDB ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
+    @Bean(name = EMBEDDED_INFLUX_DB, destroyMethod = "stop")
     public ConcreteInfluxDbContainer influxdb(ConfigurableEnvironment environment,
-                                              InfluxDBProperties properties) {
+                                              InfluxDBProperties properties,
+                                              Optional<Network> network) {
         ConcreteInfluxDbContainer influxDBContainer = new ConcreteInfluxDbContainer(ContainerUtils.getDockerImageName(properties));
         influxDBContainer
                 .withAdmin(properties.getAdminUser())
@@ -39,6 +68,8 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                 .withPassword(properties.getPassword())
                 .withDatabase(properties.getDatabase())
                 .withExposedPorts(properties.getPort());
+
+        network.ifPresent(influxDBContainer::withNetwork);
 
         influxDBContainer.waitingFor(getInfluxWaitStrategy(properties.getUser(), properties.getPassword()));
 

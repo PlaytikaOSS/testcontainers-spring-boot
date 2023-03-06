@@ -24,9 +24,7 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
     @Bean
     @ConfigurationProperties("embedded.kafka.install")
     public InstallPackageProperties kafkaPackageProperties() {
-        InstallPackageProperties properties = new InstallPackageProperties();
-//        properties.setPackages(Collections.singleton("iproute2"));// we need iproute2 for tc command to work
-        return properties;
+        return new InstallPackageProperties();
     }
 
     @Bean
@@ -34,12 +32,4 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
                                                   @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) {
         return new YumPackageInstaller(kafkaPackageProperties, kafka);
     }
-
-// Current image doesn't support `tc` command, since kafka is currently based on ubi with microdnf package manager. `iproute2` package is not available here.
-// This bean is commented, so that users that expect NetworkTestOperations in the tests are notified that this is not supported anymore.
-//    @Bean
-//    @ConditionalOnMissingBean(name = "kafkaNetworkTestOperations")
-//    public NetworkTestOperations kafkaNetworkTestOperations(@Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) {
-//        return new DefaultNetworkTestOperations(kafka);
-//    }
 }

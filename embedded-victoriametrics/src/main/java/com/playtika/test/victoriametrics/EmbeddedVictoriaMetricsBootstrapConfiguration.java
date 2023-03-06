@@ -58,7 +58,7 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedVictoriaMetricsToxiProxyInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-        log.info("VictoriaMetrics ToxiProxy connection details {}", map);
+        log.info("Started VictoriaMetrics ToxiProxy connection details {}", map);
 
         return proxy;
     }

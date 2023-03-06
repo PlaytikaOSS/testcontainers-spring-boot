@@ -36,7 +36,6 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.aerospike.toxiproxy.port`
 * Bean `AerospikeTestOperations aerospikeTestOperations`
 * Bean `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`
-* *[Deprecated]* Bean `NetworkTestOperations aerospikeNetworkTestOperations`. Instead use `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`.
 
 ==== Example
 

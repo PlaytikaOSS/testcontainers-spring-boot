@@ -20,6 +20,8 @@
 ** Image versions on https://github.com/singlestore-labs/singlestoredb-dev-image[gitHub]
 * `embedded.memsql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.memsql.licenseKey` `(required licenseKey should be generated on https://www.singlestore.com/free/[singlestore])`
+* `embedded.toxiproxy.proxies.memsql.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-memsql` container.
+
 
 ==== Produces
 
@@ -28,11 +30,13 @@
 * `embedded.memsql.schema`
 * `embedded.memsql.user`
 * `embedded.memsql.password`
+* `embedded.memsql.toxiproxy.host`
+* `embedded.memsql.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy memsqlContainerProxy`
 
 ==== Notes
 
 * There should be at least 1.5 GB of RAM available for memsql to start
 * You can enable debug logs for `com.playtika.test` category to troubleshoot issues
-* NetworkTestOperations are not supported currently.
 
 //TODO: example missing

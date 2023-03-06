@@ -11,11 +11,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
-
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Validate ${{ github.event.inputs.version }} release exists
         uses: actions/github-script@v6
         with:
@@ -39,7 +36,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD

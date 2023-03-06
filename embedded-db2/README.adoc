@@ -24,6 +24,7 @@
 * `embedded.db2.acceptLicence` `(default is 'false')`
 * `embedded.db2.startupLogCheckRegex`
 * `embedded.db2.initScriptPath`
+* `embedded.toxiproxy.proxies.db2.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-db2` container.
 
 ==== Produces
 
@@ -32,3 +33,6 @@
 * `embedded.db2.database`
 * `embedded.db2.user`
 * `embedded.db2.password`
+* `embedded.db2.toxiproxy.host`
+* `embedded.db2.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy db2ContainerProxy`

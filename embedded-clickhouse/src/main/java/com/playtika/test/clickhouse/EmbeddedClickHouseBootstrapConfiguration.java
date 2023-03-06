@@ -2,7 +2,9 @@ package com.playtika.test.clickhouse;
 
 import com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.test.common.utils.ContainerUtils;
+import com.playtika.test.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,8 +15,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.ClickHouseContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.playtika.test.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
 import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -27,10 +33,34 @@ import static com.playtika.test.common.utils.ContainerUtils.configureCommonsAndS
 @EnableConfigurationProperties(ClickHouseProperties.class)
 public class EmbeddedClickHouseBootstrapConfiguration {
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "clickhouse")
+    ToxiproxyContainer.ContainerProxy clickhouseContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                           @Qualifier(BEAN_NAME_EMBEDDED_CLICK_HOUSE) ClickHouseContainer clickHouseContainer,
+                                                           ClickHouseProperties properties,
+                                                           ConfigurableEnvironment environment) {
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(clickHouseContainer, properties.getPort());
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.clickhouse.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.clickhouse.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.clickhouse.toxiproxy.proxyName", proxy.getName());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedClickHouseToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started ClickHouse ToxiProxy connection details {}", map);
+
+        return proxy;
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_CLICK_HOUSE, destroyMethod = "stop")
     public ClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
-                                                           ClickHouseProperties properties) {
+                                                   ClickHouseProperties properties,
+                                                   Optional<Network> network) {
         ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties));
+
+        network.ifPresent(clickHouseContainer::withNetwork);
+
         String username = !StringUtils.hasLength(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
         String password = !StringUtils.hasLength(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
         clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
