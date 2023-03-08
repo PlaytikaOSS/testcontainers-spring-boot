@@ -22,10 +22,12 @@ public class AzuriteProperties extends CommonContainerProperties {
      */
     static final String ACCOUNT_KEY = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
-    int port = 10000;
+    int blobStoragePort = 10000;
+    int queueStoragePort = 10001;
+    int tableStoragePort = 10002;
 
     @Override
     public String getDefaultDockerImage() {
-        return "mcr.microsoft.com/azure-storage/azurite:3.20.1";
+        return "mcr.microsoft.com/azure-storage/azurite:3.22.0";
     }
 }
