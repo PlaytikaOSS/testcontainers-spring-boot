@@ -1,0 +1,35 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.mockserver.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.mockserver.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of mockserver on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of mockserver on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.mockserver.docker-image",
+      "values": [
+        {
+          "value": "jamesdbloom/mockserver:mockserver-5.13.2",
+          "description": "Latest mockserver-5.13.X version. Ref https://hub.docker.com/r/jamesdbloom/mockserver/tags?page=1&name=mockserver-5.13.2 for further info."
+        }
+      ]
+    }
+  ]
+}

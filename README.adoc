@@ -306,6 +306,8 @@ embedded:
 
 === link:embedded-k3s/README.adoc[embedded-k3s]
 
+=== link:embedded-mockserver/README.adoc[embedded-mockserver]
+
 == How to contribute
 
 === Flow

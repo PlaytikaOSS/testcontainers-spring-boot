@@ -75,6 +75,7 @@
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>
         <module>embedded-k3s</module>
+        <module>embedded-mockserver</module>
     </modules>
 
     <properties>
