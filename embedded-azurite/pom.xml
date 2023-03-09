@@ -22,6 +22,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-storage-queue</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
         </dependency>
