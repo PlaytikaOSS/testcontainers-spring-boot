@@ -17,7 +17,9 @@
 * `embedded.azurite.reuseContainer` `(true|false, default is false)`
 * `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite')`
 ** Image versions on https://hub.docker.com/_/microsoft-azure-storage-azurite
-* `embedded.azurite.port` `(default is 10000)`
+* `embedded.azurite.blobStoragePort` `(default is 10000)`
+* `embedded.azurite.queueStoragePort` `(default is 10001)`
+* `embedded.azurite.tableStoragePort` `(default is 10002)`
 * `embedded.toxiproxy.proxies.azurite.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-azurite` container.
 
 
@@ -26,13 +28,18 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 ==== Produces
 
 * `embedded.azurite.host`
-* `embedded.azurite.port`
 * `embedded.azurite.account-name`
 * `embedded.azurite.account-key`
 * `embedded.azurite.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-blob`)
+* `embedded.azurite.queue-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-queue`)
+* `embedded.azurite.table-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-table`)
 * `embedded.azurite.toxiproxy.host`
-* `embedded.azurite.toxiproxy.port`
-* Bean `ToxiproxyContainer.ContainerProxy azuriteContainerProxy`
+* `embedded.azurite.toxiproxy.blobStoragePort`
+* `embedded.azurite.toxiproxy.queueStoragePort`
+* `embedded.azurite.toxiproxy.tableStoragePort`
+* Bean `ToxiproxyContainer.ContainerProxy azuriteBlobContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy azuriteQueueContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy azuriteTableContainerProxy`
 ==== Example
 
 Use `com.azure.spring:spring-cloud-azure-starter-storage-blob` (see https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage)
@@ -49,6 +56,10 @@ spring:
           account-name: ${embedded.azurite.account-name}
           account-key: ${embedded.azurite.account-key}
           endpoint: ${embedded.azurite.blob-endpoint}
+        queue:
+          account-name: ${embedded.azurite.account-name}
+          account-key: ${embedded.azurite.account-key}
+          endpoint: ${embedded.azurite.queue-endpoint}
 ----
 
 You can then access all beans from `spring-cloud-azure-starter-storage-blob`, i.e. `BlobServiceClientBuilder`.

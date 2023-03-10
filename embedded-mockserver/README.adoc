@@ -1,0 +1,25 @@
+=== embedded-mockserver
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mockserver</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.mockserver.enabled` `(true|false, default is true)`
+* `embedded.mockserver.reuseContainer` `(true|false, default is false)`
+* `embedded.mockserver.dockerImage` `(default is 'jamesdbloom/mockserver:mockserver-5.13.2')`
+** Image versions on https://hub.docker.com/r/jamesdbloom/mockserver/tags[dockerhub]
+
+==== Produces
+
+* `embedded.mockserver.host`
+* `embedded.mockserver.port`

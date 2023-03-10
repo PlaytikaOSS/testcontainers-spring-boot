@@ -18,6 +18,8 @@ public class ClickHouseProperties extends CommonContainerProperties {
     String user = "default";
     String password = "";
 
+    String initScriptPath;
+
     // https://github.com/ClickHouse/ClickHouse/releases
     // https://hub.docker.com/r/yandex/clickhouse-server
     @Override

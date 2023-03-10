@@ -18,6 +18,11 @@ public class EmbeddedClickHouseBootstrapConfigurationTest extends BaseEmbeddedCl
     }
 
     @Test
+    public void shouldExecuteSelectDataFromInitScriptClickHouse() throws Exception {
+        assertThat(jdbcTemplate.queryForObject("select first_name from test.users where id = 1", String.class)).isEqualTo("first_name_test");
+    }
+
+    @Test
     public void propertiesAreAvailable() {
         assertThat(environment.getProperty("embedded.clickhouse.schema")).isNotEmpty();
         assertThat(environment.getProperty("embedded.clickhouse.host")).isNotEmpty();

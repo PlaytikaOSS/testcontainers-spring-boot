@@ -57,7 +57,8 @@ public class EmbeddedClickHouseBootstrapConfiguration {
     public ClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
                                                    ClickHouseProperties properties,
                                                    Optional<Network> network) {
-        ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties));
+        ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties))
+                .withInitScript(properties.getInitScriptPath());
 
         network.ifPresent(clickHouseContainer::withNetwork);
 
