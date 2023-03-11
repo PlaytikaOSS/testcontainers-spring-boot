@@ -1,0 +1,30 @@
+=== embedded-solr
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-solr</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.solr.enabled` `(true|false, default is true)`
+* `embedded.solr.reuseContainer` `(true|false, default is false)`
+* `embedded.solr.dockerImage` `(default is 'solr:9.1')`
+** Image versions on https://hub.docker.com/_/solr/tags[dockerhub]
+* `embedded.toxiproxy.proxies.solr.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-solr` container.
+
+
+==== Produces
+
+* `embedded.solr.host`
+* `embedded.solr.port`
+* `embedded.solr.toxiproxy.host`
+* `embedded.solr.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy solrContainerProxy`
