@@ -178,6 +178,16 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |null
 |key-value map of additional environment variables. Where key is name of variable and value is actual value of it.
 
+|embedded.{module-name}.label
+|null
+|key-value map of additional labels to the container. Where key is name of label and value is actual value of label.
+Example:
+[source,yaml]
+----
+embedded.redis.labels:
+  labelKey: labelValue
+----
+
 |embedded.{module-name}.filesToInclude
 | empty list
 |List of files to include objects.

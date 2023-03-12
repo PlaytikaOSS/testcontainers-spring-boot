@@ -68,7 +68,8 @@ public class ContainerUtils {
                 .withReuse(properties.isReuseContainer())
                 .withLogConsumer(containerLogsConsumer(logger))
                 .withImagePullPolicy(resolveImagePullPolicy(properties))
-                .withEnv(properties.getEnv());
+                .withEnv(properties.getEnv())
+                .withLabels(properties.getLabel());
 
         if (!properties.getTmpFs().getMounts().isEmpty()) {
             Map<String, String> tmpFsMapping = properties.getTmpFs().getMounts().stream()
