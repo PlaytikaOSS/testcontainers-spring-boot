@@ -318,6 +318,7 @@ embedded:
 
 === link:embedded-mockserver/README.adoc[embedded-mockserver]
 
+=== link:embedded-solr/README.adoc[embedded-solr]
 == How to contribute
 
 === Flow
