@@ -77,6 +77,7 @@
         <module>embedded-k3s</module>
         <module>embedded-mockserver</module>
         <module>embedded-solr</module>
+        <module>embedded-cockroachdb</module>
     </modules>
 
     <properties>
