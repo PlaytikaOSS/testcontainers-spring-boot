@@ -1,12 +1,10 @@
 package com.playtika.test.mysql;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Arrays;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -27,10 +25,6 @@ public class MySQLProperties extends CommonContainerProperties {
      * The SQL file path to execute after the container starts to initialize the database.
      */
     String initScriptPath;
-
-    public MySQLProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
-    }
 
     // https://hub.docker.com/_/mysql
     @Override

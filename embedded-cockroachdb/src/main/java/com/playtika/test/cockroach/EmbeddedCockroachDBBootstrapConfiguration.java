@@ -34,7 +34,7 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
-    ToxiproxyContainer.ContainerProxy cockroachdbContainerProxy(ToxiproxyContainer toxiproxyContainer,
+    ToxiproxyContainer.ContainerProxy cockroachContainerProxy(ToxiproxyContainer toxiproxyContainer,
                                                                 @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer,
                                                                 CockroachDBProperties properties,
                                                                 ConfigurableEnvironment environment) {
@@ -53,7 +53,7 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_COCKROACHDB, destroyMethod = "stop")
-    public CockroachContainer cockroachdb(ConfigurableEnvironment environment,
+    public CockroachContainer cockroach(ConfigurableEnvironment environment,
                                           CockroachDBProperties properties,
                                           Optional<Network> network) throws Exception {
 
@@ -68,22 +68,22 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
         return cockroachContainer;
     }
 
-    private void registerCockroachDBEnvironment(CockroachContainer cockroachdb,
+    private void registerCockroachDBEnvironment(CockroachContainer cockroach,
                                                 ConfigurableEnvironment environment,
                                                 CockroachDBProperties properties) {
-        Integer mappedPort = cockroachdb.getMappedPort(properties.getPort());
-        String host = cockroachdb.getHost();
+        Integer mappedPort = cockroach.getMappedPort(properties.getPort());
+        String host = cockroach.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.cockroach.port", mappedPort);
         map.put("embedded.cockroach.host", host);
-        map.put("embedded.cockroach.schema", cockroachdb.getDatabaseName());
-        map.put("embedded.cockroach.user", cockroachdb.getUsername());
-        map.put("embedded.cockroach.password", cockroachdb.getPassword());
+        map.put("embedded.cockroach.schema", cockroach.getDatabaseName());
+        map.put("embedded.cockroach.user", cockroach.getUsername());
+        map.put("embedded.cockroach.password", cockroach.getPassword());
 
         String jdbcURL = "jdbc:postgresql://{}:{}/{}";
         log.info("Started CockroachDB server. Connection details: {}, " +
-                "JDBC connection url: " + jdbcURL, map, host, mappedPort, cockroachdb.getDatabaseName());
+                "JDBC connection url: " + jdbcURL, map, host, mappedPort, cockroach.getDatabaseName());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedCockroachDBInfo", map);
         environment.getPropertySources().addFirst(propertySource);

@@ -1,13 +1,10 @@
 package com.playtika.test.couchbase;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.testcontainers.couchbase.CouchbaseService;
-
-import java.util.Arrays;
 
 import static java.lang.String.format;
 
@@ -32,10 +29,6 @@ public class CouchbaseProperties extends CommonContainerProperties {
     String user = "Administrator";
     String password = "password";
     String bucket = "test";
-
-    public CouchbaseProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
-    }
 
     public void setPassword(String password) {
         if (password.length() < 6) {

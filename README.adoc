@@ -323,6 +323,10 @@ embedded:
 === link:embedded-mockserver/README.adoc[embedded-mockserver]
 
 === link:embedded-solr/README.adoc[embedded-solr]
+
+=== link:embedded-cockroachdb/README.adoc[embedded-cockroachdb]
+
+
 == How to contribute
 
 === Flow
