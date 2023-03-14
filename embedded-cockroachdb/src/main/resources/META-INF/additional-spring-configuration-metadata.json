@@ -1,0 +1,32 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.cockroach.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.cockroach.init-script-path",
+      "type": "java.lang.String",
+      "defaultValue": "null",
+      "description": "The SQL file path to execute after the container starts to initialize the database."
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.cockroach.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of cockroachdb server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of cockroachdb server on startup."
+        }
+      ]
+    }
+  ]
+}

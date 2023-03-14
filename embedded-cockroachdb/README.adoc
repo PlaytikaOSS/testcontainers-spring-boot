@@ -1,0 +1,34 @@
+=== embedded-cockroachdb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-cockroachdb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.cockroach.enabled` `(true|false, default is true)`
+* `embedded.cockroach.reuseContainer` `(true|false, default is false)`
+* `embedded.cockroach.dockerImage` `(default is 'mariadb:10.6-focal')`
+** Image versions on https://hub.docker.com/_/mariadb?tab=tags[dockerhub]
+* `embedded.cockroach.initScriptPath` `(default is null)`
+* `embedded.toxiproxy.proxies.mariadb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-cockroachdb` container.
+
+
+==== Produces
+
+* `embedded.cockroach.port`
+* `embedded.cockroach.host`
+* `embedded.cockroach.schema`
+* `embedded.cockroach.user`
+* `embedded.cockroach.password`
+* `embedded.cockroach.toxiproxy.host`
+* `embedded.cockroach.toxiproxy.port`
+* Bean `ToxiproxyContainer.ContainerProxy cockroachdbContainerProxy`
