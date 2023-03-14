@@ -16,10 +16,10 @@
 
 * `embedded.cockroach.enabled` `(true|false, default is true)`
 * `embedded.cockroach.reuseContainer` `(true|false, default is false)`
-* `embedded.cockroach.dockerImage` `(default is 'mariadb:10.6-focal')`
-** Image versions on https://hub.docker.com/_/mariadb?tab=tags[dockerhub]
+* `embedded.cockroach.dockerImage` `(default is 'cockroachdb/cockroach:v19.2.11')`
+** Image versions on https://hub.docker.com/r/cockroachdb/cockroach/tags[dockerhub]
 * `embedded.cockroach.initScriptPath` `(default is null)`
-* `embedded.toxiproxy.proxies.mariadb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-cockroachdb` container.
+* `embedded.toxiproxy.proxies.cockroach.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-cockroachdb` container.
 
 
 ==== Produces
@@ -31,4 +31,4 @@
 * `embedded.cockroach.password`
 * `embedded.cockroach.toxiproxy.host`
 * `embedded.cockroach.toxiproxy.port`
-* Bean `ToxiproxyContainer.ContainerProxy cockroachdbContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy cockroachContainerProxy`
