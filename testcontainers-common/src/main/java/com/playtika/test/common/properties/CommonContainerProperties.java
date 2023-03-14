@@ -54,6 +54,11 @@ public abstract class CommonContainerProperties {
     private String[] command;
 
     /**
+     * Enable embedded container log.
+     */
+    private boolean attachContainerLog = false;
+
+    /**
      * Set environment variables for the container.
      */
     private Map<String, String> env = new HashMap<>();

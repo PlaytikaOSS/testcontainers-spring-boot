@@ -14,6 +14,7 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.images.ImagePullPolicy;
 import org.testcontainers.images.PullPolicy;
 import org.testcontainers.utility.DockerImageName;
@@ -91,6 +92,7 @@ public class ContainerUtils {
         }
 
         updatedContainer = properties.getCommand() != null ? updatedContainer.withCommand(properties.getCommand()) : updatedContainer;
+        updatedContainer = properties.isAttachContainerLog() ? updatedContainer.withLogConsumer(new Slf4jLogConsumer(log, true).withPrefix(container.getDockerImageName())) : updatedContainer;
 
         startAndLogTime(updatedContainer, logger);
         return updatedContainer;
