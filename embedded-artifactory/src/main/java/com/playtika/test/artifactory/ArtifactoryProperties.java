@@ -25,6 +25,6 @@ public class ArtifactoryProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.25.6";
+        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.12.10";
     }
 }
