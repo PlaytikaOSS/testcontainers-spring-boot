@@ -18,6 +18,6 @@ public class VictoriaMetricsProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "victoriametrics/victoria-metrics:v1.80.0";
+        return "victoriametrics/victoria-metrics:v1.89.1";
     }
 }
