@@ -26,6 +26,6 @@ public class MemSqlProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "ghcr.io/singlestore-labs/singlestoredb-dev:0.2.2";
+        return "ghcr.io/singlestore-labs/singlestoredb-dev:0.2.5";
     }
 }
