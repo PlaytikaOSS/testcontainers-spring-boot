@@ -21,6 +21,6 @@ public class GrafanaProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/grafana/grafana
     @Override
     public String getDefaultDockerImage() {
-        return "grafana/grafana:8.1.0";
+        return "grafana/grafana:9.4.3";
     }
 }

@@ -19,6 +19,6 @@ public class PrometheusProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/prom/prometheus
     @Override
     public String getDefaultDockerImage() {
-        return "prom/prometheus:v2.28.1";
+        return "prom/prometheus:v2.42.0";
     }
 }
