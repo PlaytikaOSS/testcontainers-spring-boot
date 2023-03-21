@@ -8,8 +8,8 @@ import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import java.time.OffsetDateTime;
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
