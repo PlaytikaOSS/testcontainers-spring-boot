@@ -18,6 +18,10 @@
 * `embedded.memsql.reuseContainer` `(true|false, default is false)`
 * `embedded.memsql.dockerImage` `(default is 'ghcr.io/singlestore-labs/singlestoredb-dev:0.2.5')`
 ** Image versions on https://github.com/singlestore-labs/singlestoredb-dev-image[gitHub]
+[NOTE]
+====
+Singlestore docker image does not support ARM
+====
 * `embedded.memsql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.memsql.licenseKey` `(required licenseKey should be generated on https://www.singlestore.com/free/[singlestore])`
 * `embedded.toxiproxy.proxies.memsql.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-memsql` container.
