@@ -15,7 +15,6 @@
 
     <properties>
         <aerospike-client.version>6.1.7</aerospike-client.version>
-        <joda-time.version>2.12.2</joda-time.version>
     </properties>
 
     <dependencies>
@@ -36,11 +35,6 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda-time.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
