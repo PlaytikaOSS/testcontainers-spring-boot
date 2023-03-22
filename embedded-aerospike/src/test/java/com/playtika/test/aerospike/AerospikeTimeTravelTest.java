@@ -13,9 +13,9 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static java.time.Duration.ofHours;
 import static java.time.Duration.ofDays;
+import static java.time.Duration.ofHours;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AerospikeTimeTravelTest extends BaseAerospikeTest {
 
@@ -80,7 +80,7 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
     public void shouldSetFutureTime() {
         Key key = new Key(namespace, SET, "shouldSetFutureTime");
         putBin(key, (int) TimeUnit.HOURS.toSeconds(25));
-    
+
         aerospikeTestOperations.timeTravelTo(DateTimeUtils.now().plusHours(24));
         assertThat(client.get(null, key)).isNotNull();
 

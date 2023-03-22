@@ -33,8 +33,8 @@ public class DateTimeUtils {
     static class FixedTimeMillisProvider implements EmbeddedMillisProvider {
         private final long iMillis;
 
-        FixedTimeMillisProvider(long var1) {
-            this.iMillis = var1;
+        FixedTimeMillisProvider(long millis) {
+            this.iMillis = millis;
         }
 
         public long getMillis() {
