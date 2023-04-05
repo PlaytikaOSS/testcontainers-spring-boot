@@ -38,7 +38,6 @@
         <module>testcontainers-spring-boot-bom</module>
         <module>testcontainers-spring-boot-parent</module>
         <module>testcontainers-common</module>
-        <module>embedded-git</module>
         <module>embedded-kafka</module>
         <module>embedded-keycloak</module>
         <module>embedded-aerospike</module>
@@ -79,6 +78,7 @@
         <module>embedded-mockserver</module>
         <module>embedded-solr</module>
         <module>embedded-cockroachdb</module>
+        <module>embedded-git</module>
     </modules>
 
     <properties>
