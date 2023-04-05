@@ -295,23 +295,23 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>io.github.gitflow-incremental-builder</groupId>-->
-<!--                <artifactId>gitflow-incremental-builder</artifactId>-->
-<!--                <version>${gitflow-incremental-builder.version}</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <disableIfBranchMatches>develop|support/2.3.X</disableIfBranchMatches>-->
-<!--                    <fetchReferenceBranch>true</fetchReferenceBranch>-->
-<!--                    <referenceBranch>refs/remotes/origin/develop</referenceBranch>-->
-<!--                    <buildUpstream>always</buildUpstream>-->
-<!--                    <skipTestsForUpstreamModules>true</skipTestsForUpstreamModules>-->
-<!--                    <buildUpstreamMode>impacted</buildUpstreamMode>-->
-<!--                    <skipIfPathMatches>\.github[/\\].*|\.mvn[/\\].*|mvnw.*</skipIfPathMatches>-->
-<!--                    &lt;!&ndash; Ignores Readme changes in parent or any submodule&ndash;&gt;-->
-<!--                    <excludePathsMatching>(.*[/\\])?README.adoc</excludePathsMatching>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>io.github.gitflow-incremental-builder</groupId>
+                <artifactId>gitflow-incremental-builder</artifactId>
+                <version>${gitflow-incremental-builder.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <disableIfBranchMatches>develop|support/2.3.X</disableIfBranchMatches>
+                    <fetchReferenceBranch>true</fetchReferenceBranch>
+                    <referenceBranch>refs/remotes/origin/develop</referenceBranch>
+                    <buildUpstream>always</buildUpstream>
+                    <skipTestsForUpstreamModules>true</skipTestsForUpstreamModules>
+                    <buildUpstreamMode>impacted</buildUpstreamMode>
+                    <skipIfPathMatches>\.github[/\\].*|\.mvn[/\\].*|mvnw.*</skipIfPathMatches>
+                    <!-- Ignores Readme changes in parent or any submodule-->
+                    <excludePathsMatching>(.*[/\\])?README.adoc</excludePathsMatching>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
