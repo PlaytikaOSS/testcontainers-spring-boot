@@ -74,6 +74,9 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .waitingFor(memSqlStatusCheck);
+        if ("aarch".equals(System.getProperty("system.arch"))){
+            memsql = memsql.withCommand("platform", "linux/amd64");
+        }
         network.ifPresent(memsql::withNetwork);
         memsql = configureCommonsAndStart(memsql, properties, log);
         registerMemSqlEnvironment(memsql, environment, properties);
