@@ -7,15 +7,14 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.0.0-RC3</version>
+        <version>3.0.0-RC4</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
     <artifactId>embedded-aerospike</artifactId>
 
     <properties>
-        <aerospike-client.version>6.1.7</aerospike-client.version>
-        <joda-time.version>2.12.2</joda-time.version>
+        <aerospike-client.version>6.1.8</aerospike-client.version>
     </properties>
 
     <dependencies>
@@ -36,11 +35,6 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda-time.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>

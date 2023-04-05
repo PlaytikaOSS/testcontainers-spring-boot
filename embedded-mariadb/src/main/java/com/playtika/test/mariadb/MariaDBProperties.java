@@ -1,12 +1,10 @@
 package com.playtika.test.mariadb;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Arrays;
 
 
 @Data
@@ -29,10 +27,6 @@ public class MariaDBProperties extends CommonContainerProperties {
      * The SQL file path to execute after the container starts to initialize the database.
      */
     String initScriptPath;
-
-    public MariaDBProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
-    }
 
     // https://hub.docker.com/_/mariadb
     @Override

@@ -54,9 +54,18 @@ public abstract class CommonContainerProperties {
     private String[] command;
 
     /**
+     * Enable embedded container log.
+     */
+    private boolean attachContainerLog = false;
+
+    /**
      * Set environment variables for the container.
      */
     private Map<String, String> env = new HashMap<>();
+    /**
+     * Labels that should be added to the container.
+     */
+    private Map<String, String> label = new HashMap<>();
     /**
      * Files/directories that should be copied to the container.
      */

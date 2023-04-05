@@ -37,8 +37,7 @@ public abstract class BaseStandaloneEmbeddedRedisTest extends BaseEmbeddedRedisT
         assertThat(durationOf(() -> ops.get("any")))
                 .isLessThan(100L);
 
-        redisContainerProxy.toxics().latency("latency", ToxicDirection.DOWNSTREAM, 1000);
-
+        redisContainerProxy.toxics().latency("latency", ToxicDirection.UPSTREAM, 1000);
 
                 assertThat(durationOf(() -> ops.get("any")))
                         .isGreaterThanOrEqualTo(1000L);

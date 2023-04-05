@@ -1,14 +1,11 @@
 package com.playtika.test.redis;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import com.playtika.test.common.utils.TcpPortAvailableUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.Arrays;
 
 import static com.playtika.test.common.utils.TcpPortAvailableUtils.PORT_RANGE_MIN;
 
@@ -25,10 +22,6 @@ public class RedisProperties extends CommonContainerProperties implements Initia
     public boolean requirepass = true;
     public boolean clustered = false;
 
-    public RedisProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
-    }
-
     @Override
     public void afterPropertiesSet() {
         if (this.port == 0) {
@@ -39,6 +32,6 @@ public class RedisProperties extends CommonContainerProperties implements Initia
     // https://hub.docker.com/_/redis
     @Override
     public String getDefaultDockerImage() {
-        return "redis:7.0.8-alpine";
+        return "redis:7.0.9-alpine";
     }
 }

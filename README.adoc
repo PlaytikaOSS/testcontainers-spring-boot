@@ -174,9 +174,23 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |null
 |List of keywords which combines into command for container startup. Some modules ship container's commands by default, so resetting this value may lead to incorrect work of container.
 
+|embedded.{module-name}.attachContainerLog
+|false
+|Attach embedded container output log.
+
 |embedded.{module-name}.env
 |null
 |key-value map of additional environment variables. Where key is name of variable and value is actual value of it.
+
+|embedded.{module-name}.label
+|null
+|key-value map of additional labels to the container. Where key is name of label and value is actual value of label.
+Example:
+[source,yaml]
+----
+embedded.redis.labels:
+  labelKey: labelValue
+----
 
 |embedded.{module-name}.filesToInclude
 | empty list
@@ -307,6 +321,11 @@ embedded:
 === link:embedded-k3s/README.adoc[embedded-k3s]
 
 === link:embedded-mockserver/README.adoc[embedded-mockserver]
+
+=== link:embedded-solr/README.adoc[embedded-solr]
+
+=== link:embedded-cockroachdb/README.adoc[embedded-cockroachdb]
+
 
 == How to contribute
 

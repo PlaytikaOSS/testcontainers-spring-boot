@@ -1,6 +1,5 @@
 package com.playtika.test.memsql;
 
-import com.github.dockerjava.api.model.Capability;
 import com.playtika.test.common.properties.CommonContainerProperties;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -8,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Arrays;
 
 @Data
 @Validated
@@ -26,12 +24,8 @@ public class MemSqlProperties extends CommonContainerProperties {
     int port = 3306;
     String statusCheck = "source /schema.sql; use test_db; SELECT 1;";
 
-    public MemSqlProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
-    }
-
     @Override
     public String getDefaultDockerImage() {
-        return "ghcr.io/singlestore-labs/singlestoredb-dev:0.2.2";
+        return "ghcr.io/singlestore-labs/singlestoredb-dev:0.2.5";
     }
 }
