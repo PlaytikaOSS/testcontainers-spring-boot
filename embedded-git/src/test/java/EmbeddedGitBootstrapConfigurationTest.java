@@ -92,10 +92,11 @@ class EmbeddedGitBootstrapConfigurationTest {
         try (PrintWriter writer = new PrintWriter(fullFilePath, UTF_8)) {
             writer.print("hello world!");
         }
-        git.add().addFilepattern("*").call();
+        git.add().addFilepattern("test_file.txt").call();
         git.commit().setMessage("Test commit").call();
         git.push()
-                .setRefSpecs(new RefSpec("master"))
+                .setRemote("origin")
+                .setRefSpecs(new RefSpec(beforeRepoFolderName))
                 .setTransportConfigCallback(new CustomTransportConfigCallback(keyPair))
                 .call();
         git.close();
