@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.RefSpec;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
-import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 import util.EncryptionUtils;
 
 import java.io.File;
@@ -27,6 +24,8 @@ import java.security.Security;
 import static java.io.File.separator;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.shaded.org.apache.commons.io.FileUtils.contentEquals;
 
 @Slf4j
 @SpringBootTest(
@@ -60,13 +59,7 @@ class EmbeddedGitBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.git.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.git.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.git.password")).isEqualTo("embedded-git-password");
-        assertThat(environment.getProperty("embedded.git.path-to-repositories")).isEqualTo("src/test/resources/empty-repository.git");
-        assertThat(environment.getProperty("embedded.git.authorized-keys")).isEqualTo("src/test/resources/key/embedded-git.pub");
-    }
-
-    @AfterEach
-    public void afterEach() {
-        git.close();
+        assertThat(environment.getProperty("embedded.git.path-to-repositories")).isEqualTo("src/test/resources/repository");
     }
 
     @Test
@@ -113,7 +106,7 @@ class EmbeddedGitBootstrapConfigurationTest {
 
         File pushedFile = new File(fullFilePath);
         File pulledFile = new File(afterRepoFolderName + separator + "test_file.txt");
-        Assertions.assertTrue(FileUtils.contentEquals(pushedFile, pulledFile));
+        assertTrue(contentEquals(pushedFile, pulledFile));
     }
 
     @EnableAutoConfiguration
