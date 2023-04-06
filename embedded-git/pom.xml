@@ -24,5 +24,15 @@
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit.ssh.apache</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
