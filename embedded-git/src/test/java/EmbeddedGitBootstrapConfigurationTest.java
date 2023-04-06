@@ -46,7 +46,6 @@ class EmbeddedGitBootstrapConfigurationTest {
 
     @Value("classpath:key/pk_pem_encoded.txt")
     Resource pkPemKeyEncoded;
-    Git git;
     private static final String REPO_URL_TEMPLATE = "ssh://git@localhost:%s/projects/empty-repository.git";
 
     @BeforeAll
@@ -70,7 +69,7 @@ class EmbeddedGitBootstrapConfigurationTest {
         String ms = String.valueOf(System.currentTimeMillis());
         String beforeRepoFolderName = "target/before" + ms;
 
-        git = Git.cloneRepository()
+        Git git = Git.cloneRepository()
                 .setURI(link)
                 .setDirectory(new File(beforeRepoFolderName))
                 .setBranch("master")
