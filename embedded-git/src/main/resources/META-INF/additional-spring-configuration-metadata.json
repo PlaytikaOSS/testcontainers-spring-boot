@@ -1,0 +1,47 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.git.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.git.password",
+      "type": "java.lang.String",
+      "defaultValue": "embedded-git-password"
+    },
+    {
+      "name": "embedded.git.path-to-repositories",
+      "type": "java.lang.String",
+      "description": "Host path to a folder with git repositories that will be mounted to a container."
+    },
+    {
+      "name": "embedded.git.path-to-authorized-keys",
+      "type": "java.lang.String",
+      "description": "Path to authorized_keys file which will be mounted to a container in order to use ssh connection. If not specified - only password authentication will be available by default."
+    },
+    {
+      "name": "embedded.git.path-to-sshd-config",
+      "type": "java.lang.String",
+      "defaultValue": "config/sshd_config",
+      "description": "Path to sshd_config file which will be copied to a container. By default sshd_config with both ssh and password authentication methods is used."
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.git.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of Git server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of Git server on startup."
+        }
+      ]
+    }
+  ]
+}

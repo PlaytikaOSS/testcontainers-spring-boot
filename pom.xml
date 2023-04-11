@@ -78,6 +78,7 @@
         <module>embedded-mockserver</module>
         <module>embedded-solr</module>
         <module>embedded-cockroachdb</module>
+        <module>embedded-git</module>
     </modules>
 
     <properties>
