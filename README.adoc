@@ -325,6 +325,7 @@ embedded:
 === link:embedded-solr/README.adoc[embedded-solr]
 
 === link:embedded-cockroachdb/README.adoc[embedded-cockroachdb]
+=== link:embedded-git/README.adoc[embedded-git]
 
 
 == How to contribute
