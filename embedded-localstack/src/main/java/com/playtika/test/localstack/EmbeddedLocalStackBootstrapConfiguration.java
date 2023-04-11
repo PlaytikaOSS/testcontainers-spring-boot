@@ -87,7 +87,7 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         String prefix = "embedded.localstack.";
         Integer mappedPort = localStack.getMappedPort(properties.getEdgePort());
         for (LocalStackContainer.Service service : properties.services) {
-            map.put(prefix + service, localStack.getEndpointConfiguration(service).getServiceEndpoint());
+            map.put(prefix + service, localStack.getEndpointOverride(service));
             map.put(prefix + service + ".port", mappedPort);
         }
         log.info("Started Localstack. Connection details: {}", map);
