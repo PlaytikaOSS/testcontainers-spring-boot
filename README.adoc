@@ -11,6 +11,18 @@ additional code. https://www.docker.com/[Docker] and https://www.testcontainers.
 bootstrap stateful service using Spring Cloud https://cloud.spring.io/spring-cloud-static/spring-cloud.html#_the_bootstrap_application_context[bootstrap phase].
 Usage of Spring Cloud in your production code is optional, but __you will need it in tests__. See <<how-to-use, How to use>> below.
 
+== Versions compatibility
+
+|===
+| Spring Boot | Test Containers Spring Boot
+
+|2.4, 2.5, 2.6, 2.7
+|2.X.X
+
+|3.0
+|3.X.X
+|===
+
 [[how-to-use]]
 == How to use
 
@@ -185,12 +197,6 @@ NOTE: embedded.kafka.enabled=false will cause DockerNotPresentException if you d
 |embedded.{module-name}.label
 |null
 |key-value map of additional labels to the container. Where key is name of label and value is actual value of label.
-Example:
-[source,yaml]
-----
-embedded.redis.labels:
-  labelKey: labelValue
-----
 
 |embedded.{module-name}.filesToInclude
 | empty list
@@ -356,4 +362,5 @@ embedded:
 * Release can be done by contributor request
 * Contacts to start release:
 ** mailto:sstus@playtika.com[sstus@playtika.com]
-** mailto:asmirnova@playtika.com[asmirnova@playtika.com]
+** mailto:iyova@playtika.com[iyova@playtika.com]
+** mailto:admitrov@playtika.com[admitrov@playtika.com]
