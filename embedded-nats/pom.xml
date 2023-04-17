@@ -13,7 +13,7 @@
     <artifactId>embedded-nats</artifactId>
 
     <properties>
-        <jnats.version>2.16.9</jnats.version>
+        <jnats.version>2.16.10</jnats.version>
     </properties>
 
     <dependencies>
