@@ -21,6 +21,6 @@ public class Neo4jProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/neo4j
     @Override
     public String getDefaultDockerImage() {
-        return "neo4j:4.4-community";
+        return "neo4j:5.7-community";
     }
 }
