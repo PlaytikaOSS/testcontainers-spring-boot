@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.dynamodb.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.dynamodb.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of dynamodb on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of dynamodb on startup."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.victoriametrics.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.victoriametrics.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of victoriametrics on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of victoriametrics on startup."
+        }
+      ]
+    }
+  ]
+}

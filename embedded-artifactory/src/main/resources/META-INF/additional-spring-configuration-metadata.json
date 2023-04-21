@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.artifactory.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.artifactory.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of artifactory on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of artifactory on startup."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.consul.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.consul.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of consul on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of consul on startup."
+        }
+      ]
+    }
+  ]
+}

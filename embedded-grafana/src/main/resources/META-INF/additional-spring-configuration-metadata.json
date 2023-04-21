@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.grafana.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.grafana.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of grafana on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of grafana on startup."
+        }
+      ]
+    }
+  ]
+}
