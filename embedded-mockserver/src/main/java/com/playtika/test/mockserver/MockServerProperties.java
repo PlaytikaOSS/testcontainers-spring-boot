@@ -15,6 +15,6 @@ public class MockServerProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "jamesdbloom/mockserver:mockserver-5.13.2";
+        return "mockserver/mockserver:5.15.0";
     }
 }

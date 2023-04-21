@@ -14,7 +14,7 @@
     <artifactId>embedded-mockserver</artifactId>
 
     <properties>
-        <mockserver-client-java.version>5.13.2</mockserver-client-java.version>
+        <mockserver-client-java.version>5.15.0</mockserver-client-java.version>
     </properties>
 
     <dependencies>
