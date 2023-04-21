@@ -1,11 +1,8 @@
 name: Publish to the Maven Central Repository
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: Version to be released
-        required: true
+  release:
+    types: [ published ]
 
 jobs:
   publish:
@@ -15,24 +12,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
-      - name: Validate ${{ github.event.inputs.version }} release exists
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-              const response = await github.rest.repos.listReleases({
-                owner: context.repo.owner,
-                repo: context.repo.repo
-              });
-              if (!response) {
-                  throw new Error(`There are no available releases`);
-              }
-              for (const release of response.data) {
-                  if (release.name === "${{ github.event.inputs.version }}") {
-                      return
-                  }
-              }
-              throw new Error(`Release ${{ github.event.inputs.version }} is not available`);
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -44,24 +23,24 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          cache: 'maven'
 
       - name: Update version
-        run: |
-          ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.inputs.version }} versions:commit
-          git config user.name "jenkins"
-          git config user.email "jenkins@playtika.com"
-          git commit -m "Release ${{ github.event.inputs.version }}" -a
-          git push
+        if: ${{ success() }}
+        run: ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{github.event.release.tag_name}} versions:commit
 
       - name: Publish to the Maven Central Repository
-        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -Ddocker.cleanup.skip=true -P ossrh -DskipTests deploy
+        if: ${{ success() }}
+        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -P ossrh -DskipTests deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Publish release on GitHub
-        uses: test-room-7/action-publish-release-drafts@v0
+      - name: Commit & Push changes
+        if: ${{ success() }}
+        uses: actions-js/push@master
         with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            tag-name: ${{ github.event.inputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Release ${{github.event.release.tag_name}}'
+          branch: ${{ github.event.release.target_commitish }}

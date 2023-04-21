@@ -106,16 +106,14 @@
         <gpg.useagent>true</gpg.useagent>
         <gpg.lockMode>never</gpg.lockMode>
 
-        <docker.cleanup.skip>false</docker.cleanup.skip>
-
-
+        <docker.cleanup.skip>true</docker.cleanup.skip>
     </properties>
 
     <profiles>
         <profile>
-            <id>skip-docker-clean</id>
+            <id>docker-clean</id>
             <properties>
-                <docker.cleanup.skip>true</docker.cleanup.skip>
+                <docker.cleanup.skip>false</docker.cleanup.skip>
             </properties>
         </profile>
         <profile>

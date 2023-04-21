@@ -24,7 +24,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-       #needed for gitflow-incremental-builder
         with:
           fetch-depth: 0
       - name: Cache Maven packages
@@ -39,4 +38,4 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
       - name: Build with Maven
-        run: ./mvnw -version && whoami && umask -S && umask a+rw && umask -S && ./mvnw clean verify -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 --no-snapshot-updates --batch-mode --no-transfer-progress
+        run: ./mvnw -version && whoami && umask -S && umask a+rw && umask -S && ./mvnw clean verify -P docker-clean -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 --no-snapshot-updates --batch-mode --no-transfer-progress
