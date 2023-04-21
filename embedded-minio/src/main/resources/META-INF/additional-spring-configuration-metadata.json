@@ -3,22 +3,22 @@
   ],
   "properties": [
     {
-      "name": "embedded.solr.enabled",
+      "name": "embedded.minio.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
-    },
+    }
   ],
   "hints": [
     {
-      "name": "embedded.solr.enabled",
+      "name": "embedded.minio.enabled",
       "values": [
         {
           "value": "true",
-          "description": "Enables configuration of solr server on startup."
+          "description": "Enables configuration of minio on startup."
         },
         {
           "value": "false",
-          "description": "Disabled configuration of solr server on startup."
+          "description": "Disabled configuration of minio on startup."
         }
       ]
     }

@@ -6,6 +6,11 @@
       "name": "embedded.mockserver.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.mockserver.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "mockserver/mockserver:5.15.0"
     }
   ],
   "hints": [
@@ -26,8 +31,8 @@
       "name": "embedded.mockserver.docker-image",
       "values": [
         {
-          "value": "jamesdbloom/mockserver:mockserver-5.13.2",
-          "description": "Latest mockserver-5.13.X version. Ref https://hub.docker.com/r/jamesdbloom/mockserver/tags?page=1&name=mockserver-5.13.2 for further info."
+          "value": "mockserver/mockserver:5.15.0",
+          "description": "Latest mockserver:5.15.0 version. Ref https://hub.docker.com/r/mockserver/mockserver/tags for further info."
         }
       ]
     }

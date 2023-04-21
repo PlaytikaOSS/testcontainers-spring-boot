@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.db2.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.db2.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of db2 on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of db2 on startup."
+        }
+      ]
+    }
+  ]
+}

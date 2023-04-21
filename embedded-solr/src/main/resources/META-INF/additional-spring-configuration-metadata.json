@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.solr.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.solr.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of solr server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of solr server on startup."
+        }
+      ]
+    }
+  ]
+}
