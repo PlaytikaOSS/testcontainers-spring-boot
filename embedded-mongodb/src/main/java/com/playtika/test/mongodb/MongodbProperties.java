@@ -32,6 +32,6 @@ public class MongodbProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/mongo
     @Override
     public String getDefaultDockerImage() {
-        return "mongo:6.0.4-focal";
+        return "mongo:6.0.5-jammy";
     }
 }
