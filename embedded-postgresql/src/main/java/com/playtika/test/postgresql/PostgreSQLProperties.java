@@ -23,6 +23,8 @@ public class PostgreSQLProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/postgres
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "postgres:13-alpine";
     }
 }

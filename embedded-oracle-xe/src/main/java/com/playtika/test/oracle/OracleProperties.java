@@ -23,6 +23,8 @@ public class OracleProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "gvenzl/oracle-xe:18.4.0-slim";
     }
 }

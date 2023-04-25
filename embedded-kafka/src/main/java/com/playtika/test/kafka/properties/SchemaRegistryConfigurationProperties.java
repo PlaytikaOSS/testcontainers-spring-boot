@@ -39,6 +39,8 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     // https://hub.docker.com/r/confluentinc/cp-schema-registry
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "confluentinc/cp-schema-registry:7.2.0";
     }
 

@@ -15,9 +15,11 @@ public class K3sProperties extends CommonContainerProperties {
     String host = "localhost";
     int port = 6443;
 
-    // https://hub.docker.com/r/rancher/k3s
+
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "rancher/k3s:v1.24.10-k3s1";
     }
 }

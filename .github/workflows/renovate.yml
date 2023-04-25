@@ -1,0 +1,30 @@
+name: Renovate for update docker images
+
+on:
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: "Dry-Run"
+        default: false
+        required: false
+        type: boolean
+      logLevel:
+        description: "Log-Level"
+        default: "debug"
+        required: false
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v36.0.3
+        with:
+          configurationFile: .github/renovate/renovate.json
+          token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
+        env:
+          DRY_RUN: ${{ inputs.dryRun || 'false' }}
+          LOG_LEVEL: ${{ inputs.logLevel || 'debug' }}

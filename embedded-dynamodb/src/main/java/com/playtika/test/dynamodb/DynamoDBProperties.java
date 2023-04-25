@@ -20,6 +20,8 @@ public class DynamoDBProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "amazon/dynamodb-local:latest";
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
+        return "amazon/dynamodb-local:1.21.0";
     }
 }
