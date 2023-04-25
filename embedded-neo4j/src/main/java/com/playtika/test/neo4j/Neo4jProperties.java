@@ -21,6 +21,8 @@ public class Neo4jProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/neo4j
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "neo4j:4.4-community";
     }
 }

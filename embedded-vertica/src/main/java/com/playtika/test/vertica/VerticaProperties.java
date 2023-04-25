@@ -21,6 +21,8 @@ public class VerticaProperties extends CommonContainerProperties {
     // https://github.com/vertica/vertica-kubernetes
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "vertica/vertica-ce:11.1.0-0";
     }
 }

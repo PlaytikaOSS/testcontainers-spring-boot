@@ -1,0 +1,36 @@
+{
+  "branchPrefix": "dependabot/",
+  "username": "dependabot[bot]",
+  "gitAuthor": "dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+  "onboarding": false,
+  "platform": "github",
+  "repositories": [
+    "PlaytikaOSS/testcontainers-spring-boot"
+  ],
+  "extends": [
+    "config:base"
+  ],
+  "enabledManagers": ["regex"],
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "labels": [
+        "dependencies"
+      ]
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "(^|.+)Properties\\.java$"
+      ],
+      "matchStrings": [
+        "\/\/\\s?renovate:\\s?datasource=(?<datasource>.*?)\\s?.*?return\\s?\\\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\""
+      ],
+      "versioningTemplate": "docker",
+      "datasourceTemplate": "docker"
+    }
+  ]
+}
