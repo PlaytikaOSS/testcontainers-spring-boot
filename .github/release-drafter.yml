@@ -20,8 +20,11 @@ categories:
   - title: 🐞 Fixes
     label: bug
 
-  - title: 📁 Dependencies updates
+  - title: 📁 Java Dependencies updates
     label: dependencies
+
+  - title: 📁 Docker images updates
+    label: docker-update-images
 
   - title: 📖 Documentation
     label: documentation

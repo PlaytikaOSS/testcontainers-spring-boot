@@ -31,6 +31,8 @@ public class VaultProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/vault
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "vault:1.8.1";
     }
 }

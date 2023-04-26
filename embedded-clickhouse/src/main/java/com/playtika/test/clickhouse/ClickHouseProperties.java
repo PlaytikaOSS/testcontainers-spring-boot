@@ -11,8 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ClickHouseProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_CLICK_HOUSE = "embeddedClickHouse";
 
-    static final String DEFAULT_DOCKER_IMAGE = "yandex/clickhouse-server";
-    static final String DEFAULT_DOCKER_IMAGE_TAG = "21.7-alpine";
     String host = "localhost";
     int port = 8123;
     String user = "default";
@@ -21,9 +19,11 @@ public class ClickHouseProperties extends CommonContainerProperties {
     String initScriptPath;
 
     // https://github.com/ClickHouse/ClickHouse/releases
-    // https://hub.docker.com/r/yandex/clickhouse-server
+    // https://hub.docker.com/r/clickhouse/clickhouse-server/tags
     @Override
     public String getDefaultDockerImage() {
-        return DEFAULT_DOCKER_IMAGE + ":" + DEFAULT_DOCKER_IMAGE_TAG;
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
+        return "clickhouse/clickhouse-server:23.2.6";
     }
 }

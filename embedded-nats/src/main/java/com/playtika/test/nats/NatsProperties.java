@@ -19,6 +19,8 @@ public class NatsProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "nats:2.9";
     }
 }

@@ -32,6 +32,8 @@ public class MongodbProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/mongo
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "mongo:6.0.5-jammy";
     }
 }

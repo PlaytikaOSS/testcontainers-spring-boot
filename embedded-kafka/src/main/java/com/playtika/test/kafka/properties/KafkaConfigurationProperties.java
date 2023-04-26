@@ -69,7 +69,9 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     // https://docs.confluent.io/platform/current/installation/versions-interoperability.html
     @Override
     public String getDefaultDockerImage() {
-        return "confluentinc/cp-kafka:7.2.1";
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
+        return "confluentinc/cp-kafka:7.3.3";
     }
 
     @AllArgsConstructor

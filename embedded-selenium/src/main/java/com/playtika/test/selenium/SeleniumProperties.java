@@ -26,7 +26,9 @@ public class SeleniumProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return null;
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
+        return "selenium/standalone-chrome-debug:3.141.59-mercury";
     }
 
     public FirefoxOptions apply(FirefoxOptions options) {

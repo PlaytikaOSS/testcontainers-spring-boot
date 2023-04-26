@@ -31,6 +31,8 @@ public class Db2Properties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "ibmcom/db2";
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
+        return "ibmcom/db2:11.5.8.0";
     }
 }

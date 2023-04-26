@@ -27,6 +27,8 @@ public class MinioProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/minio/minio
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "minio/minio:RELEASE.2023-03-13T19-46-17Z";
     }
 }

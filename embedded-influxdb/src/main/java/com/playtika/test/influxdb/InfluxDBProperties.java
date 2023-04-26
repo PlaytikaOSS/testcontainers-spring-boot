@@ -24,6 +24,8 @@ public class InfluxDBProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/influxdb
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "influxdb:2.5-alpine";
     }
 }
