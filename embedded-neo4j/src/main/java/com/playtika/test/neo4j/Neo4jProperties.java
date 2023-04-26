@@ -13,7 +13,7 @@ public class Neo4jProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
 
     String user = "neo4j";
-    String password = "letmein";
+    String password = "password";
     int httpsPort = 7473;
     int httpPort = 7474;
     int boltPort = 7687;
