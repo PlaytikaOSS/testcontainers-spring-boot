@@ -19,11 +19,11 @@ public class ClickHouseProperties extends CommonContainerProperties {
     String initScriptPath;
 
     // https://github.com/ClickHouse/ClickHouse/releases
-    // https://hub.docker.com/r/yandex/clickhouse-server
+    // https://hub.docker.com/r/clickhouse/clickhouse-server/tags
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "yandex/clickhouse-server:21.7-alpine";
+        return "clickhouse/clickhouse-server:23.2.6";
     }
 }

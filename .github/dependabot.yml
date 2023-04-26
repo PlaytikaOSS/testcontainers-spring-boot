@@ -16,3 +16,7 @@ updates:
       - "housekeeping"
     schedule:
       interval: "monthly"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
