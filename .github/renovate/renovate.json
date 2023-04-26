@@ -4,18 +4,18 @@
   "username": "renovateBot",
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "platform": "github",
-  "dependencyDashboard": true,
   "onboarding": false,
   "requireConfig": "ignored",
   "commitBodyTable": true,
   "rebaseWhen": "auto",
+  "extends": ["config:base", ":disableDependencyDashboard"],
   "repositories": [
     "PlaytikaOSS/testcontainers-spring-boot"
   ],
   "enabledManagers": [
     "regex"
   ],
-  "labels": ["dependencies", "docker-update-images"],
+  "labels": ["docker-update-images"],
   "regexManagers": [
     {
       "description": "Process update docker images",

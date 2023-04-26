@@ -10,8 +10,17 @@ on:
         type: boolean
       logLevel:
         description: "Log-Level"
-        default: "debug"
         required: false
+        default: 'debug'
+        type: choice
+        options:
+          - info
+          - warn
+          - debug
+          - error
+          - fatal
+    schedule:
+      - cron: '0 8 * * *'
 
 jobs:
   renovate:
