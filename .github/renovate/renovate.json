@@ -5,10 +5,10 @@
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "platform": "github",
   "onboarding": false,
+  "dependencyDashboard": true,
   "requireConfig": "ignored",
   "commitBodyTable": true,
   "rebaseWhen": "auto",
-  "extends": ["config:base", ":disableDependencyDashboard"],
   "repositories": [
     "PlaytikaOSS/testcontainers-spring-boot"
   ],
