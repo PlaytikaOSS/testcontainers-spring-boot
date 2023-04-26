@@ -4,10 +4,13 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
@@ -19,7 +22,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.testcontainers.DockerClientFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -28,7 +30,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = EmbeddedLocalStackTest.TestConfiguration.class,
-        properties = "embedded.localstack.services=S3,SQS")
+        properties = {
+                "embedded.localstack.services=S3,SQS"
+        }
+)
 public class EmbeddedLocalStackTest {
     @Value("${embedded.localstack.accessKey}")
     private String accessKey;
@@ -48,6 +53,9 @@ public class EmbeddedLocalStackTest {
     @Autowired
     private ConfigurableEnvironment environment;
 
+    @Autowired
+    private LocalStackProperties properties;
+
     @Test
     public void shouldStartS3() {
         AmazonS3 s3 = AmazonS3ClientBuilder
@@ -57,7 +65,7 @@ public class EmbeddedLocalStackTest {
                 .build();
 
         String bucketName = "foo";
-        s3.createBucket(bucketName);
+        s3.createBucket(new CreateBucketRequest(bucketName, Region.US_West_2));
         s3.putObject(bucketName, "bar", "baz");
 
         List<Bucket> buckets = s3.listBuckets();
@@ -77,19 +85,19 @@ public class EmbeddedLocalStackTest {
     @Test
     public void shouldStartSQS() {
         AmazonSQS sqs = AmazonSQSClientBuilder.standard()
-                                              .withEndpointConfiguration(getEndpointConfiguration(sqsEndpoint))
-                                              .withCredentials(getAwsCredentialsProvider())
-                                              .build();
+                .withEndpointConfiguration(getEndpointConfiguration(sqsEndpoint))
+                .withCredentials(getAwsCredentialsProvider())
+                .build();
 
         CreateQueueResult queueResult = sqs.createQueue("baz");
         String fooQueueUrl = queueResult.getQueueUrl();
         assertThat(fooQueueUrl).
-                                       contains("http://" + DockerClientFactory.instance().dockerHostIpAddress() + ":" + sqsPort);
+                contains("http://" + properties.getHostname() + ":" + sqsPort);
 
         sqs.sendMessage(fooQueueUrl, "test");
         long messageCount = sqs.receiveMessage(fooQueueUrl).getMessages().stream()
-                                     .filter(message -> message.getBody().equals("test"))
-                                     .count();
+                .filter(message -> message.getBody().equals("test"))
+                .count();
         assertThat(messageCount).isEqualTo(1);
     }
 
@@ -103,7 +111,7 @@ public class EmbeddedLocalStackTest {
     }
 
     private AwsClientBuilder.EndpointConfiguration getEndpointConfiguration(String endpoint) {
-        return new AwsClientBuilder.EndpointConfiguration(endpoint, "us-west-2");
+        return new AwsClientBuilder.EndpointConfiguration(endpoint, Regions.DEFAULT_REGION.getName());
     }
 
     private AWSCredentialsProvider getAwsCredentialsProvider() {
