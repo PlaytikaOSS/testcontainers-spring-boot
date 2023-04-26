@@ -11,6 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: ${{github.event.release.target_commitish}}
           token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
 
       - name: Set up JDK
