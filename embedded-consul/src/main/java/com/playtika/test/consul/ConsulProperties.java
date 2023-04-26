@@ -19,6 +19,6 @@ public class ConsulProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "consul:1.10";
+        return "consul:1.15";
     }
 }
