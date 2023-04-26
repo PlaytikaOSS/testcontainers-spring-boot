@@ -20,6 +20,8 @@ public class RabbitMQProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/rabbitmq
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "rabbitmq:3.8-alpine";
     }
 }

@@ -22,6 +22,8 @@ public class LocalStackProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/localstack/localstack
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "localstack/localstack:0.14.0";
     }
 }

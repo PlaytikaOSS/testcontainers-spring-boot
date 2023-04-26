@@ -21,14 +21,12 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
 
-import static com.playtika.test.pubsub.PubsubProperties.BASE_DOCKER_IMAGE;
 import static com.playtika.test.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringBootTest(classes = EmbeddedPubsubBootstrapConfigurationTest.TestConfiguration.class,
-    properties = "embedded.google.pubsub.dockerImage=" + BASE_DOCKER_IMAGE + "-emulators") // much smaller image
+@SpringBootTest(classes = EmbeddedPubsubBootstrapConfigurationTest.TestConfiguration.class)
 @ActiveProfiles("enabled")
 class EmbeddedPubsubBootstrapConfigurationTest {
 

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -82,12 +81,8 @@ public class EmbeddedSeleniumBootstrapConfiguration {
     public BrowserWebDriverContainer selenium(ConfigurableEnvironment environment,
                                               SeleniumProperties properties,
                                               MutableCapabilities capabilities,
-                                              @Deprecated @Value("${embedded.selenium.imageName:#{null}}") String deprImageName,
                                               Optional<Network> network) {
 
-        if (deprImageName != null) {
-            throw new IllegalArgumentException("`embedded.selenium.imageName` property is deprecated. Please replace `embedded.selenium.imageName` property with `embedded.selenium.dockerImage` property.");
-        }
         BrowserWebDriverContainer container = isNotBlank(properties.getDockerImage())
                 ? new BrowserWebDriverContainer<>(ContainerUtils.getDockerImageName(properties))
                 : new BrowserWebDriverContainer<>();

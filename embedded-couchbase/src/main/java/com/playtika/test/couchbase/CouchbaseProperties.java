@@ -45,6 +45,8 @@ public class CouchbaseProperties extends CommonContainerProperties {
     // https://hub.docker.com/r/couchbase/server
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "couchbase/server:7.0.0";
     }
 }

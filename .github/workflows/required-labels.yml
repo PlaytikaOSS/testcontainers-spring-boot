@@ -13,4 +13,4 @@ jobs:
         with:
           mode: minimum
           count: 1
-          labels: "breaking-change, feature, enhancement, bug, dependencies, documentation, housekeeping"
+          labels: "breaking-change, feature, enhancement, bug, dependencies, docker-update-images, documentation, housekeeping"

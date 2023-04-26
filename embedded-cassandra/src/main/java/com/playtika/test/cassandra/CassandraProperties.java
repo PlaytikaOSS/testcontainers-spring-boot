@@ -20,6 +20,8 @@ public class CassandraProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/cassandra
     @Override
     public String getDefaultDockerImage() {
-        return "cassandra:4.0";
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
+        return "cassandra:4.1";
     }
 }

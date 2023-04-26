@@ -31,6 +31,8 @@ public class MariaDBProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/mariadb
     @Override
     public String getDefaultDockerImage() {
+        // Please don`t remove this comment.
+        // renovate: datasource=docker
         return "mariadb:10.6-focal";
     }
 }
