@@ -18,7 +18,7 @@
 * `embedded.mariadb.reuseContainer` `(true|false, default is false)`
 * `embedded.mariadb.encoding` `(default is 'utf8mb4')`
 * `embedded.mariadb.collation` `(default is 'utf8mb4_unicode_ci')`
-* `embedded.mariadb.dockerImage` `(default is 'mariadb:10.6-focal')`
+* `embedded.mariadb.dockerImage` `(default is 'mariadb:10.8-focal')`
 ** Image versions on https://hub.docker.com/_/mariadb?tab=tags[dockerhub]
 * `embedded.mariadb.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.mariadb.maxAllowedPacket` `(default is '16777216')`
