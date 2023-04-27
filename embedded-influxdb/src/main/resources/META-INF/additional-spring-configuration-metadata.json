@@ -26,7 +26,7 @@
       "name": "embedded.influxdb.docker-image",
       "values": [
         {
-          "value": "influxdb:1.5-alpine",
+          "value": "influxdb:1.8-alpine",
           "description": "Latest 1.5.x alpine version. Ref https://hub.docker.com/_/influxdb for further info."
         },
         {
