@@ -18,7 +18,7 @@
 * `embedded.cassandra.reuseContainer` `(true|false, default is false)`
 * `embedded.cassandra.keyspace-name` `(default is 'embedded')`
 * `embedded.cassandra.replication-factor` `(default is '1')`
-* `embedded.cassandra.dockerImage` `(default is 'cassandra:4.0')`
+* `embedded.cassandra.dockerImage` `(default is 'cassandra:4.1')`
 ** Image versions on https://hub.docker.com/_/cassandra?tab=tags[dockerhub]
 * `embedded.toxiproxy.proxies.cassandra.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-cassandra` container.
 
