@@ -18,7 +18,7 @@
 * `embedded.rabbitmq.reuseContainer` `(true|false, default is false)`
 * `embedded.rabbitmq.password` `(default is 'rabbitmq')`
 * `embedded.rabbitmq.vhost` `(virtual host, default is '/')`
-* `embedded.rabbitmq.dockerImage` `(default is 'rabbitmq:3.8-alpine')`
+* `embedded.rabbitmq.dockerImage` `(default is 'rabbitmq:3.11-alpine')`
 ** Image versions on https://hub.docker.com/_/rabbitmq?tab=tags[dockerhub]
 * `embedded.rabbitmq.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.toxiproxy.proxies.rabbitmq.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-rabbitmq` container.
