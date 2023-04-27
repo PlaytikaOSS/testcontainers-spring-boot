@@ -24,6 +24,6 @@ public class LocalStackProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "localstack/localstack:0.14.5";
+        return "localstack/localstack:2.0.2";
     }
 }
