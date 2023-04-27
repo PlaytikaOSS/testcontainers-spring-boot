@@ -16,7 +16,7 @@
 
 * `embedded.keycloak.enabled` `(true|false, default is true)`
 * `embedded.keycloak.reuseContainer` `(true|false, default is false)`
-* `embedded.keycloak.dockerImage` `(default is 'jboss/keycloak:15.0.0')`
+* `embedded.keycloak.dockerImage` `(default is 'jboss/keycloak:15.1.1')`
 ** Image versions on https://hub.docker.com/r/jboss/keycloak/tags[dockerhub]
 * `embedded.keycloak.command` `(String[], default is '["-c", "standalone.xml", "-Dkeycloak.profile.feature.upload_scripts=enabled"]')`
 * `embedded.keycloak.admin-user` `(default is 'admin')`
