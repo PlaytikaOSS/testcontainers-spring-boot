@@ -16,7 +16,7 @@
 
 * `embedded.vault.enabled` `(true|false, default is true)`
 * `embedded.vault.reuseContainer` `(true|false, default is false)`
-* `embedded.vault.dockerImage` `(default is 'vault:1.8.1')`
+* `embedded.vault.dockerImage` `(default is 'vault:1.13.1')`
 ** Image versions on https://hub.docker.com/_/vault?tab=tags[dockerhub]
 * `embedded.vault.host` `(default is 'localhost')`
 * `embedded.vault.port` `(int, default is 8200)`
