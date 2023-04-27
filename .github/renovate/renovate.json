@@ -4,6 +4,8 @@
   "username": "renovate[bot]",
   "gitAuthor": "Renovate Bot <renovate@whitesourcesoftware.com>",
   "platform": "github",
+  "prHourlyLimit": 10,
+  "prConcurrentLimit": 20,
   "onboarding": false,
   "dependencyDashboard": false,
   "requireConfig": "ignored",
