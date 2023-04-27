@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.playtika.testcontainers</groupId>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
-        <version>3.0.0-RC5</version>
+        <version>3.0.0-RC6</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
