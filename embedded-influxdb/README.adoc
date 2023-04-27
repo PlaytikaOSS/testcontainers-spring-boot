@@ -16,7 +16,7 @@
 
 * `embedded.influxdb.enabled` `(true|false, default is true)`
 * `embedded.influxdb.reuseContainer` `(true|false, default is false)`
-* `embedded.influxdb.dockerImage` `(default is 'influxdb:2.5-alpine')`
+* `embedded.influxdb.dockerImage` `(default is 'influxdb:2.7-alpine')`
 ** Image versions on https://hub.docker.com/_/influxdb?tab=tags[dockerhub]
 * `embedded.influxdb.admin-user` `(default is 'admin')`
 * `embedded.influxdb.admin-password` `(default is 'admin')`
