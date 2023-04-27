@@ -16,7 +16,7 @@
 
 * `embedded.consul.enabled` `(true|false, default is 'true')`
 * `embedded.consul.configurationFile` `(path for the consul configuration file to be mounted, relative to the resources folder, default is 'null')`
-* `embedded.consul.dockerImage` `(default is 'consul:1.10')`
+* `embedded.consul.dockerImage` `(default is 'consul:1.15')`
 ** Image versions on https://hub.docker.com/_/consul?tab=tags[dockerhub]
 * `embedded.toxiproxy.proxies.consul.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-consul` container.
 
