@@ -24,6 +24,6 @@ public class ClickHouseProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "clickhouse/clickhouse-server:23.3.2";
+        return "clickhouse/clickhouse-server:23.4.1";
     }
 }
