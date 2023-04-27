@@ -24,10 +24,14 @@
     {
       "description": "Process update docker images",
       "fileMatch": [
-        "^.*Properties\\.java$"
+        "^.*Properties\\.java$",
+        "^.*\\.adoc",
+        "^.*additional-spring-configuration-metadata.json"
       ],
       "matchStrings": [
-        "\\/\\/.*?renovate:.*?datasource=(?<datasource>.*?)\\s+?return\\s+?\\\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\""
+        "\\/\\/.*?renovate:.*?datasource=(?<datasource>.*?)\\s+?return\\s+?\\\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\"",
+        "\\*.+?\\`embedded\\.\\w+?\\.(dockerImage|docker\\-image)\\`.*\\'(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)'",
+        "\\\"embedded\\.\\w+?\\.(dockerImage|docker\\-image)\\\",\\s+.*\\s+.*\\s+\\\"value\\\"\\s*?:\\s*?\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\""
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
