@@ -35,6 +35,7 @@ public class EmbeddedK3sBootstrapConfiguration {
                             Optional<Network> network) {
         K3sContainer k3sContainer = new K3sContainer(ContainerUtils.getDockerImageName(properties));
         k3sContainer
+                .withCommand(new String[]{"server", "--tls-san=" + k3sContainer.getHost()})
                 .withExposedPorts(properties.getPort())
                 .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Node controller sync successful.*"));
 

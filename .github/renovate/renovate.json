@@ -17,7 +17,9 @@
   "enabledManagers": [
     "regex"
   ],
-  "labels": ["docker-update-images"],
+  "labels": [
+    "docker-update-images"
+  ],
   "regexManagers": [
     {
       "description": "Process update docker images",
@@ -29,6 +31,29 @@
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
+    },
+    {
+      "description": "Process update doc for docker images",
+      "fileMatch": [
+        "^.*\\.adoc"
+      ],
+      "matchStrings": [
+        "\\*.+?\\`embedded\\.\\w+?\\.(dockerImage|docker\\-image)\\`.*\\'(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)'"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "Process update images in spring configuration metadata",
+      "fileMatch": [
+        "^.*additional-spring-configuration-metadata.json"
+      ],
+      "matchStrings": [
+        "\\\"embedded\\.\\w+?\\.(dockerImage|docker\\-image)\\\",\\s+.*\\s+.*\\s+\\\"value\\\"\\s*?:\\s*?\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\""
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
     }
+
   ]
 }
