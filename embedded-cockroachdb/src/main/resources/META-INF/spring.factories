@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.cockroach.EmbeddedCockroachDBBootstrapConfiguration
+  com.playtika.testcontainer.cockroach.EmbeddedCockroachDBBootstrapConfiguration

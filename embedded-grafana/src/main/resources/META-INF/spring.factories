@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.grafana.EmbeddedGrafanaBootstrapConfiguration
+com.playtika.testcontainer.grafana.EmbeddedGrafanaBootstrapConfiguration

@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.postgresql.EmbeddedPostgreSQLBootstrapConfiguration
+  com.playtika.testcontainer.postgresql.EmbeddedPostgreSQLBootstrapConfiguration

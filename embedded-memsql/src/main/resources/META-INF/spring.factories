@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.memsql.EmbeddedMemSqlBootstrapConfiguration
+com.playtika.testcontainer.memsql.EmbeddedMemSqlBootstrapConfiguration

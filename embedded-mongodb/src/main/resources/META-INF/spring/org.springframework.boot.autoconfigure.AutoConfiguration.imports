@@ -1,2 +1,2 @@
-com.playtika.test.mongodb.EmbeddedMongodbTestOperationsAutoConfiguration
-com.playtika.test.mongodb.EmbeddedMongodbDependenciesAutoConfiguration
+com.playtika.testcontainer.mongodb.EmbeddedMongodbTestOperationsAutoConfiguration
+com.playtika.testcontainer.mongodb.EmbeddedMongodbDependenciesAutoConfiguration

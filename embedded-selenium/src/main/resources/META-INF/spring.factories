@@ -1,7 +1,7 @@
 # Spring Test ContextCustomizerFactories
 org.springframework.test.context.ContextCustomizerFactory=\
-   com.playtika.test.selenium.testscope.TestcontainerContextCustomizerFactory
+   com.playtika.testcontainer.selenium.testscope.TestcontainerContextCustomizerFactory
 
 org.springframework.test.context.TestExecutionListener=\
-  com.playtika.test.selenium.testscope.TestcontainerTestExecutionListener
+  com.playtika.testcontainer.selenium.testscope.TestcontainerTestExecutionListener
 

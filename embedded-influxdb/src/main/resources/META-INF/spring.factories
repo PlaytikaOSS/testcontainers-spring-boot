@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.influxdb.EmbeddedInfluxDBBootstrapConfiguration
+  com.playtika.testcontainer.influxdb.EmbeddedInfluxDBBootstrapConfiguration

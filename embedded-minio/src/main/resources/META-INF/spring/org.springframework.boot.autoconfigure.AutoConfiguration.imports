@@ -1,1 +1,1 @@
-com.playtika.test.minio.EmbeddedMinioTestOperationsAutoConfiguration
+com.playtika.testcontainer.minio.EmbeddedMinioTestOperationsAutoConfiguration

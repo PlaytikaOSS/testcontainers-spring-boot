@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.prometheus.EmbeddedPrometheusBootstrapConfiguration
+com.playtika.testcontainer.prometheus.EmbeddedPrometheusBootstrapConfiguration
