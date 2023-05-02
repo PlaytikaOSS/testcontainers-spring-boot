@@ -1,1 +1,1 @@
-com.playtika.test.oracle.EmbeddedOracleDependenciesAutoConfiguration
+com.playtika.testcontainer.oracle.EmbeddedOracleDependenciesAutoConfiguration

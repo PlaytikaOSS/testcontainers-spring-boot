@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.elasticsearch.EmbeddedElasticSearchBootstrapConfiguration
+com.playtika.testcontainer.elasticsearch.EmbeddedElasticSearchBootstrapConfiguration

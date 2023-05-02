@@ -6,7 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.playtika.test" level="info"/>
+        <Logger name="com.playtika.testcontainer" level="info"/>
         <Logger name="org.springframework" level="info"/>
         <Root level="warn">
             <AppenderRef ref="console"/>

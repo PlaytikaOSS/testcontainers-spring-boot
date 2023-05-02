@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.victoriametrics.EmbeddedVictoriaMetricsBootstrapConfiguration
+com.playtika.testcontainer.victoriametrics.EmbeddedVictoriaMetricsBootstrapConfiguration

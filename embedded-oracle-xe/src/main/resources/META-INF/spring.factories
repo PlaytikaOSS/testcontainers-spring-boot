@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.oracle.EmbeddedOracleBootstrapConfiguration
+  com.playtika.testcontainer.oracle.EmbeddedOracleBootstrapConfiguration

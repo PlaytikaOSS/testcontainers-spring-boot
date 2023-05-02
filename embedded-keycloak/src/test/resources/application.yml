@@ -10,7 +10,7 @@ spring:
 
 logging:
   level:
-    com.playtika.test: info
+    com.playtika.testcontainer: info
     org.springframework.boot: info
     org.springframework.security: info
     org.keycloak: info

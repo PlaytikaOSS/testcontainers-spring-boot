@@ -1,2 +1,2 @@
-com.playtika.test.mysql.EmbeddedMySQLTestOperationsAutoConfiguration
-com.playtika.test.mysql.EmbeddedMySQLDependenciesAutoConfiguration
+com.playtika.testcontainer.mysql.EmbeddedMySQLTestOperationsAutoConfiguration
+com.playtika.testcontainer.mysql.EmbeddedMySQLDependenciesAutoConfiguration

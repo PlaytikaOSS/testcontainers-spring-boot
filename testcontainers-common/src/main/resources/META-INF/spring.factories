@@ -1,6 +1,6 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
- com.playtika.test.common.spring.DockerPresenceBootstrapConfiguration
+ com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration
 
 org.springframework.boot.diagnostics.FailureAnalyzer=\
- com.playtika.test.common.spring.NoDockerPresenceMarkerFailureAnalyser,\
- com.playtika.test.common.spring.DockerNotPresentFailureAnalyser
+ com.playtika.testcontainer.common.spring.NoDockerPresenceMarkerFailureAnalyser,\
+ com.playtika.testcontainer.common.spring.DockerNotPresentFailureAnalyser
