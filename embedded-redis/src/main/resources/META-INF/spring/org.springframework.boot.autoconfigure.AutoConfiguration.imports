@@ -1,2 +1,2 @@
-com.playtika.test.redis.EmbeddedRedisTestOperationsAutoConfiguration
-com.playtika.test.redis.EmbeddedRedisDependenciesAutoConfiguration
+com.playtika.testcontainer.redis.EmbeddedRedisTestOperationsAutoConfiguration
+com.playtika.testcontainer.redis.EmbeddedRedisDependenciesAutoConfiguration

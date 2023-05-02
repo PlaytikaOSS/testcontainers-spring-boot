@@ -1,2 +1,2 @@
-com.playtika.test.mariadb.EmbeddedMariaDBTestOperationsAutoConfiguration
-com.playtika.test.mariadb.EmbeddedMariaDBDependenciesAutoConfiguration
+com.playtika.testcontainer.mariadb.EmbeddedMariaDBTestOperationsAutoConfiguration
+com.playtika.testcontainer.mariadb.EmbeddedMariaDBDependenciesAutoConfiguration

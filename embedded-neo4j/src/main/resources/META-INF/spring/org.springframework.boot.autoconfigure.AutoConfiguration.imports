@@ -1,2 +1,2 @@
-com.playtika.test.neo4j.EmbeddedNeo4jTestOperationsAutoConfiguration
-com.playtika.test.neo4j.EmbeddedNeo4jDependenciesAutoConfiguration
+com.playtika.testcontainer.neo4j.EmbeddedNeo4jTestOperationsAutoConfiguration
+com.playtika.testcontainer.neo4j.EmbeddedNeo4jDependenciesAutoConfiguration

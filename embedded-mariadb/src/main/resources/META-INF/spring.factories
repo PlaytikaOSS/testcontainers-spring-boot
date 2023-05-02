@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.mariadb.EmbeddedMariaDBBootstrapConfiguration
+  com.playtika.testcontainer.mariadb.EmbeddedMariaDBBootstrapConfiguration
