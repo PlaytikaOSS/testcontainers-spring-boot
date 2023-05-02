@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.storage.EmbeddedStorageBootstrapConfiguration
+com.playtika.testcontainer.storage.EmbeddedStorageBootstrapConfiguration

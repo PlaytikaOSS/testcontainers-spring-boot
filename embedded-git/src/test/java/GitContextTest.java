@@ -1,4 +1,4 @@
-import com.playtika.test.git.EmbeddedGitBootstrapConfiguration;
+import com.playtika.testcontainer.git.EmbeddedGitBootstrapConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

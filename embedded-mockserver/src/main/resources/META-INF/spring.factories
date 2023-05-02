@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.mockserver.EmbeddedMockServerBootstrapConfiguration
+  com.playtika.testcontainer.mockserver.EmbeddedMockServerBootstrapConfiguration

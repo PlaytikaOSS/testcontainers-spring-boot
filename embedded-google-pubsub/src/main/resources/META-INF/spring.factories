@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.pubsub.EmbeddedPubsubBootstrapConfiguration
+com.playtika.testcontainer.pubsub.EmbeddedPubsubBootstrapConfiguration

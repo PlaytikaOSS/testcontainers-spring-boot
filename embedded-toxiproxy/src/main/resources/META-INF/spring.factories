@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration
+com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration

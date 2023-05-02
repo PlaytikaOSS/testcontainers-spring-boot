@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.vertica.EmbeddedVerticaBootstrapConfiguration
+com.playtika.testcontainer.vertica.EmbeddedVerticaBootstrapConfiguration

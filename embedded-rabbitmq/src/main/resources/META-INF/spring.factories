@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.rabbitmq.EmbeddedRabbitMQBootstrapConfiguration
+com.playtika.testcontainer.rabbitmq.EmbeddedRabbitMQBootstrapConfiguration
