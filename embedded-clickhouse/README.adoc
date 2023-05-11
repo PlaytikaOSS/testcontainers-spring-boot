@@ -16,7 +16,7 @@
 
 * `embedded.clickhouse.enabled` `(true|false, default is true)`
 * `embedded.clickhouse.reuseContainer` `(true|false, default is false)`
-* `embedded.clickhouse.dockerImage` `(default is 'clickhouse/clickhouse-server:23.4.1')`
+* `embedded.clickhouse.dockerImage` `(default is 'clickhouse/clickhouse-server:23.4.2')`
 ** Image versions on https://hub.docker.com/r/clickhouse/clickhouse-server/tags[dockerhub]
 * `embedded.clickhouse.user` `(default is 'default')`
 * `embedded.clickhouse.password` `(default is '')`
