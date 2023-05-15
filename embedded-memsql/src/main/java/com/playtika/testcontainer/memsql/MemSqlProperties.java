@@ -28,6 +28,6 @@ public class MemSqlProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "ghcr.io/singlestore-labs/singlestoredb-dev:0.2.5";
+        return "ghcr.io/singlestore-labs/singlestoredb-dev:0.2.6";
     }
 }

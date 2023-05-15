@@ -33,6 +33,6 @@ public class VaultProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "vault:1.13.1";
+        return "vault:1.13.2";
     }
 }

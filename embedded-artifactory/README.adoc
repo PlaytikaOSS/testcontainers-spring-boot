@@ -16,7 +16,7 @@
 
 * `embedded.artifactory.enabled` `(true|false, default is true)`
 * `embedded.artifactory.reuseContainer` `(true|false, default is false)`
-* `embedded.artifactory.dockerImage` `(default is 'releases-docker.jfrog.io/jfrog/artifactory-oss:7.55.10')`
+* `embedded.artifactory.dockerImage` `(default is 'releases-docker.jfrog.io/jfrog/artifactory-oss:7.55.13')`
 ** Release notes on https://www.jfrog.com/confluence/display/JFROG/Artifactory+Release+Notes[jfrog.com]
 * `embedded.artifactory.networkAlias` `(default is 'artifactory')`
 * `embedded.artifactory.username` `(default is 'admin')`
