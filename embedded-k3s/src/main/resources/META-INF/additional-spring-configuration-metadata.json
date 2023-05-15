@@ -26,7 +26,7 @@
       "name": "embedded.k3s.docker-image",
       "values": [
         {
-          "value": "rancher/k3s:v1.26.4-k3s1",
+          "value": "rancher/k3s:v1.27.1-k3s1",
           "description": "Latest 1.24.x version. Ref https://hub.docker.com/r/rancher/k3s/tags?page=1&name=v1.24 for further info."
         }
       ]
