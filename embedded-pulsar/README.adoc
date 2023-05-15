@@ -15,7 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.pulsar.enabled` `(true|false, default is true)`
-* `embedded.pulsar.docker-image` `(default is 'apachepulsar/pulsar:2.11.1')`
+* `embedded.pulsar.docker-image` `(default is 'apachepulsar/pulsar:3.0.0')`
 ** Image versions on https://hub.docker.com/r/apachepulsar/pulsar/tags[dockerhub]
 * `embedded.toxiproxy.proxies.pulsar.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-pulsar` container.
 
