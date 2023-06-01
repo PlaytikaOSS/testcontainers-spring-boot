@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.zookeeper.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.zookeeper.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of Zookeeper server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of Zookeeper server on startup."
+        }
+      ]
+    }
+  ]
+}
