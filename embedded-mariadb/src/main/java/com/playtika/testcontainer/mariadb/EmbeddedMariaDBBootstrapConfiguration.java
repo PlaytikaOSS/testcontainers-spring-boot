@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.mariadb.MariaDBProperties.BEAN_NAME_EMB
 @EnableConfigurationProperties(MariaDBProperties.class)
 public class EmbeddedMariaDBBootstrapConfiguration {
 
+    private static final String MARIADB_NETWORK_ALIAS = "mariadb.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mariadb")
     ToxiproxyContainer.ContainerProxy mariadbContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -68,7 +70,8 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                 "--collation-server=" + properties.getCollation(),
                                 "--max_allowed_packet=" + properties.getMaxAllowedPacket())
                         .withExposedPorts(properties.getPort())
-                        .withInitScript(properties.getInitScriptPath());
+                        .withInitScript(properties.getInitScriptPath())
+                        .withNetworkAliases(MARIADB_NETWORK_ALIAS);
 
         network.ifPresent(mariadb::withNetwork);
 
@@ -89,6 +92,8 @@ public class EmbeddedMariaDBBootstrapConfiguration {
         map.put("embedded.mariadb.schema", properties.getDatabase());
         map.put("embedded.mariadb.user", properties.getUser());
         map.put("embedded.mariadb.password", properties.getPassword());
+        map.put("embedded.mariadb.networkAlias", MARIADB_NETWORK_ALIAS);
+        map.put("embedded.mariadb.internalPort", properties.getPort());
 
         String jdbcURL = "jdbc:mysql://{}:{}/{}";
         log.info("Started mariadb server. Connection details: {}, " +

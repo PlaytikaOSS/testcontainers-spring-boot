@@ -32,4 +32,6 @@
 * `embedded.grafana.password`
 * `embedded.grafana.toxiproxy.host`
 * `embedded.grafana.toxiproxy.port`
+* `embedded.grafana.networkAlias`
+* `embedded.grafana.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy grafanaContainerProxy`

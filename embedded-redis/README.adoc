@@ -33,6 +33,7 @@
 * `embedded.redis.password`
 * `embedded.redis.toxiproxy.host`
 * `embedded.redis.toxiproxy.port`
+* `embedded.redis.networkAlias`
 * Bean `ToxiproxyContainer.ContainerProxy redisContainerProxy`
 
 //TODO: example missing

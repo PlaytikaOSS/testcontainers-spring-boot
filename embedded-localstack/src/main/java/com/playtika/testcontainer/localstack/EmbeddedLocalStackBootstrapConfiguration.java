@@ -33,6 +33,8 @@ import static com.playtika.testcontainer.localstack.LocalStackProperties.BEAN_NA
 @EnableConfigurationProperties(LocalStackProperties.class)
 public class EmbeddedLocalStackBootstrapConfiguration {
 
+    private static final String LOCALSTACK_NETWORK_ALIAS = "localstack.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "localstack")
     ToxiproxyContainer.ContainerProxy localstackContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -63,7 +65,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
                 .withExposedPorts(properties.getEdgePort())
                 .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
                 .withEnv("HOSTNAME", properties.getHostname())
-                .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal());
+                .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
+                .withNetworkAliases(LOCALSTACK_NETWORK_ALIAS);
 
         network.ifPresent(localStackContainer::withNetwork);
 
@@ -84,6 +87,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         map.put("embedded.localstack.host", host);
         map.put("embedded.localstack.accessKey", localStack.getAccessKey());
         map.put("embedded.localstack.secretKey", localStack.getSecretKey());
+        map.put("embedded.localstack.networkAlias", LOCALSTACK_NETWORK_ALIAS);
+        map.put("embedded.localstack.internalEdgePort", properties.getEdgePort());
         String prefix = "embedded.localstack.";
         Integer mappedPort = localStack.getMappedPort(properties.getEdgePort());
         for (LocalStackContainer.Service service : properties.services) {

@@ -35,6 +35,8 @@ import static com.playtika.testcontainer.mssqlserver.MSSQLServerProperties.BEAN_
 @EnableConfigurationProperties(MSSQLServerProperties.class)
 public class EmbeddedMSSQLServerBootstrapConfiguration {
 
+    private static final String MSSQLSERVER_NETWORK_ALIAS = "mssqlserver.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
     ToxiproxyContainer.ContainerProxy mssqlserverContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -61,7 +63,8 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
 
         EmbeddedMSSQLServerContainer mssqlServerContainer = new EmbeddedMSSQLServerContainer(ContainerUtils.getDockerImageName(properties))
                 .withPassword(properties.getPassword())
-                .withInitScript(properties.getInitScriptPath());
+                .withInitScript(properties.getInitScriptPath())
+                .withNetworkAliases(MSSQLSERVER_NETWORK_ALIAS);
 
         network.ifPresent(mssqlServerContainer::withNetwork);
 
@@ -95,6 +98,8 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
         map.put("embedded.mssqlserver.database", "master");
         map.put("embedded.mssqlserver.user", "sa");
         map.put("embedded.mssqlserver.password", properties.getPassword());
+        map.put("embedded.mssqlserver.networkAlias", MSSQLSERVER_NETWORK_ALIAS);
+        map.put("embedded.mssqlserver.internalPort", MSSQLServerContainer.MS_SQL_SERVER_PORT);
 
         String jdbcURL = "jdbc:sqlserver://{}:{};databaseName={};trustServerCertificate=true";
         log.info("Started mssql server. Connection details: {}, " +

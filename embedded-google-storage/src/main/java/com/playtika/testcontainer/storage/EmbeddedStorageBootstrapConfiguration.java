@@ -37,6 +37,8 @@ import static java.lang.String.format;
 @EnableConfigurationProperties(StorageProperties.class)
 public class EmbeddedStorageBootstrapConfiguration {
 
+    private static final String GOOGLE_STORAGE_NETWORK_ALIAS = "googlestorage.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "google.storage")
     ToxiproxyContainer.ContainerProxy googleStorageContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -70,7 +72,8 @@ public class EmbeddedStorageBootstrapConfiguration {
                         "-host", "0.0.0.0",
                         "-port", String.valueOf(StorageProperties.PORT),
                         "-location", properties.getBucketLocation()
-                ));
+                ))
+                .withNetworkAliases(GOOGLE_STORAGE_NETWORK_ALIAS);
 
         network.ifPresent(storageContainer::withNetwork);
 
@@ -98,6 +101,8 @@ public class EmbeddedStorageBootstrapConfiguration {
         map.put("embedded.google.storage.endpoint", buildContainerEndpoint(container));
         map.put("embedded.google.storage.project-id", properties.getProjectId());
         map.put("embedded.google.storage.bucket-location", properties.getBucketLocation());
+        map.put("embedded.google.storage.networkAlias", GOOGLE_STORAGE_NETWORK_ALIAS);
+        map.put("embedded.google.storage.internalPort", StorageProperties.PORT);
 
         log.info("Started Google Cloud Fake Storage Server. Connection details: {}, ", map);
         log.info("Consult with the doc https://github.com/fsouza/fake-gcs-server for more details");

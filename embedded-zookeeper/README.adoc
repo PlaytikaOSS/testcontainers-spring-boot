@@ -21,6 +21,9 @@
 * `embedded.zookeeper.host`
 * `embedded.zookeeper.port`
 * `embedded.zookeeper.admin.port`
+* `embedded.zookeeper.networkAlias`
+* `embedded.zookeeper.internalClientPort`
+* `embedded.zookeeper.internalAdminServerPort`
 
 ==== Example (Spring Boot)
 

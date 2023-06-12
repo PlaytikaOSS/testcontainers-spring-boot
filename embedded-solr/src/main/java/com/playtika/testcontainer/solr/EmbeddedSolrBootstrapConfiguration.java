@@ -33,6 +33,8 @@ import static com.playtika.testcontainer.solr.SolrProperties.BEAN_NAME_EMBEDDED_
 @EnableConfigurationProperties(SolrProperties.class)
 public class EmbeddedSolrBootstrapConfiguration {
 
+    private static final String SOLR_NETWORK_ALIAS = "solr.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "solr")
     ToxiproxyContainer.ContainerProxy solrContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -59,7 +61,8 @@ public class EmbeddedSolrBootstrapConfiguration {
                                              Optional<Network> network) {
 
         SolrContainer solrContainer = new SolrContainer(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort());
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(SOLR_NETWORK_ALIAS);
 
         network.ifPresent(solrContainer::withNetwork);
 
@@ -79,6 +82,8 @@ public class EmbeddedSolrBootstrapConfiguration {
 
         map.put("embedded.solr.host", host);
         map.put("embedded.solr.port", port);
+        map.put("embedded.solr.networkAlias", SOLR_NETWORK_ALIAS);
+        map.put("embedded.solr.internalPort", properties.getPort());
 
         log.info("Started Solr server. Connection details {}", map);
 

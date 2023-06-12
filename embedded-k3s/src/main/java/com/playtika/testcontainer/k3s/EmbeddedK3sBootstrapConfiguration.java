@@ -29,6 +29,8 @@ import static com.playtika.testcontainer.k3s.K3sProperties.EMBEDDED_K3S;
 @EnableConfigurationProperties(K3sProperties.class)
 public class EmbeddedK3sBootstrapConfiguration {
 
+    private static final String K3S_NETWORK_ALIAS = "k3s.testcontainer.docker";
+
     @Bean(name = EMBEDDED_K3S, destroyMethod = "stop")
     public K3sContainer k3s(ConfigurableEnvironment environment,
                             K3sProperties properties,
@@ -37,23 +39,27 @@ public class EmbeddedK3sBootstrapConfiguration {
         k3sContainer
                 .withCommand(new String[]{"server", "--tls-san=" + k3sContainer.getHost()})
                 .withExposedPorts(properties.getPort())
-                .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Node controller sync successful.*"));
+                .waitingFor(new LogMessageWaitStrategy().withRegEx(".*Node controller sync successful.*"))
+                .withNetworkAliases(K3S_NETWORK_ALIAS);
 
         network.ifPresent(k3sContainer::withNetwork);
 
         k3sContainer = (K3sContainer) configureCommonsAndStart(k3sContainer, properties, log);
-        registerK3sEnvironment(k3sContainer, environment);
+        registerK3sEnvironment(k3sContainer, environment, properties);
         log.info("Started K3s");
 
         return k3sContainer;
     }
 
     private void registerK3sEnvironment(K3sContainer k3s,
-                                        ConfigurableEnvironment environment) {
+                                        ConfigurableEnvironment environment,
+                                        K3sProperties properties) {
         String kubeConfigYaml = k3s.getKubeConfigYaml();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.k3s.kubeconfig", kubeConfigYaml);
+        map.put("embedded.k3s.networkAlias", K3S_NETWORK_ALIAS);
+        map.put("embedded.k3s.internalPort", properties.getPort());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedK3sInfo", map);
         environment.getPropertySources().addFirst(propertySource);

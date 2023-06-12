@@ -29,6 +29,8 @@
 * `embedded.git.port` `(default is '22')`
 * `embedded.git.host` `(default is 'localhost')`
 * `embedded.git.password` `(default is "embedded-git-password")`
+* `embedded.git.networkAlias`
+* `embedded.git.internalPort`
 
 
 ==== Example

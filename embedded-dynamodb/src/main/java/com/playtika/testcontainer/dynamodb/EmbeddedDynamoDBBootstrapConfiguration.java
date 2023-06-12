@@ -34,6 +34,8 @@ import static com.playtika.testcontainer.dynamodb.DynamoDBProperties.BEAN_NAME_E
 @EnableConfigurationProperties(DynamoDBProperties.class)
 public class EmbeddedDynamoDBBootstrapConfiguration {
 
+    private static final String DYNAMODB_NETWORK_ALIAS = "dynamodb.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "dynamodb")
     ToxiproxyContainer.ContainerProxy dynamodbContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -61,7 +63,8 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
 
         GenericContainer<?> dynamodbContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
-                .waitingFor(new HostPortWaitStrategy());
+                .waitingFor(new HostPortWaitStrategy())
+                .withNetworkAliases(DYNAMODB_NETWORK_ALIAS);
 
         network.ifPresent(dynamodbContainer::withNetwork);
 
@@ -82,6 +85,8 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
         map.put("embedded.dynamodb.host", host);
         map.put("embedded.dynamodb.accessKey", properties.getAccessKey());
         map.put("embedded.dynamodb.secretKey", properties.getSecretKey());
+        map.put("embedded.dynamodb.networkAlias", DYNAMODB_NETWORK_ALIAS);
+        map.put("embedded.dynamodb.internalPort", properties.getPort());
 
         log.info("Started DynamoDb server. Connection details: {}, ", map);
         log.info("Consult with the doc " +

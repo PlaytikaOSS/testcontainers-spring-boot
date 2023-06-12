@@ -23,3 +23,5 @@
 
 * `embedded.mockserver.host`
 * `embedded.mockserver.port`
+* `embedded.mockserver.networkAlias`
+* `embedded.mockserver.internalPort`

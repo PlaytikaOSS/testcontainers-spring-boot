@@ -28,13 +28,16 @@ import static com.playtika.testcontainer.mockserver.MockServerProperties.EMBEDDE
 @EnableConfigurationProperties(MockServerProperties.class)
 public class EmbeddedMockServerBootstrapConfiguration {
 
+    private static final String MOCKSERVER_NETWORK_ALIAS = "mockserver.testcontainer.docker";
+
     @Bean(name = EMBEDDED_MOCK_SERVER, destroyMethod = "stop")
     public MockServerContainer mockServerContainer(ConfigurableEnvironment environment,
                                                    MockServerProperties properties,
                                                    Optional<Network> network) {
         MockServerContainer mockServerContainer = new MockServerContainer(ContainerUtils.getDockerImageName(properties));
         mockServerContainer
-                .withExposedPorts(properties.getPort());
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(MOCKSERVER_NETWORK_ALIAS);
 
         network.ifPresent(mockServerContainer::withNetwork);
 
@@ -52,6 +55,8 @@ public class EmbeddedMockServerBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.mockserver.host", host);
         map.put("embedded.mockserver.port", mappedPort);
+        map.put("embedded.mockserver.networkAlias", MOCKSERVER_NETWORK_ALIAS);
+        map.put("embedded.mockserver.internalPort", properties.getPort());
 
         log.info("Started MockServer server. Connection details: {}", map);
 

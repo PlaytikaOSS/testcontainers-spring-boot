@@ -37,6 +37,8 @@ import static org.testcontainers.utility.MountableFile.forClasspathResource;
 @EnableConfigurationProperties(GitProperties.class)
 public class EmbeddedGitBootstrapConfiguration {
 
+    private static final String GIT_NETWORK_ALIAS = "git.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "git")
     ToxiproxyContainer.ContainerProxy gitContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -62,7 +64,8 @@ public class EmbeddedGitBootstrapConfiguration {
     public GenericContainer<?> embeddedGit(ConfigurableEnvironment environment,
                                            GitProperties properties,
                                            Optional<Network> network) {
-        GenericContainer<?> gitContainer = configureCommonsAndStart(createContainer(properties), properties, log);
+        GenericContainer<?> gitContainer = configureCommonsAndStart(createContainer(properties), properties, log)
+                .withNetworkAliases(GIT_NETWORK_ALIAS);
         network.ifPresent(gitContainer::withNetwork);
         registerGitEnvironment(gitContainer, environment, properties);
         return gitContainer;
@@ -97,6 +100,8 @@ public class EmbeddedGitBootstrapConfiguration {
         map.put("embedded.git.port", mappedPort);
         map.put("embedded.git.host", host);
         map.put("embedded.git.password", password);
+        map.put("embedded.git.networkAlias", GIT_NETWORK_ALIAS);
+        map.put("embedded.git.internalPort", properties.getPort());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedGitInfo", map);
         environment.getPropertySources().addFirst(propertySource);

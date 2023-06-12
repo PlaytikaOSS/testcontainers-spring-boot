@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDE
 @EnableConfigurationProperties(MySQLProperties.class)
 public class EmbeddedMySQLBootstrapConfiguration {
 
+    private static final String MYSQL_NETWORK_ALIAS = "mysql.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mysql")
     ToxiproxyContainer.ContainerProxy mysqlContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -66,7 +68,8 @@ public class EmbeddedMySQLBootstrapConfiguration {
                         "--character-set-server=" + properties.getEncoding(),
                         "--collation-server=" + properties.getCollation())
                 //.withExposedPorts(properties.getPort())
-                .withInitScript(properties.getInitScriptPath());
+                .withInitScript(properties.getInitScriptPath())
+                .withNetworkAliases(MYSQL_NETWORK_ALIAS);
 
         network.ifPresent(mysql::withNetwork);
         mysql = (MySQLContainer) configureCommonsAndStart(mysql, properties, log);
@@ -86,6 +89,8 @@ public class EmbeddedMySQLBootstrapConfiguration {
         map.put("embedded.mysql.schema", properties.getDatabase());
         map.put("embedded.mysql.user", properties.getUser());
         map.put("embedded.mysql.password", properties.getPassword());
+        map.put("embedded.mysql.networkAlias", MYSQL_NETWORK_ALIAS);
+        map.put("embedded.mysql.internalPort", properties.getPort());
 
         String jdbcURL = "jdbc:mysql://{}:{}/{}";
         log.info("Started mysql server. Connection details: {}, " +

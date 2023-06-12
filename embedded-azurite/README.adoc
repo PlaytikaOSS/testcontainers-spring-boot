@@ -37,6 +37,7 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 * `embedded.azurite.toxiproxy.blobStoragePort`
 * `embedded.azurite.toxiproxy.queueStoragePort`
 * `embedded.azurite.toxiproxy.tableStoragePort`
+* `embedded.azurite.networkAlias`
 * Bean `ToxiproxyContainer.ContainerProxy azuriteBlobContainerProxy`
 * Bean `ToxiproxyContainer.ContainerProxy azuriteQueueContainerProxy`
 * Bean `ToxiproxyContainer.ContainerProxy azuriteTableContainerProxy`

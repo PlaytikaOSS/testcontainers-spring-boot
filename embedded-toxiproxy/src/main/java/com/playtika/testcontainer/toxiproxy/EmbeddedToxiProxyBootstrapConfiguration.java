@@ -26,7 +26,9 @@ import java.util.Map;
 @EnableConfigurationProperties(ToxiProxyProperties.class)
 public class EmbeddedToxiProxyBootstrapConfiguration {
 
-    private static final String TOXIPROXY_NETWORK_ALIAS = "toxiproxy";
+    private static final String TOXIPROXY_NETWORK_ALIAS = "toxiproxy.testcontainer.docker";
+    // keep the old alias for backward compatibility
+    private static final String TOXIPROXY_NETWORK_ALIAS_OLD = "toxiproxy";
 
     @Bean
     @ConditionalOnMissingBean(Network.class)
@@ -42,7 +44,7 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
                                  ConfigurableEnvironment environment) {
         ToxiproxyContainer toxiproxyContainer = new ToxiproxyContainer(ContainerUtils.getDockerImageName(toxiProxyProperties))
                 .withNetwork(network)
-                .withNetworkAliases(TOXIPROXY_NETWORK_ALIAS);
+                .withNetworkAliases(TOXIPROXY_NETWORK_ALIAS, TOXIPROXY_NETWORK_ALIAS_OLD);
 
         toxiproxyContainer = (ToxiproxyContainer) ContainerUtils.configureCommonsAndStart(toxiproxyContainer, toxiProxyProperties, log);
         registerEnvironment(toxiproxyContainer, environment);
@@ -54,6 +56,7 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.toxiproxy.host", container.getHost());
         map.put("embedded.toxiproxy.controlPort", container.getControlPort());
+        map.put("embedded.toxiproxy.networkAlias", TOXIPROXY_NETWORK_ALIAS);
 
         log.info("Started ToxiProxy server. Connection details {}", map);
 

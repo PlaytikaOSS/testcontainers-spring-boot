@@ -26,6 +26,8 @@
 * `embedded.pulsar.httpServiceUrl`
 * `embedded.pulsar.toxiproxy.host`
 * `embedded.pulsar.toxiproxy.port`
+* `embedded.pulsar.networkAlias`
+* `embedded.pulsar.internalBrokerPort`
 * Bean `ToxiproxyContainer.ContainerProxy pulsarContainerProxy`
 
 ==== Example

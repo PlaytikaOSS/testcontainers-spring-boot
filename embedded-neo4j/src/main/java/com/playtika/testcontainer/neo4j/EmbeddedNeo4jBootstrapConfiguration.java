@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDE
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class EmbeddedNeo4jBootstrapConfiguration {
 
+    private static final String NEO4J_NETWORK_ALIAS = "neo4j.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "neo4j")
     ToxiproxyContainer.ContainerProxy neo4jContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -58,7 +60,8 @@ public class EmbeddedNeo4jBootstrapConfiguration {
                                 Neo4jProperties properties,
                                 Optional<Network> network) {
         Neo4jContainer neo4j = new Neo4jContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withAdminPassword(properties.password);
+                .withAdminPassword(properties.password)
+                .withNetworkAliases(NEO4J_NETWORK_ALIAS);
 
         network.ifPresent(neo4j::withNetwork);
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
@@ -81,6 +84,10 @@ public class EmbeddedNeo4jBootstrapConfiguration {
         map.put("embedded.neo4j.host", host);
         map.put("embedded.neo4j.password", properties.getPassword());
         map.put("embedded.neo4j.user", properties.getUser());
+        map.put("embedded.neo4j.networkAlias", NEO4J_NETWORK_ALIAS);
+        map.put("embedded.neo4j.internalHttpsPort", properties.getHttpsPort());
+        map.put("embedded.neo4j.internalHttpPort", properties.getHttpPort());
+        map.put("embedded.neo4j.internalBoltPort", properties.getBoltPort());
 
         log.info("Started neo4j server. Connection details {},  " +
                         "Admin UI: http://localhost:{}, user: {}, password: {}",

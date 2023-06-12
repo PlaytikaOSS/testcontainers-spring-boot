@@ -32,6 +32,8 @@
 * `embedded.keycloak.auth-server-url`
 * `embedded.keycloak.toxiproxy.host`
 * `embedded.keycloak.toxiproxy.port`
+* `embedded.keycloak.networkAlias`
+* `embedded.keycloak.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy keycloakContainerProxy`
 
 ==== Example

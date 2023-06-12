@@ -35,6 +35,8 @@ import static com.playtika.testcontainer.influxdb.InfluxDBProperties.EMBEDDED_IN
 @EnableConfigurationProperties(InfluxDBProperties.class)
 public class EmbeddedInfluxDBBootstrapConfiguration {
 
+    private static final String INFLUXDB_NETWORK_ALIAS = "influxdb.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "influxdb")
     ToxiproxyContainer.ContainerProxy influxdbContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -67,7 +69,8 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())
                 .withDatabase(properties.getDatabase())
-                .withExposedPorts(properties.getPort());
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(INFLUXDB_NETWORK_ALIAS);
 
         network.ifPresent(influxDBContainer::withNetwork);
 
@@ -90,6 +93,8 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
         map.put("embedded.influxdb.database", properties.getDatabase());
         map.put("embedded.influxdb.user", properties.getUser());
         map.put("embedded.influxdb.password", properties.getPassword());
+        map.put("embedded.influxdb.networkAlias", INFLUXDB_NETWORK_ALIAS);
+        map.put("embedded.influxdb.internalPort", properties.getPort());
 
         String influxDBURL = "http://{}:{}";
         log.info("Started InfluxDB server. Connection details: {}, " +

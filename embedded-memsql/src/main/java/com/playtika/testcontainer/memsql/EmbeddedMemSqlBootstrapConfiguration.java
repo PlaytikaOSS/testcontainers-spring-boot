@@ -34,6 +34,8 @@ import static com.playtika.testcontainer.memsql.MemSqlProperties.BEAN_NAME_EMBED
 @EnableConfigurationProperties(MemSqlProperties.class)
 public class EmbeddedMemSqlBootstrapConfiguration {
 
+    private static final String MEMSQL_NETWORK_ALIAS = "memsql.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean
     MemSqlStatusCheck memSqlStartupCheckStrategy(MemSqlProperties properties) {
@@ -73,7 +75,8 @@ public class EmbeddedMemSqlBootstrapConfiguration {
                 .withEnv("START_AFTER_INIT", "Y")
                 .withExposedPorts(properties.port)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
-                .waitingFor(memSqlStatusCheck);
+                .waitingFor(memSqlStatusCheck)
+                .withNetworkAliases(MEMSQL_NETWORK_ALIAS);
         if ("aarch".equals(System.getProperty("system.arch"))){
             memsql = memsql.withCommand("platform", "linux/amd64");
         }
@@ -95,6 +98,8 @@ public class EmbeddedMemSqlBootstrapConfiguration {
         map.put("embedded.memsql.schema", properties.getDatabase());
         map.put("embedded.memsql.user", properties.getUser());
         map.put("embedded.memsql.password", properties.getPassword());
+        map.put("embedded.memsql.networkAlias", MEMSQL_NETWORK_ALIAS);
+        map.put("embedded.memsql.internalPort", properties.getPort());
 
         log.info("Started memsql server. Connection details {} ", map);
 

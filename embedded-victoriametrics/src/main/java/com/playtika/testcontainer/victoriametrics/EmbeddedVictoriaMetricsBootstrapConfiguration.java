@@ -34,6 +34,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.getDockerIm
 @ConditionalOnProperty(name = "embedded.victoriametrics.enabled", matchIfMissing = true)
 public class EmbeddedVictoriaMetricsBootstrapConfiguration {
 
+    private static final String VICTORIAMETRICS_NETWORK_ALIAS = "victoriametrics.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean(name = "victoriaMetricsWaitStrategy")
     public WaitStrategy victoriaMetricsWaitStrategy(VictoriaMetricsProperties properties) {
@@ -73,7 +75,7 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
                 new GenericContainer<>(getDockerImageName(properties))
                         .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
-                        .withNetworkAliases(properties.getNetworkAlias())
+                        .withNetworkAliases(properties.getNetworkAlias(), VICTORIAMETRICS_NETWORK_ALIAS)
                         .waitingFor(victoriaMetricsWaitStrategy);
 
         network.ifPresent(victoriaMetrics::withNetwork);
@@ -95,6 +97,8 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.victoriametrics.host", host);
         map.put("embedded.victoriametrics.port", mappedPort);
+        map.put("embedded.victoriametrics.staticNetworkAlias", VICTORIAMETRICS_NETWORK_ALIAS);
+        map.put("embedded.victoriametrics.internalPort", properties.getPort());
 
         log.info("Started VictoriaMetrics server. Connection details: {}", map);
 

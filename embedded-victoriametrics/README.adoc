@@ -31,6 +31,8 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.victoriametrics.port`
 * `embedded.victoriametrics.toxiproxy.host`
 * `embedded.victoriametrics.toxiproxy.port`
+* `embedded.victoriametrics.staticNetworkAlias`
+* `embedded.victoriametrics.internalPort`
 
 ==== ToxiProxy
 

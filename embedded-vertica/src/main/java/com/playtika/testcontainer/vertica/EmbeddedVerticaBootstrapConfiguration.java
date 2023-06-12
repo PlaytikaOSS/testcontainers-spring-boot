@@ -33,6 +33,8 @@ import static com.playtika.testcontainer.vertica.VerticaProperties.BEAN_NAME_EMB
 @EnableConfigurationProperties(VerticaProperties.class)
 public class EmbeddedVerticaBootstrapConfiguration {
 
+    private static final String VERTICA_NETWORK_ALIAS = "vertica.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "vertica")
     ToxiproxyContainer.ContainerProxy verticaContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -57,7 +59,8 @@ public class EmbeddedVerticaBootstrapConfiguration {
     public GenericContainer<?> embeddedVertica(ConfigurableEnvironment environment,
                                                VerticaProperties properties,
                                                Optional<Network> network) {
-        GenericContainer<?> verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log);
+        GenericContainer<?> verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log)
+                .withNetworkAliases(VERTICA_NETWORK_ALIAS);
         network.ifPresent(verticaContainer::withNetwork);
         registerVerticaEnvironment(verticaContainer, environment, properties);
         return verticaContainer;
@@ -86,6 +89,8 @@ public class EmbeddedVerticaBootstrapConfiguration {
         map.put("embedded.vertica.database", properties.getDatabase());
         map.put("embedded.vertica.user", properties.getUser());
         map.put("embedded.vertica.password", properties.getPassword());
+        map.put("embedded.vertica.networkAlias", VERTICA_NETWORK_ALIAS);
+        map.put("embedded.vertica.internalPort", properties.getPort());
 
 
         MapPropertySource propertySource = new MapPropertySource("embeddedVerticaInfo", map);

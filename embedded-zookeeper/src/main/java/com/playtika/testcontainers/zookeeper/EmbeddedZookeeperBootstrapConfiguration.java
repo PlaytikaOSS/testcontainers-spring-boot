@@ -31,6 +31,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @EnableConfigurationProperties(ZookeeperConfigurationProperties.class)
 public class EmbeddedZookeeperBootstrapConfiguration {
 
+    private static final String ZOOKEEPER_NETWORK_ALIAS = "zookeeper.testcontainer.docker";
+
     @Bean(destroyMethod = "stop")
     public GenericContainer<?> zooKeeperContainer(ConfigurableEnvironment environment,
                                          ZookeeperConfigurationProperties properties,
@@ -45,6 +47,7 @@ public class EmbeddedZookeeperBootstrapConfiguration {
         GenericContainer<?> zookeeper = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.clientPort, properties.adminServerPort)
                 .withEnv("ZOO_ADMINSERVER_ENABLED", String.valueOf(true))
+                .withNetworkAliases(ZOOKEEPER_NETWORK_ALIAS)
                 .waitingFor(waitStrategy);
         network.ifPresent(zookeeper::withNetwork);
 
@@ -62,6 +65,9 @@ public class EmbeddedZookeeperBootstrapConfiguration {
         map.put("embedded.zookeeper.port", zookeeper.getMappedPort(properties.clientPort));
         map.put("embedded.zookeeper.admin.port", zookeeper.getMappedPort(properties.adminServerPort));
         map.put("embedded.zookeeper.host", host);
+        map.put("embedded.zookeeper.networkAlias", ZOOKEEPER_NETWORK_ALIAS);
+        map.put("embedded.zookeeper.internalClientPort", properties.getClientPort());
+        map.put("embedded.zookeeper.internalAdminServerPort", properties.getAdminServerPort());
 
         log.info("Started Zookeeper. Connection Details: {}", map);
 

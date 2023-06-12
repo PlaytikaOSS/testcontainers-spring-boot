@@ -29,6 +29,8 @@ import static com.playtika.testcontainer.pulsar.PulsarProperties.EMBEDDED_PULSAR
 @EnableConfigurationProperties(PulsarProperties.class)
 public class EmbeddedPulsarBootstrapConfiguration {
 
+    private static final String PULSAR_NETWORK_ALIAS = "pulsar.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "pulsar")
     ToxiproxyContainer.ContainerProxy pulsarContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -57,22 +59,26 @@ public class EmbeddedPulsarBootstrapConfiguration {
         if (deprImageTag != null) {
             throw new IllegalArgumentException("Property `embedded.pulsar.imageTag` is deprecated. Please replace property `embedded.pulsar.imageTag` with `embedded.pulsar.dockerImageVersion`.");
         }
-        PulsarContainer pulsarContainer = new PulsarContainer(ContainerUtils.getDockerImageName(pulsarProperties));
+        PulsarContainer pulsarContainer = new PulsarContainer(ContainerUtils.getDockerImageName(pulsarProperties))
+                .withNetworkAliases(PULSAR_NETWORK_ALIAS);
 
         network.ifPresent(pulsarContainer::withNetwork);
         pulsarContainer = (PulsarContainer) ContainerUtils.configureCommonsAndStart(pulsarContainer, pulsarProperties, log);
-        registerEmbeddedPulsarEnvironment(environment, pulsarContainer);
+        registerEmbeddedPulsarEnvironment(environment, pulsarContainer, pulsarProperties);
         return pulsarContainer;
     }
 
     private static void registerEmbeddedPulsarEnvironment(final ConfigurableEnvironment environment,
-                                                          final PulsarContainer pulsarContainer) {
+                                                          final PulsarContainer pulsarContainer,
+                                                          PulsarProperties properties) {
         String pulsarBrokerUrl = pulsarContainer.getPulsarBrokerUrl();
         String pulsarHttpServiceUrl = pulsarContainer.getHttpServiceUrl();
 
         Map<String, Object> pulsarEnv = new LinkedHashMap<>();
         pulsarEnv.put("embedded.pulsar.brokerUrl", pulsarBrokerUrl);
         pulsarEnv.put("embedded.pulsar.httpServiceUrl", pulsarHttpServiceUrl);
+        pulsarEnv.put("embedded.pulsar.networkAlias", PULSAR_NETWORK_ALIAS);
+        pulsarEnv.put("embedded.pulsar.internalBrokerPort", properties.getBrokerPort());
 
         MapPropertySource propertySource = new MapPropertySource("embeddedPulsarInfo", pulsarEnv);
         environment.getPropertySources().addFirst(propertySource);

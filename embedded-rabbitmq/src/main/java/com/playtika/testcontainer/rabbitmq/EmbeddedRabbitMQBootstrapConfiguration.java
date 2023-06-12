@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.rabbitmq.RabbitMQProperties.BEAN_NAME_E
 @EnableConfigurationProperties(RabbitMQProperties.class)
 public class EmbeddedRabbitMQBootstrapConfiguration {
 
+    private static final String RABBITMQ_NETWORK_ALIAS = "rabbitmq.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "rabbitmq")
     ToxiproxyContainer.ContainerProxy rabbitmqContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -60,7 +62,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                 new RabbitMQContainer(ContainerUtils.getDockerImageName(properties))
                         .withAdminPassword(properties.getPassword())
                         .withEnv("RABBITMQ_DEFAULT_VHOST", properties.getVhost())
-                        .withExposedPorts(properties.getPort(), properties.getHttpPort());
+                        .withExposedPorts(properties.getPort(), properties.getHttpPort())
+                        .withNetworkAliases(RABBITMQ_NETWORK_ALIAS);
 
         network.ifPresent(rabbitMQ::withNetwork);
         rabbitMQ = (RabbitMQContainer) configureCommonsAndStart(rabbitMQ, properties, log);
@@ -82,6 +85,9 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
         map.put("embedded.rabbitmq.user", rabbitMQ.getAdminUsername());
         map.put("embedded.rabbitmq.password", rabbitMQ.getAdminPassword());
         map.put("embedded.rabbitmq.httpPort", mappedHttpPort);
+        map.put("embedded.rabbitmq.networkAlias", RABBITMQ_NETWORK_ALIAS);
+        map.put("embedded.rabbitmq.internalPort", properties.getPort());
+        map.put("embedded.rabbitmq.internalHttpPort", properties.getHttpPort());
 
         log.info("Started RabbitMQ server. Connection details: {}", map);
 

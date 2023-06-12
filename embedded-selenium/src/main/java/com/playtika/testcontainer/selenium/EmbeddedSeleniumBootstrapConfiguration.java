@@ -51,6 +51,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 @RequiredArgsConstructor
 public class EmbeddedSeleniumBootstrapConfiguration {
 
+    private static final String SELENIUM_NETWORK_ALIAS = "selenium.testcontainer.docker";
     private static final String TC_TEMP_DIR_PREFIX = "tc";
     public static final String DEFINED_VNC_USERNAME = "vnc";
     public static final String DEFINED_VNC_PASSWORD = "secret";
@@ -90,6 +91,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         container.setWaitStrategy(getWaitStrategy());
         container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
+        container.withNetworkAliases(SELENIUM_NETWORK_ALIAS);
         network.ifPresent(container::withNetwork);
         File recordingDirOrNull = null;
         if (properties.getVnc().getMode().convert() != BrowserWebDriverContainer.VncRecordingMode.SKIP) {
@@ -165,6 +167,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         map.put("embedded.selenium.vnc.recording-dir", recordingDirOrNull);
         map.put("embedded.selenium.vnc.mode", vncMode);
         map.put("embedded.selenium.dockerhost", getHostName(container));
+        map.put("embedded.selenium.networkAlias", SELENIUM_NETWORK_ALIAS);
 
         MapPropertySource propertySource = new MapPropertySource("embeddedSeleniumInfo", map);
         environment.getPropertySources().addFirst(propertySource);

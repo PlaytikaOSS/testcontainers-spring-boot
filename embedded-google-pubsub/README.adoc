@@ -46,6 +46,8 @@ Google cloud sdk docker image does not support ARM
 * `embedded.google.pubsub.project-id`
 * `embedded.google.pubsub.toxiproxy.host`
 * `embedded.google.pubsub.toxiproxy.port`
+* `embedded.google.pubsub.networkAlias`
+* `embedded.google.pubsub.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy googlePubSubContainerProxy`
 
 ==== Example

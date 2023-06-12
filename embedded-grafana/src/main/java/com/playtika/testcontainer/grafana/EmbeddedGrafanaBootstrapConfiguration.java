@@ -35,6 +35,8 @@ import static com.playtika.testcontainer.grafana.GrafanaProperties.GRAFANA_BEAN_
 @EnableConfigurationProperties(GrafanaProperties.class)
 public class EmbeddedGrafanaBootstrapConfiguration {
 
+    private static final String GRAFANA_NETWORK_ALIAS = "grafana.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean(name = "grafanaWaitStrategy")
     public WaitStrategy grafanaWaitStrategy(GrafanaProperties properties) {
@@ -76,7 +78,7 @@ public class EmbeddedGrafanaBootstrapConfiguration {
                         .withEnv("GF_SECURITY_ADMIN_PASSWORD", properties.getPassword())
                         .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
-                        .withNetworkAliases(properties.getNetworkAlias())
+                        .withNetworkAliases(properties.getNetworkAlias(), GRAFANA_NETWORK_ALIAS)
                         .waitingFor(grafanaWaitStrategy);
 
         network.ifPresent(container::withNetwork);
@@ -100,6 +102,8 @@ public class EmbeddedGrafanaBootstrapConfiguration {
         map.put("embedded.grafana.port", mappedPort);
         map.put("embedded.grafana.username", properties.getUsername());
         map.put("embedded.grafana.password", properties.getPassword());
+        map.put("embedded.grafana.networkAlias", GRAFANA_NETWORK_ALIAS);
+        map.put("embedded.grafana.internalPort", properties.getPort());
 
         log.info("Started Grafana server. Connection details: {}", map);
 

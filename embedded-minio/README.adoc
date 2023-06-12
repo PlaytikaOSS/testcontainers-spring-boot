@@ -36,6 +36,9 @@
 * `embedded.minio.region`
 * `embedded.minio.toxiproxy.host`
 * `embedded.minio.toxiproxy.port`
+* `embedded.minio.networkAlias`
+* `embedded.minio.internalPort`
+* `embedded.minio.internalConsolePort`
 * Bean `ToxiproxyContainer.ContainerProxy minioContainerProxy`
 
 //TODO: example missing

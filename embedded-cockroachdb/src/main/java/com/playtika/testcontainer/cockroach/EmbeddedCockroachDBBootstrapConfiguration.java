@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @EnableConfigurationProperties(CockroachDBProperties.class)
 public class EmbeddedCockroachDBBootstrapConfiguration {
 
+    private static final String COCKROACHDB_NETWORK_ALIAS = "сockroachdb.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
     ToxiproxyContainer.ContainerProxy cockroachContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -59,7 +61,8 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
 
         CockroachContainer cockroachContainer = new CockroachContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
-                .withInitScript(properties.getInitScriptPath());
+                .withInitScript(properties.getInitScriptPath())
+                .withNetworkAliases(COCKROACHDB_NETWORK_ALIAS);
 
         network.ifPresent(cockroachContainer::withNetwork);
 
@@ -80,6 +83,8 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
         map.put("embedded.cockroach.schema", cockroach.getDatabaseName());
         map.put("embedded.cockroach.user", cockroach.getUsername());
         map.put("embedded.cockroach.password", cockroach.getPassword());
+        map.put("embedded.cockroach.networkAlias", COCKROACHDB_NETWORK_ALIAS);
+        map.put("embedded.cockroach.internalPort", properties.getPort());
 
         String jdbcURL = "jdbc:postgresql://{}:{}/{}";
         log.info("Started CockroachDB server. Connection details: {}, " +

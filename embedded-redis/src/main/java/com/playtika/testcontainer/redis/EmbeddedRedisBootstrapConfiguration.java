@@ -45,7 +45,8 @@ import static com.playtika.testcontainer.redis.RedisProperties.BEAN_NAME_EMBEDDE
 @RequiredArgsConstructor
 public class EmbeddedRedisBootstrapConfiguration {
 
-    public final static String REDIS_WAIT_STRATEGY_BEAN_NAME = "redisStartupCheckStrategy";
+    public static final String REDIS_NETWORK_ALIAS = "redis.testcontainer.docker";
+    public static final String REDIS_WAIT_STRATEGY_BEAN_NAME = "redisStartupCheckStrategy";
 
     private final ResourceLoader resourceLoader;
     private final RedisProperties properties;
@@ -100,7 +101,8 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf()), "/data/redis.conf")
                         .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
-                        .waitingFor(redisStartupCheckStrategy);
+                        .waitingFor(redisStartupCheckStrategy)
+                        .withNetworkAliases(REDIS_NETWORK_ALIAS);
         network.ifPresent(redis::withNetwork);
         redis = configureCommonsAndStart(redis, properties, log);
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.getPort());

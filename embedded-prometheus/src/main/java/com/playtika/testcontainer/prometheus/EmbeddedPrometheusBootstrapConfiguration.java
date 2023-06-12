@@ -36,6 +36,8 @@ import static com.playtika.testcontainer.prometheus.PrometheusProperties.PROMETH
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class EmbeddedPrometheusBootstrapConfiguration {
 
+    private static final String PROMETHEUS_NETWORK_ALIAS = "prometheus.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean(name = "prometheusWaitStrategy")
     public WaitStrategy prometheusWaitStrategy(PrometheusProperties properties) {
@@ -75,7 +77,7 @@ public class EmbeddedPrometheusBootstrapConfiguration {
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
-                        .withNetworkAliases(properties.getNetworkAlias())
+                        .withNetworkAliases(properties.getNetworkAlias(), PROMETHEUS_NETWORK_ALIAS)
                         .waitingFor(prometheusWaitStrategy);
 
         network.ifPresent(container::withNetwork);
@@ -97,6 +99,8 @@ public class EmbeddedPrometheusBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.prometheus.host", host);
         map.put("embedded.prometheus.port", mappedPort);
+        map.put("embedded.prometheus.staticNetworkAlias", PROMETHEUS_NETWORK_ALIAS);
+        map.put("embedded.prometheus.internalPort", properties.getPort());
 
         log.info("Started Prometheus server. Connection details: {}", map);
 

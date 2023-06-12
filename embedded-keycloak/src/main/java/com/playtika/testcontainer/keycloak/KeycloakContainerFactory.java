@@ -11,10 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.keycloak.KeycloakContainer.KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL;
 
 @Slf4j
 @RequiredArgsConstructor
 public class KeycloakContainerFactory {
+
+    private static final String KEYCLOAK_NETWORK_ALIAS = "keycloak.testcontainer.docker";
 
     private final ConfigurableEnvironment environment;
     private final KeycloakProperties properties;
@@ -22,7 +25,8 @@ public class KeycloakContainerFactory {
     private final Optional<Network> network;
 
     public KeycloakContainer newKeycloakContainer() {
-        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader);
+        KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader)
+                .withNetworkAliases(KEYCLOAK_NETWORK_ALIAS);
 
         network.ifPresent(keycloak::withNetwork);
 
@@ -36,6 +40,8 @@ public class KeycloakContainerFactory {
         map.put("embedded.keycloak.host", keycloak.getIp());
         map.put("embedded.keycloak.http-port", keycloak.getHttpPort());
         map.put("embedded.keycloak.auth-server-url", keycloak.getAuthServerUrl());
+        map.put("embedded.keycloak.networkAlias", KEYCLOAK_NETWORK_ALIAS);
+        map.put("embedded.keycloak.internalPort", KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
 
         log.info("Started Keycloak server. Connection details: {}", map);
 

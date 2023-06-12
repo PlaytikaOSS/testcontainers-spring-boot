@@ -38,6 +38,8 @@ import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_
 @EnableConfigurationProperties(NatsProperties.class)
 public class EmbeddedNatsBootstrapConfiguration {
 
+    private static final String NATS_NETWORK_ALIAS = "nats.testcontainer.docker";
+
     @Bean(name = BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "nats")
     ToxiproxyContainer.ContainerProxy natsContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -69,7 +71,8 @@ public class EmbeddedNatsBootstrapConfiguration {
         GenericContainer<?> natsContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getClientPort(), properties.getHttpMonitorPort(), properties.getRouteConnectionsPort())
                 .withCopyFileToContainer(MountableFile.forClasspathResource("nats-server.conf"), "/nats-server.conf")
-                .waitingFor(waitStrategy);
+                .waitingFor(waitStrategy)
+                .withNetworkAliases(NATS_NETWORK_ALIAS);
 
         network.ifPresent(natsContainer::withNetwork);
 
@@ -93,6 +96,10 @@ public class EmbeddedNatsBootstrapConfiguration {
         map.put("embedded.nats.port", clientMappedPort);
         map.put("embedded.nats.httpMonitorPort", httpMonitorMappedPort);
         map.put("embedded.nats.routeConnectionsPort", routeConnectionsMappedPort);
+        map.put("embedded.nats.networkAlias", NATS_NETWORK_ALIAS);
+        map.put("embedded.nats.internalClientPort", properties.getClientPort());
+        map.put("embedded.nats.internalHttpMonitorPort", properties.getHttpMonitorPort());
+        map.put("embedded.nats.internalRouteConnectionsPort", properties.getRouteConnectionsPort());
 
         log.info("Started NATS server. Connection details {}", map);
 

@@ -33,6 +33,8 @@ import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class EmbeddedCouchbaseBootstrapConfiguration {
 
+    private static final String COUCHBASE_NETWORK_ALIAS = "couchbase.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "couchbase")
     ToxiproxyContainer.ContainerProxy couchbaseContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -63,7 +65,8 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
         CouchbaseContainer couchbase = new CouchbaseContainer(ContainerUtils.getDockerImageName(properties))
                 .withBucket(bucketDefinition)
                 .withEnabledServices(properties.getServices())
-                .withCredentials(properties.getUser(), properties.getPassword());
+                .withCredentials(properties.getUser(), properties.getPassword())
+                .withNetworkAliases(COUCHBASE_NETWORK_ALIAS);
 
         network.ifPresent(couchbase::withNetwork);
         couchbase = (CouchbaseContainer) configureCommonsAndStart(couchbase, properties, log);
@@ -90,6 +93,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
         map.put("embedded.couchbase.bucket", properties.bucket);
         map.put("embedded.couchbase.user", properties.user);
         map.put("embedded.couchbase.password", properties.password);
+        map.put("embedded.couchbase.networkAlias", COUCHBASE_NETWORK_ALIAS);
 
         log.info("Started couchbase server. Connection details {},  " +
                         "Admin UI: http://localhost:{}, user: {}, password: {}",

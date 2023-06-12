@@ -29,6 +29,8 @@
 * `embedded.dynamodb.secretKey`
 * `embedded.dynamodb.toxiproxy.host`
 * `embedded.dynamodb.toxiproxy.port`
+* `embedded.dynamodb.networkAlias`
+* `embedded.dynamodb.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy dynamodbContainerProxy`
 
 
