@@ -1,0 +1,59 @@
+=== embedded-zookeeper
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-zookeeper</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.zookeeper.enabled` `(true|false, default is true)`
+
+==== Produces
+
+* `embedded.zookeeper.host`
+* `embedded.zookeeper.port`
+* `embedded.zookeeper.admin.port`
+
+==== Example (Spring Boot)
+
+===== Example spring configuration:
+
+application-test.yml
+[source,yaml]
+----
+embedded:
+  containers:
+    enabled: true
+  zookeeper:
+    enabled: true
+----
+
+===== Create vanilla client
+Create vanilla client pointed directly to Zookeeper server using properties provided by `embedded-zookeeper`:
+
+[source,java]
+----
+private static final int DEFAULT_SESSION_TIMEOUT_MS = 60000;
+
+@Bean(destroyMethod = "close")
+public ZooKeeper zookeeperClient(@Value("${embedded.zookeeper.host}") String host,
+                                 @Value("${embedded.zookeeper.port}") int port) throws Exception {
+    CountDownLatch connSignal = new CountDownLatch(1);
+    String connectionString = host + ":" + port;
+    ZooKeeper zooKeeper = new ZooKeeper(connectionString, DEFAULT_SESSION_TIMEOUT_MS, event -> {
+        if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
+            connSignal.countDown();
+        }
+    });
+    connSignal.await();
+    return zooKeeper;
+}
+----
