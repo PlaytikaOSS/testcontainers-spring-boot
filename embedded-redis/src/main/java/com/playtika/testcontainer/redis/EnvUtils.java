@@ -8,6 +8,8 @@ import org.testcontainers.containers.GenericContainer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.playtika.testcontainer.redis.EmbeddedRedisBootstrapConfiguration.REDIS_NETWORK_ALIAS;
+
 @UtilityClass
 class EnvUtils {
     static Map<String, Object> registerRedisEnvironment(ConfigurableEnvironment environment, GenericContainer<?> redis,
@@ -19,6 +21,7 @@ class EnvUtils {
         map.put("embedded.redis.host", host);
         map.put("embedded.redis.password", properties.getPassword());
         map.put("embedded.redis.user", properties.getUser());
+        map.put("embedded.redis.networkAlias", REDIS_NETWORK_ALIAS);
         MapPropertySource propertySource = new MapPropertySource("embeddedRedisInfo", map);
         environment.getPropertySources().addFirst(propertySource);
         return map;

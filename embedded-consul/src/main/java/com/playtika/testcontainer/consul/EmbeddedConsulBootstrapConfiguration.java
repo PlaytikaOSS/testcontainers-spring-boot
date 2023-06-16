@@ -34,6 +34,8 @@ import static com.playtika.testcontainer.consul.ConsulProperties.BEAN_NAME_EMBED
 @ConditionalOnProperty(name = "embedded.consul.enabled", matchIfMissing = true)
 public class EmbeddedConsulBootstrapConfiguration {
 
+    private static final String CONSUL_NETWORK_ALIAS = "consul.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "consul")
     ToxiproxyContainer.ContainerProxy consulContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -63,7 +65,8 @@ public class EmbeddedConsulBootstrapConfiguration {
                 .waitingFor(
                         Wait.forHttp("/v1/status/leader")
                                 .forStatusCode(200)
-                ).withStartupTimeout(properties.getTimeoutDuration());
+                ).withStartupTimeout(properties.getTimeoutDuration())
+                .withNetworkAliases(CONSUL_NETWORK_ALIAS);
 
         network.ifPresent(consul::withNetwork);
 
@@ -86,6 +89,8 @@ public class EmbeddedConsulBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.consul.port", mappedPort);
         map.put("embedded.consul.host", host);
+        map.put("embedded.consul.networkAlias", CONSUL_NETWORK_ALIAS);
+        map.put("embedded.consul.internalPort", properties.getPort());
 
         log.info("Started consul. Connection Details: {}", map);
 

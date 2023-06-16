@@ -33,6 +33,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @EnableConfigurationProperties(ClickHouseProperties.class)
 public class EmbeddedClickHouseBootstrapConfiguration {
 
+    private static final String CLICKHOUSE_NETWORK_ALIAS = "clickhouse.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "clickhouse")
     ToxiproxyContainer.ContainerProxy clickhouseContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -58,7 +60,8 @@ public class EmbeddedClickHouseBootstrapConfiguration {
                                                    ClickHouseProperties properties,
                                                    Optional<Network> network) {
         ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties))
-                .withInitScript(properties.getInitScriptPath());
+                .withInitScript(properties.getInitScriptPath())
+                .withNetworkAliases(CLICKHOUSE_NETWORK_ALIAS);
 
         network.ifPresent(clickHouseContainer::withNetwork);
 
@@ -87,6 +90,8 @@ public class EmbeddedClickHouseBootstrapConfiguration {
         map.put("embedded.clickhouse.port", mappedPort);
         map.put("embedded.clickhouse.user", username);
         map.put("embedded.clickhouse.password", password);
+        map.put("embedded.clickhouse.networkAlias", CLICKHOUSE_NETWORK_ALIAS);
+        map.put("embedded.clickhouse.internalPort", properties.getPort());
 
         log.info("Started ClickHouse server. Connection details: {}", map);
 

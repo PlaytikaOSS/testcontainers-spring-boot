@@ -37,6 +37,8 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @EnableConfigurationProperties(VaultProperties.class)
 public class EmbeddedVaultBootstrapConfiguration {
 
+    private static final String VAULT_NETWORK_ALIAS = "vault.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "vault")
     ToxiproxyContainer.ContainerProxy vaultContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -64,7 +66,8 @@ public class EmbeddedVaultBootstrapConfiguration {
 
         VaultContainer vault = new VaultContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withVaultToken(properties.getToken())
-                .withExposedPorts(properties.getPort());
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(VAULT_NETWORK_ALIAS);
 
         network.ifPresent(vault::withNetwork);
 
@@ -98,6 +101,8 @@ public class EmbeddedVaultBootstrapConfiguration {
         map.put("embedded.vault.host", host);
         map.put("embedded.vault.port", mappedPort);
         map.put("embedded.vault.token", properties.getToken());
+        map.put("embedded.vault.networkAlias", VAULT_NETWORK_ALIAS);
+        map.put("embedded.vault.internalPort", properties.getPort());
 
         log.info("Started vault. Connection Details: {}, Connection URI: http://{}:{}", map, host, mappedPort);
 

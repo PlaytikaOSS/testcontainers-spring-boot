@@ -39,6 +39,8 @@
 * `embedded.google.storage.bucketLocation`
 * `embedded.google.storage.toxiproxy.host`
 * `embedded.google.storage.toxiproxy.port`
+* `embedded.google.storage.networkAlias`
+* `embedded.google.storage.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy googleStorageContainerProxy`
 
 ==== Example

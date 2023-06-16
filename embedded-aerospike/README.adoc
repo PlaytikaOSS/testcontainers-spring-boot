@@ -34,6 +34,8 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.aerospike.namespace`
 * `embedded.aerospike.toxiproxy.host`
 * `embedded.aerospike.toxiproxy.port`
+* `embedded.aerospike.networkAlias`
+* `embedded.aerospike.internalPort`
 * Bean `AerospikeTestOperations aerospikeTestOperations`
 * Bean `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`
 

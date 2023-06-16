@@ -37,6 +37,7 @@ import static java.lang.String.format;
 @EnableConfigurationProperties({PubsubProperties.class})
 public class EmbeddedPubsubBootstrapConfiguration {
 
+    private static final String GOOGLE_PUB_SUB_NETWORK_ALIAS = "googlepubsub.testcontainer.docker";
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR = "embeddedGooglePubsubResourcesGenerator";
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL = "embeddedGooglePubsubManagedChannel";
 
@@ -76,7 +77,8 @@ public class EmbeddedPubsubBootstrapConfiguration {
                                 properties.getHost(),
                                 properties.getPort()
                         )
-                ).waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"));
+                ).waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
+                .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS);
 
         network.ifPresent(pubsubContainer::withNetwork);
 
@@ -92,6 +94,8 @@ public class EmbeddedPubsubBootstrapConfiguration {
         map.put("embedded.google.pubsub.port", container.getMappedPort(properties.getPort()));
         map.put("embedded.google.pubsub.host", container.getHost());
         map.put("embedded.google.pubsub.project-id", properties.getProjectId());
+        map.put("embedded.google.pubsub.networkAlias", GOOGLE_PUB_SUB_NETWORK_ALIAS);
+        map.put("embedded.google.pubsub.internalPort", properties.getPort());
 
         log.info("Started Google Cloud Pubsub emulator. Connection details: {}, ", map);
         log.info("Consult with the doc https://cloud.google.com/pubsub/docs/emulator for more details");

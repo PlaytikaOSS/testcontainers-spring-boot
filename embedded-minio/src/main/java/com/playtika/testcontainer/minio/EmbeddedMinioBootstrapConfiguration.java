@@ -31,6 +31,8 @@ import static com.playtika.testcontainer.minio.MinioProperties.MINIO_BEAN_NAME;
 @ConditionalOnProperty(value = "embedded.minio.enabled", matchIfMissing = true)
 public class EmbeddedMinioBootstrapConfiguration {
 
+    private static final String MINIO_NETWORK_ALIAS = "minio.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean
     MinioProperties minioProperties() {
@@ -78,7 +80,8 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withEnv("MINIO_WORM", properties.getWorm())
                         .withEnv("MINIO_BROWSER", properties.getBrowser())
                         .withCommand("server", properties.getDirectory(), "--console-address", ":" + properties.getConsolePort())
-                        .waitingFor(minioWaitStrategy);
+                        .waitingFor(minioWaitStrategy)
+                        .withNetworkAliases(MINIO_NETWORK_ALIAS);
 
         network.ifPresent(minio::withNetwork);
         minio = configureCommonsAndStart(minio, properties, log);
@@ -96,6 +99,9 @@ public class EmbeddedMinioBootstrapConfiguration {
         map.put("embedded.minio.accessKey", properties.accessKey);
         map.put("embedded.minio.secretKey", properties.secretKey);
         map.put("embedded.minio.region", properties.region);
+        map.put("embedded.minio.networkAlias", MINIO_NETWORK_ALIAS);
+        map.put("embedded.minio.internalPort", properties.getPort());
+        map.put("embedded.minio.internalConsolePort", properties.getConsolePort());
 
         log.info("Started Minio server. Connection details: {}", map);
 

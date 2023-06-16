@@ -29,4 +29,6 @@
 * `embedded.prometheus.port`
 * `embedded.prometheus.toxiproxy.host`
 * `embedded.prometheus.toxiproxy.port`
+* `embedded.prometheus.staticNetworkAlias`
+* `embedded.prometheus.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy prometheusContainerProxy`

@@ -35,6 +35,8 @@
 * `embedded.vault.token`
 * `embedded.vault.toxiproxy.host`
 * `embedded.vault.toxiproxy.port`
+* `embedded.vault.networkAlias`
+* `embedded.vault.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy vaultContainerProxy`
 
 ==== Example

@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @EnableConfigurationProperties(AzuriteProperties.class)
 public class EmbeddedAzuriteBootstrapConfiguration {
 
+    private static final String AZURITE_BLOB_NETWORK_ALIAS = "azurite-blob.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "azurite")
     ToxiproxyContainer.ContainerProxy azuriteBlobContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -97,7 +99,8 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                                        AzuriteProperties properties,
                                        Optional<Network> network) {
         GenericContainer<?> azuriteContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getBlobStoragePort(), properties.getQueueStoragePort(), properties.getTableStoragePort());
+                .withExposedPorts(properties.getBlobStoragePort(), properties.getQueueStoragePort(), properties.getTableStoragePort())
+                .withNetworkAliases(AZURITE_BLOB_NETWORK_ALIAS);
 
         network.ifPresent(azuriteContainer::withNetwork);
 
@@ -125,6 +128,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         map.put("embedded.azurite.blob-endpoint", "http://" + host + ":" + mappedBlobStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
         map.put("embedded.azurite.queue-endpoint", "http://" + host + ":" + mappedQueueStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
         map.put("embedded.azurite.table-endpoint", "http://" + host + ":" + mappedTableStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
+        map.put("embedded.azurite.networkAlias", AZURITE_BLOB_NETWORK_ALIAS);
 
         log.info("Started Azurite. Connection details: {}", map);
 

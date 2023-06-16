@@ -42,4 +42,6 @@ embedded:
 * `embedded.consul.port`
 * `embedded.consul.toxiproxy.host`
 * `embedded.consul.toxiproxy.port`
+* `embedded.consul.networkAlias`
+* `embedded.consul.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy consulContainerProxy`

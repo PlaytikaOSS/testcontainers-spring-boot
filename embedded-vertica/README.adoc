@@ -31,6 +31,8 @@
 * `embedded.vertica.password` `(default is "")`
 * `embedded.vertica.toxiproxy.host`
 * `embedded.vertica.toxiproxy.port`
+* `embedded.vertica.networkAlias`
+* `embedded.vertica.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy verticaContainerProxy`
 
 ==== Notes

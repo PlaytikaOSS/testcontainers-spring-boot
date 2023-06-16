@@ -36,6 +36,8 @@ import static com.playtika.testcontainer.mongodb.MongodbProperties.BEAN_NAME_EMB
 @EnableConfigurationProperties(MongodbProperties.class)
 public class EmbeddedMongodbBootstrapConfiguration {
 
+    private static final String MONGODB_NETWORK_ALIAS = "mongodb.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mongodb")
     ToxiproxyContainer.ContainerProxy mongodbContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -67,7 +69,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
                         .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                         .withExposedPorts(properties.getPort())
-                        .waitingFor(mongodbStatusCheck);
+                        .waitingFor(mongodbStatusCheck)
+                        .withNetworkAliases(MONGODB_NETWORK_ALIAS);
 
         network.ifPresent(mongodb::withNetwork);
 
@@ -92,6 +95,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
         map.compute("embedded.mongodb.username", (k, v) -> properties.getUsername());
         map.compute("embedded.mongodb.password", (k, v) -> properties.getPassword());
         map.put("embedded.mongodb.database", properties.getDatabase());
+        map.put("embedded.mongodb.networkAlias", MONGODB_NETWORK_ALIAS);
+        map.put("embedded.mongodb.internalPort", properties.getPort());
 
         log.info("Started mongodb. Connection Details: {}, Connection URI: mongodb://{}:{}/{}", map, host, mappedPort, properties.getDatabase());
 

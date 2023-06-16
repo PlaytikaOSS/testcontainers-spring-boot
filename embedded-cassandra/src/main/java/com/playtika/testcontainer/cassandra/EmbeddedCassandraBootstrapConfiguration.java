@@ -41,6 +41,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @RequiredArgsConstructor
 public class EmbeddedCassandraBootstrapConfiguration {
 
+    private static final String CASSANDRA_NETWORK_ALIAS = "cassandra.testcontainer.docker";
+
     private final ResourceLoader resourceLoader;
 
     @Bean
@@ -69,7 +71,8 @@ public class EmbeddedCassandraBootstrapConfiguration {
                                         Optional<Network> network) throws Exception {
 
         CassandraContainer cassandra = new CassandraContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort());
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(CASSANDRA_NETWORK_ALIAS);
 
         network.ifPresent(cassandra::withNetwork);
         cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
@@ -89,6 +92,8 @@ public class EmbeddedCassandraBootstrapConfiguration {
         cassandraEnv.put("embedded.cassandra.host", host);
         cassandraEnv.put("embedded.cassandra.datacenter", DEFAULT_DATACENTER);
         cassandraEnv.put("embedded.cassandra.keyspace-name", properties.keyspaceName);
+        cassandraEnv.put("embedded.cassandra.networkAlias", CASSANDRA_NETWORK_ALIAS);
+        cassandraEnv.put("embedded.cassandra.internalPort", properties.getPort());
         MapPropertySource propertySource = new MapPropertySource("embeddedCassandraInfo", cassandraEnv);
         environment.getPropertySources().addFirst(propertySource);
         return cassandraEnv;

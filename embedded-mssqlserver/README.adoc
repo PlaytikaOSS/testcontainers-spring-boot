@@ -37,4 +37,6 @@ do not allow to set those parameters.
 * `embedded.mssqlserver.password`
 * `embedded.mssqlserver.toxiproxy.host`
 * `embedded.mssqlserver.toxiproxy.port`
+* `embedded.mssqlserver.networkAlias`
+* `embedded.mssqlserver.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy mssqlserverContainerProxy`

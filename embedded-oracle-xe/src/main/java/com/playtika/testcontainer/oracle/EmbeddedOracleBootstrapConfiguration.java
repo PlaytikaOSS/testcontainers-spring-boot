@@ -34,6 +34,8 @@ import static com.playtika.testcontainer.oracle.OracleProperties.ORACLE_PORT;
 @EnableConfigurationProperties(OracleProperties.class)
 public class EmbeddedOracleBootstrapConfiguration {
 
+    private static final String ORACLE_NETWORK_ALIAS = "oracle.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "oracle")
     ToxiproxyContainer.ContainerProxy oracleContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -62,7 +64,8 @@ public class EmbeddedOracleBootstrapConfiguration {
                 new OracleContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
-                        .withInitScript(properties.initScriptPath);
+                        .withInitScript(properties.initScriptPath)
+                        .withNetworkAliases(ORACLE_NETWORK_ALIAS);
 
         network.ifPresent(oracle::withNetwork);
         oracle = (OracleContainer) configureCommonsAndStart(oracle, properties, log);
@@ -82,6 +85,8 @@ public class EmbeddedOracleBootstrapConfiguration {
         map.put("embedded.oracle.database", properties.getDatabase());
         map.put("embedded.oracle.user", properties.getUser());
         map.put("embedded.oracle.password", properties.getPassword());
+        map.put("embedded.oracle.networkAlias", ORACLE_NETWORK_ALIAS);
+        map.put("embedded.oracle.internalPort", ORACLE_PORT);
 
         String jdbcURL = "jdbc:oracle://{}:{}/{}";
         log.info("Started oracle server. Connection details: {}, " +

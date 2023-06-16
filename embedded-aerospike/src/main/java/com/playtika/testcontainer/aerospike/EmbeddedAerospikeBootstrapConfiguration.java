@@ -39,6 +39,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @EnableConfigurationProperties(AerospikeProperties.class)
 public class EmbeddedAerospikeBootstrapConfiguration {
 
+    private static final String AEROSPIKE_NETWORK_ALIAS = "aerospike.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean
     public AerospikeWaitStrategy aerospikeStartupCheckStrategy(AerospikeProperties properties) {
@@ -84,6 +86,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
                         .withEnv("STORAGE_GB", String.valueOf(1))
+                        .withNetworkAliases(AEROSPIKE_NETWORK_ALIAS)
                         .waitingFor(waitStrategy);
         network.ifPresent(aerospike::withNetwork);
         String featureKey = properties.featureKey;
@@ -108,6 +111,8 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         map.put("embedded.aerospike.host", host);
         map.put("embedded.aerospike.port", mappedPort);
         map.put("embedded.aerospike.namespace", properties.namespace);
+        map.put("embedded.aerospike.networkAlias", AEROSPIKE_NETWORK_ALIAS);
+        map.put("embedded.aerospike.internalPort", properties.port);
 
         log.info("Started aerospike server. Connection details {}", map);
 

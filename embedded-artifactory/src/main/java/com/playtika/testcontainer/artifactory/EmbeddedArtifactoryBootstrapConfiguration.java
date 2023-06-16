@@ -35,6 +35,8 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @EnableConfigurationProperties(ArtifactoryProperties.class)
 public class EmbeddedArtifactoryBootstrapConfiguration {
 
+    private static final String ARTIFACTORY_NETWORK_ALIAS = "artifactory.testcontainer.docker";
+
     @Bean
     @ConditionalOnMissingBean(name = "artifactoryWaitStrategy")
     public WaitStrategy artifactoryWaitStrategy(ArtifactoryProperties properties) {
@@ -74,7 +76,7 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getRestApiPort(), properties.getGeneralPort())
                         .withNetwork(Network.SHARED)
-                        .withNetworkAliases(properties.getNetworkAlias())
+                        .withNetworkAliases(properties.getNetworkAlias(), ARTIFACTORY_NETWORK_ALIAS)
                         .waitingFor(artifactoryWaitStrategy);
 
         network.ifPresent(container::withNetwork);
@@ -97,6 +99,9 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
         map.put("embedded.artifactory.port", mappedPort);
         map.put("embedded.artifactory.username", properties.getUsername());
         map.put("embedded.artifactory.password", properties.getPassword());
+        map.put("embedded.artifactory.staticNetworkAlias", ARTIFACTORY_NETWORK_ALIAS);
+        map.put("embedded.artifactory.internalRestApiPort", properties.getRestApiPort());
+        map.put("embedded.artifactory.internalGeneralPort", properties.getGeneralPort());
 
         log.info("Started Artifactory server. Connection details: {}", map);
 

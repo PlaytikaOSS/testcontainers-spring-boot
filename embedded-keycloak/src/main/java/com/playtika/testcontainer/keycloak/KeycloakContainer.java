@@ -14,7 +14,7 @@ import static java.lang.String.format;
 @Slf4j
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
-    private static final int DEFAULT_HTTP_PORT_INTERNAL = 8080;
+    public static final int KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL = 8080;
 
     private final KeycloakProperties properties;
     private final ResourceLoader resourceLoader;
@@ -29,8 +29,8 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     @Override
     protected void configure() {
         withEnv("HTTP_ENABLED", String.valueOf(true));
-        withEnv("HTTP_PORT", String.valueOf(DEFAULT_HTTP_PORT_INTERNAL));
-        withExposedPorts(DEFAULT_HTTP_PORT_INTERNAL);
+        withEnv("HTTP_PORT", String.valueOf(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL));
+        withExposedPorts(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
         withEnv("KEYCLOAK_ADMIN", properties.getAdminUser());
         withEnv("KEYCLOAK_ADMIN_PASSWORD", properties.getAdminPassword());
         withDB();
@@ -149,7 +149,7 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     }
 
     public Integer getHttpPort() {
-        return getMappedPort(DEFAULT_HTTP_PORT_INTERNAL);
+        return getMappedPort(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
     }
 
     public String getAuthServerUrl() {

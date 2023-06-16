@@ -34,6 +34,8 @@
 * `embedded.localstack.{service}.port` (mapped port for connection)
 * `embedded.localstack.toxiproxy.host`
 * `embedded.localstack.toxiproxy.port`
+* `embedded.localstack.networkAlias`
+* `embedded.localstack.internalEdgePort`
 * Bean `ToxiproxyContainer.ContainerProxy localstackContainerProxy`
 
 // TODO: missing example

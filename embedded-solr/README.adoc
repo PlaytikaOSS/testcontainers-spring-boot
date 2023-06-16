@@ -27,4 +27,6 @@
 * `embedded.solr.port`
 * `embedded.solr.toxiproxy.host`
 * `embedded.solr.toxiproxy.port`
+* `embedded.solr.networkAlias`
+* `embedded.solr.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy solrContainerProxy`

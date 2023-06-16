@@ -32,6 +32,7 @@ TIP: See other common container properties in `com.playtika.test.common.properti
 
 * `embedded.toxiproxy.host`
 * `embedded.toxiproxy.controlPort`
+* `embedded.toxiproxy.networkAlias`
 
 ==== Example
 

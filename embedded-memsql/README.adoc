@@ -36,6 +36,8 @@ Singlestore docker image does not support ARM
 * `embedded.memsql.password`
 * `embedded.memsql.toxiproxy.host`
 * `embedded.memsql.toxiproxy.port`
+* `embedded.memsql.networkAlias`
+* `embedded.memsql.internalPort`
 * Bean `ToxiproxyContainer.ContainerProxy memsqlContainerProxy`
 
 ==== Notes

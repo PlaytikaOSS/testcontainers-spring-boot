@@ -35,6 +35,8 @@ import static com.playtika.testcontainer.db2.Db2Properties.BEAN_NAME_EMBEDDED_DB
 @EnableConfigurationProperties(Db2Properties.class)
 public class EmbeddedDb2BootstrapConfiguration {
 
+    private static final String DB2_NETWORK_ALIAS = "db2.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "db2")
     ToxiproxyContainer.ContainerProxy db2ContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -62,7 +64,8 @@ public class EmbeddedDb2BootstrapConfiguration {
                 .withDatabaseName(properties.getDatabase())
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())
-                .withInitScript(properties.getInitScriptPath());
+                .withInitScript(properties.getInitScriptPath())
+                .withNetworkAliases(DB2_NETWORK_ALIAS);
 
         network.ifPresent(db2Container::withNetwork);
 
@@ -95,6 +98,8 @@ public class EmbeddedDb2BootstrapConfiguration {
         map.put("embedded.db2.database", properties.getDatabase());
         map.put("embedded.db2.user", properties.getUser());
         map.put("embedded.db2.password", properties.getPassword());
+        map.put("embedded.db2.networkAlias", DB2_NETWORK_ALIAS);
+        map.put("embedded.db2.internalPort", Db2Container.DB2_PORT);
 
         String jdbcURL = "jdbc:db2://{}:{}/{}";
         log.info("Started db2 server. Connection details: {}, " +

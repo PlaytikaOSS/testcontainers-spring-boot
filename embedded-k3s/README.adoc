@@ -23,6 +23,8 @@
 ==== Produces
 
 * `embedded.k3s.kubeconfig` Kubeconfig for Kubernetes client
+* `embedded.k3s.networkAlias`
+* `embedded.k3s.internalPort`
 * Bean `K3Container embeddedK3s`
 
 ==== Example for configuring client

@@ -32,6 +32,8 @@ import static com.playtika.testcontainer.elasticsearch.ElasticSearchProperties.B
 @EnableConfigurationProperties(ElasticSearchProperties.class)
 public class EmbeddedElasticSearchBootstrapConfiguration {
 
+    private static final String ELASTICSEARCH_NETWORK_ALIAS = "elasticsearch.testcontainer.docker";
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "elasticsearch")
     ToxiproxyContainer.ContainerProxy elasticsearchContainerProxy(ToxiproxyContainer toxiproxyContainer,
@@ -58,7 +60,8 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
                                                 ElasticSearchProperties properties,
                                                 Optional<Network> network) {
 
-        ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties);
+        ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties)
+                .withNetworkAliases(ELASTICSEARCH_NETWORK_ALIAS);
         network.ifPresent(elasticSearch::withNetwork);
         elasticSearch = (ElasticsearchContainer) configureCommonsAndStart(elasticSearch, properties, log);
         registerElasticSearchEnvironment(elasticSearch, environment, properties);
@@ -77,6 +80,9 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
         map.put("embedded.elasticsearch.host", host);
         map.put("embedded.elasticsearch.httpPort", httpPort);
         map.put("embedded.elasticsearch.transportPort", transportPort);
+        map.put("embedded.elasticsearch.networkAlias", ELASTICSEARCH_NETWORK_ALIAS);
+        map.put("embedded.elasticsearch.internalHttpPort", properties.getHttpPort());
+        map.put("embedded.elasticsearch.internalTransportPort", properties.getTransportPort());
 
         log.info("Started ElasticSearch server. Connection details: {}", map);
 

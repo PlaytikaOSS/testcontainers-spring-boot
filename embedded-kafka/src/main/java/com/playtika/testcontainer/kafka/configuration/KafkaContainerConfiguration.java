@@ -253,6 +253,8 @@ public class KafkaContainerConfiguration {
         map.put("embedded.kafka.saslPlaintext.brokerList", saslPlaintextKafkaBrokerList);
         map.put("embedded.kafka.saslPlaintext.user", KafkaConfigurationProperties.KAFKA_USER);
         map.put("embedded.kafka.saslPlaintext.password", KafkaConfigurationProperties.KAFKA_PASSWORD);
+        map.put("embedded.kafka.networkAlias", KAFKA_HOST_NAME);
+        map.put("embedded.kafka.internalPort", kafkaProperties.getInternalBrokerPort());
 
         Integer containerPort = kafkaProperties.getContainerBrokerPort();
         String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, containerPort);
