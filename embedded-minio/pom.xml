@@ -13,7 +13,7 @@
     <artifactId>embedded-minio</artifactId>
 
     <properties>
-        <minio.version>8.5.3</minio.version>
+        <minio.version>8.5.4</minio.version>
         <!-- Manage an OkHttp version supported by MinIO -->
         <okhttp.version>4.11.0</okhttp.version>
     </properties>
