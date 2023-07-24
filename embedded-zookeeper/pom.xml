@@ -13,7 +13,7 @@
     <artifactId>embedded-zookeeper</artifactId>
 
     <properties>
-        <zookeeper-client.version>3.8.1</zookeeper-client.version>
+        <zookeeper-client.version>3.8.2</zookeeper-client.version>
     </properties>
 
     <dependencies>
