@@ -19,7 +19,7 @@
         <spring.boot.version>3.0.6</spring.boot.version>
         <spring.cloud.version>2022.0.3</spring.cloud.version>
         <spring.cloud.gcp.version>4.5.0</spring.cloud.gcp.version>
-        <equalsverifier.version>3.14.3</equalsverifier.version>
+        <equalsverifier.version>3.15</equalsverifier.version>
         <junit-jupiter.version>5.10.0</junit-jupiter.version>
         <spring.cloud.azure.version>5.0.0</spring.cloud.azure.version>
     </properties>
