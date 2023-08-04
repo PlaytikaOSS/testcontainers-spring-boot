@@ -16,7 +16,7 @@
 
 * `embedded.prometheus.enabled` `(true|false, default is true)`
 * `embedded.prometheus.reuseContainer` `(true|false, default is false)`
-* `embedded.prometheus.dockerImage` `(default is 'prom/prometheus:v2.44.0')`
+* `embedded.prometheus.dockerImage` `(default is 'prom/prometheus:v2.46.0')`
 ** Image versions on https://hub.docker.com/r/prom/prometheus/tags[dockerhub]
 * `embedded.prometheus.networkAlias` `(default is 'prometheus')`
 * `embedded.toxiproxy.proxies.prometheus.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-prometheus` container.
