@@ -57,7 +57,7 @@ public class EmbeddedFirefoxSeleniumBeanConfigurationTest extends BaseEmbeddedSe
             FirefoxOptions options = new FirefoxOptions();
             properties.apply(options);
             options.addArguments("hello-world");
-            options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, false);
+            options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, false);
             options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, false);
             return options;
         }
