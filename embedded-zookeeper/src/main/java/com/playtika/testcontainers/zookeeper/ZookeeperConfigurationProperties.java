@@ -20,6 +20,6 @@ public class ZookeeperConfigurationProperties extends CommonContainerProperties 
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "zookeeper:3.8.1";
+        return "zookeeper:3.8.2";
     }
 }
