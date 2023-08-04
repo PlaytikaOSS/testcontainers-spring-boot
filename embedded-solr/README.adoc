@@ -16,7 +16,7 @@
 
 * `embedded.solr.enabled` `(true|false, default is true)`
 * `embedded.solr.reuseContainer` `(true|false, default is false)`
-* `embedded.solr.dockerImage` `(default is 'solr:9.2')`
+* `embedded.solr.dockerImage` `(default is 'solr:9.3')`
 ** Image versions on https://hub.docker.com/_/solr/tags[dockerhub]
 * `embedded.toxiproxy.proxies.solr.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-solr` container.
 
