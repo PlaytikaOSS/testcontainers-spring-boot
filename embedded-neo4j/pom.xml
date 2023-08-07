@@ -57,6 +57,12 @@
             <artifactId>neo4j-ogm-http-driver</artifactId>
             <version>${neo4j-ogm.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
