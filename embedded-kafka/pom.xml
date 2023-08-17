@@ -14,7 +14,7 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>3.21.0</camel.version>
+        <camel.version>4.0.0</camel.version>
         <!-- https://spring.io/projects/spring-kafka#kafka-client-compatibility Confluent Platform 6.2 provides Kafka 2.8 -->
         <kafka-clients.version>3.5.1</kafka-clients.version>
         <maven-clean-plugin.version>3.3.1</maven-clean-plugin.version>
@@ -34,7 +34,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -76,6 +75,10 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-kafka</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-xml-io</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
