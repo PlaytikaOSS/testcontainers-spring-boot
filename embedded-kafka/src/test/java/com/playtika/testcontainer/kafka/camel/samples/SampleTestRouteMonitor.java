@@ -15,7 +15,7 @@ public class SampleTestRouteMonitor {
     private final MockEndpoint resultEndpoint;
 
     public SampleTestRouteMonitor(CamelContext camelContext) throws Exception {
-        ModelCamelContext modelCamelContext = camelContext.adapt(ModelCamelContext.class);
+        ModelCamelContext modelCamelContext = camelContext.getCamelContextExtension().getContextPlugin(ModelCamelContext.class);
         RouteDefinition route = modelCamelContext.getRouteDefinition(PRODUCTION_ROUTE);
         AdviceWith.adviceWith(route, modelCamelContext, new AdviceWithRouteBuilder() {
             @Override
