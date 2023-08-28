@@ -1,0 +1,73 @@
+=== embedded-wiremock
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-wiremock</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.wiremock.enabled` `(true|false, default is true)`
+* `embedded.wiremock.reuseContainer` `(true|false, default is false)`
+* `embedded.wiremock.dockerImage` `(default is 'wiremock/wiremock:2.32.0')`
+* `embedded.wiremock.host` `(default is 'localhost')`
+* `embedded.wiremock.port` `(int, default is 8990)`
+
+
+==== Produces
+
+* `embedded.wiremock.host`
+* `embedded.wiremock.port` (mapped HTTP port)
+* `embedded.wiremock.networkAlias`
+* `embedded.wiremock.internalPort`
+* Bean `GenericContainer<?> embeddedWiremock`
+
+
+==== Example
+
+Add wiremock dependency with test scope (to use wiremock client to configure stubs, etc.):
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.github.tomakehurst</groupId>
+    <artifactId>wiremock</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+Set up and use the wiremock:
+
+[source,java]
+----
+class SomeTest {
+    //...
+    @Value("${embedded.wiremock.host}")
+    String wiremockHost;
+
+    @Value("${embedded.wiremock.port}")
+    int wiremockPort;
+
+    @BeforeEach
+    void setUp() {
+        WireMock.configureFor(wiremockHost, wiremockPort);
+    }
+
+    @Test
+    void doTest() {
+        // configure stub
+        stubFor(get("/say-hello")
+                .willReturn(ok("Hello world!")));
+        // test something
+    }
+    //...
+ }
+----
