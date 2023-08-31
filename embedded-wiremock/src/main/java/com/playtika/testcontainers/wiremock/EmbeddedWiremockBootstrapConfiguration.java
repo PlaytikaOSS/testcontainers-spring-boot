@@ -13,10 +13,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
@@ -38,13 +40,16 @@ public class EmbeddedWiremockBootstrapConfiguration {
 
     @Bean(value = BEAN_NAME_EMBEDDED_WIREMOCK, destroyMethod = "stop")
     public GenericContainer<?> wiremockContainer(ConfigurableEnvironment environment,
-                                       WiremockProperties properties) {
+                                                 WiremockProperties properties,
+                                                 Optional<Network> network) {
         GenericContainer<?> wiremock =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .waitingFor(DEFAULT_WAITER)
                         .withCommand("--port " + properties.getPort())
                         .withExposedPorts(properties.getPort())
                         .withNetworkAliases(WIREMOCK_NETWORK_ALIAS);
+
+        network.ifPresent(wiremock::withNetwork);
 
         wiremock = configureCommonsAndStart(wiremock, properties, log);
         registerWiremockEnvironment(wiremock, environment, properties);
