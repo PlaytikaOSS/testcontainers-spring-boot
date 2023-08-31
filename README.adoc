@@ -333,6 +333,8 @@ embedded:
 === link:embedded-cockroachdb/README.adoc[embedded-cockroachdb]
 === link:embedded-git/README.adoc[embedded-git]
 
+=== link:embedded-wiremock/README.adoc[embedded-wiremock]
+
 
 == How to contribute
 

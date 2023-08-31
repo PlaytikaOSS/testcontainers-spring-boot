@@ -80,6 +80,7 @@
         <module>embedded-git</module>
         <module>embedded-zookeeper</module>
         <module>embedded-couchbase</module>
+        <module>embedded-wiremock</module>
     </modules>
 
     <properties>

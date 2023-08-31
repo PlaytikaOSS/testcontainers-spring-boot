@@ -1,0 +1,25 @@
+{
+  "properties": [
+    {
+      "name": "embedded.wiremock.enabled",
+      "type": "java.lang.String",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.wiremock.dockerImage",
+      "type": "java.lang.String",
+      "defaultValue": "wiremock/wiremock:2.32.0"
+    },
+    {
+      "name": "embedded.wiremock.host",
+      "type": "java.lang.String",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "embedded.wiremock.port",
+      "type": "java.lang.Integer",
+      "description": "The container internal port. Will be overwritten with mapped port.",
+      "defaultValue": "8990"
+    }
+  ]
+}
