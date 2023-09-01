@@ -22,6 +22,6 @@ public class PubsubProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "google/cloud-sdk:441.0.0";
+        return "google/cloud-sdk:444.0.0";
     }
 }
