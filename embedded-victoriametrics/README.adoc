@@ -19,7 +19,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 
 * `embedded.victoriametrics.enabled` `(true|false, default is true)`
 * `embedded.victoriametrics.reuseContainer` `(true|false, default is false)`
-* `embedded.victoriametrics.dockerImage` `(default is 'victoriametrics/victoria-metrics:v1.92.1')`
+* `embedded.victoriametrics.dockerImage` `(default is 'victoriametrics/victoria-metrics:v1.93.1')`
 ** Image versions on https://hub.docker.com/r/victoriametrics/victoria-metrics/tags[dockerhub]
 * `embedded.victoriametrics.networkAlias` `(default is 'victoriametrics')`
 * `embedded.toxiproxy.proxies.victoriametrics.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-victoria` container.
