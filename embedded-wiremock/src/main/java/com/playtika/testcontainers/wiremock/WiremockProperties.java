@@ -18,6 +18,6 @@ public class WiremockProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "wiremock/wiremock:2.32.0";
+        return "wiremock/wiremock:2.35.0";
     }
 }
