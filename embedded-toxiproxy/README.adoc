@@ -23,7 +23,7 @@ Convenient and simple to use wrapper for ToxiProxy:
 * `embedded.toxiproxy.enabled` `(true|false, default is 'false')` Enables ToxiProxy container.
 * `embedded.toxiproxy.proxies.{module}.enabled` `(true|false, default is 'false')` Enables ToxiProxy proxy for specific module.
 * `embedded.toxiproxy.reuseContainer` `(true|false, default is 'false')`
-* `embedded.toxiproxy.dockerImage` `(default is set to 'ghcr.io/shopify/toxiproxy:2.5.0')`
+* `embedded.toxiproxy.dockerImage` `(default is set to 'ghcr.io/shopify/toxiproxy:2.6.0')`
 * `embedded.toxiproxy.waitTimeoutInSeconds` `(default is 60 seconds)`
 
 TIP: See other common container properties in `com.playtika.test.common.properties.CommonContainerProperties`.
