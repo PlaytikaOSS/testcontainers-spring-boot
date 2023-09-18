@@ -278,6 +278,8 @@ embedded:
 
 === link:embedded-elasticsearch/README.adoc[embedded-elasticsearch]
 
+=== link:embedded-opensearch/README.adoc[embedded-opensearch]
+
 === link:embedded-dynamodb/README.adoc[embedded-dynamodb]
 
 === link:embedded-voltdb/README.adoc[embedded-voltdb]

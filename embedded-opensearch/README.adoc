@@ -1,0 +1,48 @@
+=== embedded-opensearch
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-opensearch</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.opensearch.enabled` `(true|false, default is true)`
+* `embedded.opensearch.reuseContainer` `(true|false, default is false)`
+* `embedded.opensearch.dockerImage` `(default is 'opensearchproject/opensearch:2.9.0')`
+** Image versions on https://hub.docker.com/r/opensearchproject/opensearch[docker.opensearch.co]
+* `embedded.opensearch.indices` `(indices to create, no indices are created by default)`
+* `embedded.opensearch.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.opensearch.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-opensearch` container.
+
+
+==== Produces
+
+* `embedded.opensearch.clusterName`
+* `embedded.opensearch.host`
+* `embedded.opensearch.httpPort`
+* `embedded.opensearch.transportPort`
+* `embedded.opensearch.toxiproxy.host`
+* `embedded.opensearch.toxiproxy.port`
+* `embedded.opensearch.networkAlias`
+* `embedded.opensearch.internalHttpPort`
+* `embedded.opensearch.internalTransportPort`
+* Bean `ToxiproxyContainer.ContainerProxy opensearchContainerProxy`
+
+
+==== Example
+
+To use autoconfigured opensearch client use this property in your test `application.properties`:
+
+./src/test/resources/application.properties
+[source,properties]
+----
+opensearch.uris=http://${embedded.opensearch.host}:${embedded.opensearch.httpPort}
+----

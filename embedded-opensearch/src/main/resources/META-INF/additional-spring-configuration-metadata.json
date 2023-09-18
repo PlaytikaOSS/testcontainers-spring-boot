@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.opensearch.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.opensearch.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of OpenSearch server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disables configuration of OpenSearch server on startup."
+        }
+      ]
+    }
+  ]
+}
