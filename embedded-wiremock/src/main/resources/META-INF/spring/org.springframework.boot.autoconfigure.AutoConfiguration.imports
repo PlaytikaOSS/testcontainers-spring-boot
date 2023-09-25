@@ -1,1 +1,1 @@
-com.playtika.testcontainers.wiremock.EmbeddedWiremockBootstrapConfiguration
+com.playtika.testcontainers.wiremock.EmbeddedWiremockDependenciesAutoConfiguration
