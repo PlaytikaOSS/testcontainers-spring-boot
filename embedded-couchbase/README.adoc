@@ -18,7 +18,7 @@
 * `embedded.couchbase.reuseContainer` `(true|false, default is false)`
 * `embedded.couchbase.services` `(comma separated list, default is 'INDEX,KV,QUERY,SEARCH')`
 * `embedded.couchbase.bucketRamMb` `(default is '100')`
-* `embedded.couchbase.dockerImage` `(default is 'couchbase/server:7.2.0')`
+* `embedded.couchbase.dockerImage` `(default is 'couchbase/server:7.2.2')`
 ** Image versions on https://hub.docker.com/r/couchbase/server/tags[dockerhub]
 * `embedded.toxiproxy.proxies.couchbase.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-couchbase` container.
 
