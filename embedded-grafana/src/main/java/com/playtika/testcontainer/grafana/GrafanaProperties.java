@@ -23,6 +23,6 @@ public class GrafanaProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "grafana/grafana:10.1.1";
+        return "grafana/grafana:10.1.2";
     }
 }
