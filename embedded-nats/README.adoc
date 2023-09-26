@@ -16,7 +16,7 @@
 
 * `embedded.nats.enabled` `(true|false, default is true)`
 * `embedded.nats.reuseContainer` `(true|false, default is false)`
-* `embedded.nats.dockerImage` `(default is 'nats:2.9')`
+* `embedded.nats.dockerImage` `(default is 'nats:2.10')`
 ** Image versions on https://hub.docker.com/_/nats/tags[dockerhub]
 * `embedded.toxiproxy.proxies.nats.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-nats` container.
 
