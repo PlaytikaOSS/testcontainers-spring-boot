@@ -1,0 +1,2 @@
+com.playtika.testcontainer.keydb.EmbeddedKeyDbDependenciesAutoConfiguration
+com.playtika.testcontainer.keydb.EmbeddedKeyDbTestOperationsAutoConfiguration

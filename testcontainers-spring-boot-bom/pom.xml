@@ -72,6 +72,11 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-keydb</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-mariadb</artifactId>
                 <version>${project.version}</version>
             </dependency>
