@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>testcontainers-spring-boot-parent</artifactId>
+        <groupId>com.playtika.testcontainers</groupId>
+        <version>3.0.3</version>
+        <relativePath>../testcontainers-spring-boot-parent</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>embedded-keydb</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
+
+        <!-- using Redis libraries as KeyDB is compatible with Redis API -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

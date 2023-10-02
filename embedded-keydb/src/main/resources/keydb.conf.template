@@ -1,0 +1,6 @@
+cluster-enabled {{clustered}}
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+port {{port}}
+protected-mode {{requirepass}}
+{{password}}

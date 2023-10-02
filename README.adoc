@@ -294,6 +294,8 @@ embedded:
 
 === link:embedded-keycloak/README.adoc[embedded-keycloak]
 
+=== link:embedded-keydb/README.adoc[embedded-keydb]
+
 === link:embedded-influxdb/README.adoc[embedded-influxdb]
 
 === link:embedded-vault/README.adoc[embedded-vault]

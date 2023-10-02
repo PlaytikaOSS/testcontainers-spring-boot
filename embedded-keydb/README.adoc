@@ -1,0 +1,39 @@
+=== embedded-keydb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-keydb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.keydb.enabled` `(true|false, default is true)`
+* `embedded.keydb.reuseContainer` `(true|false, default is false)`
+* `embedded.keydb.dockerImage` `(default is 'eqalpha/keydb:alpine_x86_64_v6.3.3')`
+** Image versions on https://hub.docker.com/r/eqalpha/keydb/tags[dockerhub]
+* `embedded.keydb.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.keydb.clustered` `(true|false, default is false)`
+** If `true` KeyDB is started in cluster mode
+* `embedded.keydb.requirepass` `(true|false, default is true)`
+* `embedded.toxiproxy.proxies.keydb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-keydb` container.
+
+
+==== Produces
+
+* `embedded.keydb.host`
+* `embedded.keydb.port`
+* `embedded.keydb.user`
+* `embedded.keydb.password`
+* `embedded.keydb.toxiproxy.host`
+* `embedded.keydb.toxiproxy.port`
+* `embedded.keydb.networkAlias`
+* Bean `ToxiproxyContainer.ContainerProxy keyDbContainerProxy`
+
+//TODO: example missing
