@@ -16,7 +16,7 @@
 
 * `embedded.wiremock.enabled` `(true|false, default is true)`
 * `embedded.wiremock.reuseContainer` `(true|false, default is false)`
-* `embedded.wiremock.dockerImage` `(default is 'wiremock/wiremock:2.35.0')`
+* `embedded.wiremock.dockerImage` `(default is 'wiremock/wiremock:3.1.0')`
 * `embedded.wiremock.host` `(default is 'localhost')`
 * `embedded.wiremock.port` `(int, default is 8990)`
 
