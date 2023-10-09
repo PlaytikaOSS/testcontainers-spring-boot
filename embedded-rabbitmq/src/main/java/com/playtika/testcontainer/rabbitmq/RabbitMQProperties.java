@@ -16,6 +16,7 @@ public class RabbitMQProperties extends CommonContainerProperties {
     private String vhost = "/";
     private int port = 5672;
     private int httpPort = 15672;
+    private String[] enabledPlugins = null;
 
     // https://hub.docker.com/_/rabbitmq
     @Override
