@@ -65,6 +65,10 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                         .withExposedPorts(properties.getPort(), properties.getHttpPort())
                         .withNetworkAliases(RABBITMQ_NETWORK_ALIAS);
 
+        if (properties.getEnabledPlugins() != null && properties.getEnabledPlugins().size() != 0) {
+            rabbitMQ = rabbitMQ.withPluginsEnabled(properties.getEnabledPlugins().toArray(new String[0]));
+        }
+
         network.ifPresent(rabbitMQ::withNetwork);
         rabbitMQ = (RabbitMQContainer) configureCommonsAndStart(rabbitMQ, properties, log);
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
