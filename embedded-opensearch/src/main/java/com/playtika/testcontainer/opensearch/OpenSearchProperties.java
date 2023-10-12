@@ -20,6 +20,10 @@ public class OpenSearchProperties extends CommonContainerProperties {
     int httpPort = 9200;
     int transportPort = 9300;
     int clusterRamMb = 256;
+    boolean credentialsEnabled = false;
+    boolean allowInsecure = false;
+    String username = "admin";
+    String password = "admin";
 
     // https://hub.docker.com/r/opensearchproject/opensearch
     @Override

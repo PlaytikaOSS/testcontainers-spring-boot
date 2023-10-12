@@ -11,12 +11,16 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 class OpenSearchContainerFactory {
 
     static OpensearchContainer create(OpenSearchProperties properties) {
-        return new OpensearchContainer(ContainerUtils.getDockerImageName(properties))
+        OpensearchContainer opensearchContainer = new OpensearchContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
                 .waitingFor(getCompositeWaitStrategy(properties));
+        if (properties.isCredentialsEnabled()) {
+            opensearchContainer.withSecurityEnabled();
+        }
+        return opensearchContainer;
     }
 
     private static String getJavaOpts(OpenSearchProperties properties) {
