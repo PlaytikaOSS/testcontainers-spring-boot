@@ -13,7 +13,7 @@
     <artifactId>embedded-neo4j</artifactId>
 
     <properties>
-        <neo4j-ogm.version>3.3.1</neo4j-ogm.version>
+        <neo4j-java-driver.version>5.12.0</neo4j-java-driver.version>
     </properties>
 
     <dependencies>
@@ -41,28 +41,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-core</artifactId>
-            <version>${neo4j-ogm.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-bolt-driver</artifactId>
-            <version>${neo4j-ogm.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-http-driver</artifactId>
-            <version>${neo4j-ogm.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>${neo4j-java-driver.version}</version>
         </dependency>
     </dependencies>
 </project>
