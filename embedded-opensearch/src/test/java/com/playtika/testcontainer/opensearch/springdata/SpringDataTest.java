@@ -7,19 +7,27 @@ import org.opensearch.client.RestClient;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("enabled")
+@SpringBootTest(
+        classes = EmbeddedOpenSearchBootstrapConfigurationTest.Config.class,
+        properties = {
+                "embedded.opensearch.enabled=true"
+        })
 public class SpringDataTest extends EmbeddedOpenSearchBootstrapConfigurationTest {
 
     @Autowired
-    private TestDocumentRepository documentRepository;
+    protected TestDocumentRepository documentRepository;
 
     @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
+    protected ConfigurableListableBeanFactory beanFactory;
 
     @Test
     public void springDataShouldWork() {

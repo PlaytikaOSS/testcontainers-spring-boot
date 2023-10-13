@@ -21,6 +21,7 @@
 * `embedded.rabbitmq.dockerImage` `(default is 'rabbitmq:3.12-alpine')`
 ** Image versions on https://hub.docker.com/_/rabbitmq?tab=tags[dockerhub]
 * `embedded.rabbitmq.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.rabbitmq.enabledPlugins` `(list of strings, e.g. `rabbitmq_consistent_hash_exchange`, defaults to an empty list)`
 * `embedded.toxiproxy.proxies.rabbitmq.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-rabbitmq` container.
 
 
