@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties("embedded.rabbitmq")
@@ -16,6 +18,7 @@ public class RabbitMQProperties extends CommonContainerProperties {
     private String vhost = "/";
     private int port = 5672;
     private int httpPort = 15672;
+    private List<String> enabledPlugins = null;
 
     // https://hub.docker.com/_/rabbitmq
     @Override

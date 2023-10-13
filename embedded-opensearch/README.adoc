@@ -20,6 +20,10 @@
 ** Image versions on https://hub.docker.com/r/opensearchproject/opensearch[docker.opensearch.co]
 * `embedded.opensearch.indices` `(indices to create, no indices are created by default)`
 * `embedded.opensearch.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.opensearch.credentialsEnabled` `(true|false, default is false)`. Enables start of opensearch with security plugin activated (HTTPS + basic auth).
+* `embedded.opensearch.allowInsecure` (`true|false, default is false)`. Enables TrustAll policy for client methods (for init on startup and wait policies).
+* `embedded.opensearch.username` `(username, default is "admin")`. Login to be sent via basic authentication for client methods (for init on startup and wait policies).
+* `embedded.opensearch.password` `(password, default is "admin")`. Password to be sent via basic authentication for client methods (for init on startup and wait policies).
 * `embedded.toxiproxy.proxies.opensearch.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-opensearch` container.
 
 

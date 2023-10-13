@@ -2,6 +2,7 @@ package com.playtika.testcontainer.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.AmqpIOException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -18,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static com.playtika.testcontainer.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_RABBITMQ;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @Slf4j
 @SpringBootTest(
@@ -77,6 +79,11 @@ public class EmbeddedRabbitMQBootstrapConfigurationTest {
                 .hasSize(1)
                 .contains("rabbitTemplate");
         asList(beanNamesForType).forEach(this::hasDependsOn);
+    }
+
+    @Test
+    public void testCustomExchangeFailsWithoutPlugin() {
+        assertThatExceptionOfType(AmqpIOException.class).isThrownBy(() -> EmbeddedRabbitMQWithPluginsTest.tryCreateConsistentHashExchange(rabbitAdmin));
     }
 
     private void hasDependsOn(String beanName) {
