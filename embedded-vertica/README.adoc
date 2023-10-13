@@ -16,7 +16,7 @@
 
 * `embedded.vertica.enabled` `(true|false, default is true)`
 * `embedded.vertica.reuseContainer` `(true|false, default is false)`
-* `embedded.vertica.dockerImage` `(default is 'vertica/vertica-ce:23.3.0-0')`
+* `embedded.vertica.dockerImage` `(default is 'vertica/vertica-ce:23.4.0-0')`
 ** Image versions on https://hub.docker.com/r/vertica/vertica-ce[dockerhub]
 * `embedded.vertica.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.toxiproxy.proxies.vertica.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-vertica` container.
