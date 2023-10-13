@@ -22,6 +22,6 @@ public class CassandraProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "cassandra:4.1";
+        return "cassandra:5.0";
     }
 }
