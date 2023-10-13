@@ -6,6 +6,26 @@
       "name": "embedded.opensearch.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": "true"
+    },
+    {
+      "name": "embedded.opensearch.credentials-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
+    },
+    {
+      "name": "embedded.opensearch.allow-insecure",
+      "type": "java.lang.Boolean",
+      "defaultValue": "false"
+    },
+    {
+      "name": "embedded.opensearch.username",
+      "type": "java.lang.String",
+      "defaultValue": "admin"
+    },
+    {
+      "name": "embedded.opensearch.password",
+      "type": "java.lang.String",
+      "defaultValue": "admin"
     }
   ],
   "hints": [
@@ -19,6 +39,32 @@
         {
           "value": "false",
           "description": "Disables configuration of OpenSearch server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.opensearch.credentials-enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables security of OpenSearch server on startup (https, credentials needed)."
+        },
+        {
+          "value": "false",
+          "description": "Disables security OpenSearch server on startup (http, no credentials needed)."
+        }
+      ]
+    },
+    {
+      "name": "embedded.opensearch.allow-insecure",
+      "values": [
+        {
+          "value": "true",
+          "description": "Trust all certificates for SSL. Never use this in production."
+        },
+        {
+          "value": "false",
+          "description": "Keep default SSL configuration."
         }
       ]
     }
