@@ -49,7 +49,7 @@ bootstrap-test.yml
 embedded:
   postgresql:
     enabled: true
-    docker-image: 'bitnami/postgresql:13.3.0'
+    docker-image: 'postgres:16-alpine'
     wait-timeout-in-seconds: 40
     command: '/opt/bitnami/scripts/postgresql/run.sh'
     startupLogCheckRegex: '.*database system is ready to accept connections.*'
