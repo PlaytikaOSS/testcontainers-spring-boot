@@ -33,6 +33,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected int saslPlaintextBrokerPort = 9095;
     protected int toxiProxyContainerBrokerPort = 9096;
     protected int toxiProxySaslPlaintextContainerBrokerPort = 9097;
+    protected int internalSaslPlaintextBrokerPort = 9098;
     protected int socketTimeoutMs = 5_000;
     protected int bufferSize = 64 * 1024;
 
