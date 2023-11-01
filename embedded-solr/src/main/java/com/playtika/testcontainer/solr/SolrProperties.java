@@ -17,6 +17,6 @@ public class SolrProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "solr:9.3";
+        return "solr:9.4";
     }
 }
