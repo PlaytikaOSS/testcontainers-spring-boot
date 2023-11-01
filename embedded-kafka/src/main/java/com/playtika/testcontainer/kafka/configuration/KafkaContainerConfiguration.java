@@ -130,6 +130,7 @@ public class KafkaContainerConfiguration {
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
         int saslPlaintextKafkaExternalPort = kafkaProperties.getSaslPlaintextBrokerPort();
+        int saslPlaintextKafkaInternalPort = kafkaProperties.getInternalSaslPlaintextBrokerPort();
         int toxiProxyKafkaInternalPort = kafkaProperties.getToxiProxyContainerBrokerPort();
         int toxiProxySaslPlaintextKafkaInternalPort = kafkaProperties.getToxiProxySaslPlaintextContainerBrokerPort();
 
@@ -143,6 +144,7 @@ public class KafkaContainerConfiguration {
                 List<String> servers = new ArrayList<>();
                 servers.add("EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort));
                 servers.add("EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort));
+                servers.add("INTERNAL_SASL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + saslPlaintextKafkaInternalPort);
                 servers.add("INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort);
 
                 if (plainTextProxy != null) {
@@ -162,16 +164,18 @@ public class KafkaContainerConfiguration {
                 //see: https://github.com/wurstmeister/kafka-docker/blob/develop/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
                 .withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP",
-                        "EXTERNAL_PLAINTEXT:PLAINTEXT," +
+                                "EXTERNAL_PLAINTEXT:PLAINTEXT," +
                                 "EXTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
+                                "INTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
                                 "INTERNAL_PLAINTEXT:PLAINTEXT," +
                                 "BROKER:PLAINTEXT," +
                                 "TOXIPROXY_INTERNAL_PLAINTEXT:PLAINTEXT," +
                                 "TOXIPROXY_INTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT"
                 )
                 .withEnv("KAFKA_LISTENERS",
-                        "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + "," +
+                                "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + "," +
                                 "EXTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaExternalPort + "," +
+                                "INTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaInternalPort + "," +
                                 "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
                                 "TOXIPROXY_INTERNAL_PLAINTEXT://0.0.0.0:" + toxiProxyKafkaInternalPort + "," +
                                 "TOXIPROXY_INTERNAL_SASL_PLAINTEXT://0.0.0.0:" + toxiProxySaslPlaintextKafkaInternalPort + "," +
@@ -255,6 +259,7 @@ public class KafkaContainerConfiguration {
         map.put("embedded.kafka.saslPlaintext.password", KafkaConfigurationProperties.KAFKA_PASSWORD);
         map.put("embedded.kafka.networkAlias", KAFKA_HOST_NAME);
         map.put("embedded.kafka.internalPort", kafkaProperties.getInternalBrokerPort());
+        map.put("embedded.kafka.internalSaslPlaintextPort", kafkaProperties.getInternalSaslPlaintextBrokerPort());
 
         Integer containerPort = kafkaProperties.getContainerBrokerPort();
         String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, containerPort);
