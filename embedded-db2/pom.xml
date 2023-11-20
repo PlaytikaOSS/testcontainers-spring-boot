@@ -14,7 +14,7 @@
     <artifactId>embedded-db2</artifactId>
 
     <properties>
-        <db2.jcc.version>11.5.8.0</db2.jcc.version>
+        <db2.jcc.version>11.5.9.0</db2.jcc.version>
     </properties>
 
     <dependencies>
