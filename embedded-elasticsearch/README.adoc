@@ -16,7 +16,7 @@
 
 * `embedded.elasticsearch.enabled` `(true|false, default is true)`
 * `embedded.elasticsearch.reuseContainer` `(true|false, default is false)`
-* `embedded.elasticsearch.dockerImage` `(default is 'docker.elastic.co/elasticsearch/elasticsearch:8.10.4')`
+* `embedded.elasticsearch.dockerImage` `(default is 'docker.elastic.co/elasticsearch/elasticsearch:8.11.1')`
 ** Image versions on https://www.docker.elastic.co/r/elasticsearch[docker.elastic.co]
 * `embedded.elasticsearch.indices` `(indices to create, no indices are created by default)`
 * `embedded.elasticsearch.waitTimeoutInSeconds` `(default is 60 seconds)`
