@@ -4,23 +4,24 @@ import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.opensearch.rest.CreateIndex;
 import com.playtika.testcontainer.opensearch.rest.WaitForGreenStatus;
 import org.opensearch.testcontainers.OpensearchContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 class OpenSearchContainerFactory {
 
-    static OpensearchContainer create(OpenSearchProperties properties) {
-        OpensearchContainer opensearchContainer = new OpensearchContainer(ContainerUtils.getDockerImageName(properties))
+    static GenericContainer create(OpenSearchProperties properties) {
+        OpensearchContainer opensearchContainer = new OpensearchContainer(ContainerUtils.getDockerImageName(properties));
+        if (properties.isCredentialsEnabled()) {
+            opensearchContainer.withSecurityEnabled();
+        }
+        return opensearchContainer
                 .withExposedPorts(properties.httpPort, properties.transportPort)
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
                 .waitingFor(getCompositeWaitStrategy(properties));
-        if (properties.isCredentialsEnabled()) {
-            opensearchContainer.withSecurityEnabled();
-        }
-        return opensearchContainer;
     }
 
     private static String getJavaOpts(OpenSearchProperties properties) {

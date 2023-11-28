@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
@@ -56,24 +57,24 @@ public class EmbeddedOpenSearchBootstrapConfiguration {
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_OPEN_SEARCH)
     @Bean(name = BEAN_NAME_EMBEDDED_OPEN_SEARCH, destroyMethod = "stop")
-    public OpensearchContainer openSearch(ConfigurableEnvironment environment,
+    public GenericContainer openSearch(ConfigurableEnvironment environment,
                                           OpenSearchProperties properties,
                                           Optional<Network> network) {
 
-        OpensearchContainer openSearch = OpenSearchContainerFactory.create(properties)
+        GenericContainer openSearch = OpenSearchContainerFactory.create(properties)
                 .withNetworkAliases(OPENSEARCH_NETWORK_ALIAS);
         network.ifPresent(openSearch::withNetwork);
-        openSearch = (OpensearchContainer) configureCommonsAndStart(openSearch, properties, log);
+        openSearch = configureCommonsAndStart(openSearch, properties, log);
         registerOpenSearchEnvironment(openSearch, environment, properties);
         return openSearch;
     }
 
-    private void registerOpenSearchEnvironment(OpensearchContainer OpenSearch,
+    private void registerOpenSearchEnvironment(GenericContainer openSearch,
                                                ConfigurableEnvironment environment,
                                                OpenSearchProperties properties) {
-        Integer httpPort = OpenSearch.getMappedPort(properties.getHttpPort());
-        Integer transportPort = OpenSearch.getMappedPort(properties.getTransportPort());
-        String host = OpenSearch.getHost();
+        Integer httpPort = openSearch.getMappedPort(properties.getHttpPort());
+        Integer transportPort = openSearch.getMappedPort(properties.getTransportPort());
+        String host = openSearch.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.opensearch.clusterName", properties.getClusterName());
