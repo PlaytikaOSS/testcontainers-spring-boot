@@ -85,7 +85,7 @@ class EmbeddedGitBootstrapConfigurationTest {
             writer.print("hello world!");
         }
         git.add().addFilepattern("test_file.txt").call();
-        git.commit().setMessage("Test commit").call();
+        git.commit().setMessage("Test commit").setSign(false).call();
         git.push()
                 .setRemote("origin")
                 .setRefSpecs(new RefSpec(beforeRepoFolderName))
