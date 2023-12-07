@@ -172,7 +172,6 @@
         </profile>
     </profiles>
 
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -183,16 +182,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-
-    <!--TO DELETE-->
-    <repositories>
-        <repository>
-            <id>spring-milestone</id>
-            <name>Spring Milestone Repository</name>
-            <url>https://repo.spring.io/milestone</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
