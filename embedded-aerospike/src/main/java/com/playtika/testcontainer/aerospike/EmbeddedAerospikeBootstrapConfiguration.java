@@ -27,7 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 
 @Slf4j
@@ -68,7 +68,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     }
 
 
-    @Bean(name = AEROSPIKE_BEAN_NAME, destroyMethod = "stop")
+    @Bean(name = BEAN_NAME_AEROSPIKE, destroyMethod = "stop")
     public GenericContainer<?> aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                       ConfigurableEnvironment environment,
                                       AerospikeProperties properties,

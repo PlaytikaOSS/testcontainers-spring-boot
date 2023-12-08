@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.keydb.KeyDbProperties.BEAN_NAME_EMBEDDED_KEYDB;
+import static com.playtika.testcontainer.keydb.KeyDbProperties.BEAN_NAME_EMBEDDED_KEYDB_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnBean({KeyDbProperties.class})
@@ -20,7 +21,7 @@ import static com.playtika.testcontainer.keydb.KeyDbProperties.BEAN_NAME_EMBEDDE
 @ConditionalOnProperty(value = "embedded.keydb.enabled", matchIfMissing = true)
 public class EmbeddedKeyDbTestOperationsAutoConfiguration {
 
-  @Bean
+  @Bean(BEAN_NAME_EMBEDDED_KEYDB_PACKAGE_PROPERTIES)
   @ConfigurationProperties("embedded.keydb.install")
   public InstallPackageProperties keyDbPackageProperties() {
     return new InstallPackageProperties();
@@ -28,7 +29,7 @@ public class EmbeddedKeyDbTestOperationsAutoConfiguration {
 
   @Bean
   public PackageInstaller keyDbPackageInstaller(
-    InstallPackageProperties keyDbPackageProperties,
+    @Qualifier(BEAN_NAME_EMBEDDED_KEYDB_PACKAGE_PROPERTIES) InstallPackageProperties keyDbPackageProperties,
     @Qualifier(BEAN_NAME_EMBEDDED_KEYDB) GenericContainer<?> keyDb
   ) {
     return new ApkPackageInstaller(keyDbPackageProperties, keyDb);

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
+import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_PACKAGE_PROPERTIES_BEAN_NAME;
 
 @AutoConfiguration
 @ConditionalOnBean({KafkaConfigurationProperties.class})
@@ -21,14 +22,14 @@ import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProp
 @ConditionalOnProperty(value = {"embedded.kafka.enabled"}, havingValue = "true", matchIfMissing = true)
 public class EmbeddedKafkaTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(KAFKA_PACKAGE_PROPERTIES_BEAN_NAME)
     @ConfigurationProperties("embedded.kafka.install")
     public InstallPackageProperties kafkaPackageProperties() {
         return new InstallPackageProperties();
     }
 
     @Bean
-    public PackageInstaller kafkaPackageInstaller(InstallPackageProperties kafkaPackageProperties,
+    public PackageInstaller kafkaPackageInstaller(@Qualifier(KAFKA_PACKAGE_PROPERTIES_BEAN_NAME) InstallPackageProperties kafkaPackageProperties,
                                                   @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) {
         return new YumPackageInstaller(kafkaPackageProperties, kafka);
     }

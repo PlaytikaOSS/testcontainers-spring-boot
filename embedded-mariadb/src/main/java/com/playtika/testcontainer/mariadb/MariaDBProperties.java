@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.mariadb")
 public class MariaDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MARIADB = "embeddedMariaDb";
+    static final String BEAN_NAME_MARIADB_PACKAGE_PROPERTIES= "mariadbPackageProperties";
 
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";

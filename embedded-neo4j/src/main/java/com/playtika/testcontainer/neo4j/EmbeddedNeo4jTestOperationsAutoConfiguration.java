@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
+import static com.playtika.testcontainer.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -20,15 +21,15 @@ import static com.playtika.testcontainer.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDE
 @ConditionalOnProperty(value = "embedded.neo4j.enabled", matchIfMissing = true)
 public class EmbeddedNeo4jTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_EMBEDDED_NEO4J_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.neo4j.install")
     public InstallPackageProperties neo4jPackageProperties() {
         return new InstallPackageProperties();
     }
 
-    @Bean
+    @Bean()
     public PackageInstaller neo4jPackageInstaller(
-            InstallPackageProperties neo4jPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J_PACKAGE_PROPERTIES) InstallPackageProperties neo4jPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer<?> neo4j
     ) {
         return new AptGetPackageInstaller(neo4jPackageProperties, neo4j);

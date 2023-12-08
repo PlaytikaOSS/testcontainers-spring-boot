@@ -14,6 +14,7 @@ import static com.playtika.testcontainer.common.utils.TcpPortAvailableUtils.PORT
 @ConfigurationProperties("embedded.redis")
 public class RedisProperties extends CommonContainerProperties implements InitializingBean {
     public static final String BEAN_NAME_EMBEDDED_REDIS = "embeddedRedis";
+    public static final String BEAN_NAME_EMBEDDED_REDIS_PACKAGE_PROPERTIES = "redisPackageProperties";
 
     public String user = "root";
     public String password = "passw";

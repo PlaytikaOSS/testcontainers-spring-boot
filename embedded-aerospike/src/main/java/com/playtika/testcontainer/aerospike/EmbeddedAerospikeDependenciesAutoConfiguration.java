@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.playtika.testcontainer.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
 
 @Slf4j
 @AutoConfiguration
@@ -26,7 +26,7 @@ public class EmbeddedAerospikeDependenciesAutoConfiguration {
     protected static class AerospikeClientPostProcessorConfiguration {
         @Bean
         public static BeanFactoryPostProcessor aerospikeClientDependencyPostProcessor() {
-            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{AEROSPIKE_BEAN_NAME});
+            return new DependsOnPostProcessor(AerospikeClient.class, new String[]{BEAN_NAME_AEROSPIKE});
         }
     }
 }

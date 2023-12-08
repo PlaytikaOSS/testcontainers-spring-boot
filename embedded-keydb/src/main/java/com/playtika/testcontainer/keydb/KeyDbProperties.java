@@ -14,6 +14,7 @@ import static com.playtika.testcontainer.common.utils.TcpPortAvailableUtils.PORT
 @ConfigurationProperties("embedded.keydb")
 public class KeyDbProperties extends CommonContainerProperties implements InitializingBean {
   public static final String BEAN_NAME_EMBEDDED_KEYDB = "embeddedKeyDb";
+  public static final String BEAN_NAME_EMBEDDED_KEYDB_PACKAGE_PROPERTIES = "keyDbPackageProperties";
 
   public String user = "root";
   public String password = "passw";

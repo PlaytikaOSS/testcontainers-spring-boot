@@ -12,7 +12,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
-import static com.playtika.testcontainer.minio.MinioProperties.MINIO_BEAN_NAME;
+import static com.playtika.testcontainer.minio.MinioProperties.BEAN_NAME_EMBEDDED_MINIO;
+import static com.playtika.testcontainer.minio.MinioProperties.BEAN_NAME_EMBEDDED_MINIO_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -20,16 +21,16 @@ import static com.playtika.testcontainer.minio.MinioProperties.MINIO_BEAN_NAME;
 @ConditionalOnProperty(value = "embedded.minio.enabled", matchIfMissing = true)
 public class EmbeddedMinioTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_EMBEDDED_MINIO_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.minio.install")
-    InstallPackageProperties minioPackageProperties() {
+    public InstallPackageProperties minioPackageProperties() {
         return new InstallPackageProperties();
     }
 
     @Bean
-    PackageInstaller minioPackageInstaller(
-            InstallPackageProperties minioPackageProperties,
-            @Qualifier(MINIO_BEAN_NAME) GenericContainer<?> minio
+    public PackageInstaller minioPackageInstaller(
+            @Qualifier(BEAN_NAME_EMBEDDED_MINIO_PACKAGE_PROPERTIES) InstallPackageProperties minioPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio
     ) {
         return new MicroDnfPackageInstaller(minioPackageProperties, minio);
     }
