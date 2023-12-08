@@ -19,11 +19,11 @@ Usage of Spring Cloud in your production code is optional, but __you will need i
 |2.4.X, 2.5.X, 2.6.X, 2.7.X
 |2.X.X
 
-|3.0.X, 3.1.X
+|2.7.X, 3.0.X, 3.1.X
 |3.0.X
 
 |3.2.X
-|WIP
+|3.1.X
 |===
 
 [[how-to-use]]

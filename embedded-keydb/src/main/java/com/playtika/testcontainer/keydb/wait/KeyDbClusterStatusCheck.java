@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.ContainerLaunchException;
 import redis.clients.jedis.Jedis;
 
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,14 +37,14 @@ public class KeyDbClusterStatusCheck extends AbstractRetryingWaitStrategy {
     try (Jedis jedis = createJedis()) {
       String clusterInfo = jedis.clusterInfo();
       String info = jedis.info();
-      List<String> config = jedis.configGet("*");
+      Map<String, String> config = jedis.configGet("*");
       String clusterNodes = jedis.clusterNodes();
       log.error("Cluster in failed state:\n" +
           "-- cluster info:\n{}\n" +
           "-- nodes:\n{}\n" +
           "-- info:\n{}\n" +
           "-- config:\n{}",
-        clusterInfo, clusterNodes, info, String.join("\n", config));
+        clusterInfo, clusterNodes, info, String.join("\n", config.values()));
     }
   }
 

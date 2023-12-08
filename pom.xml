@@ -172,7 +172,6 @@
         </profile>
     </profiles>
 
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -191,7 +190,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                  <parameters>true</parameters>
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
             <plugin>

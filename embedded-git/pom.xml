@@ -13,12 +13,18 @@
     <artifactId>embedded-git</artifactId>
 
     <properties>
+        <bcpkix-jdk18on.version>1.75</bcpkix-jdk18on.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bcpkix-jdk18on.version}</version>
         </dependency>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>

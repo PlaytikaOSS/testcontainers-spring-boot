@@ -14,7 +14,7 @@
     <artifactId>embedded-k3s</artifactId>
 
     <properties>
-
+        <bcpkix-jdk18on.version>1.75</bcpkix-jdk18on.version>
     </properties>
 
     <dependencies>
@@ -31,6 +31,11 @@
             <artifactId>k3s</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bcpkix-jdk18on.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>openshift-client-api</artifactId>

@@ -1,6 +1,5 @@
 embedded:
   keycloak:
     enabled: true
-    docker-image: 'quay.io/keycloak/keycloak:21.0.0'
     wait-timeout-in-seconds: 60
     command: "start-dev --import-realm"
