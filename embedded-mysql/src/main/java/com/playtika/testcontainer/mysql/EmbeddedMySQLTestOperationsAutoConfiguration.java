@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.MySQLContainer;
 
 import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
+import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -20,7 +21,7 @@ import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDE
 @ConditionalOnProperty(value = "embedded.mysql.enabled", matchIfMissing = true)
 public class EmbeddedMySQLTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_EMBEDDED_MYSQL_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.mysql.install")
     public InstallPackageProperties mysqlPackageProperties() {
         return new InstallPackageProperties();
@@ -28,7 +29,7 @@ public class EmbeddedMySQLTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller mysqlPackageInstaller(
-            InstallPackageProperties mysqlPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_MYSQL_PACKAGE_PROPERTIES) InstallPackageProperties mysqlPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql
     ) {
         return new AptGetPackageInstaller(mysqlPackageProperties, mysql);

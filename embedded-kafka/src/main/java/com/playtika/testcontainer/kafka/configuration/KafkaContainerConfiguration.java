@@ -274,7 +274,7 @@ public class KafkaContainerConfiguration {
 
     @Bean
     public KafkaTopicsConfigurer kafkaConfigurer(
-            GenericContainer<?> kafka,
+            @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka,
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties) {
         return new KafkaTopicsConfigurer(kafka, zookeeperProperties, kafkaProperties);

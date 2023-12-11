@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties("embedded.memsql")
 public class MemSqlProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MEMSQL = "embeddedMemsql";
+    static final String BEAN_NAME_EMBEDDED_MEMSQL_PACKAGE_PROPERTIES = "memsqlPackageProperties";
     String user = "root";
     String password = "pass";
     String database = "test_db";

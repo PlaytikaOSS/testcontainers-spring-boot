@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
+import static com.playtika.testcontainer.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnBean({RedisProperties.class})
@@ -20,7 +21,7 @@ import static com.playtika.testcontainer.redis.RedisProperties.BEAN_NAME_EMBEDDE
 @ConditionalOnProperty(value = "embedded.redis.enabled", matchIfMissing = true)
 public class EmbeddedRedisTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_EMBEDDED_REDIS_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.redis.install")
     public InstallPackageProperties redisPackageProperties() {
         return new InstallPackageProperties();
@@ -28,7 +29,7 @@ public class EmbeddedRedisTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller redisPackageInstaller(
-            InstallPackageProperties redisPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_REDIS_PACKAGE_PROPERTIES) InstallPackageProperties redisPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis
     ) {
         return new ApkPackageInstaller(redisPackageProperties, redis);

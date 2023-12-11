@@ -11,7 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.aerospike")
 public class AerospikeProperties extends CommonContainerProperties {
 
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
+    static final String BEAN_NAME_AEROSPIKE = "aerospike";
+    static final String BEAN_NAME_AEROSPIKE_BEAN_NAME = "aerospikePackageProperties";
 
     boolean enabled = true;
     String namespace = "TEST";

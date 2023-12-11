@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.neo4j")
 public class Neo4jProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_NEO4J = "embeddedNeo4j";
+    static final String BEAN_NAME_EMBEDDED_NEO4J_PACKAGE_PROPERTIES = "neo4jPackageProperties";
 
     String user = "neo4j";
     String password = "password";

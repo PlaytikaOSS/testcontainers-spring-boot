@@ -16,6 +16,7 @@ import static java.lang.String.format;
 @ConfigurationProperties("embedded.couchbase")
 public class CouchbaseProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_COUCHBASE = "embeddedCouchbase";
+    public static final String BEAN_NAME_EMBEDDED_COUCHBASE_PACKAGE_PROPERTIES = "couchbasePackageProperties";
     CouchbaseService[] services = new CouchbaseService[]{
             CouchbaseService.INDEX
             , CouchbaseService.KV

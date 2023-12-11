@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
-import static com.playtika.testcontainer.minio.MinioProperties.MINIO_BEAN_NAME;
+import static com.playtika.testcontainer.minio.MinioProperties.BEAN_NAME_EMBEDDED_MINIO;
 
 @Slf4j
 @Configuration
@@ -48,7 +48,7 @@ public class EmbeddedMinioBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "minio")
     ToxiproxyContainer.ContainerProxy minioContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                          @Qualifier(MINIO_BEAN_NAME) GenericContainer<?> minio,
+                                                          @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
                                                           ConfigurableEnvironment environment,
                                                           MinioProperties properties) {
         ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(minio, properties.getPort());
@@ -65,7 +65,7 @@ public class EmbeddedMinioBootstrapConfiguration {
         return proxy;
     }
 
-    @Bean(name = MINIO_BEAN_NAME, destroyMethod = "stop")
+    @Bean(name = BEAN_NAME_EMBEDDED_MINIO, destroyMethod = "stop")
     public GenericContainer<?> minio(MinioWaitStrategy minioWaitStrategy,
                                      ConfigurableEnvironment environment,
                                      MinioProperties properties,

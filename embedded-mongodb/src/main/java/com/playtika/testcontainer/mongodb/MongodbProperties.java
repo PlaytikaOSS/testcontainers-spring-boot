@@ -14,6 +14,7 @@ import java.util.Arrays;
 public class MongodbProperties extends CommonContainerProperties {
 
     static final String BEAN_NAME_EMBEDDED_MONGODB = "embeddedMongodb";
+    static final String BEAN_NAME_EMBEDDED_MONGODB_PACKAGE_PROPERTIES = "mongodbPackageProperties";
 
     private String host = "localhost";
     /**

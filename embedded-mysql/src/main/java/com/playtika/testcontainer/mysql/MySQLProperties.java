@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.mysql")
 public class MySQLProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_MYSQL = "embeddedMySQL";
+    static final String BEAN_NAME_EMBEDDED_MYSQL_PACKAGE_PROPERTIES = "mysqlPackageProperties";
 
     String encoding = "utf8mb4";
     String collation = "utf8mb4_unicode_ci";

@@ -16,7 +16,8 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.time.Instant;
 
-import static com.playtika.testcontainer.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
+import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE_BEAN_NAME;
 
 @AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.aerospike.AerospikeAutoConfiguration")
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -24,15 +25,15 @@ import static com.playtika.testcontainer.aerospike.AerospikeProperties.AEROSPIKE
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
 public class EmbeddedAerospikeTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_AEROSPIKE_BEAN_NAME)
     @ConfigurationProperties("embedded.aerospike.install")
     public InstallPackageProperties aerospikePackageProperties() {
         return new InstallPackageProperties();
     }
 
     @Bean
-    public PackageInstaller aerospikePackageInstaller(InstallPackageProperties aerospikePackageProperties,
-                                                      @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike) {
+    public PackageInstaller aerospikePackageInstaller(@Qualifier(BEAN_NAME_AEROSPIKE_BEAN_NAME) InstallPackageProperties aerospikePackageProperties,
+                                                      @Qualifier(BEAN_NAME_AEROSPIKE) GenericContainer<?> aerospike) {
         return new AptGetPackageInstaller(aerospikePackageProperties, aerospike);
     }
 
@@ -62,7 +63,7 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AerospikeTestOperations aerospikeTestOperations(ExpiredDocumentsCleaner expiredDocumentsCleaner,
-                                                           @Qualifier(AEROSPIKE_BEAN_NAME) GenericContainer<?> aerospike) {
+                                                           @Qualifier(BEAN_NAME_AEROSPIKE) GenericContainer<?> aerospike) {
         return new AerospikeTestOperations(expiredDocumentsCleaner, aerospike);
     }
 

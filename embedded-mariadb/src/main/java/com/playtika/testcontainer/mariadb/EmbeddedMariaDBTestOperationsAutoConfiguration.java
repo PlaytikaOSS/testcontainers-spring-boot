@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
+import static com.playtika.testcontainer.mariadb.MariaDBProperties.BEAN_NAME_MARIADB_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -20,7 +21,7 @@ import static com.playtika.testcontainer.mariadb.MariaDBProperties.BEAN_NAME_EMB
 @ConditionalOnProperty(value = "embedded.mariadb.enabled", matchIfMissing = true)
 public class EmbeddedMariaDBTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_MARIADB_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.mariadb.install")
     public InstallPackageProperties mariadbPackageProperties() {
         return new InstallPackageProperties();
@@ -28,7 +29,7 @@ public class EmbeddedMariaDBTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller mariadbPackageInstaller(
-            InstallPackageProperties mariadbPackageProperties,
+            @Qualifier(BEAN_NAME_MARIADB_PACKAGE_PROPERTIES) InstallPackageProperties mariadbPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer<?> mariadb
     ) {
         return new AptGetPackageInstaller(mariadbPackageProperties, mariadb);

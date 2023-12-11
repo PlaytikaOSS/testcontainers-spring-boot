@@ -11,7 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.minio")
 public class MinioProperties extends CommonContainerProperties {
 
-    static final String MINIO_BEAN_NAME = "minio";
+    static final String BEAN_NAME_EMBEDDED_MINIO = "minio";
+    static final String BEAN_NAME_EMBEDDED_MINIO_PACKAGE_PROPERTIES = "minioPackageProperties";
 
     String accessKey = "AKIAIOSFODNN7EXAMPLE";
     String secretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";

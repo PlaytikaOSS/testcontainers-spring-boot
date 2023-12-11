@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
+import static com.playtika.testcontainer.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnBean({MemSqlProperties.class})
@@ -20,7 +21,7 @@ import static com.playtika.testcontainer.memsql.MemSqlProperties.BEAN_NAME_EMBED
 @ConditionalOnProperty(value = "embedded.memsql.enabled", matchIfMissing = true)
 public class EmbeddedMemSqlTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_EMBEDDED_MEMSQL_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.memsql.install")
     public InstallPackageProperties memsqlPackageProperties() {
         return new InstallPackageProperties();
@@ -28,7 +29,7 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller memsqlPackageInstaller(
-            InstallPackageProperties memsqlPackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL_PACKAGE_PROPERTIES) InstallPackageProperties memsqlPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql
     ) {
         return new YumPackageInstaller(memsqlPackageProperties, memsql);

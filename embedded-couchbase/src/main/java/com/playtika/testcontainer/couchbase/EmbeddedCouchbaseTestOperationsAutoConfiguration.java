@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
 
 import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
+import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE_PACKAGE_PROPERTIES;
 
 @AutoConfiguration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -20,7 +21,7 @@ import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME
 @ConditionalOnProperty(value = "embedded.couchbase.enabled", matchIfMissing = true)
 public class EmbeddedCouchbaseTestOperationsAutoConfiguration {
 
-    @Bean
+    @Bean(BEAN_NAME_EMBEDDED_COUCHBASE_PACKAGE_PROPERTIES)
     @ConfigurationProperties("embedded.couchbase.install")
     public InstallPackageProperties couchbasePackageProperties() {
         return new InstallPackageProperties();
@@ -28,7 +29,7 @@ public class EmbeddedCouchbaseTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller couchbasePackageInstaller(
-            InstallPackageProperties couchbasePackageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE_PACKAGE_PROPERTIES) InstallPackageProperties couchbasePackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer<?> couchbase
     ) {
         return new AptGetPackageInstaller(couchbasePackageProperties, couchbase);

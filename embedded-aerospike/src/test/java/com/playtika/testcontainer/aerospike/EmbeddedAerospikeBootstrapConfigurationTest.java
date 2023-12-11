@@ -14,7 +14,7 @@ import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
 
-import static com.playtika.testcontainer.aerospike.AerospikeProperties.AEROSPIKE_BEAN_NAME;
+import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -76,7 +76,7 @@ public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTe
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
                 .isNotNull()
                 .isNotEmpty()
-                .contains(AEROSPIKE_BEAN_NAME);
+                .contains(BEAN_NAME_AEROSPIKE);
     }
 
 }

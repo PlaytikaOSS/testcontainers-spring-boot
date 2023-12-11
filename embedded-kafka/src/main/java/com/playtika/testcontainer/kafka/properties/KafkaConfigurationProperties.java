@@ -20,6 +20,7 @@ import java.util.Collections;
 public class KafkaConfigurationProperties extends CommonContainerProperties {
 
     public static final String KAFKA_BEAN_NAME = "kafka";
+    public static final String KAFKA_PACKAGE_PROPERTIES_BEAN_NAME = "kafkaPackageProperties";
     public static final String KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME = "kafkaPlainTextContainerProxy";
     public static final String KAFKA_SASL_TOXI_PROXY_BEAN_NAME = "kafkaSaslContainerProxy";
     public static final String KAFKA_USER = "alice";
