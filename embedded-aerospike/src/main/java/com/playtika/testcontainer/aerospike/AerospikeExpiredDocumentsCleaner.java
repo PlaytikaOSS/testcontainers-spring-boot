@@ -3,6 +3,7 @@ package com.playtika.testcontainer.aerospike;
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.Language;
 import com.aerospike.client.Value;
+import com.aerospike.client.policy.WritePolicy;
 import com.aerospike.client.query.Statement;
 import com.aerospike.client.task.ExecuteTask;
 import com.aerospike.client.task.RegisterTask;
@@ -22,14 +23,20 @@ public class AerospikeExpiredDocumentsCleaner implements ExpiredDocumentsCleaner
 
     private final AerospikeClient client;
     private final String namespace;
+    private final boolean durableDelete;
 
-    public AerospikeExpiredDocumentsCleaner(AerospikeClient client, String namespace) {
+    public AerospikeExpiredDocumentsCleaner(AerospikeClient client, String namespace, boolean durableDelete) {
         Assert.notNull(client, "Aerospike client can not be null");
         Assert.notNull(namespace, "Namespace can not be null");
         this.client = client;
         this.namespace = namespace;
+        this.durableDelete = durableDelete;
 
         registerUdf();
+    }
+
+    public AerospikeExpiredDocumentsCleaner(AerospikeClient client, String namespace) {
+        this(client, namespace, false);
     }
 
     private void registerUdf() {
@@ -51,8 +58,9 @@ public class AerospikeExpiredDocumentsCleaner implements ExpiredDocumentsCleaner
 
         Statement statement = new Statement();
         statement.setNamespace(namespace);
-
-        ExecuteTask executeTask = client.execute(null, statement, PACKAGE_NAME, FUNC_NAME, value);
+        WritePolicy writePolicy = new WritePolicy(client.getWritePolicyDefault());
+        writePolicy.durableDelete = durableDelete;
+        ExecuteTask executeTask = client.execute(writePolicy, statement, PACKAGE_NAME, FUNC_NAME, value);
         executeTask.waitTillComplete(SLEEP_INTERVAL, TIMEOUT);
     }
 }
