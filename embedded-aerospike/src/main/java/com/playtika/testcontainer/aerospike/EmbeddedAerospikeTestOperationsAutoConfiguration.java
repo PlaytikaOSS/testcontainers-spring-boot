@@ -38,6 +38,7 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue = "true", matchIfMissing = true)
     public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
                                                            AerospikeProperties properties) {
