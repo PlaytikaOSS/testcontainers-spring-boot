@@ -13,7 +13,7 @@ import java.util.Arrays;
 @ConfigurationProperties("embedded.aerospike")
 public class AerospikeProperties extends CommonContainerProperties {
 
-    static final String AEROSPIKE_BEAN_NAME = "aerospike";
+    public static final String AEROSPIKE_BEAN_NAME = "aerospike";
 
     boolean enabled = true;
     String namespace = "TEST";
