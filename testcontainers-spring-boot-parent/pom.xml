@@ -21,7 +21,7 @@
         <spring.cloud.gcp.version>4.8.4</spring.cloud.gcp.version>
         <equalsverifier.version>3.15.4</equalsverifier.version>
         <junit-jupiter.version>5.10.1</junit-jupiter.version>
-        <spring.cloud.azure.version>5.7.0</spring.cloud.azure.version>
+        <spring.cloud.azure.version>5.8.0</spring.cloud.azure.version>
     </properties>
 
     <dependencyManagement>
