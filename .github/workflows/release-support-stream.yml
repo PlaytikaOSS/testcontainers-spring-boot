@@ -38,7 +38,7 @@ jobs:
 
       - name: Update version
         if: ${{ success() }}
-        run: ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{github.event.inputs.version}} versions:commit
+        run: ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{github.event.inputs.version}} -Dgib.referenceBranch=refs/remotes/origin/${{github.event.inputs.branch}} versions:commit
 
       - name: Publish to the Maven Central Repository
         if: ${{ success() }}
