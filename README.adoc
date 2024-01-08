@@ -342,6 +342,8 @@ embedded:
 
 === link:embedded-wiremock/README.adoc[embedded-wiremock]
 
+=== link:embedded-mailhog/README.adoc[embedded-mailhog]
+
 
 == How to contribute
 
