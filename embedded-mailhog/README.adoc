@@ -1,0 +1,57 @@
+=== embedded-mailhog
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mailhog</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.mailhog.enabled` `(true|false, default is true)`
+* `embedded.mailhog.reuseContainer` `(true|false, default is false)`
+* `embedded.mailhog.dockerImage` `(default is 'mailhog/mailhog:v1.0.1')`
+** Image versions on https://hub.docker.com/r/mailhog/mailhog/tags[dockerhub]
+* `embedded.mailhog.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.mailhog.smtp-port` `(default is 1025)`
+* `embedded.mailhog.http-port` `(default is 8025)`
+* `embedded.toxiproxy.proxies.mailhog.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-mailhog` container SMTP port.
+
+
+==== Produces
+
+* `embedded.mailhog.host`
+* `embedded.mailhog.smtp-port`
+* `embedded.mailhog.http-port`
+* `embedded.mailhog.toxiproxy.host`
+* `embedded.mailhog.toxiproxy.port`
+* `embedded.mailhog.networkAlias`
+* `embedded.mailhog.internalSmtpPort`
+* `embedded.mailhog.internalHttpPort`
+* Bean `ToxiproxyContainer.ContainerProxy mailhogSmtpContainerProxy`
+
+==== Example (Spring Boot)
+
+bootstrap-test.yml
+[source,yaml]
+----
+embedded:
+  mailhog:
+    enabled: true
+    docker-image: 'mailhog/mailhog:v1.0.1'
+----
+
+application-test.yml
+[source,yaml]
+----
+spring:
+  mail:
+    host: ${embedded.mailhog.host}
+    port: ${embedded.mailhog.smtp-port}
+----
