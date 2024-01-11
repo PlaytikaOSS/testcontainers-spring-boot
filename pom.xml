@@ -75,6 +75,7 @@
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>
+        <module>embedded-aerospike-enterprise</module>
     </modules>
 
     <properties>
