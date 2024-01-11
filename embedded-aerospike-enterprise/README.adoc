@@ -1,0 +1,71 @@
+=== embedded-aerospike-enterprise
+
+TIP: This module provides integration with https://github.com/Shopify/toxiproxy[ToxiProxy] out of the box.
+ToxiProxy is a great tool for simulating network conditions, meaning that you can test your application's resiliency.
+
+==== Difference with `embedded-aerospike` module
+
+* Aerospike Enterprise container version must be not less then 6.3.0, because of option for disallow non-durable deletes.
+* By default disallow [non-durable deletes](#Disallow non-durable deletes).
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-aerospike-enterprise</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.aerospike.enabled` `(true|false, default is 'true')`
+* `embedded.aerospike.reuseContainer` `(true|false, default is 'false')`
+* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server-enterprise:6.3.0.16_1')`
+** Aerospike Enterprise version must be not less then 6.3.0
+* `embedded.aerospike.featureKey` base64 of a feature-key-file https://aerospike.com/docs/server/operations/configure/feature-key, default is null.
+**Warning: if not provided, the Aerospike Database EE evaluation feature key file will be used. That means you can use it internally only for Evaluation
+purposes only during the Evaluation Period**. See https://github.com/aerospike/aerospike-server.docker/blob/master/enterprise/ENTERPRISE_LICENSE`
+* `embedded.aerospike.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.toxiproxy.proxies.aerospike.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-aerospike` container.
+* `embedded.aerospike.time-travel.enabled` Enables time travel to clean expired documents by time. Does not work on ARM(mac m1) because of LUA scripts are not supported on ARM.
+* `embedded.aerospike.enterprise.durableDeletes` Enables disallow non-durable deletes for Aerospike Enterprise Server. By default is true.
+*  https://mvnrepository.com/artifact/com.aerospike/aerospike-client[aerospike client library]
+
+==== Produces
+
+* `embedded.aerospike.host`
+* `embedded.aerospike.port`
+* `embedded.aerospike.namespace`
+* `embedded.aerospike.toxiproxy.host`
+* `embedded.aerospike.toxiproxy.port`
+* `embedded.aerospike.networkAlias`
+* `embedded.aerospike.internalPort`
+* Bean `AerospikeTestOperations aerospikeTestOperations`
+* Bean `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`
+
+==== Example
+
+See `embedded-aerospike` module readme for examples.
+
+==== Enterprise features
+
+===== Disallow non-durable deletes
+
+Aerospike server never delete record from disk(SSD), but the index in memory that points to the record is removed.
+If the location on disk of the deleted record was not overwritten prior to reboot, the record will be indexed during cold restart.
+The record then returns from the disk to the database as a zombie record.
+
+To avoid this, Aerospike provide a feature called https://aerospike.com/docs/server/guide/durable_deletes[Durable Deletes].
+Durable deletes typically free storage when they generate a tombstone, a record without any bins that contains all metadata including the key.
+Tombstones correctly resolve conflicts and prevent previously persisted versions of deleted objects from resurrecting when the index is repopulated.
+This feature is available only for Aerospike Enterprise Edition.
+
+This library reconfigure com.playtika.testcontainers:embedded-aerospike
+to use Aerospike Enterprise Edition docker image, and set up Durable Deletes feature as mandatory.
+If the client call delete operation without setting WritePolicy.durableDeletes to true, the operation
+will fail with Aerospike Error 22 (forbidden). This is done by configuring aerospike server with option
+https://aerospike.com/docs/server/reference/configuration#disallow-expunge[disallow-expunge].

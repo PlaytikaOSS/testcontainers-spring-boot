@@ -90,7 +90,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         }
         String featureKey = properties.featureKey;
         if (featureKey != null) {
-            // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/develop/aerospike.template.conf
+            // see https://github.com/aerospike/aerospike-server.docker/blob/master/template/0/aerospike.template.conf
             aerospike
                 .withEnv("FEATURES", featureKey)
                 .withEnv("FEATURE_KEY_FILE", "env-b64:FEATURES");
