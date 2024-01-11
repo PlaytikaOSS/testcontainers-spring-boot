@@ -21,7 +21,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.aerospike.reuseContainer` `(true|false, default is 'false')`
 * `embedded.aerospike.dockerImage` `(default is set to 'aerospike:ce-6.2.0.2')`
 ** You can pick wanted version on https://hub.docker.com/r/library/aerospike/tags/[dockerhub]
-* `embedded.aerospike.featureKey` `(base64 of a feature-key-file https://docs.aerospike.com/docs/reference/configuration/index.html#feature-key-file, default is null) is only required for the EE image`
+* `embedded.aerospike.featureKey` `(base64 of a feature-key-file https://aerospike.com/docs/server/operations/configure/feature-key, default is null) is only required for the EE image`
 * `embedded.aerospike.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.toxiproxy.proxies.aerospike.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-aerospike` container.
 * `embedded.aerospike.time-travel.enabled` Enables time travel to clean expired documents by time. Does not work on ARM(mac m1) because of LUA scripts are not supported on ARM.

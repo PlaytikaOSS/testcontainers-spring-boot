@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>testcontainers-spring-boot-parent</artifactId>
+        <groupId>com.playtika.testcontainers</groupId>
+        <version>3.1.1</version>
+        <relativePath>../testcontainers-spring-boot-parent</relativePath>
+    </parent>
+
+    <artifactId>embedded-aerospike-enterprise</artifactId>
+
+    <properties>
+        <aerospike-client.version>7.2.0</aerospike-client.version>
+    </properties>
+
+    <dependencies>
+        <!--
+             aerospike client is provided since we want users to pick own version,
+             and not rely on test library
+        -->
+        <dependency>
+            <groupId>com.aerospike</groupId>
+            <artifactId>aerospike-client</artifactId>
+            <version>${aerospike-client.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-aerospike</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
