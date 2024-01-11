@@ -84,6 +84,7 @@
         <module>embedded-couchbase</module>
         <module>embedded-wiremock</module>
         <module>embedded-mailhog</module>
+        <module>embedded-aerospike-enterprise</module>
     </modules>
 
     <properties>
