@@ -1,7 +1,8 @@
 package com.playtika.testcontainers.aerospike.enterprise;
 
-import com.playtika.test.aerospike.AerospikeProperties;
-import com.playtika.test.aerospike.EmbeddedAerospikeBootstrapConfiguration;
+import com.playtika.testcontainer.aerospike.AerospikeProperties;
+import com.playtika.testcontainer.aerospike.EmbeddedAerospikeBootstrapConfiguration;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,8 +13,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.testcontainers.containers.GenericContainer;
-
-import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 
