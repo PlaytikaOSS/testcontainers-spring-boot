@@ -1,10 +1,10 @@
 package com.playtika.testcontainers.aerospike.enterprise;
 
 import com.aerospike.client.AerospikeClient;
-import com.playtika.test.aerospike.AerospikeExpiredDocumentsCleaner;
-import com.playtika.test.aerospike.AerospikeProperties;
-import com.playtika.test.aerospike.EmbeddedAerospikeTestOperationsAutoConfiguration;
-import com.playtika.test.aerospike.ExpiredDocumentsCleaner;
+import com.playtika.testcontainer.aerospike.AerospikeExpiredDocumentsCleaner;
+import com.playtika.testcontainer.aerospike.AerospikeProperties;
+import com.playtika.testcontainer.aerospike.EmbeddedAerospikeTestOperationsAutoConfiguration;
+import com.playtika.testcontainer.aerospike.ExpiredDocumentsCleaner;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
