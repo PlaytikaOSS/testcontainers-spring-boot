@@ -8,10 +8,12 @@ on:
     branches:
       - develop
       - support/2.3.X
+      - support/3.0.X
   pull_request:
     branches:
       - develop
       - support/2.3.X
+      - support/3.0.X
 
 jobs:
   build-jdk8:
