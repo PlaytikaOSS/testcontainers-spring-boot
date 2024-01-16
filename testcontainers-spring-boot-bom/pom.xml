@@ -32,6 +32,11 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-aerospike-enterprise</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-couchbase</artifactId>
                 <version>${project.version}</version>
             </dependency>
