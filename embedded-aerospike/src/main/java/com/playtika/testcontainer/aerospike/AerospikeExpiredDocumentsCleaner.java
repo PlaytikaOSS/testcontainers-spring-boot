@@ -1,6 +1,6 @@
 package com.playtika.testcontainer.aerospike;
 
-import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.Language;
 import com.aerospike.client.Value;
 import com.aerospike.client.policy.WritePolicy;
@@ -21,11 +21,11 @@ public class AerospikeExpiredDocumentsCleaner implements ExpiredDocumentsCleaner
     private static final int SLEEP_INTERVAL = 100;
     private static final int TIMEOUT = 10_000;
 
-    private final AerospikeClient client;
+    private final IAerospikeClient client;
     private final String namespace;
     private final boolean durableDelete;
 
-    public AerospikeExpiredDocumentsCleaner(AerospikeClient client, String namespace, boolean durableDelete) {
+    public AerospikeExpiredDocumentsCleaner(IAerospikeClient client, String namespace, boolean durableDelete) {
         Assert.notNull(client, "Aerospike client can not be null");
         Assert.notNull(namespace, "Namespace can not be null");
         this.client = client;
@@ -35,7 +35,7 @@ public class AerospikeExpiredDocumentsCleaner implements ExpiredDocumentsCleaner
         registerUdf();
     }
 
-    public AerospikeExpiredDocumentsCleaner(AerospikeClient client, String namespace) {
+    public AerospikeExpiredDocumentsCleaner(IAerospikeClient client, String namespace) {
         this(client, namespace, false);
     }
 
