@@ -1,6 +1,7 @@
 package com.playtika.testcontainers.aerospike.enterprise;
 
 import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
 import com.playtika.testcontainer.aerospike.AerospikeTestOperations;
@@ -27,7 +28,7 @@ public abstract class BaseEnterpriseAerospikeTest {
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    AerospikeClient client;
+    IAerospikeClient client;
 
     @Autowired
     WritePolicy writePolicyWithDurableDelete;
