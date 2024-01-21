@@ -1,6 +1,6 @@
 package com.playtika.testcontainers.aerospike.enterprise;
 
-import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.playtika.testcontainer.aerospike.AerospikeExpiredDocumentsCleaner;
 import com.playtika.testcontainer.aerospike.AerospikeProperties;
 import com.playtika.testcontainer.aerospike.EmbeddedAerospikeTestOperationsAutoConfiguration;
@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.aerospike.AerospikeAutoConfiguration",
         before = EmbeddedAerospikeTestOperationsAutoConfiguration.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@ConditionalOnBean({AerospikeClient.class, AerospikeProperties.class})
+@ConditionalOnBean({IAerospikeClient.class, AerospikeProperties.class})
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
 public class EnterpriseAerospikeTestOperationsAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue = "true", matchIfMissing = true)
-    public ExpiredDocumentsCleaner expiredDocumentsCleaner(AerospikeClient client,
+    public ExpiredDocumentsCleaner expiredDocumentsCleaner(IAerospikeClient client,
                                                            AerospikeProperties properties) {
         return new AerospikeExpiredDocumentsCleaner(client, properties.getNamespace(), true);
     }
