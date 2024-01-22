@@ -1,6 +1,6 @@
 package com.playtika.testcontainer.aerospike;
 
-import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
@@ -32,7 +32,7 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 
 @Slf4j
 @Configuration
-@ConditionalOnClass(AerospikeClient.class)
+@ConditionalOnClass(IAerospikeClient.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter({DockerPresenceBootstrapConfiguration.class, EmbeddedToxiProxyBootstrapConfiguration.class})
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
