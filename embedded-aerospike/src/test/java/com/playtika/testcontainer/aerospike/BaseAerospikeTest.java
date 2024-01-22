@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.aerospike;
 
 import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +31,11 @@ public abstract class BaseAerospikeTest {
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    AerospikeClient client;
+    IAerospikeClient client;
 
     @Qualifier("aerospikeToxicClient")
     @Autowired
-    AerospikeClient aerospikeToxicClient;
+    IAerospikeClient aerospikeToxicClient;
 
     @Autowired
     WritePolicy policy;

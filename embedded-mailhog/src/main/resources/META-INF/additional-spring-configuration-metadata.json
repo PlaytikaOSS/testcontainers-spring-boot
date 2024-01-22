@@ -1,0 +1,44 @@
+{
+  "groups": [
+    {
+      "name": "embedded.mailhog",
+      "description": "Configuration properties related to embedded MailHog."
+    }
+  ],
+  "properties": [
+    {
+      "name": "embedded.mailhog.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.mailhog.docker-image",
+      "type": "java.lang.String",
+      "defaultValue": "mailhog/mailhog:v1.0.1"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.mailhog.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of MailHog server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disables configuration of MailHog server on startup."
+        }
+      ]
+    },
+    {
+      "name": "embedded.mailhog.docker-image",
+      "values": [
+        {
+          "value": "mailhog/mailhog:v1.0.1",
+          "description": "Default MailHog image. Ref https://hub.docker.com/r/mailhog/mailhog for further info."
+        }
+      ]
+    }
+  ]
+}
