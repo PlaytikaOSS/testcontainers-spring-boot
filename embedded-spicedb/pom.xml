@@ -10,10 +10,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>embedded-vertica</artifactId>
+    <artifactId>embedded-spicedb</artifactId>
 
     <properties>
-        <vertica-jdbc.version>24.1.0-0</vertica-jdbc.version>
+        <grpc-protobuf.version>1.61.0</grpc-protobuf.version>
+        <authzed.version>0.6.0</authzed.version>
     </properties>
 
     <dependencies>
@@ -25,20 +26,23 @@
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>com.vertica.jdbc</groupId>
-            <artifactId>vertica-jdbc</artifactId>
-            <version>${vertica-jdbc.version}</version>
+            <groupId>com.authzed.api</groupId>
+            <artifactId>authzed</artifactId>
+            <version>${authzed.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>${grpc-protobuf.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>${grpc-protobuf.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
