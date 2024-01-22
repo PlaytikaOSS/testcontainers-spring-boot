@@ -1,0 +1,32 @@
+=== embedded-spicedb
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-spicedb</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.spicedb.enabled` `(true|false, default is true)`
+* `embedded.spicedb.dockerImage` `(default is 'authzed/spicedb:v1.28.0')`
+** Image versions on https://hub.docker.com/r/authzed/spicedb/tags[dockerhub]
+* `embedded.spicedb.presharedKey` `(default is 'somerandomkeyhere')`
+* `embedded.toxiproxy.proxies.spicedb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-spicedb` container.
+
+
+==== Produces
+
+* `embedded.spicedb.host`
+* `embedded.spicedb.port`
+* `embedded.spicedb.token`
+* `embedded.spicedb.toxiproxy.host`
+* `embedded.spicedb.toxiproxy.port`
+* `embedded.spicedb.networkAlias`
+* Bean `ToxiproxyContainer.ContainerProxy spicedbContainerProxy`

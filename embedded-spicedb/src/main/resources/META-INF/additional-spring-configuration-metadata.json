@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.spicedb.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.spicedb.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of SpiceDB server on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of SpiceDB server on startup."
+        }
+      ]
+    }
+  ]
+}
