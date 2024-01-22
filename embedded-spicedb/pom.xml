@@ -31,16 +31,19 @@
             <groupId>com.authzed.api</groupId>
             <artifactId>authzed</artifactId>
             <version>${authzed.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
             <version>${grpc-protobuf.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
             <version>${grpc-protobuf.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
