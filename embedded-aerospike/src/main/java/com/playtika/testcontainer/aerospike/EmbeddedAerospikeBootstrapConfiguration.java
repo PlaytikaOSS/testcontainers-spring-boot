@@ -1,6 +1,6 @@
 package com.playtika.testcontainer.aerospike;
 
-import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.IAerospikeClient;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
@@ -32,7 +32,7 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 
 @Slf4j
 @Configuration
-@ConditionalOnClass(AerospikeClient.class)
+@ConditionalOnClass(IAerospikeClient.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter({DockerPresenceBootstrapConfiguration.class, EmbeddedToxiProxyBootstrapConfiguration.class})
 @ConditionalOnProperty(value = "embedded.aerospike.enabled", matchIfMissing = true)
@@ -91,7 +91,7 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         network.ifPresent(aerospike::withNetwork);
         String featureKey = properties.featureKey;
         if (featureKey != null) {
-            // see https://github.com/aerospike/aerospike-server-enterprise.docker/blob/develop/aerospike.template.conf
+            // see https://github.com/aerospike/aerospike-server.docker/blob/master/template/0/aerospike.template.conf
             aerospike
                 .withEnv("FEATURES", featureKey)
                 .withEnv("FEATURE_KEY_FILE", "env-b64:FEATURES");

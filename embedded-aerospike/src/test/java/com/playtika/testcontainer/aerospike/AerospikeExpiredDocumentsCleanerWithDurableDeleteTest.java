@@ -2,6 +2,7 @@ package com.playtika.testcontainer.aerospike;
 
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.Bin;
+import com.aerospike.client.IAerospikeClient;
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
@@ -32,7 +33,7 @@ class AerospikeExpiredDocumentsCleanerWithDurableDeleteTest {
     @Autowired
     ExpiredDocumentsCleaner durableDeleteExpiredDocumentsCleaner;
     @Autowired
-    AerospikeClient aerospikeClient;
+    IAerospikeClient aerospikeClient;
 
     @Test
     public void shouldNotRemoveExpiredWithDurableDeleteFlagBecauseOfAerospikeCommunityEdition() {

@@ -1,8 +1,6 @@
 package com.playtika.testcontainer.aerospike;
 
-import com.aerospike.client.AerospikeClient;
-import com.aerospike.client.Bin;
-import com.aerospike.client.Key;
+import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
@@ -36,10 +34,10 @@ public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTe
     }
 
     @Test
-    public void shouldSetupDependsOnForAerospikeClient() {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, AerospikeClient.class);
+    public void shouldSetupDependOnAerospikeClient() {
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, IAerospikeClient.class);
         assertThat(beanNamesForType)
-                .as("AerospikeClient should be present")
+                .as("IAerospikeClient should be present")
                 .isNotEmpty()
                 .contains("aerospikeClient", "aerospikeToxicClient");
         assertThat(beanNamesForType).allSatisfy(this::hasDependsOn);

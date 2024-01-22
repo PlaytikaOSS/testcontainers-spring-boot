@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.1</version>
+        <version>3.1.2</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <artifactId>embedded-vertica</artifactId>
 
     <properties>
-        <vertica-jdbc.version>23.4.0-0</vertica-jdbc.version>
+        <vertica-jdbc.version>24.1.0-0</vertica-jdbc.version>
     </properties>
 
     <dependencies>

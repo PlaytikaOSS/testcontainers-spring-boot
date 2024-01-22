@@ -6,13 +6,13 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.1</version>
+        <version>3.1.2</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
     <artifactId>embedded-solr</artifactId>
     <properties>
-        <solr-solrj.version>9.4.0</solr-solrj.version>
+        <solr-solrj.version>9.4.1</solr-solrj.version>
     </properties>
 
     <dependencies>
