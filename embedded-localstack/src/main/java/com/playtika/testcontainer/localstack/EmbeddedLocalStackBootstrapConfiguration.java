@@ -65,7 +65,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
                 .withExposedPorts(properties.getEdgePort())
                 .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
                 .withEnv("HOSTNAME", properties.getHostname())
-                .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
+                .withEnv("LOCALSTACK_HOST", properties.getHostnameExternal())
+                .withEnv("SKIP_SSL_CERT_DOWNLOAD", "1")
                 .withNetworkAliases(LOCALSTACK_NETWORK_ALIAS);
 
         network.ifPresent(localStackContainer::withNetwork);
