@@ -72,7 +72,7 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
         if (StringUtils.hasLength(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
                     .withRegEx(startupLogCheckRegex);
-            mssqlServerContainer.setWaitStrategy(waitStrategy);
+            mssqlServerContainer.waitingFor(waitStrategy);
         }
 
         if (properties.isAcceptLicence()) {
