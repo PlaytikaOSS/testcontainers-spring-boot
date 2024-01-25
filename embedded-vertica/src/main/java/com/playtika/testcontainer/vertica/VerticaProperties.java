@@ -23,6 +23,6 @@ public class VerticaProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "vertica/vertica-ce:23.4.0-0";
+        return "vertica/vertica-ce:24.1.0-0";
     }
 }
