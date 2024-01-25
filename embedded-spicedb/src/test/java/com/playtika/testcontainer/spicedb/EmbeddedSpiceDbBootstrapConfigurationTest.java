@@ -60,13 +60,9 @@ class EmbeddedSpiceDbBootstrapConfigurationTest extends BaseSpiceDbTest {
                 .setSchema(schema)
                 .build();
 
-        SchemaServiceOuterClass.WriteSchemaResponse response;
-        try {
-            response = schemaService.writeSchema(request);
-            response.getWrittenAt().getToken();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+        SchemaServiceOuterClass.WriteSchemaResponse response = schemaService.writeSchema(request);
+
+        assertThat(response.getWrittenAt().getToken()).isNotEmpty();
     }
 
     @Test

@@ -88,7 +88,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
                 ? new BrowserWebDriverContainer<>(ContainerUtils.getDockerImageName(properties))
                 : new BrowserWebDriverContainer<>();
 
-        container.setWaitStrategy(getWaitStrategy());
+        container.waitingFor(getWaitStrategy());
         container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
         container.withNetworkAliases(SELENIUM_NETWORK_ALIAS);

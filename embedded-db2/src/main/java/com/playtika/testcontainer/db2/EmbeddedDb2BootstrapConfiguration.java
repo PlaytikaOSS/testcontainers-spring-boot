@@ -73,7 +73,7 @@ public class EmbeddedDb2BootstrapConfiguration {
         if (StringUtils.hasLength(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
                     .withRegEx(startupLogCheckRegex);
-            db2Container.setWaitStrategy(waitStrategy);
+            db2Container.waitingFor(waitStrategy);
         }
 
         if (properties.isAcceptLicence()) {

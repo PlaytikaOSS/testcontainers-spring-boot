@@ -37,6 +37,17 @@
       "versioningTemplate": "docker"
     },
     {
+      "description": "Process update properties for docker images",
+      "fileMatch": [
+        "^.*\\.properties"
+      ],
+      "matchStrings": [
+        "\\*.+?\\`embedded\\.\\w+?\\.(dockerImage|docker\\-image)\\`.*\\'(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)'"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
       "description": "Process update doc for docker images",
       "fileMatch": [
         "^.*\\.adoc"

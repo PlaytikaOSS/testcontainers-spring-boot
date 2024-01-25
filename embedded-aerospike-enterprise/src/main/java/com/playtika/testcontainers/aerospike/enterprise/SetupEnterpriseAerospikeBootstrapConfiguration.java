@@ -16,6 +16,8 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 
+import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
+
 @Slf4j
 @AutoConfiguration(after = EmbeddedAerospikeBootstrapConfiguration.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -24,7 +26,7 @@ import java.io.IOException;
 @PropertySource("classpath:/embedded-enterprise-aerospike.properties")
 public class SetupEnterpriseAerospikeBootstrapConfiguration {
 
-    private static final String DOCKER_IMAGE = "aerospike/aerospike-server-enterprise:6.3.0.16_1";
+    private static final String DOCKER_IMAGE = "aerospike/aerospike-server-enterprise:6.3.0.16";
     private static final String AEROSPIKE_DOCKER_IMAGE_PROPERTY = "embedded.aerospike.dockerImage";
     private static final ImageVersion SUITABLE_IMAGE_VERSION = new ImageVersion(6, 3);
     private static final String TEXT_TO_DOCUMENTATION = "Documentation: https://github.com/PlaytikaOSS/testcontainers-spring-boot/blob/develop/embedded-aerospike-enterprise/README.adoc";
@@ -40,7 +42,7 @@ public class SetupEnterpriseAerospikeBootstrapConfiguration {
     }
 
     @Autowired
-    @Qualifier(AerospikeProperties.BEAN_NAME_AEROSPIKE)
+    @Qualifier(BEAN_NAME_AEROSPIKE)
     public void setAerospikeContainer(GenericContainer<?> aerospikeContainer) {
         this.aerospikeContainer = aerospikeContainer;
     }
