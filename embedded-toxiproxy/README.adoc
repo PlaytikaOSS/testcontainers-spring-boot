@@ -26,7 +26,7 @@ Convenient and simple to use wrapper for ToxiProxy:
 * `embedded.toxiproxy.dockerImage` `(default is set to 'ghcr.io/shopify/toxiproxy:2.7.0')`
 * `embedded.toxiproxy.waitTimeoutInSeconds` `(default is 60 seconds)`
 
-TIP: See other common container properties in `com.playtika.test.common.properties.CommonContainerProperties`.
+TIP: See other common container properties in `com.playtika.testcontainer.common.properties.CommonContainerProperties`.
 
 ==== Produces
 

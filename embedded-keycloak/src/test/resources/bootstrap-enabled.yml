@@ -2,4 +2,3 @@ embedded:
   keycloak:
     enabled: true
     wait-timeout-in-seconds: 60
-    command: "start-dev --import-realm"

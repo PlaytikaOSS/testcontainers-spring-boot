@@ -12,9 +12,8 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     public static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
 
-    public static final String[] DEFAULT_COMMAND = {"start-dev --import-realm"};
+    public static final String[] DEFAULT_COMMAND = {"start-dev", "--import-realm"};
 
-    // https://quay.io/keycloak/keycloak:21.0.0
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
@@ -82,6 +81,6 @@ public class KeycloakProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "quay.io/keycloak/keycloak:23.0.3";
+        return "quay.io/keycloak/keycloak:23.0.4";
     }
 }

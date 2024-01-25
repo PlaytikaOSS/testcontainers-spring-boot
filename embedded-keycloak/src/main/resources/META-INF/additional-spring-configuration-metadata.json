@@ -21,19 +21,19 @@
     {
       "name": "embedded.keycloak.docker-image",
       "type": "java.lang.String",
-      "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_KEYCLOAK_VERSION"
+      "defaultValue": "See com.playtika.testcontainer.keycloak.KeycloakProperties.DEFAULT_KEYCLOAK_VERSION"
     },
     {
       "name": "embedded.keycloak.command",
       "type": "java.lang.String[]",
       "description": "The command string issued to the container.",
-      "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_COMMAND"
+      "defaultValue": "See com.playtika.testcontainer.keycloak.KeycloakProperties.DEFAULT_COMMAND"
     },
     {
       "name": "embedded.keycloak.authBasePath",
       "type": "java.lang.String",
       "description": "The relative auth URL of the container. Maybe needs to be tweaked for the WaitStrategy for different Keycloak versions (/auth vs. /auth/).",
-      "defaultValue": "See com.playtika.test.keycloak.KeycloakProperties.DEFAULT_AUTH_BASE_URL"
+      "defaultValue": "See com.playtika.testcontainer.keycloak.KeycloakProperties.DEFAULT_AUTH_BASE_URL"
     },
     {
       "name": "embedded.keycloak.admin-user",
@@ -116,8 +116,8 @@
       "name": "embedded.keycloak.docker-image",
       "values": [
         {
-          "value": "quay.io/keycloak/keycloak:23.0.3",
-          "description": "Default Keycloak image in version 21.0.0. Ref https://quay.io/keycloak/keycloak:21.0.0 for further info."
+          "value": "quay.io/keycloak/keycloak:23.0.4",
+          "description": "Default Keycloak image. Ref https://quay.io/repository/keycloak/keycloak?tab=tags for further info."
         }
       ]
     }
