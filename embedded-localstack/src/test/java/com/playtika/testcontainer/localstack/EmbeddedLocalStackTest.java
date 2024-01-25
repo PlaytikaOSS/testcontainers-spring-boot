@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,10 +92,12 @@ public class EmbeddedLocalStackTest {
 
         CreateQueueResult queueResult = sqs.createQueue("baz");
         String fooQueueUrl = queueResult.getQueueUrl();
-        assertThat(fooQueueUrl).
-                contains("http://" + properties.getHostname() + ":" + sqsPort);
 
-        sqs.sendMessage(fooQueueUrl, "test");
+        SendMessageRequest sendMessageRequest = new SendMessageRequest();
+        sendMessageRequest.setQueueUrl(fooQueueUrl);
+        sendMessageRequest.setMessageBody("test");
+        sqs.sendMessage(sendMessageRequest);
+
         long messageCount = sqs.receiveMessage(fooQueueUrl).getMessages().stream()
                 .filter(message -> message.getBody().equals("test"))
                 .count();

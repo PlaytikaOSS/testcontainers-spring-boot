@@ -14,7 +14,7 @@
     {
       "name": "embedded.localstack.docker-image",
       "type": "java.lang.String",
-      "defaultValue": "localstack/localstack:0.10.8"
+      "defaultValue": "localstack/localstack:3.0.0"
     }
   ],
   "hints": [
@@ -36,7 +36,7 @@
       "values": [
         {
           "value": "localstack/localstack:3.0.0",
-          "description": "Default Localstack image in version 0.10.8. Ref https://hub.docker.com/r/localstack/localstack for further info."
+          "description": "Default Localstack image. Ref https://hub.docker.com/r/localstack/localstack for further info."
         }
       ]
     },
