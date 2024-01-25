@@ -16,7 +16,7 @@
 
 * `embedded.redis.enabled` `(true|false, default is true)`
 * `embedded.redis.reuseContainer` `(true|false, default is false)`
-* `embedded.redis.dockerImage` `(default is 'redis:7.2.3-alpine')`
+* `embedded.redis.dockerImage` `(default is 'redis:7.2.4-alpine')`
 ** Image versions on https://hub.docker.com/_/redis?tab=tags[dockerhub]
 * `embedded.redis.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.redis.clustered` `(true|false, default is false)`
