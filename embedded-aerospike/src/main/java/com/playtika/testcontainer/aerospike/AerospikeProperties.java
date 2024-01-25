@@ -24,6 +24,6 @@ public class AerospikeProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "aerospike/aerospike-server:6.3.0.16";
+        return "aerospike/aerospike-server:6.4.0.10";
     }
 }
