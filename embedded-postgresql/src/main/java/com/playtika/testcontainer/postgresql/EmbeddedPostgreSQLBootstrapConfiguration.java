@@ -18,14 +18,18 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.ShellStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
+import static java.lang.String.format;
 
 @Slf4j
 @Configuration
@@ -71,11 +75,15 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
         network.ifPresent(postgresql::withNetwork);
 
+        postgresql.waitingFor(new ShellStrategy()
+                .withCommand(format("pg_isready -U %s -d %s", properties.getUser(), properties.getDatabase()))
+                .withStartupTimeout(Duration.of(60, ChronoUnit.SECONDS)));
+
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
         if (StringUtils.hasLength(startupLogCheckRegex)) {
             WaitStrategy waitStrategy = new LogMessageWaitStrategy()
                     .withRegEx(startupLogCheckRegex);
-            postgresql.setWaitStrategy(waitStrategy);
+            postgresql.waitingFor(waitStrategy);
         }
 
         postgresql = (PostgreSQLContainer) configureCommonsAndStart(postgresql, properties, log);
