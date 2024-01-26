@@ -20,13 +20,13 @@ public class ValidateEnterpriseAerospikeBootstrapConfigurationTest {
 
     @Test
     void failOnUnsuitableEnterpriseImageVersion() {
-        contextRunner.withPropertyValues("embedded.aerospike.dockerImage=aerospike/aerospike-server-enterprise:6.1.0.16_1")
+        contextRunner.withPropertyValues("embedded.aerospike.dockerImage=aerospike/aerospike-server-enterprise:6.1.0.16")
                 .run(context -> assertThat(context).hasFailed());
     }
 
     @Test
     void skipValidation() {
-        contextRunner.withPropertyValues("embedded.aerospike.dockerImage=aerospike-server:6.1.0.16_1",
+        contextRunner.withPropertyValues("embedded.aerospike.dockerImage=aerospike-server:6.1.0.16",
                 "embedded.aerospike.enabled=false")
                 .run(context -> assertThat(context).hasNotFailed());
 

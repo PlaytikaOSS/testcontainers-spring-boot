@@ -15,7 +15,7 @@ public class AerospikeEnterpriseConfigurer {
     private final AerospikeProperties aerospikeProperties;
     private final AerospikeEnterpriseProperties enterpriseProperties;
 
-    public void configure(GenericContainer<?> aerospikeContainer)  throws IOException, InterruptedException {
+    public void configure(GenericContainer<?> aerospikeContainer) throws IOException, InterruptedException {
         if (aerospikeProperties.getFeatureKey() == null || aerospikeProperties.getFeatureKey().isBlank()) {
             log.warn("Evaluation feature key file not provided by 'embedded.aerospike.featureKey' property. " +
                     "Pay attention to license details: https://github.com/aerospike/aerospike-server.docker/blob/master/enterprise/ENTERPRISE_LICENSE");
@@ -32,9 +32,9 @@ public class AerospikeEnterpriseConfigurer {
         String namespace = aerospikeProperties.getNamespace();
         Container.ExecResult result = aerospikeContainer.execInContainer("asadm", "-e",
                 String.format("enable; manage config namespace %s param disallow-expunge to true", namespace));
-        if (result.getStderr().length() > 0) {
+        if (result.getExitCode() != 0) {
             throw new IllegalStateException("Failed to set up 'disallow-expunge' to true: " + result.getStderr());
         }
-        log.info("Set up 'disallow-expunge' to true: {}", result.getStdout());
+        log.info("Success setting up 'disallow-expunge' to true");
     }
 }
