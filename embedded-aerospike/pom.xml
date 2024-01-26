@@ -14,7 +14,7 @@
     <artifactId>embedded-aerospike</artifactId>
 
     <properties>
-        <aerospike-client.version>8.0.0</aerospike-client.version>
+        <aerospike-client.version>8.0.1</aerospike-client.version>
     </properties>
 
     <dependencies>
@@ -24,7 +24,7 @@
         -->
         <dependency>
             <groupId>com.aerospike</groupId>
-            <artifactId>aerospike-client</artifactId>
+            <artifactId>aerospike-client-jdk8</artifactId>
             <version>${aerospike-client.version}</version>
             <scope>provided</scope>
         </dependency>
