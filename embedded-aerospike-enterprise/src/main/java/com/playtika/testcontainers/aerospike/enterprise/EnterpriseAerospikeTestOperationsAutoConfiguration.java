@@ -21,8 +21,9 @@ public class EnterpriseAerospikeTestOperationsAutoConfiguration {
     @Bean
     @ConditionalOnProperty(value = "embedded.aerospike.time-travel.enabled", havingValue = "true", matchIfMissing = true)
     public ExpiredDocumentsCleaner expiredDocumentsCleaner(IAerospikeClient client,
+                                                           AerospikeEnterpriseProperties aerospikeEnterpriseProperties,
                                                            AerospikeProperties properties) {
-        return new AerospikeExpiredDocumentsCleaner(client, properties.getNamespace(), true);
+        return new AerospikeExpiredDocumentsCleaner(client, properties.getNamespace(), aerospikeEnterpriseProperties.isDurableDeletes());
     }
 
 }
