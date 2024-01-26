@@ -1,6 +1,6 @@
 = Testcontainers Spring Boot
 
-https://codecov.io/gh/Playtika/testcontainers-spring-boot[image:https://codecov.io/gh/testcontainers/testcontainers-spring-boot/branch/develop/graph/badge.svg[codecov]]
+https://codecov.io/gh/PlaytikaOSS/testcontainers-spring-boot[image:https://codecov.io/gh/PlaytikaOSS/testcontainers-spring-boot/graph/badge.svg?token=9E0VBFIB5B[codecov]]
 https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot[image:https://maven-badges.herokuapp.com/maven-central/com.playtika.testcontainers/testcontainers-spring-boot/badge.svg[Maven Central]]
 
 If you develop services using Spring Boot and maybe Spring Cloud and you do
