@@ -25,8 +25,9 @@
       "description": "Process update docker images",
       "fileMatch": [
         "^.*Properties\\.java$",
+        "^.*\\.properties",
         "^.*\\.adoc",
-        "^.*additional-spring-configuration-metadata.json"
+        "^.*additional-spring-configuration-metadata\\.json"
       ],
       "matchStrings": [
         "\\/\\/.*?renovate:.*?datasource=(?<datasource>.*?)\\s+?return\\s+?\\\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\"",
@@ -61,7 +62,7 @@
     {
       "description": "Process update images in spring configuration metadata",
       "fileMatch": [
-        "^.*additional-spring-configuration-metadata.json"
+        "^.*additional-spring-configuration-metadata\\.json"
       ],
       "matchStrings": [
         "\\\"embedded\\.\\w+?\\.(dockerImage|docker\\-image)\\\",\\s+.*\\s+.*\\s+\\\"value\\\"\\s*?:\\s*?\"(?<depName>.*?):?(?<currentValue>[\\w+\\.\\-]*)\""
