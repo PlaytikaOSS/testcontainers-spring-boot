@@ -3,7 +3,6 @@ package com.playtika.testcontainers.aerospike.enterprise;
 import com.playtika.testcontainer.aerospike.AerospikeProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
@@ -21,20 +20,23 @@ public class AerospikeEnterpriseConfigurer {
                     "Pay attention to license details: https://github.com/aerospike/aerospike-server.docker/blob/master/enterprise/ENTERPRISE_LICENSE");
         }
 
-        setupDisallowExpunge(aerospikeContainer);
+        String namespace = aerospikeProperties.getNamespace();
+        AsadmCommandExecutor asadmCommandExecutor = new AsadmCommandExecutor(aerospikeContainer);
+
+        /*
+         By default, the value of this metric is 90%, we set it to 100% to prevent stopping writes for the Aerospike
+         Enterprise container during high consumption of system memory. For the Aerospike Community Edition, this metric is not used.
+         Documentation: https://aerospike.com/docs/server/reference/configuration#stop-writes-sys-memory-pct
+        */
+        log.info("Switching off 'stop-writes-sys-memory-pct'... ");
+        asadmCommandExecutor.execute(String.format("manage config namespace %s param stop-writes-sys-memory-pct to 100", namespace));
+        log.info("Success switching off 'stop-writes-sys-memory-pct'");
+
+        if (enterpriseProperties.isDurableDeletes()) {
+            log.info("Setting up 'disallow-expunge' to true...");
+            asadmCommandExecutor.execute(String.format("manage config namespace %s param disallow-expunge to true", namespace));
+            log.info("Success setting up 'disallow-expunge' to true");
+        }
     }
 
-    private void setupDisallowExpunge(GenericContainer<?> aerospikeContainer) throws IOException, InterruptedException {
-        if (!enterpriseProperties.isDurableDeletes()) {
-            return;
-        }
-        log.info("Setting up 'disallow-expunge' to true...");
-        String namespace = aerospikeProperties.getNamespace();
-        Container.ExecResult result = aerospikeContainer.execInContainer("asadm", "-e",
-                String.format("enable; manage config namespace %s param disallow-expunge to true", namespace));
-        if (result.getExitCode() != 0) {
-            throw new IllegalStateException("Failed to set up 'disallow-expunge' to true: " + result.getStderr());
-        }
-        log.info("Success setting up 'disallow-expunge' to true");
-    }
 }
