@@ -19,6 +19,6 @@ public class SpiceDBProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "authzed/spicedb:v1.29.0";
+        return "authzed/spicedb:v1.29.1";
     }
 }
