@@ -16,7 +16,7 @@
 
 * `embedded.google.storage.enabled` `(true|false, default is true)`
 * `embedded.google.storage.reuseContainer` `(true|false, default is false)`
-* `embedded.google.storage.dockerImage` `(default is 'fsouza/fake-gcs-server')`
+* `embedded.google.storage.dockerImage` `(default is 'fsouza/fake-gcs-server:1.47.8')`
 ** Image versions on https://hub.docker.com/r/fsouza/fake-gcs-server/tags[dockerhub]
 * `embedded.google.storage.projectId` `(project id for storage, default is my-project-id)`
 * `embedded.google.storage.bucketLocation` `(location for buckets, default is US-CENTRAL1)`
