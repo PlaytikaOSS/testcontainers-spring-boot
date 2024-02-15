@@ -116,7 +116,7 @@
       "name": "embedded.keycloak.docker-image",
       "values": [
         {
-          "value": "quay.io/keycloak/keycloak:23.0.4",
+          "value": "quay.io/keycloak/keycloak:23.0.6",
           "description": "Default Keycloak image. Ref https://quay.io/repository/keycloak/keycloak?tab=tags for further info."
         }
       ]
