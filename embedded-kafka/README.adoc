@@ -33,6 +33,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.kafka.schema-registry.avroCompatibilityLevel` `(NONE|BACKWARD|BACKWARD_TRANSITIVE|FORWARD|FORWARD_TRANSITIVE|FULL|FULL_TRANSITIVE, default is BACKWARD)`
 * `embedded.kafka.schema-registry.authentication` `(NONE|BASIC, default is NONE)`
 * `embedded.toxiproxy.proxies.kafka.enabled` Enables creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-kafka` container.
+* `embedded.kafka.withEnvProperties` Allows to configure Kafka Broker with any custom properties
 
 ==== Filesystem bindings
 

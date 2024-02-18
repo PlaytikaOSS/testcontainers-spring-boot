@@ -3,6 +3,8 @@ package com.playtika.testcontainer.kafka;
 import com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.TopicConfiguration;
 import com.playtika.testcontainer.kafka.properties.ZookeeperConfigurationProperties;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -14,8 +16,11 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Map;
 
+import static org.apache.kafka.clients.producer.ProducerConfig.MAX_BLOCK_MS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @Order(2)
@@ -75,6 +80,17 @@ public class EmbeddedKafkaTest extends AbstractEmbeddedKafkaTest {
 
         assertThat(consumedMessage)
                 .isEqualTo(MESSAGE);
+    }
+
+    @Test
+    @DisplayName("shouldn't auto-create destination topic if configured")
+    public void shouldFailToSendMessageIfTopicIsMissed() {
+        Map<String, Object> kafkaProducerConfiguration = getKafkaProducerConfiguration();
+        kafkaProducerConfiguration.put(MAX_BLOCK_MS_CONFIG, 1000);
+        try (KafkaProducer<String, String> kafkaProducer = createProducer(kafkaProducerConfiguration)) {
+            assertThatThrownBy(() -> kafkaProducer.send(new ProducerRecord<>("topic_missed_in_broker", MESSAGE)).get())
+                    .hasMessageContaining("Topic topic_missed_in_broker not present in metadata after 1000 ms");
+        }
     }
 
     @AfterAll

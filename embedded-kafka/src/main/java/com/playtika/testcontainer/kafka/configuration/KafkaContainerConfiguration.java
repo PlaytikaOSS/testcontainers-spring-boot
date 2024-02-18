@@ -195,6 +195,7 @@ public class KafkaContainerConfiguration {
                 .withCopyFileToContainer(MountableFile.forClasspathResource("kafka_server_jaas.conf"), "/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_OPTS", "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_GC_LOG_OPTS", "-Dnogclog")
+                .withEnv(kafkaProperties.getWithEnvProperties())
                 .withExposedPorts(kafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort)
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)

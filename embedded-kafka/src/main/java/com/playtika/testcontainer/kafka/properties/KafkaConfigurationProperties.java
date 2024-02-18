@@ -13,6 +13,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -46,6 +48,8 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected Collection<String> topicsToCreate = Collections.emptyList();
     protected Collection<TopicConfiguration> topicsConfiguration = Collections.emptyList();
     Collection<String> secureTopics = Collections.emptyList();
+
+    protected Map<String, String> withEnvProperties = new HashMap<>();
 
     // https://github.com/apache/kafka/blob/trunk/config/server.properties
 
