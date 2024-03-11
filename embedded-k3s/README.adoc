@@ -46,6 +46,6 @@ https://github.com/fabric8io/kubernetes-client[Fabric8 Java Client]
 ----
 @Bean(destroyMethod = "close")
 public KubernetesClient kubernetesClient(@Value("${embedded.k3s.kubeconfig}") String kubeconfig) {
-    return new KubernetesClientBuilder().withConfig(Config.from(kubeconfig)).build();
+    return new KubernetesClientBuilder().withConfig(Config.fromKubeconfig(kubeconfig)).build();
 }
 ----
