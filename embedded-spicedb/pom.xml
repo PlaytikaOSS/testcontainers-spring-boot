@@ -14,7 +14,7 @@
 
     <properties>
         <grpc-protobuf.version>1.62.2</grpc-protobuf.version>
-        <authzed.version>0.6.0</authzed.version>
+        <authzed.version>0.7.0</authzed.version>
     </properties>
 
     <dependencies>
