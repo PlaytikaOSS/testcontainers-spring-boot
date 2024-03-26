@@ -23,7 +23,7 @@ public class MongodbProperties extends CommonContainerProperties {
     private String username;
     private String password;
     private String database = "test";
-    private String[] checkCommand = new String[]{"mongosh", "admin", "--eval", "\"db['system.version'].find()\""};
+    private String shell = "mongosh";
 
     public MongodbProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));

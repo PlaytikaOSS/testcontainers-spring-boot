@@ -9,10 +9,15 @@ public class MongodbStatusCheck extends AbstractCommandWaitStrategy {
 
     @Override
     public String[] getCheckCommand() {
-        if (properties.getCheckCommand().length == 0) {
-            return new String[]{"mongo", "admin", "--eval", "\"db['system.version'].find()\""};
-        } else {
-            return properties.getCheckCommand();
+        String shell = properties.getShell();
+        if (shell == null) {
+            shell = "mongo";
         }
+        return new String[]{
+                shell, "admin",
+                "-u", properties.getUsername(),
+                "-p", properties.getPassword(),
+                "--eval", "\"db['system.version'].find()\""
+        };
     }
 }
