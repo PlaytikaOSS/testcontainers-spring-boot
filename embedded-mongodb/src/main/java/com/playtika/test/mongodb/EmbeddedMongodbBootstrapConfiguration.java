@@ -51,7 +51,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
     @Bean
     @ConditionalOnMissingBean
     MongodbStatusCheck mongodbStartupCheckStrategy(MongodbProperties properties) {
-        return new MongodbStatusCheck();
+        return new MongodbStatusCheck(properties);
     }
 
     private void registerMongodbEnvironment(GenericContainer<?> mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {

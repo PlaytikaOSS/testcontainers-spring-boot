@@ -8,7 +8,7 @@
     {
       "name": "embedded.mongodb.dockerImage",
       "type": "java.lang.String",
-      "defaultValue": "mongo:4.2.0-bionic"
+      "defaultValue": "mongo:7.0.7-jammy"
     },
     {
       "name": "embedded.mongodb.host",
@@ -22,17 +22,22 @@
       "defaultValue": "27017"
     },
     {
-      "name": "embedded.mongodb.database",
-      "type": "java.lang.String",
-      "defaultValue": "test"
-    },
-    {
       "name": "embedded.mongodb.username",
       "type": "java.lang.String"
     },
     {
       "name": "embedded.mongodb.password",
       "type": "java.lang.String"
+    },
+    {
+      "name": "embedded.mongodb.database",
+      "type": "java.lang.String",
+      "defaultValue": "test"
+    },
+    {
+      "name": "embedded.mongodb.shell",
+      "type": "java.lang.String",
+      "defaultValue": "mongosh"
     }
   ]
 }

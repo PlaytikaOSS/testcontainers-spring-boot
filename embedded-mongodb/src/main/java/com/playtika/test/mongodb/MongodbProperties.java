@@ -23,6 +23,7 @@ public class MongodbProperties extends CommonContainerProperties {
     private String username;
     private String password;
     private String database = "test";
+    private String shell = "mongosh";
 
     public MongodbProperties() {
         this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
@@ -31,6 +32,6 @@ public class MongodbProperties extends CommonContainerProperties {
     // https://hub.docker.com/_/mongo
     @Override
     public String getDefaultDockerImage() {
-        return "mongo:5.0.14-focal";
+        return "mongo:7.0.7-jammy";
     }
 }
