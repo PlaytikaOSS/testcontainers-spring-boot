@@ -24,6 +24,8 @@
 * `embedded.mongodb.password`
 * `embedded.mongodb.database` `(default is test)`
 * `embedded.mongodb.shell` `(default is mongosh)`
+** For MongoDB version 4 and older use `mongo`
+
 
 ==== Produces
 
