@@ -26,7 +26,6 @@
 * `embedded.mongodb.shell` `(default is mongosh)`
 ** For MongoDB version 4 and older use `mongo`
 
-
 ==== Produces
 
 * `embedded.mongodb.host`
