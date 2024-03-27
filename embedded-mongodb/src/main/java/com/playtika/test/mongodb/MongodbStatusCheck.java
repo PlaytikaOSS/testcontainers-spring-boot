@@ -5,19 +5,20 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class MongodbStatusCheck extends AbstractCommandWaitStrategy {
+    private static final String COMMAND = "\"db['system.version'].find()\"";
     private final MongodbProperties properties;
 
     @Override
     public String[] getCheckCommand() {
-        String shell = properties.getShell();
-        if (shell == null) {
-            shell = "mongo";
+        if (properties.getUsername() == null) {
+            return new String[]{properties.getShell(), "--eval", COMMAND};
         }
+
         return new String[]{
-                shell, "admin",
+                properties.getShell(), "admin",
                 "-u", properties.getUsername(),
                 "-p", properties.getPassword(),
-                "--eval", "\"db['system.version'].find()\""
+                "--eval", COMMAND
         };
     }
 }
