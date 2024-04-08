@@ -14,7 +14,7 @@
     <artifactId>embedded-k3s</artifactId>
 
     <properties>
-        <bcpkix-jdk18on.version>1.77</bcpkix-jdk18on.version>
+        <bcpkix-jdk18on.version>1.78</bcpkix-jdk18on.version>
     </properties>
 
     <dependencies>
