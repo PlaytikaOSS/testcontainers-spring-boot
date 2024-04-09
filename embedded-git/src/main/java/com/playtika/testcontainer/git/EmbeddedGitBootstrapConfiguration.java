@@ -64,14 +64,12 @@ public class EmbeddedGitBootstrapConfiguration {
     public GenericContainer<?> embeddedGit(ConfigurableEnvironment environment,
                                            GitProperties properties,
                                            Optional<Network> network) {
-        GenericContainer<?> gitContainer = configureCommonsAndStart(createContainer(properties), properties, log)
-                .withNetworkAliases(GIT_NETWORK_ALIAS);
-        network.ifPresent(gitContainer::withNetwork);
+        GenericContainer<?> gitContainer = configureCommonsAndStart(createContainer(properties, network), properties, log);
         registerGitEnvironment(gitContainer, environment, properties);
         return gitContainer;
     }
 
-    private GenericContainer<?> createContainer(GitProperties properties) {
+    private GenericContainer<?> createContainer(GitProperties properties, Optional<Network> network) {
         if (isEmpty(properties.getPathToRepositories())) {
             throw new RuntimeException("embedded.git.path-to-repositories is required");
         }
@@ -81,7 +79,9 @@ public class EmbeddedGitBootstrapConfiguration {
                 .withEnv("GIT_REPOSITORIES_PATH", "/projects")
                 .withEnv("GIT_PASSWORD", properties.getPassword())
                 .withExposedPorts(properties.getPort())
+                .withNetworkAliases(GIT_NETWORK_ALIAS)
                 .waitingFor(new HostPortWaitStrategy());
+        network.ifPresent(container::withNetwork);
         if (isNotEmpty(properties.getPathToAuthorizedKeys())) {
             container.withFileSystemBind(properties.getPathToAuthorizedKeys(), "/home/git/.ssh/authorized_keys");
         }
