@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
+import org.testcontainers.containers.GenericContainer;
 import util.EncryptionUtils;
 
 import java.io.File;
@@ -38,6 +39,10 @@ import static org.testcontainers.shaded.org.apache.commons.io.FileUtils.contentE
         }
 )
 class EmbeddedGitBootstrapConfigurationTest {
+
+    @Autowired
+    GenericContainer embeddedGit;
+
     @Autowired
     ConfigurableListableBeanFactory beanFactory;
 
@@ -59,6 +64,11 @@ class EmbeddedGitBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.git.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.git.password")).isEqualTo("embedded-git-password");
         assertThat(environment.getProperty("embedded.git.path-to-repositories")).isEqualTo("src/test/resources/repository");
+    }
+
+    @Test
+    public void shouldHaveCorrectNetworkAlias() {
+        assertThat(embeddedGit.getNetworkAliases()).contains("git.testcontainer.docker");
     }
 
     @Test
