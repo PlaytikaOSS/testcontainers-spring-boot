@@ -13,7 +13,7 @@
     <artifactId>embedded-spicedb</artifactId>
 
     <properties>
-        <grpc-protobuf.version>1.62.2</grpc-protobuf.version>
+        <grpc-protobuf.version>1.63.0</grpc-protobuf.version>
         <authzed.version>0.7.0</authzed.version>
     </properties>
 
