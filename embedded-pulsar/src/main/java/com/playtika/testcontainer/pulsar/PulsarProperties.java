@@ -18,6 +18,6 @@ public class PulsarProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "apachepulsar/pulsar:3.2.0";
+        return "apachepulsar/pulsar:3.2.2";
     }
 }
