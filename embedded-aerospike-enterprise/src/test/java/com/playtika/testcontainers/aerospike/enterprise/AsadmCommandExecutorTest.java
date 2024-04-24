@@ -1,6 +1,6 @@
 package com.playtika.testcontainers.aerospike.enterprise;
 
-import com.playtika.test.aerospike.AerospikeProperties;
+import com.playtika.testcontainer.aerospike.AerospikeProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class AsadmCommandExecutorTest extends BaseEnterpriseAerospikeTest {
 
     @Autowired
-    @Qualifier(AerospikeProperties.AEROSPIKE_BEAN_NAME)
+    @Qualifier(AerospikeProperties.BEAN_NAME_AEROSPIKE)
     private GenericContainer<?> aerospikeContainer;
 
     @Test

@@ -17,13 +17,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.azure.spring</groupId>
-            <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
-            <scope>test</scope>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
-            <artifactId>testcontainers-common</artifactId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

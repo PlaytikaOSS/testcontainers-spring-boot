@@ -1,7 +1,7 @@
 package com.playtika.testcontainers.aerospike.enterprise;
 
-import com.playtika.test.aerospike.AerospikeProperties;
-import com.playtika.test.aerospike.EmbeddedAerospikeBootstrapConfiguration;
+import com.playtika.testcontainer.aerospike.AerospikeProperties;
+import com.playtika.testcontainer.aerospike.EmbeddedAerospikeBootstrapConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,7 +41,7 @@ public class SetupEnterpriseAerospikeBootstrapConfiguration {
     }
 
     @Autowired
-    @Qualifier(AerospikeProperties.AEROSPIKE_BEAN_NAME)
+    @Qualifier(AerospikeProperties.BEAN_NAME_AEROSPIKE)
     public void setAerospikeContainer(GenericContainer<?> aerospikeContainer) {
         this.aerospikeContainer = aerospikeContainer;
     }

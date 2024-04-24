@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.mysql.EmbeddedMySQLBootstrapConfiguration
+  com.playtika.testcontainer.mysql.EmbeddedMySQLBootstrapConfiguration

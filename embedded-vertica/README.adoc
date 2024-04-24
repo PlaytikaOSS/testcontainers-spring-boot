@@ -30,7 +30,7 @@
 
 ==== Notes
 
-* You can enable debug logs for `com.playtika.test` category to troubleshoot issues
+* You can enable debug logs for `testcontainer` category to troubleshoot issues
 
 ==== Example
 
