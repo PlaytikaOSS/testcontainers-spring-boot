@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.nats.EmbeddedNatsBootstrapConfiguration
+  com.playtika.testcontainer.nats.EmbeddedNatsBootstrapConfiguration

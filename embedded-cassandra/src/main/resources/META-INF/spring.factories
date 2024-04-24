@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.cassandra.EmbeddedCassandraBootstrapConfiguration
+  com.playtika.testcontainer.cassandra.EmbeddedCassandraBootstrapConfiguration

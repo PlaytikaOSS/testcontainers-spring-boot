@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.kafka.configuration.EmbeddedKafkaBootstrapConfiguration
+com.playtika.testcontainer.kafka.configuration.EmbeddedKafkaBootstrapConfiguration

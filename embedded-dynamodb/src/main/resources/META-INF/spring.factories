@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.dynamodb.EmbeddedDynamoDBBootstrapConfiguration
+com.playtika.testcontainer.dynamodb.EmbeddedDynamoDBBootstrapConfiguration

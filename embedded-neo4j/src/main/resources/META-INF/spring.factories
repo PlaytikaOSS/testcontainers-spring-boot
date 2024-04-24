@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.neo4j.EmbeddedNeo4jBootstrapConfiguration
+com.playtika.testcontainer.neo4j.EmbeddedNeo4jBootstrapConfiguration

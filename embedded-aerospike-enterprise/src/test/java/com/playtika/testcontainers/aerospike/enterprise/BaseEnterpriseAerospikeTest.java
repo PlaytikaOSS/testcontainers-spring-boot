@@ -3,7 +3,7 @@ package com.playtika.testcontainers.aerospike.enterprise;
 import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
-import com.playtika.test.aerospike.AerospikeTestOperations;
+import com.playtika.testcontainer.aerospike.AerospikeTestOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;

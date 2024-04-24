@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.playtika.test.artifactory.EmbeddedArtifactoryBootstrapConfiguration
+com.playtika.testcontainer.artifactory.EmbeddedArtifactoryBootstrapConfiguration

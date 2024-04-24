@@ -1,1 +1,1 @@
-com.playtika.test.common.spring.EmbeddedContainersShutdownAutoConfiguration
+com.playtika.testcontainer.common.spring.EmbeddedContainersShutdownAutoConfiguration

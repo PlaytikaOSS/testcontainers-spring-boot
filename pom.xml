@@ -84,18 +84,18 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
-        <maven.enforcer.plugin.version>3.2.1</maven.enforcer.plugin.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
+        <maven.enforcer.plugin.version>3.4.1</maven.enforcer.plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <spotless-maven-plugin.version>2.33.0</spotless-maven-plugin.version>
-        <gitflow-incremental-builder.version>4.3.0</gitflow-incremental-builder.version>
+        <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
+        <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
+        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+        <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
+        <gitflow-incremental-builder.version>4.5.1</gitflow-incremental-builder.version>
 
         <!-- GPG -->
         <gpg.keyname>3EEF24C7</gpg.keyname>
@@ -103,12 +103,16 @@
         <gpg.useagent>true</gpg.useagent>
         <gpg.lockMode>never</gpg.lockMode>
 
-        <docker.cleanup.skip>false</docker.cleanup.skip>
-
-
+        <docker.cleanup.skip>true</docker.cleanup.skip>
     </properties>
 
     <profiles>
+        <profile>
+            <id>docker-clean</id>
+            <properties>
+                <docker.cleanup.skip>false</docker.cleanup.skip>
+            </properties>
+        </profile>
         <profile>
             <id>sonar</id>
             <build>

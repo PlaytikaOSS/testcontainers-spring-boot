@@ -1,2 +1,2 @@
-com.playtika.test.aerospike.EmbeddedAerospikeTestOperationsAutoConfiguration
-com.playtika.test.aerospike.EmbeddedAerospikeDependenciesAutoConfiguration
+com.playtika.testcontainer.aerospike.EmbeddedAerospikeTestOperationsAutoConfiguration
+com.playtika.testcontainer.aerospike.EmbeddedAerospikeDependenciesAutoConfiguration

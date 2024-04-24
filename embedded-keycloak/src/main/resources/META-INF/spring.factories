@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  com.playtika.test.keycloak.EmbeddedKeycloakBootstrapConfiguration
+  com.playtika.testcontainer.keycloak.EmbeddedKeycloakBootstrapConfiguration

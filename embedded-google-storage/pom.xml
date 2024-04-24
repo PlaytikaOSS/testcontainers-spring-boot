@@ -23,6 +23,10 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
             <scope>provided</scope>

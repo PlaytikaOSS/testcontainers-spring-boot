@@ -14,11 +14,18 @@
     <artifactId>embedded-aerospike</artifactId>
 
     <properties>
-        <aerospike-client.version>6.1.7</aerospike-client.version>
-        <joda-time.version>2.12.2</joda-time.version>
+        <aerospike-client.version>6.1.11</aerospike-client.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
         <!--
              aerospike client is provided since we want users to pick own version,
              and not rely on test library
@@ -30,21 +37,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.playtika.testcontainers</groupId>
-            <artifactId>testcontainers-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda-time.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.playtika.testcontainers</groupId>
-            <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
     </dependencies>
 </project>
