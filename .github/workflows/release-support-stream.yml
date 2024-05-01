@@ -62,7 +62,7 @@ jobs:
 
       - name: Commit & Push changes
         if: ${{ success() }}
-        uses: actions-js/push@v1.4
+        uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: 'Release ${{github.event.inputs.version}}'
