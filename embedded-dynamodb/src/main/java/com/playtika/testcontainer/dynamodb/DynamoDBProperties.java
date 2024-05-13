@@ -22,6 +22,6 @@ public class DynamoDBProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "amazon/dynamodb-local:2.2.1";
+        return "amazon/dynamodb-local:2.4.0";
     }
 }
