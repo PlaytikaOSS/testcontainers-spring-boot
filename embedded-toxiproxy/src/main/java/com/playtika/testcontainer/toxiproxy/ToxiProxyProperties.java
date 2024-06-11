@@ -14,6 +14,6 @@ public class ToxiProxyProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "ghcr.io/shopify/toxiproxy:2.7.0";
+        return "ghcr.io/shopify/toxiproxy:2.9.0";
     }
 }
