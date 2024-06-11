@@ -25,6 +25,6 @@ public class RabbitMQProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "rabbitmq:3.12-alpine";
+        return "rabbitmq:3.13-alpine";
     }
 }
