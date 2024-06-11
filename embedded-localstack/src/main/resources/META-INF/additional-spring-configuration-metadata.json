@@ -35,7 +35,7 @@
       "name": "embedded.localstack.docker-image",
       "values": [
         {
-          "value": "localstack/localstack:3.1.0",
+          "value": "localstack/localstack:3.4.0",
           "description": "Default Localstack image. Ref https://hub.docker.com/r/localstack/localstack for further info."
         }
       ]
