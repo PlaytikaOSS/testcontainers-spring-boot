@@ -22,6 +22,6 @@ public class GitProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "rockstorm/git-server:2.43";
+        return "rockstorm/git-server:2.45";
     }
 }
