@@ -17,10 +17,11 @@ class OpenSearchContainerFactory {
             opensearchContainer.withSecurityEnabled();
         }
         return opensearchContainer
-                .withExposedPorts(properties.httpPort, properties.transportPort)
+                .withExposedPorts(properties.getHttpPort(), properties.getTransportPort())
                 .withEnv("cluster.name", properties.getClusterName())
                 .withEnv("discovery.type", "single-node")
                 .withEnv("ES_JAVA_OPTS", getJavaOpts(properties))
+                .withEnv("OPENSEARCH_INITIAL_ADMIN_PASSWORD", properties.getPassword())
                 .waitingFor(getCompositeWaitStrategy(properties));
     }
 
