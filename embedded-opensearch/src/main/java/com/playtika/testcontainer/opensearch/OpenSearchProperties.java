@@ -23,13 +23,13 @@ public class OpenSearchProperties extends CommonContainerProperties {
     boolean credentialsEnabled = false;
     boolean allowInsecure = false;
     String username = "admin";
-    String password = "admin";
+    String password = "tfyZx!k$7fDp45";
 
     // https://hub.docker.com/r/opensearchproject/opensearch
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "opensearchproject/opensearch:2.11.1";
+        return "opensearchproject/opensearch:2.14.0";
     }
 }
