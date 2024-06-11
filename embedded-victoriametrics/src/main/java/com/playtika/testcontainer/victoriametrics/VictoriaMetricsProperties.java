@@ -20,6 +20,6 @@ public class VictoriaMetricsProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "victoriametrics/victoria-metrics:v1.98.0";
+        return "victoriametrics/victoria-metrics:v1.101.0";
     }
 }
