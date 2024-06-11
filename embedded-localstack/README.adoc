@@ -16,7 +16,7 @@
 * `embedded.localstack.enabled` `(true|false, default is true)`
 * `embedded.localstack.reuseContainer` `(true|false, default is false)`
 * `embedded.localstack.services` `(comma separated list of AWS services (S3, SQS, DYNAMODB, etc. Should be non empty)`
-* `embedded.localstack.dockerImage` `(default is 'localstack/localstack:3.1.0')`
+* `embedded.localstack.dockerImage` `(default is 'localstack/localstack:3.4.0')`
 ** Image versions on https://hub.docker.com/r/localstack/localstack/tags[dockerhub]
 * `embedded.localstack.useSsl` `(default is false)`
 * `embedded.localstack.hostname` `(default is 'localhost')`
