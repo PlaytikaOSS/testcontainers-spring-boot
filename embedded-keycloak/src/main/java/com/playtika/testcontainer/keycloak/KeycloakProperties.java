@@ -81,6 +81,6 @@ public class KeycloakProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "quay.io/keycloak/keycloak:23.0.7";
+        return "quay.io/keycloak/keycloak:25.0.0";
     }
 }

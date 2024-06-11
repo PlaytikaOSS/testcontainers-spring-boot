@@ -40,21 +40,29 @@
   },
   "users": [
     {
-      "id": "835a36c5-d647-49a2-b794-2f128ebed7c0",
-      "username": "keycloak-test",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "123Start!"
-        }
-      ],
-      "clientRoles": {
-        "any-client": [
-          "role_reader",
-          "role_writer"
-        ]
-      }
+      "id" : "835a36c5-d647-49a2-b794-2f128ebed7c0",
+      "username" : "keycloak-test",
+      "firstName" : "keycloak",
+      "lastName" : "test",
+      "email" : "keycloak@test.com",
+      "emailVerified" : true,
+      "createdTimestamp" : 1718284523296,
+      "enabled" : true,
+      "totp" : false,
+      "credentials" : [ {
+        "id" : "d26a0b03-85c8-43e3-84d0-872670b4f462",
+        "type" : "password",
+        "createdDate" : 1718285634430,
+        "secretData" : "{\"value\":\"Npt8JAVIXIPcGGFNsxjT3eAET4IrBIdDo8DLAVBUkEY=\",\"salt\":\"buwvBN7kOkhruo5dGvbuAw==\",\"additionalParameters\":{}}",
+        "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+      } ],
+      "disableableCredentialTypes" : [ ],
+      "requiredActions" : [ ],
+      "clientRoles" : {
+        "any-client" : [ "role_reader", "role_writer" ]
+      },
+      "notBefore" : 0,
+      "groups" : [ ]
     }
   ]
 }
