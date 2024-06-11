@@ -1,7 +1,8 @@
 package com.playtika.testcontainer.spicedb;
 
 import com.authzed.api.v1.SchemaServiceGrpc;
-import com.authzed.api.v1.SchemaServiceOuterClass;
+import com.authzed.api.v1.WriteSchemaRequest;
+import com.authzed.api.v1.WriteSchemaResponse;
 import com.authzed.grpcutil.BearerToken;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -55,14 +56,12 @@ class EmbeddedSpiceDbBootstrapConfigurationTest extends BaseSpiceDbTest {
                 }
                 """;
 
-        SchemaServiceOuterClass.WriteSchemaRequest request = SchemaServiceOuterClass.WriteSchemaRequest
-                .newBuilder()
-                .setSchema(schema)
-                .build();
 
-        SchemaServiceOuterClass.WriteSchemaResponse response = schemaService.writeSchema(request);
+        WriteSchemaRequest writeSchemaRequest = WriteSchemaRequest.newBuilder().setSchema(schema).build();
 
-        assertThat(response.getWrittenAt().getToken()).isNotEmpty();
+        WriteSchemaResponse writeSchemaResponse = schemaService.writeSchema(writeSchemaRequest);
+
+        assertThat(writeSchemaResponse.getWrittenAt().getToken()).isNotEmpty();
     }
 
     @Test
