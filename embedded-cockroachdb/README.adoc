@@ -16,7 +16,7 @@
 
 * `embedded.cockroach.enabled` `(true|false, default is true)`
 * `embedded.cockroach.reuseContainer` `(true|false, default is false)`
-* `embedded.cockroach.dockerImage` `(default is 'cockroachdb/cockroach:v23.2.5')`
+* `embedded.cockroach.dockerImage` `(default is 'cockroachdb/cockroach:v24.1.0')`
 ** Image versions on https://hub.docker.com/r/cockroachdb/cockroach/tags[dockerhub]
 * `embedded.cockroach.initScriptPath` `(default is null)`
 * `embedded.toxiproxy.proxies.cockroach.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-cockroachdb` container.
