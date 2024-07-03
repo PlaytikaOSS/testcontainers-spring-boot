@@ -28,8 +28,9 @@ public class DynamoDBConfig {
     @Value("${amazon.aws.secretkey}")
     private String amazonAWSSecretKey;
 
-    public AWSCredentialsProvider amazonAWSCredentialsProvider() {
-        return new AWSStaticCredentialsProvider(amazonAWSCredentials());
+    @Bean
+    public AWSCredentialsProvider amazonAWSCredentialsProvider(AWSCredentials amazonAWSCredentials) {
+        return new AWSStaticCredentialsProvider(amazonAWSCredentials);
     }
 
     @Bean
@@ -38,11 +39,11 @@ public class DynamoDBConfig {
     }
 
     @Bean
-    public AmazonDynamoDB amazonDynamoDB() {
+    public AmazonDynamoDB amazonDynamoDB(AWSCredentialsProvider amazonAWSCredentialsProvider) {
         AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(amazonAWSEndpoint, amazonAWSSigningRegion);
         return AmazonDynamoDBClientBuilder
                 .standard()
-                .withCredentials(amazonAWSCredentialsProvider())
+                .withCredentials(amazonAWSCredentialsProvider)
                 .withEndpointConfiguration(endpointConfiguration)
                 .build();
     }

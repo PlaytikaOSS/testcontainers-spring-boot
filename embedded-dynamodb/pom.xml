@@ -14,6 +14,7 @@
 
     <properties>
         <spring-data-dynamodb.version>5.1.0</spring-data-dynamodb.version>
+        <aws-java-sdk-dynamodb.version>1.12.755</aws-java-sdk-dynamodb.version>
     </properties>
 
     <dependencies>
@@ -26,11 +27,26 @@
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
+            <version>${aws-java-sdk-dynamodb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.github.derjust</groupId>
             <artifactId>spring-data-dynamodb</artifactId>
             <version>${spring-data-dynamodb.version}</version>
             <scope>provided</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>com.amazonaws</groupId>
+                    <artifactId>aws-java-sdk-dynamodb</artifactId>
+                </exclusion>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
