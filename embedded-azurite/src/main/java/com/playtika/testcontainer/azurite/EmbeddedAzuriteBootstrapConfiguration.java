@@ -100,7 +100,16 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                                        Optional<Network> network) {
         GenericContainer<?> azuriteContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getBlobStoragePort(), properties.getQueueStoragePort(), properties.getTableStoragePort())
-                .withNetworkAliases(AZURITE_BLOB_NETWORK_ALIAS);
+                .withNetworkAliases(AZURITE_BLOB_NETWORK_ALIAS)
+                .withCommand("azurite",
+                        "-l", "/data",
+                        "--blobHost", "0.0.0.0",
+                        "--blobPort", String.valueOf(properties.getBlobStoragePort()),
+                        "--queueHost", "0.0.0.0",
+                        "--queuePort", String.valueOf(properties.getQueueStoragePort()),
+                        "--tableHost", "0.0.0.0",
+                        "--tablePort", String.valueOf(properties.getTableStoragePort()),
+                        "--skipApiVersionCheck");
 
         network.ifPresent(azuriteContainer::withNetwork);
 
