@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Arrays;
+import java.util.List;
+
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -27,14 +28,14 @@ public class MongodbProperties extends CommonContainerProperties {
     private String[] checkCommand = new String[]{"mongosh", "admin", "--eval", "\"db['system.version'].find()\""};
 
     public MongodbProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+        this.setCapabilities(List.of(Capability.ALL));
     }
 
-    // https://hub.docker.com/_/mongo
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "mongo:7.0.12-jammy";
+        // https://hub.docker.com/_/mongo
+        return "mongodb/mongodb-community-server:7.0.12-ubuntu2204";
     }
 }
