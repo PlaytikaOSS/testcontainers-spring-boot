@@ -17,6 +17,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
                         .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                         .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                         .withExposedPorts(properties.getPort())
-                        .waitingFor(mongodbStatusCheck)
+                        .waitingFor(new LogMessageWaitStrategy().withRegEx(".*mongod startup complete.*"))
                         .withNetworkAliases(MONGODB_NETWORK_ALIAS);
 
         network.ifPresent(mongodb::withNetwork);
