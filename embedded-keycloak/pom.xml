@@ -13,7 +13,7 @@
     <artifactId>embedded-keycloak</artifactId>
 
     <properties>
-        <keycloak.version>25.0.2</keycloak.version>
+        <keycloak.version>25.0.4</keycloak.version>
     </properties>
 
     <dependencies>
