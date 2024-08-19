@@ -24,7 +24,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 
 * `embedded.aerospike.enabled` `(true|false, default is 'true')`
 * `embedded.aerospike.reuseContainer` `(true|false, default is 'false')`
-* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server-enterprise:7.1.0.1')`
+* `embedded.aerospike.dockerImage` `(default is set to 'aerospike/aerospike-server-enterprise:7.1.0.4')`
 ** Aerospike Enterprise version must be not less then 6.3.0
 * `embedded.aerospike.featureKey` base64 of a feature-key-file https://aerospike.com/docs/server/operations/configure/feature-key, default is null.
 **Warning: if not provided, the Aerospike Database EE evaluation feature key file will be used. That means you can use it internally only for Evaluation
