@@ -16,7 +16,7 @@
 
 * `embedded.k3s.enabled` `(true|false, default is true)`
 * `embedded.k3s.reuseContainer` `(true|false, default is false)`
-* `embedded.k3s.dockerImage` `(default is 'rancher/k3s:v1.30.3-k3s1')`
+* `embedded.k3s.dockerImage` `(default is 'rancher/k3s:v1.30.4-k3s1')`
 ** Image versions on https://hub.docker.com/r/rancher/k3s/tags[dockerhub]
 * `embedded.k3s.port` `(int, default is '6443')`
 
