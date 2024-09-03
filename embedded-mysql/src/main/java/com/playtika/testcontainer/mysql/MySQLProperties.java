@@ -32,6 +32,6 @@ public class MySQLProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "mysql:8.0-debian";
+        return "mysql:9.0";
     }
 }
