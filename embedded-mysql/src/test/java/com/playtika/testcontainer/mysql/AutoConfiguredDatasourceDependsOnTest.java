@@ -36,7 +36,7 @@ public class AutoConfiguredDatasourceDependsOnTest {
 
     @Test
     public void shouldConnectToMySQL() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("8.0.");
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.0.");
     }
 
     @Test
