@@ -16,7 +16,7 @@
 
 * `embedded.grafana.enabled` `(true|false, default is true)`
 * `embedded.grafana.reuseContainer` `(true|false, default is false)`
-* `embedded.grafana.dockerImage` `(default is 'grafana/grafana:11.0.0')`
+* `embedded.grafana.dockerImage` `(default is 'grafana/grafana:11.2.0')`
 ** Image versions on https://hub.docker.com/r/grafana/grafana/tags[dockerhub]
 * `embedded.grafana.networkAlias` `(default is 'grafana')`
 * `embedded.grafana.username` `(default is 'admin')`
