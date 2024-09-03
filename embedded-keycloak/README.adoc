@@ -16,7 +16,7 @@
 
 * `embedded.keycloak.enabled` `(true|false, default is true)`
 * `embedded.keycloak.reuseContainer` `(true|false, default is false)`
-* `embedded.keycloak.dockerImage` `(default is 'quay.io/keycloak/keycloak:25.0.2')`
+* `embedded.keycloak.dockerImage` `(default is 'quay.io/keycloak/keycloak:25.0.4')`
 ** Image versions on https://quay.io/repository/keycloak/keycloak?tab=tags[quay.io]
 * `embedded.keycloak.command` `(String[], default is '["start-dev", "--import-realm"]')`
 * `embedded.keycloak.admin-user` `(default is 'admin')`
