@@ -18,7 +18,7 @@
 * `embedded.mysql.reuseContainer` `(true|false, default is false)`
 * `embedded.mysql.encoding` `(default is 'utf8mb4')`
 * `embedded.mysql.collation` `(default is 'utf8mb4_unicode_ci')`
-* `embedded.mysql.dockerImage` `(default is 'mysql:8.4')`
+* `embedded.mysql.dockerImage` `(default is 'mysql:9.0')`
 ** Image versions on https://hub.docker.com/_/mysql?tab=tags[dockerhub]
 * `embedded.mysql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.mysql.initScriptPath` `(default is null)`
