@@ -59,9 +59,13 @@ public class EmbeddedVerticaBootstrapConfiguration {
     public GenericContainer<?> embeddedVertica(ConfigurableEnvironment environment,
                                                VerticaProperties properties,
                                                Optional<Network> network) {
-        GenericContainer<?> verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log)
-                .withNetworkAliases(VERTICA_NETWORK_ALIAS);
+        GenericContainer<?> verticaContainer = createContainer(properties)
+            .withNetwork(Network.SHARED)
+            .withNetworkAliases(VERTICA_NETWORK_ALIAS);
+
         network.ifPresent(verticaContainer::withNetwork);
+
+        verticaContainer = configureCommonsAndStart(verticaContainer, properties, log);
         registerVerticaEnvironment(verticaContainer, environment, properties);
         return verticaContainer;
     }
