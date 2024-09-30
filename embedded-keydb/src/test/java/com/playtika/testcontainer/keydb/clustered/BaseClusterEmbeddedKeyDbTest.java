@@ -20,8 +20,7 @@ import static java.lang.String.format;
 @SpringBootTest(
   classes = BaseClusterEmbeddedKeyDbTest.TestConfiguration.class,
   properties = {
-    "embedded.keydb.clustered=true",
-    "embedded.toxiproxy.proxies.keydb.enabled=true"
+    "embedded.keydb.clustered=true"
   }
 )
 abstract class BaseClusterEmbeddedKeyDbTest extends BaseEmbeddedKeyDbTest {
