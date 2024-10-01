@@ -16,7 +16,7 @@
 
 * `embedded.mssqlserver.enabled` `(true|false, default is true)`
 * `embedded.mssqlserver.reuseContainer` `(true|false, default is false)`
-* `embedded.mssqlserver.dockerImage` `(default is 'mcr.microsoft.com/mssql/server:2017-CU12')`
+* `embedded.mssqlserver.dockerImage` `(default is 'mcr.microsoft.com/mssql/server:2022-latest')`
 ** Image versions: https://hub.docker.com/_/microsoft-mssql-server
 * `embedded.mssqlserver.password` `(default is foobar1234)`
 * `embedded.mssqlserver.acceptLicence` `(default is 'false')`
