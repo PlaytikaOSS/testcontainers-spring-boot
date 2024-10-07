@@ -15,7 +15,7 @@
 
 
     <properties>
-        <testcontainers.version>1.20.1</testcontainers.version>
+        <testcontainers.version>1.20.2</testcontainers.version>
         <spring.boot.version>3.3.4</spring.boot.version>
         <spring.cloud.version>2023.0.3</spring.cloud.version>
         <spring.cloud.gcp.version>5.6.1</spring.cloud.gcp.version>
