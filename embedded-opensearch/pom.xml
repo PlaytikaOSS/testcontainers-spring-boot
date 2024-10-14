@@ -13,7 +13,7 @@
     <artifactId>embedded-opensearch</artifactId>
 
     <properties>
-        <spring-data-opensearch-starter.version>1.5.2</spring-data-opensearch-starter.version>
+        <spring-data-opensearch-starter.version>1.5.3</spring-data-opensearch-starter.version>
         <opensearch-testcontainers.version>2.1.1</opensearch-testcontainers.version>
     </properties>
 
