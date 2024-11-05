@@ -13,7 +13,7 @@
     <artifactId>embedded-neo4j</artifactId>
 
     <properties>
-        <neo4j-java-driver.version>5.26.0</neo4j-java-driver.version>
+        <neo4j-java-driver.version>5.26.1</neo4j-java-driver.version>
     </properties>
 
     <dependencies>
