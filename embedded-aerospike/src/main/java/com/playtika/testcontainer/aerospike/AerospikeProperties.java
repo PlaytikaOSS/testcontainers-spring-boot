@@ -27,6 +27,6 @@ public class AerospikeProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
-        return "aerospike/aerospike-server:6.2";
+        return "aerospike/aerospike-server:6.3.0.31_1";
     }
 }
