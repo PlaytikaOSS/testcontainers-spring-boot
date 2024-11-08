@@ -59,22 +59,19 @@ public class EmbeddedVerticaBootstrapConfiguration {
     public GenericContainer<?> embeddedVertica(ConfigurableEnvironment environment,
                                                VerticaProperties properties,
                                                Optional<Network> network) {
-        GenericContainer<?> verticaContainer = configureCommonsAndStart(createContainer(properties), properties, log)
+
+        GenericContainer<?> vertica = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+                .withExposedPorts(properties.getPort())
+                .withEnv("DATABASE_NAME", properties.getDatabase())
+                .withEnv("DATABASE_PASSWORD", properties.getPassword())
+                .waitingFor(new HostPortWaitStrategy())
                 .withNetworkAliases(VERTICA_NETWORK_ALIAS);
-        network.ifPresent(verticaContainer::withNetwork);
+
+        network.ifPresent(vertica::withNetwork);
+
+        GenericContainer<?> verticaContainer = configureCommonsAndStart(vertica, properties, log);
         registerVerticaEnvironment(verticaContainer, environment, properties);
         return verticaContainer;
-    }
-
-    private GenericContainer<?> createContainer(VerticaProperties properties) {
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        map.put("DATABASE_NAME", properties.getDatabase());
-        map.put("DATABASE_PASSWORD", properties.getPassword());
-
-        return new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort())
-                .withEnv(map)
-                .waitingFor(new HostPortWaitStrategy());
     }
 
     private void registerVerticaEnvironment(GenericContainer<?> verticaContainer,
