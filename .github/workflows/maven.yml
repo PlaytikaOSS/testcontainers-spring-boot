@@ -42,6 +42,6 @@ jobs:
       - name: Build with Maven
         run: ./mvnw -version && whoami && umask -S && umask a+rw && umask -S && ./mvnw clean verify -P docker-clean -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 --no-snapshot-updates --batch-mode --no-transfer-progress
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
