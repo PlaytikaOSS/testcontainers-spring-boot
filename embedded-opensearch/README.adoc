@@ -16,7 +16,7 @@
 
 * `embedded.opensearch.enabled` `(true|false, default is true)`
 * `embedded.opensearch.reuseContainer` `(true|false, default is false)`
-* `embedded.opensearch.dockerImage` `(default is 'opensearchproject/opensearch:2.16.0')`
+* `embedded.opensearch.dockerImage` `(default is 'opensearchproject/opensearch:2.18.0')`
 ** Image versions on https://hub.docker.com/r/opensearchproject/opensearch[docker.opensearch.co]
 * `embedded.opensearch.indices` `(indices to create, no indices are created by default)`
 * `embedded.opensearch.waitTimeoutInSeconds` `(default is 60 seconds)`
