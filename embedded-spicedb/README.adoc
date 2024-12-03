@@ -15,7 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 
 * `embedded.spicedb.enabled` `(true|false, default is true)`
-* `embedded.spicedb.dockerImage` `(default is 'authzed/spicedb:v1.35.3')`
+* `embedded.spicedb.dockerImage` `(default is 'authzed/spicedb:v1.38.1')`
 ** Image versions on https://hub.docker.com/r/authzed/spicedb/tags[dockerhub]
 * `embedded.spicedb.presharedKey` `(default is 'somerandomkeyhere')`
 * `embedded.toxiproxy.proxies.spicedb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-spicedb` container.
