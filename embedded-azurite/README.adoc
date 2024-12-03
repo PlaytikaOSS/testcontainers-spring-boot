@@ -15,7 +15,7 @@
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.azurite.enabled` `(true|false, default is true)`
 * `embedded.azurite.reuseContainer` `(true|false, default is false)`
-* `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite:3.32.0')`
+* `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite:3.33.0')`
 ** Image versions on https://hub.docker.com/_/microsoft-azure-storage-azurite
 * `embedded.azurite.blobStoragePort` `(default is 10000)`
 * `embedded.azurite.queueStoragePort` `(default is 10001)`

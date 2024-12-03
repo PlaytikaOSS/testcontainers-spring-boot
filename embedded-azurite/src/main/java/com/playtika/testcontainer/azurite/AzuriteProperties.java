@@ -30,6 +30,6 @@ public class AzuriteProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "mcr.microsoft.com/azure-storage/azurite:3.32.0";
+        return "mcr.microsoft.com/azure-storage/azurite:3.33.0";
     }
 }
