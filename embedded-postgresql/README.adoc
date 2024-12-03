@@ -16,7 +16,7 @@
 
 * `embedded.postgresql.enabled` `(true|false, default is true)`
 * `embedded.postgresql.reuseContainer` `(true|false, default is false)`
-* `embedded.postgresql.dockerImage` `(default is 'postgres:16-alpine')`
+* `embedded.postgresql.dockerImage` `(default is 'postgres:17-alpine')`
 ** Image versions on https://hub.docker.com/_/postgres?tab=tags[dockerhub]
 * `embedded.postgresql.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.postgresql.database`
