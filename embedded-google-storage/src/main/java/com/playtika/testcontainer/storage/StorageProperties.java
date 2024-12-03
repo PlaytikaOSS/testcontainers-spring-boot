@@ -28,7 +28,7 @@ public class StorageProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "fsouza/fake-gcs-server:1.49.3";
+        return "fsouza/fake-gcs-server:1.50.2";
     }
 
     @Data
