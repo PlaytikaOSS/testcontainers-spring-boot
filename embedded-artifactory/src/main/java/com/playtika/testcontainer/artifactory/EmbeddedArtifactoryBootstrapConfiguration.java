@@ -19,6 +19,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
@@ -34,7 +35,7 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.artifactory.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(ArtifactoryProperties.class)
+@EnableConfigurationProperties({ArtifactoryProperties.class, PostgreSQLProperties.class})
 public class EmbeddedArtifactoryBootstrapConfiguration {
 
     private static final String ARTIFACTORY_NETWORK_ALIAS = "artifactory.testcontainer.docker";
@@ -70,14 +71,33 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
     @Bean(name = ARTIFACTORY_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> artifactory(ConfigurableEnvironment environment,
                                            ArtifactoryProperties properties,
+                                           PostgreSQLProperties postgresqlProperties,
                                            WaitStrategy artifactoryWaitStrategy,
                                            Optional<Network> network) {
+
+        PostgreSQLContainer postgresql =
+            new PostgreSQLContainer<>(ContainerUtils.getDockerImageName(postgresqlProperties))
+                .withNetwork(Network.SHARED)
+                .withUsername(postgresqlProperties.getUser())
+                .withPassword(postgresqlProperties.getPassword())
+                .withDatabaseName(postgresqlProperties.getDatabase())
+                .withInitScript(postgresqlProperties.initScriptPath)
+                .withNetworkAliases(properties.getNetworkAlias(), ARTIFACTORY_NETWORK_ALIAS)
+                .withNetworkAliases(ARTIFACTORY_NETWORK_ALIAS);
+
+        network.ifPresent(postgresql::withNetwork);
+        configureCommonsAndStart(postgresql, postgresqlProperties, log);
 
         GenericContainer<?> container =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getRestApiPort(), properties.getGeneralPort())
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias(), ARTIFACTORY_NETWORK_ALIAS)
+                        .withEnv("username", postgresqlProperties.user)
+                        .withEnv("password", postgresqlProperties.password)
+                        .withEnv("url", "jdbc:postgresql://localhost:5432/" + postgresqlProperties.database)
+                        .withEnv("type", "postgresql")
+                        .withEnv("driver", "org.postgresql.Driver")
                         .waitingFor(artifactoryWaitStrategy);
 
         network.ifPresent(container::withNetwork);
