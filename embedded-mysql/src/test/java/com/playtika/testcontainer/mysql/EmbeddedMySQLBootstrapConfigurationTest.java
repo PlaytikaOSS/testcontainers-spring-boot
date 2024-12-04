@@ -49,12 +49,12 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
     ToxiproxyContainer.ContainerProxy mysqlContainerProxy;
 
     @Test
-    public void shouldConnectToMySQL() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.0.");
+    public void shouldConnectToMySQL() {
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.1.");
     }
 
     @Test
-    public void shouldSaveAndGetUnicode() throws Exception {
+    public void shouldSaveAndGetUnicode() {
         jdbcTemplate.execute("CREATE TABLE employee(id INT, name VARCHAR(64));");
         jdbcTemplate.execute("insert into employee (id, name) values (1, 'some data \uD83D\uDE22');");
 
@@ -80,7 +80,7 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldInitDBForMySQL() throws Exception {
+    public void shouldInitDBForMySQL() {
         assertThat(jdbcTemplate.queryForObject("select count(first_name) from users where first_name = 'Sam' ", Integer.class)).isEqualTo(1);
     }
 
@@ -95,7 +95,7 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
     }
 
     @Test
-    public void shouldSetupDependsOnForAllDataSources() throws Exception {
+    public void shouldSetupDependsOnForAllDataSources() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
         assertThat(beanNamesForType)
                 .as("Custom datasource should be present")
