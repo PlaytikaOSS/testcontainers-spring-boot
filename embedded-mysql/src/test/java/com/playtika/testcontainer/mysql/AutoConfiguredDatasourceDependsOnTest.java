@@ -35,12 +35,12 @@ public class AutoConfiguredDatasourceDependsOnTest {
     JdbcTemplate jdbcTemplate;
 
     @Test
-    public void shouldConnectToMySQL() throws Exception {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.0.");
+    public void shouldConnectToMySQL() {
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.1.");
     }
 
     @Test
-    public void shouldSetupDependsOnForAllDataSources() throws Exception {
+    public void shouldSetupDependsOnForAllDataSources() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
         assertThat(beanNamesForType)
                 .as("Auto-configured datasource should be present")
