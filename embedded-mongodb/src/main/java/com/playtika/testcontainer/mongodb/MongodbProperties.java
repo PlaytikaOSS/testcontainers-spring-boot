@@ -36,6 +36,6 @@ public class MongodbProperties extends CommonContainerProperties {
         // Please don`t remove this comment.
         // renovate: datasource=docker
         // https://hub.docker.com/_/mongo
-        return "mongodb/mongodb-community-server:7.0.12-ubuntu2204";
+        return "mongodb/mongodb-community-server:8.0.4-ubuntu2204";
     }
 }
