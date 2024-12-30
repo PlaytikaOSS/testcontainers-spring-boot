@@ -37,7 +37,7 @@ public class MountVolumesTest {
             assertThat(it).hasSingleBean(CommonContainerProperties.class);
             CommonContainerProperties properties = it.getBean(CommonContainerProperties.class);
             assertThat(properties).isNotNull();
-            assertThat(properties.getMountVolumes()).hasSize(0);
+            assertThat(properties.getMountVolumes()).isEmpty();
         });
     }
 
@@ -71,7 +71,7 @@ public class MountVolumesTest {
                .run(it -> {
                    assertThat(it).hasFailed();
                    assertThat(it).getFailure().hasCauseExactlyInstanceOf(BindException.class);
-                   assertThat(it).getFailure().getCause()
+                   assertThat(it).getFailure().cause()
                                  .hasMessage("Failed to bind properties under 'embedded.postgresql.mount-volumes[0].mode' to org.testcontainers.containers.BindMode");
                });
     }
@@ -82,8 +82,8 @@ public class MountVolumesTest {
                .run(it -> {
                    assertThat(it).hasFailed();
                    assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class);
-                   assertThat(it).getFailure().getRootCause()
-                                 .hasMessageContaining("on field 'containerPath': rejected value [null];");
+                   assertThat(it).getFailure().rootCause()
+                                 .hasMessageContaining("on field 'mountVolumes[0].containerPath': rejected value [null];");
                });
     }
 
@@ -94,7 +94,7 @@ public class MountVolumesTest {
             .run(it -> {
                 assertThat(it).hasFailed();
                 assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class)
-                              .getRootCause().hasMessageContaining("on field 'containerPath': rejected value [];");
+                              .rootCause().hasMessageContaining("on field 'mountVolumes[0].containerPath': rejected value [];");
             });
     }
 
@@ -104,7 +104,7 @@ public class MountVolumesTest {
                .run(it -> {
                    assertThat(it).hasFailed();
                    assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class)
-                                 .getRootCause().hasMessageContaining("on field 'hostPath': rejected value [null];");
+                                 .rootCause().hasMessageContaining("on field 'mountVolumes[0].hostPath': rejected value [null];");
                });
     }
 
@@ -115,7 +115,7 @@ public class MountVolumesTest {
             .run(it -> {
                 assertThat(it).hasFailed();
                 assertThat(it).getFailure().hasRootCauseExactlyInstanceOf(BindValidationException.class)
-                              .getRootCause().hasMessageContaining("on field 'hostPath': rejected value [];");
+                              .rootCause().hasMessageContaining("on field 'mountVolumes[0].hostPath': rejected value [];");
             });
     }
 
