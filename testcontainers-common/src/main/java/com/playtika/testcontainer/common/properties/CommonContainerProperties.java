@@ -77,6 +77,8 @@ public abstract class CommonContainerProperties {
     @Valid
     private List<MountVolume> mountVolumes = new ArrayList<>();
 
+    private List<Integer> additionalPorts = new ArrayList<>();
+
     /**
      * The Linux capabilities that should be enabled.
      */

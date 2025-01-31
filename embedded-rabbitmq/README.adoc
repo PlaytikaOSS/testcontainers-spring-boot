@@ -21,8 +21,9 @@
 * `embedded.rabbitmq.dockerImage` `(default is 'rabbitmq:4.0-alpine')`
 ** Image versions on https://hub.docker.com/_/rabbitmq?tab=tags[dockerhub]
 * `embedded.rabbitmq.waitTimeoutInSeconds` `(default is 60 seconds)`
-* `embedded.rabbitmq.enabledPlugins` `(list of strings, e.g. `rabbitmq_consistent_hash_exchange`, defaults to an empty list)`
+* `embedded.rabbitmq.enabledPlugins` (list of strings, e.g. `rabbitmq_consistent_hash_exchange`; defaults to an empty list)`
 * `embedded.toxiproxy.proxies.rabbitmq.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-rabbitmq` container.
+* `embedded.rabbitmq.additionalPorts` (list of integers to expose from the container, e.g. `5552`; defaults to an empty list)`
 
 
 ==== Produces
@@ -39,5 +40,24 @@
 * `embedded.rabbitmq.internalPort`
 * `embedded.rabbitmq.internalHttpPort`
 * Bean `ToxiproxyContainer.ContainerProxy rabbitmqContainerProxy`
+* `embedded.rabbitmq.additionalPorts.x` (where `x` is the port from the container, e.g. `5552`; the value is the mapped port within the Docker container)
 
-//TODO: example missing
+==== Example
+
+===== RabbitMQ Streams
+To enable the RabbitMQ streams plugin and expose port 5552 (the Streams default protocol port) set:
+
+./src/test/resources/bootstrap.properties
+----
+embedded.rabbitmq.enabled-plugins[0]=rabbitmq_stream
+embedded.rabbitmq.additionalPorts[0]=5552
+----
+
+./src/test/resources/application.properties
+----
+spring.rabbitmq.stream.host=${embedded.rabbitmq.host}
+spring.rabbitmq.stream.port=${embedded.rabbitmq.additionalPorts.5552}
+spring.rabbitmq.stream.username=${embedded.rabbitmq.user}
+spring.rabbitmq.stream.password=${embedded.rabbitmq.password}
+spring.rabbitmq.stream.virtual-host=${embedded.rabbitmq.vhost}
+----
