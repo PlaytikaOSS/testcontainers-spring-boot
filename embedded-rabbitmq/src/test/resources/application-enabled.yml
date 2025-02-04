@@ -1,0 +1,7 @@
+spring:
+  rabbitmq:
+    host: ${embedded.rabbitmq.host}
+    port: ${embedded.rabbitmq.port}
+    username: ${embedded.rabbitmq.user}
+    password: ${embedded.rabbitmq.password}
+    virtual-host: ${embedded.rabbitmq.vhost}
