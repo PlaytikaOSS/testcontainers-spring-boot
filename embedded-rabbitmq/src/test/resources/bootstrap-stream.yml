@@ -1,0 +1,6 @@
+embedded:
+  rabbitmq:
+    enabled-plugins:
+      - rabbitmq_stream
+    additionalPorts:
+      - 5552
