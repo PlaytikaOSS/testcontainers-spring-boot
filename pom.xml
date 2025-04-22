@@ -86,6 +86,7 @@
         <module>embedded-mailhog</module>
         <module>embedded-aerospike-enterprise</module>
         <module>embedded-spicedb</module>
+        <module>embedded-temporal</module>
     </modules>
 
     <properties>

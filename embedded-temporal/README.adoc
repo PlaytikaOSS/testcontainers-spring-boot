@@ -1,0 +1,30 @@
+=== embedded-temporal
+
+==== Maven dependency
+
+.pom.xml
+[source,xml]
+----
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-temporal</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+==== Consumes (via `bootstrap.properties`)
+
+* `embedded.temporal.enabled` `(true|false, default is true)`
+* `embedded.temporal.reuseContainer` `(true|false, default is false)`
+* `embedded.temporal.docker-image` `(default is '1.27')`
+** Image versions on https://hub.docker.com/r/temporalio/admin-tools/tags
+* `embedded.temporal.ui-enabled` `(true|false, default is false)`
+
+==== Produces
+
+* `embedded.temporal.host`
+* `embedded.temporal.port`
+* `embedded.temporal.networkAlias`
+* `embedded.temporal.internalPort`
+* `embedded.temporal.uiPort`
+** When UI is enabled
