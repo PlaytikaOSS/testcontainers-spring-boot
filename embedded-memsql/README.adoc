@@ -16,7 +16,7 @@
 
 * `embedded.memsql.enabled` `(true|false, default is true)`
 * `embedded.memsql.reuseContainer` `(true|false, default is false)`
-* `embedded.memsql.dockerImage` `(default is 'ghcr.io/singlestore-labs/singlestoredb-dev:0.2.51')`
+* `embedded.memsql.dockerImage` `(default is 'ghcr.io/singlestore-labs/singlestoredb-dev:8.9.10')`
 ** Image versions on https://github.com/singlestore-labs/singlestoredb-dev-image[gitHub]
 [NOTE]
 ====
