@@ -35,6 +35,6 @@ public class RedisProperties extends CommonContainerProperties implements Initia
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "redis:7.4.3-alpine";
+        return "redis:8.0.0-alpine";
     }
 }
