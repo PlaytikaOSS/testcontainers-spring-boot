@@ -1,0 +1,61 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.temporal.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enables or disables the Temporal container.",
+      "defaultValue": "true"
+    },
+    {
+      "name": "embedded.temporal.docker-image",
+      "type": "java.lang.String",
+      "description": "The Temporal image.",
+      "defaultValue": "1.27"
+    },
+    {
+      "name": "embedded.temporal.ui-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enables or disables the Temporal UI.",
+      "defaultValue": "false"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.temporal.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables the Temporal container."
+        },
+        {
+          "value": "false",
+          "description": "Disables the Temporal container."
+        }
+      ]
+    },
+    {
+      "name": "embedded.temporal.docker-image",
+      "values": [
+        {
+          "value": "1.27",
+          "description": "Default Temporal image Ref https://hub.docker.com/r/temporalio/admin-tools/tags for further info."
+        }
+      ]
+    },
+    {
+      "name": "embedded.temporal.ui-enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables the Temporal UI."
+        },
+        {
+          "value": "false",
+          "description": "Disables the Temporal UI."
+        }
+      ]
+    }
+  ]
+}
