@@ -37,9 +37,6 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     @Autowired
     CouchbaseOperations couchbaseOperations;
 
-    @Autowired
-    CouchbaseConfigurationProperties couchbaseConfigurationProperties;
-
     @Test
     public void springDataShouldWork() {
         String key = "test::1";

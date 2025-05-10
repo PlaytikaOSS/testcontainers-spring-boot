@@ -38,9 +38,8 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
     ToxiproxyContainer.ContainerProxy cockroachContainerProxy(ToxiproxyContainer toxiproxyContainer,
                                                                 @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer,
-                                                                CockroachDBProperties properties,
                                                                 ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(cockroachContainer, properties.getPort());
+        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(cockroachContainer, CockroachDBProperties.PORT);
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.cockroach.toxiproxy.host", proxy.getContainerIpAddress());
@@ -60,21 +59,19 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
                                           Optional<Network> network) throws Exception {
 
         CockroachContainer cockroachContainer = new CockroachContainer(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort())
                 .withInitScript(properties.getInitScriptPath())
                 .withNetworkAliases(COCKROACHDB_NETWORK_ALIAS);
 
         network.ifPresent(cockroachContainer::withNetwork);
 
         cockroachContainer = (CockroachContainer) configureCommonsAndStart(cockroachContainer, properties, log);
-        registerCockroachDBEnvironment(cockroachContainer, environment, properties);
+        registerCockroachDBEnvironment(cockroachContainer, environment);
         return cockroachContainer;
     }
 
     private void registerCockroachDBEnvironment(CockroachContainer cockroach,
-                                                ConfigurableEnvironment environment,
-                                                CockroachDBProperties properties) {
-        Integer mappedPort = cockroach.getMappedPort(properties.getPort());
+                                                ConfigurableEnvironment environment) {
+        Integer mappedPort = cockroach.getMappedPort(CockroachDBProperties.PORT);
         String host = cockroach.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -84,7 +81,7 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
         map.put("embedded.cockroach.user", cockroach.getUsername());
         map.put("embedded.cockroach.password", cockroach.getPassword());
         map.put("embedded.cockroach.networkAlias", COCKROACHDB_NETWORK_ALIAS);
-        map.put("embedded.cockroach.internalPort", properties.getPort());
+        map.put("embedded.cockroach.internalPort", CockroachDBProperties.PORT);
 
         String jdbcURL = "jdbc:postgresql://{}:{}/{}";
         log.info("Started CockroachDB server. Connection details: {}, " +
