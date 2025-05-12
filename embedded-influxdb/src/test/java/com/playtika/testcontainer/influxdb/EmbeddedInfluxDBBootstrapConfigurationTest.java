@@ -6,7 +6,9 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -14,7 +16,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {TestApplication.class})
+@SpringBootTest
 class EmbeddedInfluxDBBootstrapConfigurationTest {
 
     @Autowired
@@ -46,5 +48,10 @@ class EmbeddedInfluxDBBootstrapConfigurationTest {
 
     private String getUrl() {
         return "http://" + influxDBProperties.getHost() + ":" + influxDBProperties.getPort();
+    }
+
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
     }
 }

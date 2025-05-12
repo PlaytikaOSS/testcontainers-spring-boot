@@ -10,8 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.cockroach")
 public class CockroachDBProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_COCKROACHDB = "embeddedCockroachDb";
-
-    int port = 26257;
+    static final int PORT = 26257;
 
     String initScriptPath;
 

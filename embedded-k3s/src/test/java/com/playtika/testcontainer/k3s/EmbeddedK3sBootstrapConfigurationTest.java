@@ -6,8 +6,8 @@ import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -15,11 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(
-        classes = {
-                EmbeddedK3sBootstrapConfigurationTest.TestApplication.class
-        }
-)
+@SpringBootTest
 class EmbeddedK3sBootstrapConfigurationTest {
 
     @Autowired
@@ -43,7 +39,7 @@ class EmbeddedK3sBootstrapConfigurationTest {
         }
     }
 
-    @SpringBootApplication
-    public static class TestApplication {
+    @Configuration
+    static class TestConfiguration {
     }
 }

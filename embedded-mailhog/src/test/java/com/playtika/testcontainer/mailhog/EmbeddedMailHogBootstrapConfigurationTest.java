@@ -4,7 +4,9 @@ import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,7 +20,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
-        classes = TestApplication.class,
         properties = {
                 "embedded.toxiproxy.proxies.mailhog.enabled=true"
         }
@@ -79,4 +80,8 @@ class EmbeddedMailHogBootstrapConfigurationTest {
         return JsonPath.parse(response.body()).read("$.items[*].Content.Headers.Subject[*]");
     }
 
+    @EnableAutoConfiguration
+    @Configuration
+    static class TestConfiguration {
+    }
 }

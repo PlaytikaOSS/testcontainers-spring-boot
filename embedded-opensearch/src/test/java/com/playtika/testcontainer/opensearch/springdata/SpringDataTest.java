@@ -34,11 +34,11 @@ public class SpringDataTest extends EmbeddedOpenSearchBootstrapConfigurationTest
         String key = "test::1";
         String value = "myvalue";
         assertThat(documentRepository).isNotNull();
-        assertThat(documentRepository.findById(key).isPresent()).isFalse();
+        assertThat(documentRepository.findById(key)).isEmpty();
 
         TestDocument testDocument = saveDocument(key, value);
 
-        assertThat(documentRepository.findById(key).get()).isEqualTo(testDocument);
+        assertThat(documentRepository.findById(key)).contains(testDocument);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class SpringDataTest extends EmbeddedOpenSearchBootstrapConfigurationTest
 
         List<TestDocument> resultList = documentRepository.findByTitle(title);
 
-        assertThat(resultList.size()).isEqualTo(2);
+        assertThat(resultList).hasSize(2);
     }
 
     @Test
