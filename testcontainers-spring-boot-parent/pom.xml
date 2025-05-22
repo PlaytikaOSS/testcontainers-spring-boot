@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.11</version>
+        <version>3.1.12</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,9 +15,9 @@
 
 
     <properties>
-        <spring.boot.version>3.4.4</spring.boot.version>
+        <spring.boot.version>3.4.5</spring.boot.version>
         <spring.cloud.version>2024.0.1</spring.cloud.version>
-        <spring.cloud.gcp.version>6.1.1</spring.cloud.gcp.version>
+        <spring.cloud.gcp.version>6.2.0</spring.cloud.gcp.version>
         <equalsverifier.version>4.0</equalsverifier.version>
         <junit-jupiter.version>5.12.2</junit-jupiter.version>
         <spring.cloud.azure.version>5.22.0</spring.cloud.azure.version>
