@@ -25,6 +25,6 @@ public class MSSQLServerProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "mcr.microsoft.com/mssql/server:2022-latest";
+        return "mcr.microsoft.com/mssql/server:2025-latest";
     }
 }
