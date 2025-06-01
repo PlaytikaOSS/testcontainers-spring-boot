@@ -14,14 +14,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SolrContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -56,11 +54,18 @@ public class EmbeddedSolrBootstrapConfiguration {
         return proxy;
     }
 
-    @Bean(name = BEAN_NAME_EMBEDDED_SOLR, destroyMethod = "stop")
-    public GenericContainer<?> solrContainer(ConfigurableEnvironment environment,
-                                             SolrProperties properties,
-                                             Optional<Network> network) {
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "solr")
+    public DynamicPropertyRegistrar solrToxiProxyDynamicPropertyRegistrar(@Qualifier("solrContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.solr.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.solr.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.solr.toxiproxy.proxyName", proxy::getName);
+        };
+    }
 
+    @Bean(name = BEAN_NAME_EMBEDDED_SOLR, destroyMethod = "stop")
+    public GenericContainer<?> solrContainer(SolrProperties properties, Optional<Network> network) {
         SolrContainer solrContainer = new SolrContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .withNetworkAliases(SOLR_NETWORK_ALIAS);
@@ -69,27 +74,19 @@ public class EmbeddedSolrBootstrapConfiguration {
 
         solrContainer = (SolrContainer) configureCommonsAndStart(solrContainer, properties, log);
 
-        registerNatsEnvironment(solrContainer, environment, properties);
         return solrContainer;
     }
 
-    private void registerNatsEnvironment(GenericContainer<?> natsContainer,
-                                         ConfigurableEnvironment environment,
-                                         SolrProperties properties) {
-        Integer port = natsContainer.getMappedPort(properties.getPort());
-        String host = natsContainer.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-
-        map.put("embedded.solr.host", host);
-        map.put("embedded.solr.port", port);
-        map.put("embedded.solr.networkAlias", SOLR_NETWORK_ALIAS);
-        map.put("embedded.solr.internalPort", properties.getPort());
-
-        log.info("Started Solr server. Connection details {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedSolrInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar solrDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_SOLR) GenericContainer<?> natsContainer, SolrProperties properties) {
+        return registry -> {
+            Integer port = natsContainer.getMappedPort(properties.getPort());
+            String host = natsContainer.getHost();
+            registry.add("embedded.solr.host", () -> host);
+            registry.add("embedded.solr.port", () -> port);
+            registry.add("embedded.solr.networkAlias", () -> SOLR_NETWORK_ALIAS);
+            registry.add("embedded.solr.internalPort", properties::getPort);
+        };
     }
 
 }

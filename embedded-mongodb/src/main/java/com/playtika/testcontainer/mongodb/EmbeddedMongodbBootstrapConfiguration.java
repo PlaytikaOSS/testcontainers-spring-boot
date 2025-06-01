@@ -14,8 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.core.io.ClassPathResource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
@@ -66,8 +65,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
     }
 
     @Bean(value = BEAN_NAME_EMBEDDED_MONGODB, destroyMethod = "stop")
-    public GenericContainer<?> mongodb(ConfigurableEnvironment environment,
-                                       MongodbProperties properties,
+    public GenericContainer<?> mongodb(MongodbProperties properties,
                                        Optional<Network> network) throws IOException, InterruptedException {
 
         GenericContainer<?> mongodb;
@@ -102,7 +100,6 @@ public class EmbeddedMongodbBootstrapConfiguration {
         network.ifPresent(mongodb::withNetwork);
 
         mongodb = configureCommonsAndStart(mongodb, properties, log);
-        registerMongodbEnvironment(mongodb, environment, properties);
         return mongodb;
     }
 
@@ -128,5 +125,36 @@ public class EmbeddedMongodbBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMongoInfo", map);
         environment.getPropertySources().addFirst(propertySource);
+    }
+    @Bean
+    public DynamicPropertyRegistrar mongodbDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb,
+            MongodbProperties properties) {
+        return registry -> {
+            registry.add("embedded.mongodb.port", () -> mongodb.getMappedPort(properties.getPort()));
+            registry.add("embedded.mongodb.host", mongodb::getHost);
+            registry.add("embedded.mongodb.username", properties::getUsername);
+            registry.add("embedded.mongodb.password", properties::getPassword);
+            registry.add("embedded.mongodb.database", properties::getDatabase);
+            registry.add("embedded.mongodb.networkAlias", () -> MONGODB_NETWORK_ALIAS);
+            registry.add("embedded.mongodb.internalPort", properties::getPort);
+        };
+    }
+
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "mongodb")
+    public DynamicPropertyRegistrar mongodbToxiProxyDynamicPropertyRegistrar(
+            @Qualifier("mongodbContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.mongodb.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.mongodb.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.mongodb.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    MongodbStatusCheck mongodbStartupCheckStrategy(MongodbProperties properties) {
+        return new MongodbStatusCheck(properties);
     }
 }

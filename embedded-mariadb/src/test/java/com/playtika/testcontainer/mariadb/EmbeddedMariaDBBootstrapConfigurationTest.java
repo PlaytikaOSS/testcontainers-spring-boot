@@ -84,6 +84,7 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
+        //refactor to use value fields
         assertThat(environment.getProperty("embedded.mariadb.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.mariadb.schema")).isNotEmpty();

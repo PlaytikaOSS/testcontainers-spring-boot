@@ -15,8 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -63,50 +62,50 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
                 "artifactory");
 
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.artifactory", "embeddedArtifactoryToxiproxyInfo", environment);
+        log.info("Started Artifactory ToxiProxy connection details host={}, port={}, proxyName={}", proxy.getContainerIpAddress(), proxy.getProxyPort(), proxy.getName());
 
         return proxy;
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "artifactory")
+    public DynamicPropertyRegistrar artifactoryToxiProxyDynamicPropertyRegistrar(@Qualifier("artifactoryContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.artifactory.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.artifactory.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.artifactory.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
     @Bean(name = ARTIFACTORY_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> artifactory(ConfigurableEnvironment environment,
-                                           ArtifactoryProperties properties,
+    public GenericContainer<?> artifactory(ArtifactoryProperties properties,
                                            WaitStrategy artifactoryWaitStrategy,
                                            Optional<Network> network) {
-
         GenericContainer<?> container =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getRestApiPort(), properties.getGeneralPort())
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias(), ARTIFACTORY_NETWORK_ALIAS)
                         .waitingFor(artifactoryWaitStrategy);
-
         network.ifPresent(container::withNetwork);
         configureCommonsAndStart(container, properties, log);
-
-        registerEnvironment(container, environment, properties);
-
+        Integer mappedPort = container.getMappedPort(properties.generalPort);
+        String host = container.getHost();
+        log.info("Started Artifactory server. Connection details: host={}, port={}, username={}, password={}, staticNetworkAlias={}, internalRestApiPort={}, internalGeneralPort={}",
+                host, mappedPort, properties.getUsername(), properties.getPassword(), ARTIFACTORY_NETWORK_ALIAS, properties.getRestApiPort(), properties.getGeneralPort());
         return container;
     }
 
-    private void registerEnvironment(GenericContainer<?> artifactory,
-                                     ConfigurableEnvironment environment,
-                                     ArtifactoryProperties properties) {
-
-        Integer mappedPort = artifactory.getMappedPort(properties.generalPort);
-        String host = artifactory.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.artifactory.host", host);
-        map.put("embedded.artifactory.port", mappedPort);
-        map.put("embedded.artifactory.username", properties.getUsername());
-        map.put("embedded.artifactory.password", properties.getPassword());
-        map.put("embedded.artifactory.staticNetworkAlias", ARTIFACTORY_NETWORK_ALIAS);
-        map.put("embedded.artifactory.internalRestApiPort", properties.getRestApiPort());
-        map.put("embedded.artifactory.internalGeneralPort", properties.getGeneralPort());
-
-        log.info("Started Artifactory server. Connection details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedArtifactoryInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar artifactoryDynamicPropertyRegistrar(@Qualifier(ARTIFACTORY_BEAN_NAME) GenericContainer<?> artifactory, ArtifactoryProperties properties) {
+        return registry -> {
+            registry.add("embedded.artifactory.host", artifactory::getHost);
+            registry.add("embedded.artifactory.port", () -> artifactory.getMappedPort(properties.generalPort));
+            registry.add("embedded.artifactory.username", properties::getUsername);
+            registry.add("embedded.artifactory.password", properties::getPassword);
+            registry.add("embedded.artifactory.staticNetworkAlias", () -> ARTIFACTORY_NETWORK_ALIAS);
+            registry.add("embedded.artifactory.internalRestApiPort", properties::getRestApiPort);
+            registry.add("embedded.artifactory.internalGeneralPort", properties::getGeneralPort);
+        };
     }
 }

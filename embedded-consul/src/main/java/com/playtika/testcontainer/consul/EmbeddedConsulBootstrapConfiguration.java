@@ -14,15 +14,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -57,10 +55,18 @@ public class EmbeddedConsulBootstrapConfiguration {
         return proxy;
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "consul")
+    public DynamicPropertyRegistrar consulToxiProxyDynamicPropertyRegistrar(@Qualifier("consulContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.consul.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.consul.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.consul.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
-    public GenericContainer<?> consulContainer(ConfigurableEnvironment environment,
-                                               ConsulProperties properties,
-                                               Optional<Network> network) {
+    public GenericContainer<?> consulContainer(ConsulProperties properties, Optional<Network> network) {
         GenericContainer<?> consul = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .waitingFor(
@@ -78,24 +84,16 @@ public class EmbeddedConsulBootstrapConfiguration {
         }
 
         consul = configureCommonsAndStart(consul, properties, log);
-        registerConsulEnvironment(consul, environment, properties);
         return consul;
     }
 
-    private void registerConsulEnvironment(GenericContainer<?> consul, ConfigurableEnvironment environment,
-                                           ConsulProperties properties) {
-        Integer mappedPort = consul.getMappedPort(properties.getPort());
-        String host = consul.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.consul.port", mappedPort);
-        map.put("embedded.consul.host", host);
-        map.put("embedded.consul.networkAlias", CONSUL_NETWORK_ALIAS);
-        map.put("embedded.consul.internalPort", properties.getPort());
-
-        log.info("Started consul. Connection Details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedConsulInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar consulDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_CONSUL) GenericContainer<?> consul, ConsulProperties properties) {
+        return registry -> {
+            registry.add("embedded.consul.port", () -> consul.getMappedPort(properties.getPort()));
+            registry.add("embedded.consul.host", consul::getHost);
+            registry.add("embedded.consul.networkAlias", () -> CONSUL_NETWORK_ALIAS);
+            registry.add("embedded.consul.internalPort", properties::getPort);
+        };
     }
 }

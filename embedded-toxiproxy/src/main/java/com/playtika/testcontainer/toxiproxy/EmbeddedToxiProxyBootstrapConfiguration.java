@@ -5,19 +5,16 @@ import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Slf4j
 @Configuration
@@ -41,15 +38,23 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
 
     @Bean(name = "toxiproxy", destroyMethod = "stop")
     ToxiproxyContainer toxiproxy(ToxiProxyProperties toxiProxyProperties,
-                                 Network network,
-                                 ConfigurableEnvironment environment) {
+                                 Network network) {
         ToxiproxyContainer toxiproxyContainer = new ToxiproxyContainer(ContainerUtils.getDockerImageName(toxiProxyProperties))
                 .withNetwork(network)
                 .withNetworkAliases(TOXIPROXY_NETWORK_ALIAS, TOXIPROXY_NETWORK_ALIAS_OLD);
 
         toxiproxyContainer = (ToxiproxyContainer) ContainerUtils.configureCommonsAndStart(toxiproxyContainer, toxiProxyProperties, log);
-        registerEnvironment(toxiproxyContainer, environment);
         return toxiproxyContainer;
+    }
+
+    @Bean
+    public DynamicPropertyRegistrar toxiproxyDynamicPropertyRegistrar(
+            @Qualifier("toxiproxy") ToxiproxyContainer toxiproxy) {
+        return registry -> {
+            registry.add("embedded.toxiproxy.host", toxiproxy::getHost);
+            registry.add("embedded.toxiproxy.controlPort", () -> toxiproxy.getControlPort());
+            registry.add("embedded.toxiproxy.networkAlias", () -> TOXIPROXY_NETWORK_ALIAS);
+        };
     }
 
     @Bean

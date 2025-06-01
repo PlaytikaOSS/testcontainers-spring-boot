@@ -87,6 +87,7 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
 
     @Test
     void propertiesAreAvailable() {
+        //refactor to use value fields
         assertThat(environment.getProperty("embedded.postgresql.port")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.host")).isNotEmpty();
         assertThat(environment.getProperty("embedded.postgresql.schema")).isNotEmpty();

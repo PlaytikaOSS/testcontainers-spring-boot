@@ -14,14 +14,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.ClickHouseContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
@@ -56,48 +54,46 @@ public class EmbeddedClickHouseBootstrapConfiguration {
         return proxy;
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "clickhouse")
+    public DynamicPropertyRegistrar clickhouseToxiProxyDynamicPropertyRegistrar(@Qualifier("clickhouseContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.clickhouse.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.clickhouse.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.clickhouse.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_CLICK_HOUSE, destroyMethod = "stop")
-    public ClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
-                                                   ClickHouseProperties properties,
+    public ClickHouseContainer clickHouseContainer(ClickHouseProperties properties,
                                                    Optional<Network> network) {
         ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties))
                 .withInitScript(properties.getInitScriptPath())
                 .withNetworkAliases(CLICKHOUSE_NETWORK_ALIAS);
-
         network.ifPresent(clickHouseContainer::withNetwork);
-
         String username = !StringUtils.hasLength(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
         String password = !StringUtils.hasLength(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
         clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
         clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", password == null ? "" : password);
-
         clickHouseContainer = (ClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
-
-        registerClickHouseEnvironment(clickHouseContainer, environment, properties, username, password);
-
+        Integer mappedPort = clickHouseContainer.getMappedPort(properties.port);
+        String host = clickHouseContainer.getHost();
+        log.info("Started ClickHouse server. Connection details: schema=default, host={}, port={}, user={}, password={}, networkAlias={}, internalPort={}",
+                host, mappedPort, username, password, CLICKHOUSE_NETWORK_ALIAS, properties.getPort());
         return clickHouseContainer;
     }
 
-    private void registerClickHouseEnvironment(ClickHouseContainer clickHouseContainer,
-                                               ConfigurableEnvironment environment,
-                                               ClickHouseProperties properties,
-                                               String username, String password) {
-        Integer mappedPort = clickHouseContainer.getMappedPort(properties.port);
-        String host = clickHouseContainer.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.clickhouse.schema", "default");
-        map.put("embedded.clickhouse.host", host);
-        map.put("embedded.clickhouse.port", mappedPort);
-        map.put("embedded.clickhouse.user", username);
-        map.put("embedded.clickhouse.password", password);
-        map.put("embedded.clickhouse.networkAlias", CLICKHOUSE_NETWORK_ALIAS);
-        map.put("embedded.clickhouse.internalPort", properties.getPort());
-
-        log.info("Started ClickHouse server. Connection details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedClickHouseInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar clickhouseDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_CLICK_HOUSE) ClickHouseContainer clickHouseContainer, ClickHouseProperties properties) {
+        return registry -> {
+            registry.add("embedded.clickhouse.schema", () -> "default");
+            registry.add("embedded.clickhouse.host", clickHouseContainer::getHost);
+            registry.add("embedded.clickhouse.port", () -> clickHouseContainer.getMappedPort(properties.port));
+            registry.add("embedded.clickhouse.user", () -> !StringUtils.hasLength(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser());
+            registry.add("embedded.clickhouse.password", () -> !StringUtils.hasLength(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword());
+            registry.add("embedded.clickhouse.networkAlias", () -> CLICKHOUSE_NETWORK_ALIAS);
+            registry.add("embedded.clickhouse.internalPort", properties::getPort);
+        };
     }
 
 }

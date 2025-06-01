@@ -14,13 +14,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -55,45 +53,44 @@ public class EmbeddedNeo4jBootstrapConfiguration {
         return proxy;
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "neo4j")
+    public DynamicPropertyRegistrar neo4jToxiProxyDynamicPropertyRegistrar(@Qualifier("neo4jContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.neo4j.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.neo4j.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.neo4j.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
-    public Neo4jContainer neo4j(ConfigurableEnvironment environment,
-                                Neo4jProperties properties,
-                                Optional<Network> network) {
+    public Neo4jContainer neo4j(Neo4jProperties properties, Optional<Network> network) {
         Neo4jContainer neo4j = new Neo4jContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withAdminPassword(properties.password)
                 .withNetworkAliases(NEO4J_NETWORK_ALIAS);
 
         network.ifPresent(neo4j::withNetwork);
         neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
-        registerNeo4jEnvironment(neo4j, environment, properties);
         return neo4j;
     }
 
-    private void registerNeo4jEnvironment(Neo4jContainer neo4j,
-                                          ConfigurableEnvironment environment,
-                                          Neo4jProperties properties) {
-        Integer httpsPort = neo4j.getMappedPort(properties.httpsPort);
-        Integer httpPort = neo4j.getMappedPort(properties.httpPort);
-        Integer boltPort = neo4j.getMappedPort(properties.boltPort);
-        String host = neo4j.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.neo4j.httpsPort", httpsPort);
-        map.put("embedded.neo4j.httpPort", httpPort);
-        map.put("embedded.neo4j.boltPort", boltPort);
-        map.put("embedded.neo4j.host", host);
-        map.put("embedded.neo4j.password", properties.getPassword());
-        map.put("embedded.neo4j.user", properties.getUser());
-        map.put("embedded.neo4j.networkAlias", NEO4J_NETWORK_ALIAS);
-        map.put("embedded.neo4j.internalHttpsPort", properties.getHttpsPort());
-        map.put("embedded.neo4j.internalHttpPort", properties.getHttpPort());
-        map.put("embedded.neo4j.internalBoltPort", properties.getBoltPort());
-
-        log.info("Started neo4j server. Connection details {},  " +
-                        "Admin UI: http://localhost:{}, user: {}, password: {}",
-                map, httpPort, properties.getUser(), properties.getPassword());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedNeo4jInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar neo4jDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_NEO4J) Neo4jContainer neo4j, Neo4jProperties properties) {
+        return registry -> {
+            Integer httpsPort = neo4j.getMappedPort(properties.httpsPort);
+            Integer httpPort = neo4j.getMappedPort(properties.httpPort);
+            Integer boltPort = neo4j.getMappedPort(properties.boltPort);
+            String host = neo4j.getHost();
+            registry.add("embedded.neo4j.httpsPort", () -> httpsPort);
+            registry.add("embedded.neo4j.httpPort", () -> httpPort);
+            registry.add("embedded.neo4j.boltPort", () -> boltPort);
+            registry.add("embedded.neo4j.host", () -> host);
+            registry.add("embedded.neo4j.password", properties::getPassword);
+            registry.add("embedded.neo4j.user", properties::getUser);
+            registry.add("embedded.neo4j.networkAlias", () -> NEO4J_NETWORK_ALIAS);
+            registry.add("embedded.neo4j.internalHttpsPort", properties::getHttpsPort);
+            registry.add("embedded.neo4j.internalHttpPort", properties::getHttpPort);
+            registry.add("embedded.neo4j.internalBoltPort", properties::getBoltPort);
+        };
     }
 }

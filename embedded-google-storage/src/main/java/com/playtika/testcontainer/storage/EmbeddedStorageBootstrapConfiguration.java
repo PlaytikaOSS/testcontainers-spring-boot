@@ -16,14 +16,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -59,11 +57,18 @@ public class EmbeddedStorageBootstrapConfiguration {
         return proxy;
     }
 
-    @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER, destroyMethod = "stop")
-    GenericContainer<?> storageServer(ConfigurableEnvironment environment,
-                                      StorageProperties properties,
-                                      Optional<Network> network) throws IOException {
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "google.storage")
+    public DynamicPropertyRegistrar googleStorageToxiProxyDynamicPropertyRegistrar(@Qualifier("googleStorageContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.google.storage.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.google.storage.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.google.storage.toxiproxy.proxyName", proxy::getName);
+        };
+    }
 
+    @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER, destroyMethod = "stop")
+    public GenericContainer<?> storageServer(StorageProperties properties, Optional<Network> network) throws IOException {
         GenericContainer<?> storageContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(StorageProperties.PORT)
                 .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
@@ -80,8 +85,20 @@ public class EmbeddedStorageBootstrapConfiguration {
 
         storageContainer = configureCommonsAndStart(storageContainer, properties, log);
         prepareContainerConfiguration(storageContainer);
-        registerStorageEnvironment(storageContainer, environment, properties);
         return storageContainer;
+    }
+
+    @Bean
+    public DynamicPropertyRegistrar googleStorageDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> container, StorageProperties properties) {
+        return registry -> {
+            registry.add("embedded.google.storage.host", container::getHost);
+            registry.add("embedded.google.storage.port", () -> container.getMappedPort(StorageProperties.PORT));
+            registry.add("embedded.google.storage.endpoint", () -> buildContainerEndpoint(container));
+            registry.add("embedded.google.storage.project-id", properties::getProjectId);
+            registry.add("embedded.google.storage.bucket-location", properties::getBucketLocation);
+            registry.add("embedded.google.storage.networkAlias", () -> GOOGLE_STORAGE_NETWORK_ALIAS);
+            registry.add("embedded.google.storage.internalPort", () -> StorageProperties.PORT);
+        };
     }
 
     private void prepareContainerConfiguration(GenericContainer<?> container) throws IOException {
@@ -90,26 +107,6 @@ public class EmbeddedStorageBootstrapConfiguration {
         log.info("Google Cloud Fake Storage Server with externalUrl={}", containerEndpoint);
         new GoogleCloudStorageHttpClient()
                 .sendUpdateConfigRequest(containerEndpoint);
-    }
-
-    private void registerStorageEnvironment(
-            GenericContainer<?> container,
-            ConfigurableEnvironment environment,
-            StorageProperties properties) {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.google.storage.host", container.getHost());
-        map.put("embedded.google.storage.port", container.getMappedPort(StorageProperties.PORT));
-        map.put("embedded.google.storage.endpoint", buildContainerEndpoint(container));
-        map.put("embedded.google.storage.project-id", properties.getProjectId());
-        map.put("embedded.google.storage.bucket-location", properties.getBucketLocation());
-        map.put("embedded.google.storage.networkAlias", GOOGLE_STORAGE_NETWORK_ALIAS);
-        map.put("embedded.google.storage.internalPort", StorageProperties.PORT);
-
-        log.info("Started Google Cloud Fake Storage Server. Connection details: {}, ", map);
-        log.info("Consult with the doc https://github.com/fsouza/fake-gcs-server for more details");
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedGoogleStorageInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
     }
 
     @Bean

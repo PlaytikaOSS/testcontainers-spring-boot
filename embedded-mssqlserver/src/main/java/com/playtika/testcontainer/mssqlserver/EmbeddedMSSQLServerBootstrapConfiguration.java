@@ -14,16 +14,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.util.StringUtils;
-import org.testcontainers.containers.MSSQLServerContainer;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -36,8 +30,6 @@ import static com.playtika.testcontainer.mssqlserver.MSSQLServerProperties.BEAN_
 @ConditionalOnProperty(name = "embedded.mssqlserver.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MSSQLServerProperties.class)
 public class EmbeddedMSSQLServerBootstrapConfiguration {
-
-    private static final String MSSQLSERVER_NETWORK_ALIAS = "mssqlserver.testcontainer.docker";
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
@@ -58,56 +50,36 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MSSQLSERVER, destroyMethod = "stop")
-    public EmbeddedMSSQLServerContainer mssqlserver(ConfigurableEnvironment environment,
-                                                    MSSQLServerProperties properties,
+    public EmbeddedMSSQLServerContainer mssqlServer(MSSQLServerProperties properties,
                                                     Optional<Network> network) {
-
         EmbeddedMSSQLServerContainer mssqlServerContainer = new EmbeddedMSSQLServerContainer(ContainerUtils.getDockerImageName(properties))
-                .withPassword(properties.getPassword())
-                .withInitScript(properties.getInitScriptPath())
-                .withNetworkAliases(MSSQLSERVER_NETWORK_ALIAS);
-
+                .withNetworkAliases("mssqlserver.testcontainer.docker");
         network.ifPresent(mssqlServerContainer::withNetwork);
-
-        String startupLogCheckRegex = properties.getStartupLogCheckRegex();
-        if (StringUtils.hasLength(startupLogCheckRegex)) {
-            WaitStrategy waitStrategy = new LogMessageWaitStrategy()
-                    .withRegEx(startupLogCheckRegex);
-            mssqlServerContainer.waitingFor(waitStrategy);
-        }
-
-        if (properties.isAcceptLicence()) {
-            mssqlServerContainer.acceptLicense();
-        }
-
-        mssqlServerContainer = (EmbeddedMSSQLServerContainer) configureCommonsAndStart(mssqlServerContainer, properties, log);
-        registerMSSQLServerEnvironment(mssqlServerContainer, environment, properties);
-
+        configureCommonsAndStart(mssqlServerContainer, properties, log);
         return mssqlServerContainer;
     }
 
-    private void registerMSSQLServerEnvironment(MSSQLServerContainer<?> mssqlServerContainer,
-                                                ConfigurableEnvironment environment,
-                                                MSSQLServerProperties properties) {
-        Integer mappedPort = mssqlServerContainer.getMappedPort(MSSQLServerContainer.MS_SQL_SERVER_PORT);
-        String host = mssqlServerContainer.getHost();
+    @Bean
+    public DynamicPropertyRegistrar mssqlServerDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlServer,
+            MSSQLServerProperties properties) {
+        return registry -> {
+            registry.add("embedded.mssqlserver.host", mssqlServer::getHost);
+            registry.add("embedded.mssqlserver.port", () -> mssqlServer.getMappedPort(1433));
+            registry.add("embedded.mssqlserver.networkAlias", () -> "mssqlserver.testcontainer.docker");
+            registry.add("embedded.mssqlserver.internalPort", () -> 1433);
+        };
+    }
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mssqlserver.port", mappedPort);
-        map.put("embedded.mssqlserver.host", host);
-        // Database and user cannot be chosen when starting the MSSQL image
-        map.put("embedded.mssqlserver.database", "master");
-        map.put("embedded.mssqlserver.user", "sa");
-        map.put("embedded.mssqlserver.password", properties.getPassword());
-        map.put("embedded.mssqlserver.networkAlias", MSSQLSERVER_NETWORK_ALIAS);
-        map.put("embedded.mssqlserver.internalPort", MSSQLServerContainer.MS_SQL_SERVER_PORT);
-
-        String jdbcURL = "jdbc:sqlserver://{}:{};databaseName={};trustServerCertificate=true";
-        log.info("Started mssql server. Connection details: {}, " +
-                "JDBC connection url: " + jdbcURL, map, host, mappedPort, "master");
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMSSQLServerInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
+    public DynamicPropertyRegistrar mssqlServerToxiProxyDynamicPropertyRegistrar(
+            @Qualifier("mssqlServerContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.mssqlserver.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.mssqlserver.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.mssqlserver.toxiproxy.proxyName", proxy::getName);
+        };
     }
 
 }

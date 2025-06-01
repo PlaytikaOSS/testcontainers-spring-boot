@@ -14,8 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -56,9 +55,18 @@ public class EmbeddedVerticaBootstrapConfiguration {
         return proxy;
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "vertica")
+    public DynamicPropertyRegistrar verticaToxiProxyDynamicPropertyRegistrar(@Qualifier("verticaContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.vertica.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.vertica.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.vertica.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
     @Bean(name = BEAN_NAME_EMBEDDED_VERTICA, destroyMethod = "stop")
-    public GenericContainer<?> embeddedVertica(ConfigurableEnvironment environment,
-                                               VerticaProperties properties,
+    public GenericContainer<?> embeddedVertica(VerticaProperties properties,
                                                Optional<Network> network) {
         GenericContainer<?> verticaContainer = createContainer(properties)
             .withNetwork(Network.SHARED)
@@ -67,8 +75,24 @@ public class EmbeddedVerticaBootstrapConfiguration {
         network.ifPresent(verticaContainer::withNetwork);
 
         verticaContainer = configureCommonsAndStart(verticaContainer, properties, log);
-        registerVerticaEnvironment(verticaContainer, environment, properties);
+        Integer mappedPort = verticaContainer.getMappedPort(properties.getPort());
+        String host = verticaContainer.getHost();
+        log.info("Started Vertica server. Connection details: port={}, host={}, database={}, user={}, password={}, networkAlias={}, internalPort={}",
+                mappedPort, host, properties.getDatabase(), properties.getUser(), properties.getPassword(), VERTICA_NETWORK_ALIAS, properties.getPort());
         return verticaContainer;
+    }
+
+    @Bean
+    public DynamicPropertyRegistrar verticaDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_VERTICA) GenericContainer<?> verticaContainer, VerticaProperties properties) {
+        return registry -> {
+            registry.add("embedded.vertica.port", () -> verticaContainer.getMappedPort(properties.getPort()));
+            registry.add("embedded.vertica.host", verticaContainer::getHost);
+            registry.add("embedded.vertica.database", properties::getDatabase);
+            registry.add("embedded.vertica.user", properties::getUser);
+            registry.add("embedded.vertica.password", properties::getPassword);
+            registry.add("embedded.vertica.networkAlias", () -> VERTICA_NETWORK_ALIAS);
+            registry.add("embedded.vertica.internalPort", properties::getPort);
+        };
     }
 
     private GenericContainer<?> createContainer(VerticaProperties properties) {
@@ -80,27 +104,5 @@ public class EmbeddedVerticaBootstrapConfiguration {
                 .withExposedPorts(properties.getPort())
                 .withEnv(map)
                 .waitingFor(new HostPortWaitStrategy());
-    }
-
-    private void registerVerticaEnvironment(GenericContainer<?> verticaContainer,
-                                            ConfigurableEnvironment environment,
-                                            VerticaProperties properties) {
-        Integer mappedPort = verticaContainer.getMappedPort(properties.getPort());
-        String host = verticaContainer.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.vertica.port", mappedPort);
-        map.put("embedded.vertica.host", host);
-        map.put("embedded.vertica.database", properties.getDatabase());
-        map.put("embedded.vertica.user", properties.getUser());
-        map.put("embedded.vertica.password", properties.getPassword());
-        map.put("embedded.vertica.networkAlias", VERTICA_NETWORK_ALIAS);
-        map.put("embedded.vertica.internalPort", properties.getPort());
-
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedVerticaInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-
-        log.info("Started Vertica server. Connection details: {}, ", map);
     }
 }

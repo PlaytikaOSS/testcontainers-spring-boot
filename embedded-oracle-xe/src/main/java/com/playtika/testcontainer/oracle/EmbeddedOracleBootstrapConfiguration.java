@@ -14,18 +14,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.oracle.OracleProperties.BEAN_NAME_EMBEDDED_ORACLE;
-import static com.playtika.testcontainer.oracle.OracleProperties.ORACLE_DB;
 import static com.playtika.testcontainer.oracle.OracleProperties.ORACLE_PORT;
 
 @Slf4j
@@ -56,11 +53,18 @@ public class EmbeddedOracleBootstrapConfiguration {
         return proxy;
     }
 
-    @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")
-    public OracleContainer oracle(ConfigurableEnvironment environment,
-                                  OracleProperties properties,
-                                  Optional<Network> network) {
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "oracle")
+    public DynamicPropertyRegistrar oracleToxiProxyDynamicPropertyRegistrar(@Qualifier("oracleContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.oracle.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.oracle.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.oracle.toxiproxy.proxyName", proxy::getName);
+        };
+    }
 
+    @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")
+    public OracleContainer oracle(OracleProperties properties, Optional<Network> network) {
         OracleContainer oracle =
                 new OracleContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
@@ -70,30 +74,21 @@ public class EmbeddedOracleBootstrapConfiguration {
 
         network.ifPresent(oracle::withNetwork);
         oracle = (OracleContainer) configureCommonsAndStart(oracle, properties, log);
-        registerOracleEnvironment(oracle, environment, properties);
         return oracle;
     }
 
-    private void registerOracleEnvironment(OracleContainer oracle,
-                                           ConfigurableEnvironment environment,
-                                           OracleProperties properties) {
-        Integer mappedPort = oracle.getMappedPort(ORACLE_PORT);
-        String host = oracle.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.oracle.port", mappedPort);
-        map.put("embedded.oracle.host", host);
-        map.put("embedded.oracle.database", properties.getDatabase());
-        map.put("embedded.oracle.user", properties.getUser());
-        map.put("embedded.oracle.password", properties.getPassword());
-        map.put("embedded.oracle.networkAlias", ORACLE_NETWORK_ALIAS);
-        map.put("embedded.oracle.internalPort", ORACLE_PORT);
-
-        String jdbcURL = "jdbc:oracle://{}:{}/{}";
-        log.info("Started oracle server. Connection details: {}, " +
-                "JDBC connection url: " + jdbcURL, map, host, mappedPort, ORACLE_DB);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedOracleInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar oracleDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle, OracleProperties properties) {
+        return registry -> {
+            Integer mappedPort = oracle.getMappedPort(ORACLE_PORT);
+            String host = oracle.getHost();
+            registry.add("embedded.oracle.port", () -> mappedPort);
+            registry.add("embedded.oracle.host", () -> host);
+            registry.add("embedded.oracle.database", properties::getDatabase);
+            registry.add("embedded.oracle.user", properties::getUser);
+            registry.add("embedded.oracle.password", properties::getPassword);
+            registry.add("embedded.oracle.networkAlias", () -> ORACLE_NETWORK_ALIAS);
+            registry.add("embedded.oracle.internalPort", () -> ORACLE_PORT);
+        };
     }
 }

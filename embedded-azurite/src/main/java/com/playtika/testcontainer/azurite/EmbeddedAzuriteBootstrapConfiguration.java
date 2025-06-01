@@ -14,13 +14,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.azurite.AzuriteProperties.AZURITE_BEAN_NAME;
@@ -53,6 +52,24 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteBlobToxiproxyInfo", environment, "blobStoragePort");
 
         return proxy;
+    ToxiproxyContainer.ContainerProxy azuriteQueueContainerProxy(ToxiproxyContainer toxiproxyContainer,
+                                                                 @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                                 AzuriteProperties properties) {
+        return toxiproxyContainer.getProxy(azurite, properties.getQueueStoragePort());
+    }
+
+    @Bean
+    public DynamicPropertyRegistrar azuriteBlobToxiProxyDynamicPropertyRegistrar(ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.azurite.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.azurite.toxiproxy.blobStoragePort", proxy::getProxyPort);
+            registry.add("embedded.azurite.toxiproxy.proxyName", proxy::getName);
+            log.info("Started Azurite ToxiProxy connection details {}", Map.of(
+                "embedded.azurite.toxiproxy.host", proxy.getContainerIpAddress(),
+                "embedded.azurite.toxiproxy.blobStoragePort", proxy.getProxyPort(),
+                "embedded.azurite.toxiproxy.proxyName", proxy.getName()
+            ));
+        };
     }
 
     @Bean
@@ -72,6 +89,20 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteQueueToxiproxyInfo", environment, "queueStoragePor");
 
         return proxy;
+    public DynamicPropertyRegistrar azuriteQueueToxiProxyDynamicPropertyRegistrar(ToxiproxyContainer toxiproxyContainer,
+                                                                                 @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                                                 AzuriteProperties properties) {
+        return registry -> {
+            ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(azurite, properties.getQueueStoragePort());
+            registry.add("embedded.azurite.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.azurite.toxiproxy.queueStoragePor", proxy::getProxyPort);
+            registry.add("embedded.azurite.toxiproxy.proxyName", proxy::getName);
+            log.info("Started Azurite ToxiProxy connection details {}", Map.of(
+                "embedded.azurite.toxiproxy.host", proxy.getContainerIpAddress(),
+                "embedded.azurite.toxiproxy.queueStoragePor", proxy.getProxyPort(),
+                "embedded.azurite.toxiproxy.proxyName", proxy.getName()
+            ));
+        };
     }
 
     @Bean
@@ -91,12 +122,24 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteTableToxiproxyInfo", environment, "tableStoragePort");
 
         return proxy;
+    public DynamicPropertyRegistrar azuriteTableToxiProxyDynamicPropertyRegistrar(ToxiproxyContainer toxiproxyContainer,
+                                                                                 @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                                                 AzuriteProperties properties) {
+        return registry -> {
+            ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(azurite, properties.getTableStoragePort());
+            registry.add("embedded.azurite.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.azurite.toxiproxy.tableStoragePort", proxy::getProxyPort);
+            registry.add("embedded.azurite.toxiproxy.proxyName", proxy::getName);
+            log.info("Started Azurite ToxiProxy connection details {}", Map.of(
+                "embedded.azurite.toxiproxy.host", proxy.getContainerIpAddress(),
+                "embedded.azurite.toxiproxy.tableStoragePort", proxy.getProxyPort(),
+                "embedded.azurite.toxiproxy.proxyName", proxy.getName()
+            ));
+        };
     }
 
     @Bean(name = AZURITE_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> azurite(ConfigurableEnvironment environment,
-                                       AzuriteProperties properties,
-                                       Optional<Network> network) {
+    public GenericContainer<?> azurite(AzuriteProperties properties, Optional<Network> network) {
         GenericContainer<?> azuriteContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getBlobStoragePort(), properties.getQueueStoragePort(), properties.getTableStoragePort())
                 .withNetworkAliases(AZURITE_BLOB_NETWORK_ALIAS)
@@ -109,39 +152,41 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                         "--tableHost", "0.0.0.0",
                         "--tablePort", String.valueOf(properties.getTableStoragePort()),
                         "--skipApiVersionCheck");
-
         network.ifPresent(azuriteContainer::withNetwork);
-
         configureCommonsAndStart(azuriteContainer, properties, log);
-        registerEnvironment(azuriteContainer, environment, properties);
         return azuriteContainer;
     }
 
-    private void registerEnvironment(GenericContainer<?> azurite,
-                                     ConfigurableEnvironment environment,
-                                     AzuriteProperties properties) {
-
-        Integer mappedBlobStoragePort = azurite.getMappedPort(properties.getBlobStoragePort());
-        Integer mappedQueueStoragePort = azurite.getMappedPort(properties.getQueueStoragePort());
-        Integer mappedTableStoragePort = azurite.getMappedPort(properties.getTableStoragePort());
-        String host = azurite.getHost();
-
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.azurite.host", host);
-        map.put("embedded.azurite.blobStoragePort", mappedBlobStoragePort);
-        map.put("embedded.azurite.queueStoragePor", mappedQueueStoragePort);
-        map.put("embedded.azurite.tableStoragePort", mappedTableStoragePort);
-        map.put("embedded.azurite.account-name", AzuriteProperties.ACCOUNT_NAME);
-        map.put("embedded.azurite.account-key", AzuriteProperties.ACCOUNT_KEY);
-        map.put("embedded.azurite.blob-endpoint", "http://" + host + ":" + mappedBlobStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
-        map.put("embedded.azurite.queue-endpoint", "http://" + host + ":" + mappedQueueStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
-        map.put("embedded.azurite.table-endpoint", "http://" + host + ":" + mappedTableStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
-        map.put("embedded.azurite.networkAlias", AZURITE_BLOB_NETWORK_ALIAS);
-
-        log.info("Started Azurite. Connection details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedAzuriteInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar azuriteDynamicPropertyRegistrar(@Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite, AzuriteProperties properties) {
+        return registry -> {
+            Integer mappedBlobStoragePort = azurite.getMappedPort(properties.getBlobStoragePort());
+            Integer mappedQueueStoragePort = azurite.getMappedPort(properties.getQueueStoragePort());
+            Integer mappedTableStoragePort = azurite.getMappedPort(properties.getTableStoragePort());
+            String host = azurite.getHost();
+            registry.add("embedded.azurite.host", () -> host);
+            registry.add("embedded.azurite.blobStoragePort", () -> mappedBlobStoragePort);
+            registry.add("embedded.azurite.queueStoragePor", () -> mappedQueueStoragePort);
+            registry.add("embedded.azurite.tableStoragePort", () -> mappedTableStoragePort);
+            registry.add("embedded.azurite.account-name", () -> AzuriteProperties.ACCOUNT_NAME);
+            registry.add("embedded.azurite.account-key", () -> AzuriteProperties.ACCOUNT_KEY);
+            registry.add("embedded.azurite.blob-endpoint", () -> "http://" + host + ":" + mappedBlobStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
+            registry.add("embedded.azurite.queue-endpoint", () -> "http://" + host + ":" + mappedQueueStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
+            registry.add("embedded.azurite.table-endpoint", () -> "http://" + host + ":" + mappedTableStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME);
+            registry.add("embedded.azurite.networkAlias", () -> AZURITE_BLOB_NETWORK_ALIAS);
+            log.info("Started Azurite. Connection details: {}", Map.of(
+                "embedded.azurite.host", host,
+                "embedded.azurite.blobStoragePort", mappedBlobStoragePort,
+                "embedded.azurite.queueStoragePor", mappedQueueStoragePort,
+                "embedded.azurite.tableStoragePort", mappedTableStoragePort,
+                "embedded.azurite.account-name", AzuriteProperties.ACCOUNT_NAME,
+                "embedded.azurite.account-key", AzuriteProperties.ACCOUNT_KEY,
+                "embedded.azurite.blob-endpoint", "http://" + host + ":" + mappedBlobStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME,
+                "embedded.azurite.queue-endpoint", "http://" + host + ":" + mappedQueueStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME,
+                "embedded.azurite.table-endpoint", "http://" + host + ":" + mappedTableStoragePort + "/" + AzuriteProperties.ACCOUNT_NAME,
+                "embedded.azurite.networkAlias", AZURITE_BLOB_NETWORK_ALIAS
+            ));
+        };
     }
 
 }

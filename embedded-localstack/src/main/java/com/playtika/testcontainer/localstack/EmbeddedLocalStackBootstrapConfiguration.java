@@ -15,13 +15,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -56,28 +54,26 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         return proxy;
     }
 
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "localstack")
+    public DynamicPropertyRegistrar localstackToxiProxyDynamicPropertyRegistrar(
+        @Qualifier("localstackContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+        return registry -> {
+            registry.add("embedded.localstack.toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add("embedded.localstack.toxiproxy.port", proxy::getProxyPort);
+            registry.add("embedded.localstack.toxiproxy.proxyName", proxy::getName);
+        };
+    }
+
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
-    public LocalStackContainer localStack(ConfigurableEnvironment environment,
-                                          LocalStackProperties properties,
-                                          Optional<Network> network) {
-        LocalStackContainer localStackContainer = new LocalStackContainer(ContainerUtils.getDockerImageName(properties));
-        localStackContainer
+    public LocalStackContainer localStack(LocalStackProperties properties, Optional<Network> network) {
+        LocalStackContainer localStack = new LocalStackContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getEdgePort())
-                .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
-                .withEnv("HOSTNAME", properties.getHostname())
-                .withEnv("LOCALSTACK_HOST", properties.getHostnameExternal())
-                .withEnv("SKIP_SSL_CERT_DOWNLOAD", "1")
                 .withNetworkAliases(LOCALSTACK_NETWORK_ALIAS);
-
-        network.ifPresent(localStackContainer::withNetwork);
-
-        for (LocalStackContainer.Service service : properties.services) {
-            localStackContainer.withServices(service);
-        }
-        localStackContainer = (LocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
-        registerLocalStackEnvironment(localStackContainer, environment, properties);
-        return localStackContainer;
+        network.ifPresent(localStack::withNetwork);
+        configureCommonsAndStart(localStack, properties, log);
+        return localStack;
     }
 
     private void registerLocalStackEnvironment(LocalStackContainer localStack,
@@ -109,6 +105,16 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         System.setProperty("aws.endpointUrl", localStack.getEndpoint().toString());
         System.setProperty("aws.accessKeyId", localStack.getAccessKey());
         System.setProperty("aws.secretAccessKey", localStack.getSecretKey());
+    @Bean
+    public DynamicPropertyRegistrar localStackDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
+            LocalStackProperties properties) {
+        return registry -> {
+            registry.add("embedded.localstack.host", localStack::getHost);
+            registry.add("embedded.localstack.port", () -> localStack.getMappedPort(properties.getEdgePort()));
+            registry.add("embedded.localstack.networkAlias", () -> LOCALSTACK_NETWORK_ALIAS);
+            registry.add("embedded.localstack.internalPort", properties::getEdgePort);
+        };
     }
 
 }
