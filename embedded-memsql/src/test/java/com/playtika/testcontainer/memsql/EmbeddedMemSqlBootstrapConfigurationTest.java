@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -32,8 +32,20 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    ConfigurableEnvironment environment;
+    @Value("${embedded.memsql.port}")
+    String memsqlPort;
+
+    @Value("${embedded.memsql.host}")
+    String memsqlHost;
+
+    @Value("${embedded.memsql.schema}")
+    String memsqlSchema;
+
+    @Value("${embedded.memsql.user}")
+    String memsqlUser;
+
+    @Value("${embedded.memsql.password}")
+    String memsqlPassword;
 
 //    @Autowired
 //    NetworkTestOperations memsqlNetworkTestOperations;
@@ -86,11 +98,11 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.memsql.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.schema")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.memsql.password")).isEqualTo("pass");
+        assertThat(memsqlPort).isNotEmpty();
+        assertThat(memsqlHost).isNotEmpty();
+        assertThat(memsqlSchema).isNotEmpty();
+        assertThat(memsqlUser).isNotEmpty();
+        assertThat(memsqlPassword).isEqualTo("pass");
     }
 
     @EnableAutoConfiguration

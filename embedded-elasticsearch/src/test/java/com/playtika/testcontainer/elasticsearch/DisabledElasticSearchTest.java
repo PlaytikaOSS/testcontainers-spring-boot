@@ -7,7 +7,8 @@ import org.testcontainers.containers.Container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DisabledElasticSearchTest {
+public class
+DisabledElasticSearchTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(

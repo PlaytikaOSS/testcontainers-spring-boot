@@ -17,12 +17,12 @@ public final class KeycloakClient {
     private final RestTemplate restTemplate;
 
     private KeycloakClient(Environment environment) {
-        this.environment = environment;
+        this.environment = requireNonNull(environment);
         this.restTemplate = new RestTemplate();
     }
 
     public static KeycloakClient newKeycloakClient(Environment environment) {
-        return new KeycloakClient(requireNonNull(environment));
+        return new KeycloakClient(environment);
     }
 
     public KeyCloakToken keycloakToken() {
@@ -48,9 +48,9 @@ public final class KeycloakClient {
         return fromEnv("testing.keycloak.realm");
     }
 
-    public RealmInfo getRealmInfo(String realm) {
+    public RealmInfo getRealmInfo(String realmName) {
         return restTemplate.getForObject(
-            format("%s/realms/%s", baseUrl(), requireNonNull(realm)),
+            format("%s/realms/%s", baseUrl(), realmName),
             RealmInfo.class);
     }
 

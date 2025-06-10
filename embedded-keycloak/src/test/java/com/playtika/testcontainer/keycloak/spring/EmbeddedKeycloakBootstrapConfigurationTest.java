@@ -2,6 +2,7 @@ package com.playtika.testcontainer.keycloak.spring;
 
 import com.playtika.testcontainer.keycloak.KeycloakContainer;
 import com.playtika.testcontainer.keycloak.util.KeyCloakToken;
+import com.playtika.testcontainer.keycloak.util.KeycloakClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -16,7 +17,6 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import static com.playtika.testcontainer.keycloak.KeycloakProperties.DEFAULT_REALM;
-import static com.playtika.testcontainer.keycloak.util.KeycloakClient.newKeycloakClient;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -35,6 +35,8 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     private ConfigurableListableBeanFactory beanFactory;
     @Autowired
     private KeycloakContainer keycloakContainer;
+    @Autowired
+    private KeycloakClient keycloakClient;
 
     @LocalServerPort
     private int httpPort;
@@ -59,12 +61,12 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
 
     @Test
     public void shouldGetMasterRealmInfoFromKeycloak() {
-        String realmInfo = newKeycloakClient(environment).getRealmInfo(DEFAULT_REALM).getRealm();
+        String realmInfo = keycloakClient.getRealmInfo(DEFAULT_REALM).getRealm();
         assertThat(realmInfo).isEqualTo(DEFAULT_REALM);
     }
 
     private String callSecuredPingEndpoint() {
-        KeyCloakToken keyCloakToken = newKeycloakClient(environment).keycloakToken();
+        KeyCloakToken keyCloakToken = keycloakClient.keycloakToken();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, format("Bearer %s", keyCloakToken.getAccessToken()));

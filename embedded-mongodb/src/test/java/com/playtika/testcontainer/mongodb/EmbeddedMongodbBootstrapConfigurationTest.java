@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -33,8 +32,14 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Autowired
-    ConfigurableEnvironment environment;
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.port}")
+    String mongodbPort;
+
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.host}")
+    String mongodbHost;
+
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.database}")
+    String mongodbDatabase;
 
     @Autowired
     ToxiproxyClientProxy mongodbContainerProxy;
@@ -63,9 +68,9 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.mongodb.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.database")).isNotEmpty();
+        assertThat(mongodbPort).isNotEmpty();
+        assertThat(mongodbHost).isNotEmpty();
+        assertThat(mongodbDatabase).isNotEmpty();
     }
 
     private static long durationOf(Callable<?> op) throws Exception {

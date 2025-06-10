@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.data.cassandra.repository.AllowFiltering;
@@ -38,8 +38,11 @@ public class EmbeddedCassandraTest {
     @Autowired
     protected DummyCassandraRepository dummyCassandraRepository;
 
-    @Autowired
-    protected ConfigurableEnvironment environment;
+    @Value("${embedded.cassandra.port}")
+    protected String cassandraPort;
+
+    @Value("${embedded.cassandra.host}")
+    protected String cassandraHost;
 
 
     @Test
@@ -52,8 +55,8 @@ public class EmbeddedCassandraTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.cassandra.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.cassandra.host")).isNotEmpty();
+        assertThat(cassandraPort).isNotEmpty();
+        assertThat(cassandraHost).isNotEmpty();
     }
 
     @Test

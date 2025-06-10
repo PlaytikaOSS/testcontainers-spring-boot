@@ -2,10 +2,10 @@ package com.playtika.testcontainer.vault;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.vault.VaultException;
 import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.core.VaultTemplate;
@@ -32,8 +32,20 @@ public class EmbeddedVaultWithCasEnabledForSubPathsTest {
     private static final String SUB_PATH1 = "sub-path1";
     private static final String SUB_PATH2 = "sub-path2";
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.vault.host}")
+    String vaultHost;
+
+    @Value("${embedded.vault.port}")
+    String vaultPort;
+
+    @Value("${embedded.vault.token}")
+    String vaultToken;
+
+    @Value("${secret_one}")
+    String secretOne;
+
+    @Value("${embedded.vault.cas-enabled-for-sub-paths}")
+    String vaultCasEnabledForSubPaths;
 
     @Autowired
     private VaultOperations vaultOperations;
@@ -43,11 +55,11 @@ public class EmbeddedVaultWithCasEnabledForSubPathsTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.vault.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.token")).isNotEmpty();
-        assertThat(environment.getProperty("secret_one")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.cas-enabled-for-sub-paths")).isNotEmpty();
+        assertThat(vaultHost).isNotEmpty();
+        assertThat(vaultPort).isNotEmpty();
+        assertThat(vaultToken).isNotEmpty();
+        assertThat(secretOne).isNotEmpty();
+        assertThat(vaultCasEnabledForSubPaths).isNotEmpty();
     }
 
     @Test

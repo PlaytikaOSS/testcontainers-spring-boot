@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -36,8 +35,20 @@ public class EmbeddedMongodbBootstrapAuthConfigurationTest {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Autowired
-    ConfigurableEnvironment environment;
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.port}")
+    String mongodbPort;
+
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.host}")
+    String mongodbHost;
+
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.username}")
+    String mongodbUsername;
+
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.password}")
+    String mongodbPassword;
+
+    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.database}")
+    String mongodbDatabase;
 
     @Test
     public void shouldSaveAndGet() {
@@ -50,11 +61,11 @@ public class EmbeddedMongodbBootstrapAuthConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.mongodb.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.username")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.password")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.database")).isNotEmpty();
+        assertThat(mongodbPort).isNotEmpty();
+        assertThat(mongodbHost).isNotEmpty();
+        assertThat(mongodbUsername).isNotEmpty();
+        assertThat(mongodbPassword).isNotEmpty();
+        assertThat(mongodbDatabase).isNotEmpty();
     }
 
     @Value

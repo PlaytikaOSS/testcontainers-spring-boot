@@ -4,6 +4,7 @@ package com.playtika.testcontainer.selenium.drivers;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -22,6 +23,9 @@ public class EmbeddedChromiumSeleniumTest extends BaseEmbeddedSeleniumTest {
     @Autowired
     public ChromeOptions options;
 
+    @Value("${embedded.selenium.vnc.mode}")
+    String seleniumVncMode;
+
     @Test
     public void testThatIsChromium() {
         assertThat(getBrowserName()).isEqualTo("chrome");
@@ -36,6 +40,6 @@ public class EmbeddedChromiumSeleniumTest extends BaseEmbeddedSeleniumTest {
 
     @Test
     public void vncModeIsSkipByDefault() {
-        assertThat(environment.getProperty("embedded.selenium.vnc.mode")).isEqualTo("SKIP");
+        assertThat(seleniumVncMode).isEqualTo("SKIP");
     }
 }

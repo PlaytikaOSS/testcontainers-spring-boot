@@ -4,6 +4,7 @@ import com.playtika.testcontainer.selenium.drivers.BaseEmbeddedSeleniumTest;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +20,9 @@ public class OtherCompatibleImageTest extends BaseEmbeddedSeleniumTest {
     @Autowired
     public ChromeOptions options;
 
+    @Value("${embedded.selenium.image-name}")
+    String seleniumImageName;
+
     @Test
     public void testThatIsChromium() {
         assertThat(getBrowserName()).isEqualTo("chrome");
@@ -26,11 +30,10 @@ public class OtherCompatibleImageTest extends BaseEmbeddedSeleniumTest {
 
     @Test
     public void propertiesAreSet() {
-        String foundProperty = environment.getProperty("embedded.selenium.image-name");
-        assertThat(foundProperty)
+        assertThat(seleniumImageName)
                 .isNotEmpty()
                 .isEqualTo("selenium/standalone-chrome-debug:3.141.59-mercury");
 
-        assertThat(container.getDockerImageName()).isEqualTo(foundProperty);
+        assertThat(container.getDockerImageName()).isEqualTo(seleniumImageName);
     }
 }

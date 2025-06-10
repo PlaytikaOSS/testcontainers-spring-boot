@@ -43,12 +43,14 @@
         <module>embedded-keydb</module>
         <module>embedded-aerospike</module>
         <module>embedded-mariadb</module>
+        <module>embedded-memsql</module>
         <module>embedded-mongodb</module>
         <module>embedded-redis</module>
         <module>embedded-neo4j</module>
         <module>embedded-postgresql</module>
         <module>embedded-elasticsearch</module>
         <module>embedded-opensearch</module>
+        <module>embedded-dynamodb</module>
         <module>embedded-rabbitmq</module>
         <module>embedded-minio</module>
         <module>embedded-google-pubsub</module>
@@ -85,11 +87,6 @@
         <module>embedded-aerospike-enterprise</module>
         <module>embedded-spicedb</module>
         <module>embedded-temporal</module>
-        <module>embedded-kafka</module>
-        <module>embedded-native-kafka</module>
-        <module>embedded-memsql</module>
-        <module>embedded-keycloak</module>
-        <module>embedded-dynamodb</module>
     </modules>
 
     <properties>

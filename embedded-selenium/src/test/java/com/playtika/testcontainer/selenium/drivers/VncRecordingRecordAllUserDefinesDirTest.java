@@ -38,6 +38,12 @@ public class VncRecordingRecordAllUserDefinesDirTest extends BaseEmbeddedSeleniu
     @Value("${embedded.selenium.vnc.recording-dir}")
     private String recordDir;
 
+    @Value("${embedded.selenium.vnc.mode}")
+    String seleniumVncMode;
+
+    @Value("${embedded.selenium.vnc.wassetintest}")
+    String seleniumVncWasSetInTest;
+
 
     @AfterAll
     public void cleanupTmpDir() {
@@ -64,18 +70,18 @@ public class VncRecordingRecordAllUserDefinesDirTest extends BaseEmbeddedSeleniu
 
     @Test
     public void propertiesAreSet() {
-        assertThat(environment.getProperty("embedded.selenium.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.selenium.host")).isNotEmpty();
+        assertThat(seleniumPort).isNotEmpty();
+        assertThat(seleniumHost).isNotEmpty();
 
-        assertThat(environment.getProperty("embedded.selenium.vnc.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.selenium.vnc.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.selenium.vnc.username")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.selenium.vnc.password")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.selenium.vnc.mode")).isEqualTo("RECORD_ALL");
-        assertThat(environment.getProperty("embedded.selenium.vnc.wassetintest")).isEqualTo("true");
+        assertThat(seleniumVncHost).isNotEmpty();
+        assertThat(seleniumVncPort).isNotEmpty();
+        assertThat(seleniumVncUsername).isNotEmpty();
+        assertThat(seleniumVncPassword).isNotEmpty();
+        assertThat(seleniumVncMode).isEqualTo("RECORD_ALL");
+        assertThat(seleniumVncWasSetInTest).isEqualTo("true");
 
-        assertThat(environment.getProperty("embedded.selenium.vnc.recording-dir")).isNotEmpty();
-        assertThat(new File(environment.getProperty("embedded.selenium.vnc.recording-dir"))).exists();
+        assertThat(recordDir).isNotEmpty();
+        assertThat(new File(recordDir)).exists();
     }
 
     static class PropertyOverrideContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {

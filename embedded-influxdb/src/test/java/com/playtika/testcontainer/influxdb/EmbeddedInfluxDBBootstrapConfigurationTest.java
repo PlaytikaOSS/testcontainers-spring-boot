@@ -6,10 +6,10 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static io.restassured.RestAssured.given;
@@ -22,16 +22,28 @@ class EmbeddedInfluxDBBootstrapConfigurationTest {
     @Autowired
     private InfluxDBProperties influxDBProperties;
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.influxdb.port}")
+    String influxdbPort;
+
+    @Value("${embedded.influxdb.host}")
+    String influxdbHost;
+
+    @Value("${embedded.influxdb.database}")
+    String influxdbDatabase;
+
+    @Value("${embedded.influxdb.user}")
+    String influxdbUser;
+
+    @Value("${embedded.influxdb.password}")
+    String influxdbPassword;
 
     @Test
     void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.influxdb.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.influxdb.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.influxdb.database")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.influxdb.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.influxdb.password")).isNotEmpty();
+        assertThat(influxdbPort).isNotEmpty();
+        assertThat(influxdbHost).isNotEmpty();
+        assertThat(influxdbDatabase).isNotEmpty();
+        assertThat(influxdbUser).isNotEmpty();
+        assertThat(influxdbPassword).isNotEmpty();
     }
 
     @Test
