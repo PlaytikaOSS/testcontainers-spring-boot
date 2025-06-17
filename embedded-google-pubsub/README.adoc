@@ -35,6 +35,7 @@ Google cloud sdk docker image does not support ARM
  embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name
  embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name
  embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name
+ embedded.google.pubsub.topics-and-subscriptions[1].enable-message-ordering=true
  embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic=topic0_name
  embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts=5
 ```
