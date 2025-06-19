@@ -1,0 +1,11 @@
+embedded.google.pubsub:
+  project-id: my-project-id
+  topics-and-subscriptions:
+    - topic: topic0
+      subscription: subscription0
+    - topic: topic1
+      subscription: subscription1
+      enable-message-ordering: true
+      dead-letter:
+        topic: topic0
+        max-attempts: 10

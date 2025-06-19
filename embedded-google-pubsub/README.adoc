@@ -12,7 +12,7 @@
 </dependency>
 ----
 
-==== Consumes (via `bootstrap.properties`)
+==== Consumes (via `bootstrap.yaml`)
 
 * `embedded.google.pubsub.enabled` `(true|false, default is true)`
 * `embedded.google.pubsub.reuseContainer` `(true|false, default is false)`
@@ -30,14 +30,20 @@ Google cloud sdk docker image does not support ARM
 
 * Topics and subscriptions:
 +
-```
- embedded.google.pubsub.topics-and-subscriptions[0].topic=topic0_name
- embedded.google.pubsub.topics-and-subscriptions[0].subscription=subscription0_name
- embedded.google.pubsub.topics-and-subscriptions[1].topic=topic0_name
- embedded.google.pubsub.topics-and-subscriptions[1].subscription=subscription0_name
- embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic=topic0_name
- embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts=5
-```
+./src/test/resources/bootstrap.yaml
+[source,yaml]
+----
+embedded.google.pubsub:
+  topics-and-subscriptions:
+    - topic: topic0
+      subscription: subscription0
+    - topic: topic1
+      subscription: subscription1
+      enable-message-ordering: true
+      dead-letter:
+        topic: topic0
+        max-attempts: 10
+----
 
 ==== Produces
 
@@ -52,11 +58,12 @@ Google cloud sdk docker image does not support ARM
 
 ==== Example
 
-To auto-configure `spring-cloud-gcp-starter-pubsub` use these properties in your test `application.properties`:
+To auto-configure `spring-cloud-gcp-starter-pubsub` use these properties in your test `application.yaml`:
 
-./src/test/resources/application.properties
-[source,properties]
+./src/test/resources/application.yaml
+[source,yaml]
 ----
-spring.cloud.gcp.project-id=${embedded.google.pubsub.project-id}
-spring.cloud.gcp.pubsub.emulatorHost=${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+spring.cloud.gcp:
+  project-id: ${embedded.google.pubsub.project-id}
+  pubsub.emulatorHost: ${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
 ----

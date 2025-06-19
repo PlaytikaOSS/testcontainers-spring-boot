@@ -59,11 +59,11 @@ public class PubSubResourcesGenerator implements InitializingBean {
         createTopic(ts.getTopic());
 
         if (ts.getSubscription() != null) {
-            createSubscription(ts.getTopic(), ts.getSubscription(), ts.getDeadLetter());
+            createSubscription(ts.getTopic(), ts.getSubscription(), ts.isEnableMessageOrdering(), ts.getDeadLetter());
         }
     }
 
-    public Subscription createSubscription(String topicName, String subscriptionName, DeadLetter deadLetter) {
+    public Subscription createSubscription(String topicName, String subscriptionName, boolean enableMessageOrdering, DeadLetter deadLetter) {
         ProjectTopicName topic = ProjectTopicName.of(projectId, topicName);
         ProjectSubscriptionName subscription = ProjectSubscriptionName.of(projectId, subscriptionName);
 
@@ -73,7 +73,8 @@ public class PubSubResourcesGenerator implements InitializingBean {
             Builder builder = Subscription.newBuilder()
                     .setName(subscription.toString())
                     .setTopic(topic.toString())
-                    .setAckDeadlineSeconds(100);
+                    .setAckDeadlineSeconds(100)
+                    .setEnableMessageOrdering(enableMessageOrdering);
             if (deadLetter != null) {
                 log.info("with DeadLetterPolicy [topic: {}, maxAttempts: {}]", deadLetter.getTopic(), deadLetter.getMaxAttempts());
                 ProjectTopicName dlqTopic = ProjectTopicName.of(projectId, deadLetter.getTopic());

@@ -61,6 +61,7 @@ class EmbeddedPubsubBootstrapConfigurationTest {
 
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].topic")).isEqualTo("topic1");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].subscription")).isEqualTo("subscription1");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].enable-message-ordering")).isEqualTo("true");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic")).isEqualTo("topic0");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts")).isEqualTo("10");
     }
@@ -83,6 +84,20 @@ class EmbeddedPubsubBootstrapConfigurationTest {
                 .isNotNull()
                 .returns(dlqTopic.toString(), DeadLetterPolicy::getDeadLetterTopic)
                 .returns(10, DeadLetterPolicy::getMaxDeliveryAttempts);
+    }
+
+    @Test
+    void shouldNotHaveMessageOrderingEnabled() {
+        ProjectSubscriptionName subscription0 = ProjectSubscriptionName.of(projectId, "subscription0");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription0);
+        assertThat(subscription.getEnableMessageOrdering()).isFalse();
+    }
+
+    @Test
+    void shouldHaveMessageOrderingEnabled() {
+        ProjectSubscriptionName subscription1 = ProjectSubscriptionName.of(projectId, "subscription1");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription1);
+        assertThat(subscription.getEnableMessageOrdering()).isTrue();
     }
 
     @Test
