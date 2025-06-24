@@ -267,6 +267,8 @@ embedded:
 
 === link:embedded-kafka/README.adoc[embedded-kafka]
 
+=== link:embedded-native-kafka/README.adoc[embedded-native-kafka]
+
 === link:embedded-rabbitmq/README.adoc[embedded-rabbitmq]
 
 === link:embedded-aerospike/README.adoc[embedded-aerospike]
@@ -377,3 +379,4 @@ embedded:
 ** mailto:sstus@playtika.com[sstus@playtika.com]
 ** mailto:iyova@playtika.com[iyova@playtika.com]
 ** mailto:admitrov@playtika.com[admitrov@playtika.com]
+** mailto:rkvasnytskyi@playtika.com[rkvasnytskyi@playtika.com]

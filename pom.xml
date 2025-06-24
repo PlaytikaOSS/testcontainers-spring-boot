@@ -39,6 +39,7 @@
         <module>testcontainers-spring-boot-parent</module>
         <module>testcontainers-common</module>
         <module>embedded-kafka</module>
+        <module>embedded-native-kafka</module>
         <module>embedded-keycloak</module>
         <module>embedded-keydb</module>
         <module>embedded-aerospike</module>

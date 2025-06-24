@@ -1,0 +1,26 @@
+{
+  "groups": [
+  ],
+  "properties": [
+    {
+      "name": "embedded.nativekafka.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "embedded.nativekafka.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Enables configuration of native kafka cluster on startup."
+        },
+        {
+          "value": "false",
+          "description": "Disabled configuration of native kafka cluster on startup."
+        }
+      ]
+    }
+  ]
+}
