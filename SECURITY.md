@@ -16,3 +16,4 @@ If you have the vulnerability report. Please contact with :
 - [sstus@playtika.com](mailto:sstus@playtika.com)
 - [iyova@playtika.com](mailto:iyova@playtika.com)
 - [admitrov@playtika.com](mailto:admitrov@playtika.com)
+- [rkvasnytskyi@playtika.com](mailto:rkvasnytskyi@playtika.com)

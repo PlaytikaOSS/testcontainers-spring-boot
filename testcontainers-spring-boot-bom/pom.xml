@@ -72,6 +72,11 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-native-kafka</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-keycloak</artifactId>
                 <version>${project.version}</version>
             </dependency>
