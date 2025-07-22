@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @Order(2)
 @TestPropertySource(properties = {
-    "embedded.nativekafka.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-native-kafka-data-unexpected"
+    "embedded.kafka.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-native-kafka-data-unexpected"
 })
 @TestInstance(PER_CLASS)
 @DisplayName("Default embedded-native-kafka setup test")

@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties("embedded.nativekafka")
+@ConfigurationProperties("embedded.kafka")
 public class NativeKafkaConfigurationProperties extends CommonContainerProperties {
 
     public static final String NATIVE_KAFKA_BEAN_NAME = "nativeKafka";
@@ -32,7 +32,7 @@ public class NativeKafkaConfigurationProperties extends CommonContainerPropertie
     protected FileSystemBind fileSystemBind = new FileSystemBind();
 
     public NativeKafkaConfigurationProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+        this.setCapabilities(List.of(Capability.NET_ADMIN));
     }
 
     @Override

@@ -252,7 +252,7 @@ class NativeKafkaContainerConfigurationTest {
     @DisplayName("should verify container host name constant")
     void shouldVerifyContainerHostNameConstant() {
         assertThat(NativeKafkaContainerConfiguration.NATIVE_KAFKA_HOST_NAME)
-                .isEqualTo("native-kafka-broker.testcontainer.docker");
+                .isEqualTo("kafka-broker.testcontainer.docker");
     }
 
     @Test

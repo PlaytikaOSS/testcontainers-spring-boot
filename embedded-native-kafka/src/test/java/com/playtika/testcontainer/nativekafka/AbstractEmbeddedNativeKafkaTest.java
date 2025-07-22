@@ -56,9 +56,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         properties = {
-                "embedded.nativekafka.topicsToCreate=topic1,topic2,topic3",
-                "embedded.nativekafka.topicsConfiguration[0].topic=topic3",
-                "embedded.nativekafka.topicsConfiguration[0].partitions=2"
+                "embedded.kafka.topicsToCreate=topic1,topic2,topic3",
+                "embedded.kafka.topicsConfiguration[0].topic=topic3",
+                "embedded.kafka.topicsConfiguration[0].partitions=2"
         },
         classes = {AbstractEmbeddedNativeKafkaTest.TestConfiguration.class}
 )
@@ -66,7 +66,7 @@ public abstract class AbstractEmbeddedNativeKafkaTest {
 
     @Autowired
     protected AdminClient adminClient;
-    @Value("${embedded.nativekafka.bootstrapServers}")
+    @Value("${embedded.kafka.bootstrapServers}")
     protected List<String> nativeKafkaBrokerList;
 
     protected void sendMessage(String topic, String message) throws Exception {
@@ -272,7 +272,7 @@ public abstract class AbstractEmbeddedNativeKafkaTest {
     static class TestConfiguration {
 
         @Bean
-        public AdminClient adminClient(@Value("${embedded.nativekafka.bootstrapServers}") String nativeKafkaBrokerList) {
+        public AdminClient adminClient(@Value("${embedded.kafka.bootstrapServers}") String nativeKafkaBrokerList) {
             Properties config = new Properties();
             config.put(BOOTSTRAP_SERVERS_CONFIG, nativeKafkaBrokerList);
             return AdminClient.create(config);

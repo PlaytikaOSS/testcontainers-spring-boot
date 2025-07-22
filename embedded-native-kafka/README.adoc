@@ -3,6 +3,8 @@
 This module provides Apache Kafka Native (GraalVM) support for integration testing using TestContainers.
 The native Kafka image uses KRaft instead of Zookeeper, providing a simpler and more efficient setup.
 
+WARNING: Do not try to use both embedded-kafka and embedded-native-kafka!
+
 ==== Maven dependency
 
 .pom.xml
@@ -16,50 +18,50 @@ The native Kafka image uses KRaft instead of Zookeeper, providing a simpler and 
 ----
 
 ==== Consumes (via `bootstrap.properties`)
-* `embedded.nativekafka.enabled` `(true|false, default is true)`
-* `embedded.nativekafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
-* `embedded.nativekafka.dockerImage` `(default is set to 'apache/kafka-native:4.0.0')`
+* `embedded.kafka.enabled` `(true|false, default is true)`
+* `embedded.kafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
+* `embedded.kafka.dockerImage` `(default is set to 'apache/kafka-native:4.0.0')`
 ** Image versions on https://hub.docker.com/r/apache/kafka-native/tags[dockerhub]
-* `embedded.nativekafka.waitTimeoutInSeconds` `(default is 60 seconds)`
-* `embedded.nativekafka.kafkaPort` `(default is 9092)`
+* `embedded.kafka.waitTimeoutInSeconds` `(default is 60 seconds)`
+* `embedded.kafka.kafkaPort` `(default is 9092)`
 
 ==== Filesystem bindings
 
 Container for `embedded-native-kafka` can bind its volumes to host filesystem.
 By default, to your projects `target` folder. You can configure binding using properties:
 
-* `embedded.nativekafka.fileSystemBind.enabled` `(true|false, default is false)`
-* `embedded.nativekafka.fileSystemBind.dataFolder` `(default : target/embedded-native-kafka-data)`
+* `embedded.kafka.fileSystemBind.enabled` `(true|false, default is false)`
+* `embedded.kafka.fileSystemBind.dataFolder` `(default : target/embedded-native-kafka-data)`
 
 ==== Produces
 
-* `embedded.nativekafka.bootstrapServers`
-* `embedded.nativekafka.brokerList`
-* `embedded.nativekafka.networkAlias`
-* `embedded.nativekafka.host`
-* `embedded.nativekafka.port`
+* `embedded.kafka.bootstrapServers`
+* `embedded.kafka.brokerList`
+* `embedded.kafka.networkAlias`
+* `embedded.kafka.host`
+* `embedded.kafka.port`
 
 ==== Example configuration
 
 .`embedded-native-kafka` configuration (via `bootstrap.properties`)
 [source,properties]
 ----
-embedded.nativekafka.topicsToCreate=topic1,topic2
-embedded.nativekafka.fileSystemBind.enabled=true
+embedded.kafka.topicsToCreate=topic1,topic2
+embedded.kafka.fileSystemBind.enabled=true
 ----
 
 .Application configuration
 [source,properties]
 ----
 # Kafka configuration
-bootstrap.servers=${embedded.nativekafka.bootstrapServers}
+bootstrap.servers=${embedded.kafka.bootstrapServers}
 
 # Consumer configuration
-spring.kafka.consumer.bootstrap-servers=${embedded.nativekafka.bootstrapServers}
+spring.kafka.consumer.bootstrap-servers=${embedded.kafka.bootstrapServers}
 spring.kafka.consumer.group-id=test-group
 
 # Producer configuration  
-spring.kafka.producer.bootstrap-servers=${embedded.nativekafka.bootstrapServers}
+spring.kafka.producer.bootstrap-servers=${embedded.kafka.bootstrapServers}
 ----
 
 ==== Java usage example
@@ -72,7 +74,7 @@ class EmbeddedNativeKafkaTest {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Value("${embedded.nativekafka.bootstrapServers}")
+    @Value("${embedded.kafka.bootstrapServers}")
     private String bootstrapServers;
 
     @Test

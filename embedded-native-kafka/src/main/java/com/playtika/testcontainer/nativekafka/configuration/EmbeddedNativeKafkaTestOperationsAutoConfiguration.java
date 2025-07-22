@@ -19,11 +19,11 @@ import static com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfi
 @AutoConfiguration
 @ConditionalOnBean({NativeKafkaConfigurationProperties.class})
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@ConditionalOnProperty(value = {"embedded.nativekafka.enabled"}, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = {"embedded.kafka.enabled"}, havingValue = "true", matchIfMissing = true)
 public class EmbeddedNativeKafkaTestOperationsAutoConfiguration {
 
     @Bean(NATIVE_KAFKA_PACKAGE_PROPERTIES_BEAN_NAME)
-    @ConfigurationProperties("embedded.nativekafka.install")
+    @ConfigurationProperties("embedded.kafka.install")
     public InstallPackageProperties nativeKafkaPackageProperties() {
         return new InstallPackageProperties();
     }

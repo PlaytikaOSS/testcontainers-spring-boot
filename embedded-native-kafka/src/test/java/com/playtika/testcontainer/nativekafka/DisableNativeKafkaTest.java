@@ -23,7 +23,7 @@ public class DisableNativeKafkaTest {
     public void contextLoads() {
         contextRunner
                 .withPropertyValues(
-                        "embedded.nativekafka.enabled=false"
+                        "embedded.kafka.enabled=false"
                 )
                 .run((context) -> assertThat(context)
                         .hasNotFailed()
