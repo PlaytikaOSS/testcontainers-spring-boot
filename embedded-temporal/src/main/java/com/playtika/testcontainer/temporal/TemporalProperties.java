@@ -20,6 +20,6 @@ public class TemporalProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "temporalio/admin-tools:1.27";
+        return "temporalio/admin-tools:1.28";
     }
 }
