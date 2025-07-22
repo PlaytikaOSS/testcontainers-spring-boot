@@ -76,8 +76,7 @@ public class EmbeddedKeycloakBootstrapConfiguration {
         KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader)
                 .withNetworkAliases(KEYCLOAK_NETWORK_ALIAS);
         network.ifPresent(keycloak::withNetwork);
-        configureCommonsAndStart(keycloak, properties, log);
-        return keycloak;
+        return (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);
     }
 
     @Bean
@@ -86,7 +85,7 @@ public class EmbeddedKeycloakBootstrapConfiguration {
             KeycloakProperties properties) {
         return registry -> {
             registry.add("embedded.keycloak.host", keycloak::getHost);
-            registry.add("embedded.keycloak.http-port", () -> keycloak.getMappedPort(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL));
+            registry.add("embedded.keycloak.http-port", keycloak::getHttpPort);
             registry.add("embedded.keycloak.auth-server-url", keycloak::getAuthServerUrl);
             registry.add("embedded.keycloak.port", () -> keycloak.getMappedPort(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL));
             registry.add("embedded.keycloak.networkAlias", () -> KEYCLOAK_NETWORK_ALIAS);

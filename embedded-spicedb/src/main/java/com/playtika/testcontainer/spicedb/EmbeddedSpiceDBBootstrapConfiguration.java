@@ -19,6 +19,9 @@ import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.Optional;
 
@@ -57,13 +60,23 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_SPICEDB, destroyMethod = "stop")
     public GenericContainer<?> spicedb(SpiceDBProperties properties,
                                        Optional<Network> network) {
-        GenericContainer<?> spicedb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort())
-                .withNetworkAliases("spicedb.testcontainer.docker");
-        network.ifPresent(spicedb::withNetwork);
-        configureCommonsAndStart(spicedb, properties, log);
-        return spicedb;
+        WaitStrategy waitStrategy = new WaitAllStrategy()
+            .withStrategy(new HostPortWaitStrategy())
+            .withStartupTimeout(properties.getTimeoutDuration());
+
+        GenericContainer<?> spicedbContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+            .withExposedPorts(properties.getPort())
+            .withCommand("serve", "--grpc-preshared-key", properties.getPresharedKey(), "--skip-release-check")
+            .waitingFor(waitStrategy)
+            .withNetworkAliases(NATS_NETWORK_ALIAS);
+
+        network.ifPresent(spicedbContainer::withNetwork);
+
+        spicedbContainer = configureCommonsAndStart(spicedbContainer, properties, log);
+
+        return spicedbContainer;
     }
+
 
     @Bean
     public DynamicPropertyRegistrar spicedbDynamicPropertyRegistrar(
@@ -73,6 +86,7 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
             registry.add("embedded.spicedb.host", spicedb::getHost);
             registry.add("embedded.spicedb.port", () -> spicedb.getMappedPort(properties.getPort()));
             registry.add("embedded.spicedb.networkAlias", () -> "spicedb.testcontainer.docker");
+            registry.add("embedded.spicedb.token", properties::getPresharedKey);
             registry.add("embedded.spicedb.internalPort", properties::getPort);
         };
     }

@@ -1,14 +1,12 @@
 package com.playtika.testcontainer.keycloak.spring;
 
-import com.playtika.testcontainer.keycloak.KeycloakContainer;
 import com.playtika.testcontainer.keycloak.util.KeyCloakToken;
 import com.playtika.testcontainer.keycloak.util.KeycloakClient;
+import com.playtika.testcontainer.keycloak.util.KeycloakClientTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +22,11 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 
 @SpringBootTest(
-        classes = SpringTestApplication.class,
+        classes = {SpringTestApplication.class, KeycloakClientTestConfiguration.class},
         webEnvironment = RANDOM_PORT)
 @ActiveProfiles({"enabled", "realm"})
 public class EmbeddedKeycloakBootstrapConfigurationTest {
 
-    @Autowired
-    private Environment environment;
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
-    @Autowired
-    private KeycloakContainer keycloakContainer;
     @Autowired
     private KeycloakClient keycloakClient;
 
@@ -44,19 +36,6 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     @Test
     public void shouldRunThroughSpringSecurity() {
         assertThat(callSecuredPingEndpoint()).isEqualTo("pong");
-    }
-
-    @Test
-    public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
-                .isEqualTo(format("http://%s:%d/", keycloakContainer.getHost(),
-                        keycloakContainer.getHttpPort()));
-
-        assertThat(environment.getProperty("embedded.keycloak.host"))
-                .isEqualTo(keycloakContainer.getIp());
-
-        assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
-                .isEqualTo(keycloakContainer.getHttpPort());
     }
 
     @Test

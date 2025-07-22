@@ -1,6 +1,5 @@
 package com.playtika.testcontainer.keycloak.util;
 
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,16 +12,26 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
 public final class KeycloakClient {
 
-    private final Environment environment;
+    private final String baseUrl;
+    private final String realm;
+    private final String clientId;
+    private final String clientSecret;
+    private final String username;
+    private final String password;
     private final RestTemplate restTemplate;
 
-    private KeycloakClient(Environment environment) {
-        this.environment = requireNonNull(environment);
+    private KeycloakClient(String baseUrl, String realm, String clientId, String clientSecret, String username, String password) {
+        this.baseUrl = requireNonNull(baseUrl);
+        this.realm = requireNonNull(realm);
+        this.clientId = requireNonNull(clientId);
+        this.clientSecret = requireNonNull(clientSecret);
+        this.username = requireNonNull(username);
+        this.password = requireNonNull(password);
         this.restTemplate = new RestTemplate();
     }
 
-    public static KeycloakClient newKeycloakClient(Environment environment) {
-        return new KeycloakClient(environment);
+    public static KeycloakClient of(String baseUrl, String realm, String clientId, String clientSecret, String username, String password) {
+        return new KeycloakClient(baseUrl, realm, clientId, clientSecret, username, password);
     }
 
     public KeyCloakToken keycloakToken() {
@@ -30,31 +39,23 @@ public final class KeycloakClient {
         headers.setContentType(APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("client_id", fromEnv("testing.keycloak.client"));
-        map.add("client_secret", fromEnv("testing.keycloak.client-secret"));
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
         map.add("grant_type", "password");
-        map.add("username", fromEnv("testing.keycloak.username"));
-        map.add("password", fromEnv("testing.keycloak.password"));
+        map.add("username", username);
+        map.add("password", password);
 
-        String url = format("%s/realms/%s/protocol/openid-connect/token", baseUrl(), realm());
+        String url = format("%s/realms/%s/protocol/openid-connect/token", baseUrl, realm);
         return restTemplate.postForObject(url, new HttpEntity<>(map, headers), KeyCloakToken.class);
     }
 
-    public String baseUrl() {
-        return fromEnv("embedded.keycloak.auth-server-url");
-    }
-
     public String realm() {
-        return fromEnv("testing.keycloak.realm");
+        return realm;
     }
 
     public RealmInfo getRealmInfo(String realmName) {
         return restTemplate.getForObject(
-            format("%s/realms/%s", baseUrl(), realmName),
+            format("%s/realms/%s", baseUrl, realmName),
             RealmInfo.class);
-    }
-
-    private String fromEnv(String key) {
-        return environment.getProperty(requireNonNull(key));
     }
 }

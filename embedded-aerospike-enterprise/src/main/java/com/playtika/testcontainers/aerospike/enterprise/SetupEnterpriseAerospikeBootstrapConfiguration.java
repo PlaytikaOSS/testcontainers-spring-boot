@@ -6,12 +6,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
@@ -34,12 +34,8 @@ public class SetupEnterpriseAerospikeBootstrapConfiguration {
     private GenericContainer<?> aerospikeContainer;
     private AerospikeProperties aerospikeProperties;
     private AerospikeEnterpriseProperties aerospikeEnterpriseProperties;
-    private Environment environment;
-
-    @Autowired
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+    @Value("embedded.aerospike.dockerImage:")
+    private String dockerImage;
 
     @Autowired
     @Qualifier(BEAN_NAME_AEROSPIKE)
@@ -67,7 +63,6 @@ public class SetupEnterpriseAerospikeBootstrapConfiguration {
     private void verifyAerospikeImage() {
         log.info("Verify Aerospike Enterprise Image");
 
-        String dockerImage = environment.getProperty(AEROSPIKE_DOCKER_IMAGE_PROPERTY);
         if (dockerImage == null) {
             throw new IllegalStateException("Aerospike enterprise docker image not provided, set up 'embedded.aerospike.dockerImage' property.\n"
                     + TEXT_TO_DOCUMENTATION);

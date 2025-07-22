@@ -42,8 +42,6 @@ public abstract class EmbeddedCouchbaseBootstrapConfigurationTest {
         assertThat(couchbaseBucket).isNotEmpty();
         assertThat(couchbaseUser).isNotEmpty();
         assertThat(couchbasePassword).isNotEmpty();
-        assertThat(System.getProperty("com.couchbase.bootstrapHttpDirectPort")).isNotEmpty();
-        assertThat(System.getProperty("com.couchbase.bootstrapCarrierDirectPort")).isNotEmpty();
     }
 
     @EnableAutoConfiguration

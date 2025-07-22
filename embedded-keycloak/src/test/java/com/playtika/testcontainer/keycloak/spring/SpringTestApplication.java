@@ -5,7 +5,6 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @EnableMethodSecurity(jsr250Enabled = true)
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.playtika.testcontainer.keycloak"})
 public class SpringTestApplication {
 
     @Value("${testing.keycloak.client}")
