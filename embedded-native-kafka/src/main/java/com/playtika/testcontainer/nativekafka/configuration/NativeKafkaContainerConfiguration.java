@@ -35,11 +35,11 @@ import static com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfi
 
 @Slf4j
 @Configuration
-@ConditionalOnProperty(value = "embedded.nativekafka.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "embedded.kafka.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(value = {NativeKafkaConfigurationProperties.class})
 public class NativeKafkaContainerConfiguration {
 
-    public static final String NATIVE_KAFKA_HOST_NAME = "native-kafka-broker.testcontainer.docker";
+    public static final String NATIVE_KAFKA_HOST_NAME = "kafka-broker.testcontainer.docker";
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(Network.class)
@@ -102,13 +102,13 @@ public class NativeKafkaContainerConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
         String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
-        map.put("embedded.nativekafka.bootstrapServers", bootstrapServers);
-        map.put("embedded.nativekafka.brokerList", bootstrapServers);
-        map.put("embedded.nativekafka.networkAlias", NATIVE_KAFKA_HOST_NAME);
-        map.put("embedded.nativekafka.host", nativeKafka.getHost());
-        map.put("embedded.nativekafka.port", nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort()));
+        map.put("embedded.kafka.bootstrapServers", bootstrapServers);
+        map.put("embedded.kafka.brokerList", bootstrapServers);
+        map.put("embedded.kafka.networkAlias", NATIVE_KAFKA_HOST_NAME);
+        map.put("embedded.kafka.host", nativeKafka.getHost());
+        map.put("embedded.kafka.port", nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort()));
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedNativeKafkaInfo", map);
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaInfo", map);
 
         log.info("Started native kafka broker. Connection details: {}", map);
 

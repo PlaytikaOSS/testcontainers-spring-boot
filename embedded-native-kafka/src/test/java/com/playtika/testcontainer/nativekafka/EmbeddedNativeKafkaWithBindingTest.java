@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Order(6)
 @TestPropertySource(properties = {
-    "embedded.nativekafka.waitTimeoutInSeconds=120",
-    "embedded.nativekafka.fileSystemBind.enabled=true",
-    "embedded.nativekafka.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-native-kafka-data" // /tmp is more permissible than target
+    "embedded.kafka.waitTimeoutInSeconds=120",
+    "embedded.kafka.fileSystemBind.enabled=true",
+    "embedded.kafka.fileSystemBind.dataFolder=${java.io.tmpdir}/embedded-native-kafka-data" // /tmp is more permissible than target
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Test that embedded-native-kafka with filesystem binding")
