@@ -15,7 +15,7 @@
 
 
     <properties>
-        <spring.boot.version>3.5.3</spring.boot.version>
+        <spring.boot.version>3.5.4</spring.boot.version>
         <spring.cloud.version>2025.0.0</spring.cloud.version>
         <spring.cloud.gcp.version>7.1.0</spring.cloud.gcp.version>
         <equalsverifier.version>4.0.7</equalsverifier.version>
