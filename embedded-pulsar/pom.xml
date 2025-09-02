@@ -14,7 +14,7 @@
     <artifactId>embedded-pulsar</artifactId>
 
     <properties>
-        <pulsar-clients.version>4.0.5</pulsar-clients.version>
+        <pulsar-clients.version>4.0.6</pulsar-clients.version>
     </properties>
 
     <dependencies>
