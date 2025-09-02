@@ -65,7 +65,7 @@
         <module>embedded-clickhouse</module>
         <module>embedded-selenium</module>
         <module>embedded-pulsar</module>
-        <module>embedded-vertica</module>
+<!--        <module>embedded-vertica</module>-->
         <module>embedded-prometheus</module>
         <module>embedded-grafana</module>
         <module>embedded-consul</module>
