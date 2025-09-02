@@ -19,8 +19,8 @@ on:
           - debug
           - error
           - fatal
-    schedule:
-      - cron: '0 8 * * *'
+  schedule:
+    - cron: '0 8 * * *'
 
 jobs:
   renovate:

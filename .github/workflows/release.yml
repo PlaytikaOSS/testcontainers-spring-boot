@@ -3,6 +3,24 @@ name: Publish to the Maven Central Repository
 on:
   release:
     types: [ published ]
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: "Dry-Run"
+        default: false
+        required: false
+        type: boolean
+      logLevel:
+        description: "Log-Level"
+        required: false
+        default: 'debug'
+        type: choice
+        options:
+          - info
+          - warn
+          - debug
+          - error
+          - fatal
 
 jobs:
   publish:
