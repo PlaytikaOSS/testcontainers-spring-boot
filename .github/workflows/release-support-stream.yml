@@ -42,7 +42,7 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: ${{github.event.inputs.java-version}}
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -55,7 +55,7 @@ jobs:
 
       - name: Publish to the Maven Central Repository
         if: ${{ success() }}
-        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -P ossrh -DskipTests deploy
+        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -P central -DskipTests deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
