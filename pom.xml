@@ -8,7 +8,7 @@
     <version>3.1.15</version>
     <packaging>pom</packaging>
 
-    <name>${project.groupId}:${project.artifactId}</name>
+    <name>testcontainers-spring-boot</name>
     <description>Container auto-configurations for spring-boot based integration tests</description>
     <url>https://github.com/PlaytikaOSS/testcontainers-spring-boot</url>
 

@@ -12,6 +12,7 @@
 
     <packaging>pom</packaging>
     <artifactId>testcontainers-spring-boot-bom</artifactId>
+    <name>testcontainers-spring-boot-bom</name>
 
     <dependencyManagement>
         <dependencies>

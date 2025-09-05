@@ -11,8 +11,8 @@
 
     <packaging>pom</packaging>
     <artifactId>testcontainers-spring-boot-parent</artifactId>
+    <name>testcontainers-spring-boot-parent</name>
     <description>Parent pom for all embedded testcontainers</description>
-
 
     <properties>
         <spring.boot.version>3.5.5</spring.boot.version>

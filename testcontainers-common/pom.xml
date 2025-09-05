@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>testcontainers-common</artifactId>
+    <name>testcontainers-common</name>
 
     <dependencies>
         <dependency>
