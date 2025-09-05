@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-redis</name>
     <artifactId>embedded-redis</artifactId>
 
     <properties>

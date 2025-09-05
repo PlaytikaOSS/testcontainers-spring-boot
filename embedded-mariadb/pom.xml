@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-mariadb</name>
     <artifactId>embedded-mariadb</artifactId>
 
     <dependencies>

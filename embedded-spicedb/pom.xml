@@ -10,6 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-spicedb</name>
     <artifactId>embedded-spicedb</artifactId>
 
     <properties>

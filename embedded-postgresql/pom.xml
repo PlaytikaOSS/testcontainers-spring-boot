@@ -10,6 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-postgresql</name>
     <artifactId>embedded-postgresql</artifactId>
 
     <properties>

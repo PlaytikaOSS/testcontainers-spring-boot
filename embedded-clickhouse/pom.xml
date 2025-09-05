@@ -10,6 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-clickhouse</name>
     <artifactId>embedded-clickhouse</artifactId>
 
     <properties>

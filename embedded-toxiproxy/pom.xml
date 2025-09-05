@@ -10,8 +10,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-toxiproxy</name>
     <artifactId>embedded-toxiproxy</artifactId>
-
 
     <dependencies>
         <dependency>

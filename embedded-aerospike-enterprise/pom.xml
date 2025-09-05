@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-aerospike-enterprise</name>
     <artifactId>embedded-aerospike-enterprise</artifactId>
 
     <properties>

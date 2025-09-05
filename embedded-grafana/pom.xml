@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-grafana</name>
     <artifactId>embedded-grafana</artifactId>
 
     <dependencies>

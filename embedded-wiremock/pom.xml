@@ -10,6 +10,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-wiremock</name>
     <artifactId>embedded-wiremock</artifactId>
 
     <properties>

@@ -12,8 +12,8 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-mongodb</name>
     <artifactId>embedded-mongodb</artifactId>
-
 
     <dependencies>
         <dependency>
