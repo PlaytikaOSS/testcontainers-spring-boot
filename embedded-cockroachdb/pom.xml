@@ -10,6 +10,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-cockroachdb</name>
     <artifactId>embedded-cockroachdb</artifactId>
 
     <dependencies>

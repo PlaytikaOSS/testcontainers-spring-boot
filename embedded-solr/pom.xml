@@ -10,7 +10,9 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-solr</name>
     <artifactId>embedded-solr</artifactId>
+
     <properties>
         <solr-solrj.version>9.9.0</solr-solrj.version>
     </properties>

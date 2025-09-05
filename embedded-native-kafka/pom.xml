@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-native-kafka</name>
     <artifactId>embedded-native-kafka</artifactId>
 
     <properties>

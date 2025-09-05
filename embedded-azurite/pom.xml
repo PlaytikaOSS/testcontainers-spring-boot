@@ -10,10 +10,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-azurite</name>
     <artifactId>embedded-azurite</artifactId>
-
-    <properties>
-    </properties>
 
     <dependencies>
         <dependency>

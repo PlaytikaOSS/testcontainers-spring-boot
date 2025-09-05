@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     
+    <name>embedded-db2</name>
     <artifactId>embedded-db2</artifactId>
 
     <properties>

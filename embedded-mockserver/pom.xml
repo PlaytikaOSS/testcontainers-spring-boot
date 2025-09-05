@@ -11,6 +11,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-mockserver</name>
     <artifactId>embedded-mockserver</artifactId>
 
     <properties>

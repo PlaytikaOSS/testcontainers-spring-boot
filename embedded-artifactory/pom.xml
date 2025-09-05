@@ -11,6 +11,7 @@
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-artifactory</name>
     <artifactId>embedded-artifactory</artifactId>
 
     <dependencies>
