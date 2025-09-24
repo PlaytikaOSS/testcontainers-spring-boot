@@ -65,17 +65,12 @@ class NativeKafkaContainerConfigurationTest {
     void shouldCreateKafkaContainerWithProperConfiguration() {
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(new NativeKafkaConfigurationProperties.FileSystemBind());
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(9092);
 
             GenericContainer<?> result = configuration.nativeKafka(properties, network);
 
@@ -92,17 +87,12 @@ class NativeKafkaContainerConfigurationTest {
 
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(fileSystemBind);
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(9092);
 
             GenericContainer<?> result = configuration.nativeKafka(properties, network);
 
@@ -121,17 +111,12 @@ class NativeKafkaContainerConfigurationTest {
 
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(fileSystemBind);
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(9092);
 
             GenericContainer<?> result = configuration.nativeKafka(properties, network);
 
@@ -145,17 +130,12 @@ class NativeKafkaContainerConfigurationTest {
     void shouldRegisterPropertiesCorrectly() {
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(new NativeKafkaConfigurationProperties.FileSystemBind());
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(12345);
 
             configuration.nativeKafka(properties, network);
         }
@@ -181,17 +161,12 @@ class NativeKafkaContainerConfigurationTest {
 
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(fileSystemBind);
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(9092);
 
             configuration.nativeKafka(properties, network);
 
@@ -212,17 +187,12 @@ class NativeKafkaContainerConfigurationTest {
 
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(fileSystemBind);
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(9092);
 
             configuration.nativeKafka(properties, network);
 
@@ -249,17 +219,12 @@ class NativeKafkaContainerConfigurationTest {
 
         when(properties.getDefaultDockerImage()).thenReturn("apache/kafka-native:4.0.0");
         when(properties.getFileSystemBind()).thenReturn(fileSystemBind);
-        when(properties.getKafkaPort()).thenReturn(9092);
 
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
                     .thenReturn(kafkaContainer);
-
-            when(kafkaContainer.getBootstrapServers()).thenReturn("localhost:9092");
-            when(kafkaContainer.getHost()).thenReturn("localhost");
-            when(kafkaContainer.getMappedPort(9092)).thenReturn(9092);
 
             configuration.nativeKafka(properties, network);
 
