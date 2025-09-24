@@ -36,6 +36,12 @@
             <artifactId>pulsar-client</artifactId>
             <version>${pulsar-clients.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>        
         </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>
