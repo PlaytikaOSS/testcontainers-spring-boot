@@ -4,23 +4,17 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 class EmbeddedInfluxDBBootstrapConfigurationTest {
 
-    @Autowired
-    private InfluxDBProperties influxDBProperties;
 
     @Value("${embedded.influxdb.port}")
     String influxdbPort;
@@ -49,7 +43,8 @@ class EmbeddedInfluxDBBootstrapConfigurationTest {
     @Test
     void influxDatabaseIsAvailable() {
         RestAssured.baseURI = getUrl();
-        ExtractableResponse response = given()
+        ExtractableResponse<?> response = given()
+                .auth().basic(influxdbUser, influxdbPassword)
                 .get("/ping")
                 .then()
                 .statusCode(HttpStatus.SC_NO_CONTENT)
@@ -59,7 +54,7 @@ class EmbeddedInfluxDBBootstrapConfigurationTest {
     }
 
     private String getUrl() {
-        return "http://" + influxDBProperties.getHost() + ":" + influxDBProperties.getPort();
+        return "http://" + influxdbHost + ":" + influxdbPort;
     }
 
     @EnableAutoConfiguration
