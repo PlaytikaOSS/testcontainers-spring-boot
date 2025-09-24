@@ -3,13 +3,13 @@ package com.playtika.testcontainer.nativekafka.configuration;
 import com.playtika.testcontainer.nativekafka.NativeKafkaTopicsConfigurer;
 import com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -26,7 +26,6 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -52,7 +51,6 @@ public class NativeKafkaContainerConfiguration {
     @Bean(name = NATIVE_KAFKA_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> nativeKafka(
             NativeKafkaConfigurationProperties nativeKafkaProperties,
-            ConfigurableEnvironment environment,
             Network network) {
 
         DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage())
@@ -69,18 +67,35 @@ public class NativeKafkaContainerConfiguration {
         // Configure and start the container using common utilities
         nativeKafka = (KafkaContainer) configureCommonsAndStart(nativeKafka, nativeKafkaProperties, log);
 
-        // Register environment properties
-        registerNativeKafkaEnvironment(nativeKafka, environment, nativeKafkaProperties);
-
         return nativeKafka;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public NativeKafkaTopicsConfigurer nativeKafkaTopicsConfigurer(
-            GenericContainer<?> nativeKafka,
+            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
             NativeKafkaConfigurationProperties nativeKafkaProperties) {
         return new NativeKafkaTopicsConfigurer(nativeKafka, nativeKafkaProperties);
+    }
+
+    @Bean
+    public DynamicPropertyRegistrar nativeKafkaDynamicPropertyRegistrar(
+            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
+            NativeKafkaConfigurationProperties nativeKafkaProperties) {
+        return registry -> {
+            String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
+            String host = nativeKafka.getHost();
+            Integer port = nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort());
+
+            registry.add("embedded.kafka.bootstrapServers", () -> bootstrapServers);
+            registry.add("embedded.kafka.brokerList", () -> bootstrapServers);
+            registry.add("embedded.kafka.networkAlias", () -> NATIVE_KAFKA_HOST_NAME);
+            registry.add("embedded.kafka.host", () -> host);
+            registry.add("embedded.kafka.port", () -> port);
+
+            log.info("Started native kafka broker. Connection details: bootstrapServers={}, host={}, port={}, networkAlias={}",
+                    bootstrapServers, host, port, NATIVE_KAFKA_HOST_NAME);
+        };
     }
 
     private void configureFileSystemBind(NativeKafkaConfigurationProperties nativeKafkaProperties, KafkaContainer nativeKafka) {
@@ -96,24 +111,6 @@ public class NativeKafkaContainerConfiguration {
         }
     }
 
-    private void registerNativeKafkaEnvironment(GenericContainer<?> nativeKafka,
-                                              ConfigurableEnvironment environment,
-                                              NativeKafkaConfigurationProperties nativeKafkaProperties) {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-
-        String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
-        map.put("embedded.kafka.bootstrapServers", bootstrapServers);
-        map.put("embedded.kafka.brokerList", bootstrapServers);
-        map.put("embedded.kafka.networkAlias", NATIVE_KAFKA_HOST_NAME);
-        map.put("embedded.kafka.host", nativeKafka.getHost());
-        map.put("embedded.kafka.port", nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort()));
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaInfo", map);
-
-        log.info("Started native kafka broker. Connection details: {}", map);
-
-        environment.getPropertySources().addFirst(propertySource);
-    }
 
     private void createPathAndParentOrMakeWritable(Path path) {
         Stream.of(path.getParent(), path).forEach(p -> {

@@ -1,10 +1,10 @@
 package com.playtika.testcontainer.kafka.configuration;
 
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +16,8 @@ import org.testcontainers.containers.Network;
 import java.util.LinkedHashMap;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.kafka.configuration.KafkaContainerConfiguration.KAFKA_HOST_NAME;
+import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties.SCHEMA_REGISTRY_BEAN_NAME;
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
@@ -30,8 +32,11 @@ public class SchemaRegistryContainerConfiguration {
     @Bean(name = SCHEMA_REGISTRY_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> schemaRegistry(
             SchemaRegistryConfigurationProperties properties,
-            @Value("${embedded.kafka.containerBrokerList}") String kafkaContainerBrokerList,
+            @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka,
+            KafkaConfigurationProperties kafkaProperties,
             Network network) {
+
+        String kafkaContainerBrokerList = String.format("%s:%d", KAFKA_HOST_NAME, kafkaProperties.getContainerBrokerPort());
 
         GenericContainer<?> schemaRegistry = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(SCHEMA_REGISTRY_HOST_NAME))
