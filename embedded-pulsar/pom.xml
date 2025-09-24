@@ -15,7 +15,7 @@
     <artifactId>embedded-pulsar</artifactId>
 
     <properties>
-        <pulsar-clients.version>4.0.5</pulsar-clients.version>
+        <pulsar-clients.version>4.1.0</pulsar-clients.version>
     </properties>
 
     <dependencies>
@@ -36,6 +36,12 @@
             <artifactId>pulsar-client</artifactId>
             <version>${pulsar-clients.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>        
         </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>
