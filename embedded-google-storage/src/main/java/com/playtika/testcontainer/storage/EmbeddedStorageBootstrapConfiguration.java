@@ -8,7 +8,6 @@ import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnab
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -111,8 +110,9 @@ public class EmbeddedStorageBootstrapConfiguration {
 
     @Bean
     StorageResourcesGenerator storageResourcesGenerator(
-            @Value("${embedded.google.storage.endpoint}") String endpoint,
+            @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> container,
             StorageProperties storageProperties) {
+        String endpoint = buildContainerEndpoint(container);
         return new StorageResourcesGenerator(endpoint, storageProperties);
     }
 
