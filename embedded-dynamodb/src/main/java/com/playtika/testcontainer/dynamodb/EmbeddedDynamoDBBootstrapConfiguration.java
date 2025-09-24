@@ -80,14 +80,26 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
     }
 
     @Bean
-    public DynamicPropertyRegistrar dynamodbDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> container, DynamoDBProperties properties) {
+    public DynamicPropertyRegistrar dynamodbDynamicPropertyRegistrar(
+        @Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> container, DynamoDBProperties properties) {
         return registry -> {
-            registry.add("embedded.dynamodb.port", () -> container.getMappedPort(properties.port));
-            registry.add("embedded.dynamodb.host", container::getHost);
-            registry.add("embedded.dynamodb.accessKey", properties::getAccessKey);
-            registry.add("embedded.dynamodb.secretKey", properties::getSecretKey);
+            var mappedPort = container.getMappedPort(properties.port);
+            var host = container.getHost();
+            var accessKey = properties.getAccessKey();
+            var secretKey = properties.getSecretKey();
+
+            registry.add("embedded.dynamodb.port", () -> mappedPort);
+            registry.add("embedded.dynamodb.host", () -> host);
+            registry.add("embedded.dynamodb.accessKey", () -> accessKey);
+            registry.add("embedded.dynamodb.secretKey", () -> secretKey);
             registry.add("embedded.dynamodb.networkAlias", () -> DYNAMODB_NETWORK_ALIAS);
             registry.add("embedded.dynamodb.internalPort", properties::getPort);
+
+            log.info("Started DynamoDb server. Connection details: host: {}, port: {}, accessKey:{}, secretKey: {}",
+                host, mappedPort, accessKey, secretKey);
+            log.info("Consult with the doc " +
+                     "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.UsageNotes.html " +
+                     "for more details");
         };
     }
 

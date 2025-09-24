@@ -28,8 +28,8 @@ public class SpringTestApplication {
     public JwtDecoder jwtDecoder(@Value("${embedded.keycloak.host}") String host,
                                  @Value("${embedded.keycloak.http-port}") String port,
                                  @Value("${testing.keycloak.realm}") String realm) {
-        String issuerUri = String.format("http://%s:%s/realms/%s", host, port, realm);
-        return NimbusJwtDecoder.withIssuerLocation(issuerUri).build();
+        String jwkSetUri = String.format("http://%s:%s/realms/%s/protocol/openid-connect/certs", host, port, realm);
+        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
     }
 
     @Bean
