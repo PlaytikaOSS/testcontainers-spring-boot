@@ -38,6 +38,8 @@
 ==== Notes
 
 * You can enable debug logs for `testcontainer` category to troubleshoot issues
+* https://github.com/vertica/vertica-containers/issues/64
+* You need to have local image registry mirror with image to run vertica test container since vertica does not support community.
 
 ==== Example
 
