@@ -14,7 +14,7 @@
     <artifactId>embedded-spicedb</artifactId>
 
     <properties>
-        <grpc-protobuf.version>1.75.0</grpc-protobuf.version>
+        <grpc-protobuf.version>1.76.0</grpc-protobuf.version>
         <authzed.version>1.5.1</authzed.version>
         <protobuf-java.version>4.32.1</protobuf-java.version>
     </properties>
