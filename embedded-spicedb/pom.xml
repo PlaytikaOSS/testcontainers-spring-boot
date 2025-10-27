@@ -15,7 +15,7 @@
 
     <properties>
         <grpc-protobuf.version>1.76.0</grpc-protobuf.version>
-        <authzed.version>1.5.3</authzed.version>
+        <authzed.version>1.5.4</authzed.version>
         <protobuf-java.version>4.33.0</protobuf-java.version>
     </properties>
 
