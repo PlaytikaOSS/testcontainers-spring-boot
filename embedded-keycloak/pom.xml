@@ -14,7 +14,7 @@
     <artifactId>embedded-keycloak</artifactId>
 
     <properties>
-        <keycloak.version>26.4.2</keycloak.version>
+        <keycloak.version>26.4.4</keycloak.version>
     </properties>
 
     <dependencies>
