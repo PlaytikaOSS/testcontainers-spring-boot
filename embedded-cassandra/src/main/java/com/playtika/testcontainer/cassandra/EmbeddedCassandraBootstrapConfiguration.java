@@ -2,7 +2,10 @@ package com.playtika.testcontainer.cassandra;
 
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.common.utils.FileUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,20 +50,19 @@ public class EmbeddedCassandraBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "cassandra")
-    ToxiproxyContainer.ContainerProxy cassandraContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(BEAN_NAME_EMBEDDED_CASSANDRA) CassandraContainer cassandra,
-                                                               CassandraProperties properties,
-                                                               ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(cassandra, properties.getPort());
+    ToxiproxyClientProxy cassandraContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                  ToxiproxyContainer toxiproxyContainer,
+                                                  @Qualifier(BEAN_NAME_EMBEDDED_CASSANDRA) CassandraContainer cassandra,
+                                                  CassandraProperties properties,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                cassandra,
+                properties.getPort(),
+                "cassandra");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.cassandra.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.cassandra.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.cassandra.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedCassandraToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Cassandra ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.cassandra", "embeddedCassandraToxiproxyInfo", environment);
 
         return proxy;
     }

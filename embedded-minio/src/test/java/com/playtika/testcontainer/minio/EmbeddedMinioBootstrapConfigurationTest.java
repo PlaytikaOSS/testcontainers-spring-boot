@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.minio;
 
 import com.playtika.testcontainer.common.utils.ThrowingRunnable;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -16,7 +17,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -41,7 +41,7 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     private MinioClient minioToxiProxyClient;
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy minioContainerProxy;
+    ToxiproxyClientProxy minioContainerProxy;
 
     @BeforeEach
     public void setUp() throws Exception {

@@ -2,7 +2,10 @@ package com.playtika.testcontainer.mongodb;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -20,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,20 +43,20 @@ public class EmbeddedMongodbBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mongodb")
-    ToxiproxyContainer.ContainerProxy mongodbContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb,
-                                                            MongodbProperties properties,
-                                                            ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(mongodb, properties.getPort());
+    ToxiproxyClientProxy mongodbContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                ToxiproxyContainer toxiproxyContainer,
+                                                @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb,
+                                                MongodbProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                mongodb,
+                properties.getPort(),
+                "mongodb"
+        );
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mongodb.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.mongodb.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.mongodb.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMongodbToxiProxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Mongodb ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mongodb", "embeddedMongodbToxiProxyInfo", environment);
 
         return proxy;
     }

@@ -19,6 +19,10 @@
             <artifactId>toxiproxy</artifactId>
         </dependency>
         <dependency>
+            <groupId>eu.rekawek.toxiproxy</groupId>
+            <artifactId>toxiproxy-java</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
         </dependency>

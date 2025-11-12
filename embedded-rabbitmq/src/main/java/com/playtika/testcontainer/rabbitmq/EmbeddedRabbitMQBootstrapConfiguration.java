@@ -2,7 +2,10 @@ package com.playtika.testcontainer.rabbitmq;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -37,20 +40,19 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "rabbitmq")
-    ToxiproxyContainer.ContainerProxy rabbitmqContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(BEAN_NAME_EMBEDDED_RABBITMQ) RabbitMQContainer rabbitmq,
-                                                               ConfigurableEnvironment environment,
-                                                               RabbitMQProperties properties) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(rabbitmq, properties.getPort());
+    ToxiproxyClientProxy rabbitmqContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                 ToxiproxyContainer toxiproxyContainer,
+                                                 @Qualifier(BEAN_NAME_EMBEDDED_RABBITMQ) RabbitMQContainer rabbitmq,
+                                                 ConfigurableEnvironment environment,
+                                                 RabbitMQProperties properties) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                rabbitmq,
+                properties.getPort(),
+                "rabbitmq");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.rabbitmq.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.rabbitmq.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.rabbitmq.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedRabbitmqToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Rabbitmq ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.rabbitmq", "embeddedRabbitmqToxiproxyInfo", environment);
 
         return proxy;
     }

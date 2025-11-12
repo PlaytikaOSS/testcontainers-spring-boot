@@ -2,7 +2,10 @@ package com.playtika.testcontainer.minio;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -47,20 +49,19 @@ public class EmbeddedMinioBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "minio")
-    ToxiproxyContainer.ContainerProxy minioContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                          @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
-                                                          ConfigurableEnvironment environment,
-                                                          MinioProperties properties) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(minio, properties.getPort());
+    ToxiproxyClientProxy minioContainerProxy(ToxiproxyClient toxiproxyClient,
+                                              ToxiproxyContainer toxiproxyContainer,
+                                              @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
+                                              ConfigurableEnvironment environment,
+                                              MinioProperties properties) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                minio,
+                properties.getPort(),
+                "minio");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.minio.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.minio.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.minio.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMinioToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Minio ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.minio", "embeddedMinioToxiproxyInfo", environment);
 
         return proxy;
     }

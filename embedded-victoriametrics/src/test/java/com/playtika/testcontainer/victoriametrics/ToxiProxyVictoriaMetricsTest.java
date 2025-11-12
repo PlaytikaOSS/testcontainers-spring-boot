@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.victoriametrics;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class ToxiProxyVictoriaMetricsTest extends BaseEmbeddedVictoriaMetricsTest {
 
     @Autowired
-    private ToxiproxyContainer.ContainerProxy victoriaMetricsContainerProxy;
+    private ToxiproxyClientProxy victoriaMetricsContainerProxy;
 
     @Test
     void shouldAddLatency() throws IOException {

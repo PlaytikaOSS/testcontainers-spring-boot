@@ -3,7 +3,10 @@ package com.playtika.testcontainer.spicedb;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -22,7 +25,6 @@ import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,20 +43,19 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_SPICEDB_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "spicedb")
-    ToxiproxyContainer.ContainerProxy spicedbContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                            @Qualifier(BEAN_NAME_EMBEDDED_SPICEDB) GenericContainer<?> spicedbContainer,
-                                                            SpiceDBProperties properties,
-                                                            ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(spicedbContainer, properties.getPort());
+    ToxiproxyClientProxy spicedbContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                ToxiproxyContainer toxiproxyContainer,
+                                                @Qualifier(BEAN_NAME_EMBEDDED_SPICEDB) GenericContainer<?> spicedbContainer,
+                                                SpiceDBProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                spicedbContainer,
+                properties.getPort(),
+                "spicedb");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.spicedb.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.spicedb.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.spicedb.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedSpicedbToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Spicedb ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.spicedb", "embeddedSpicedbToxiproxyInfo", environment);
 
         return proxy;
     }

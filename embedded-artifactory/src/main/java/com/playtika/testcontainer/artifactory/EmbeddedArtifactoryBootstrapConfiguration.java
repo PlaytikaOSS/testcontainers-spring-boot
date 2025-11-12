@@ -2,7 +2,10 @@ package com.playtika.testcontainer.artifactory;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.artifactory.ArtifactoryProperties.ARTIFACTORY_BEAN_NAME;
@@ -48,20 +50,19 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "artifactory")
-    ToxiproxyContainer.ContainerProxy artifactoryContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                @Qualifier(ARTIFACTORY_BEAN_NAME) GenericContainer<?> artifactory,
-                                                                ArtifactoryProperties properties,
-                                                                ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(artifactory, properties.getRestApiPort());
+    ToxiproxyClientProxy artifactoryContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                    ToxiproxyContainer toxiproxyContainer,
+                                                    @Qualifier(ARTIFACTORY_BEAN_NAME) GenericContainer<?> artifactory,
+                                                    ArtifactoryProperties properties,
+                                                    ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                artifactory,
+                properties.getRestApiPort(),
+                "artifactory");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.artifactory.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.artifactory.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.artifactory.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedArtifactoryToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Artifactory ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.artifactory", "embeddedArtifactoryToxiproxyInfo", environment);
 
         return proxy;
     }

@@ -21,6 +21,7 @@
         <equalsverifier.version>4.2.4</equalsverifier.version>
         <junit-jupiter.version>6.0.1</junit-jupiter.version>
         <spring.cloud.azure.version>6.0.0</spring.cloud.azure.version>
+        <toxiproxy-java.version>2.1.7</toxiproxy-java.version>
     </properties>
 
     <dependencyManagement>
@@ -74,6 +75,11 @@
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-aerospike</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.rekawek.toxiproxy</groupId>
+                <artifactId>toxiproxy-java</artifactId>
+                <version>${toxiproxy-java.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

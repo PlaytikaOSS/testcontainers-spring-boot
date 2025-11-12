@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.nats;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import io.nats.client.Nats;
 import io.nats.client.Options;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.TestPropertySource;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ToxiProxyNatsTest extends BaseNatsTest {
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy natsContainerProxy;
+    ToxiproxyClientProxy natsContainerProxy;
 
     @Autowired
     ConfigurableEnvironment environment;

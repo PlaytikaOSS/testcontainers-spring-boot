@@ -2,7 +2,10 @@ package com.playtika.testcontainer.pubsub;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,6 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -43,20 +45,19 @@ public class EmbeddedPubsubBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "google.pubsub")
-    ToxiproxyContainer.ContainerProxy googlePubSubContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                 @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub,
-                                                                 PubsubProperties properties,
-                                                                 ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(pubsub, properties.getPort());
+    ToxiproxyClientProxy googlePubSubContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                     ToxiproxyContainer toxiproxyContainer,
+                                                     @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub,
+                                                     PubsubProperties properties,
+                                                     ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                pubsub,
+                properties.getPort(),
+                "pubsub");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.google.pubsub.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.google.pubsub.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.google.pubsub.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedGooglePubSubToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Google PubSub ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.google.pubsub", "embeddedGooglePubSubToxiproxyInfo", environment);
 
         return proxy;
     }

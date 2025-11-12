@@ -1,7 +1,10 @@
 package com.playtika.testcontainer.elasticsearch;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -36,20 +38,19 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "elasticsearch")
-    ToxiproxyContainer.ContainerProxy elasticsearchContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                  @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) ElasticsearchContainer elasticSearch,
-                                                                  ElasticSearchProperties properties,
-                                                                  ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(elasticSearch, properties.getHttpPort());
+    ToxiproxyClientProxy elasticsearchContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                      ToxiproxyContainer toxiproxyContainer,
+                                                      @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) ElasticsearchContainer elasticSearch,
+                                                      ElasticSearchProperties properties,
+                                                      ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                elasticSearch,
+                properties.getHttpPort(),
+                "elasticsearch");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.elasticsearch.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.elasticsearch.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.elasticsearch.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedElasticSearchToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started ElasticSearch ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.elasticsearch", "embeddedElasticSearchToxiproxyInfo", environment);
 
         return proxy;
     }

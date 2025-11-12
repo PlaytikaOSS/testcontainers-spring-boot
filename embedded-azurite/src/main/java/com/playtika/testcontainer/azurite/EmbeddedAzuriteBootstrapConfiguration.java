@@ -2,7 +2,10 @@ package com.playtika.testcontainer.azurite;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.azurite.AzuriteProperties.AZURITE_BEAN_NAME;
@@ -36,60 +38,57 @@ public class EmbeddedAzuriteBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "azurite")
-    ToxiproxyContainer.ContainerProxy azuriteBlobContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
-                                                                AzuriteProperties properties,
-                                                                ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(azurite, properties.getBlobStoragePort());
+    ToxiproxyClientProxy azuriteBlobContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                    ToxiproxyContainer toxiproxyContainer,
+                                                    @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                    AzuriteProperties properties,
+                                                    ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                azurite,
+                properties.getBlobStoragePort(),
+                "azurite");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.azurite.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.azurite.toxiproxy.blobStoragePort", proxy.getProxyPort());
-        map.put("embedded.azurite.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedAzuriteBlobToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Azurite ToxiProxy connection details {}", map);
-
-        return proxy;
-    }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "azurite")
-    ToxiproxyContainer.ContainerProxy azuriteQueueContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                 @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
-                                                                 AzuriteProperties properties,
-                                                                 ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(azurite, properties.getQueueStoragePort());
-
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.azurite.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.azurite.toxiproxy.queueStoragePor", proxy.getProxyPort());
-        map.put("embedded.azurite.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedAzuriteQueueToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Azurite ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteBlobToxiproxyInfo", environment, "blobStoragePort");
 
         return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "azurite")
-    ToxiproxyContainer.ContainerProxy azuriteTableContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                 @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
-                                                                 AzuriteProperties properties,
-                                                                 ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(azurite, properties.getTableStoragePort());
+    ToxiproxyClientProxy azuriteQueueContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                     ToxiproxyContainer toxiproxyContainer,
+                                                     @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                     AzuriteProperties properties,
+                                                     ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                azurite,
+                properties.getQueueStoragePort(),
+                "azurite");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.azurite.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.azurite.toxiproxy.tableStoragePort", proxy.getProxyPort());
-        map.put("embedded.azurite.toxiproxy.proxyName", proxy.getName());
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteQueueToxiproxyInfo", environment, "queueStoragePor");
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedAzuriteTableToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Azurite ToxiProxy connection details {}", map);
+        return proxy;
+    }
+
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "azurite")
+    ToxiproxyClientProxy azuriteTableContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                     ToxiproxyContainer toxiproxyContainer,
+                                                     @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                     AzuriteProperties properties,
+                                                     ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                azurite,
+                properties.getTableStoragePort(),
+                "azurite");
+
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteTableToxiproxyInfo", environment, "tableStoragePort");
 
         return proxy;
     }

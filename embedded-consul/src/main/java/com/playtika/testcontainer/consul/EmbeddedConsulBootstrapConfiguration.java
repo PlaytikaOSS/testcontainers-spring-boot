@@ -2,7 +2,10 @@ package com.playtika.testcontainer.consul;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -20,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -38,20 +40,19 @@ public class EmbeddedConsulBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "consul")
-    ToxiproxyContainer.ContainerProxy consulContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                           @Qualifier(BEAN_NAME_EMBEDDED_CONSUL) GenericContainer<?> consulContainer,
-                                                           ConsulProperties properties,
-                                                           ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(consulContainer, properties.getPort());
+    ToxiproxyClientProxy consulContainerProxy(ToxiproxyClient toxiproxyClient,
+                                               ToxiproxyContainer toxiproxyContainer,
+                                               @Qualifier(BEAN_NAME_EMBEDDED_CONSUL) GenericContainer<?> consulContainer,
+                                               ConsulProperties properties,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                consulContainer,
+                properties.getPort(),
+                "consul");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.consul.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.consul.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.consul.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedConsulToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Consul ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.consul", "embeddedConsulToxiproxyInfo", environment);
 
         return proxy;
     }

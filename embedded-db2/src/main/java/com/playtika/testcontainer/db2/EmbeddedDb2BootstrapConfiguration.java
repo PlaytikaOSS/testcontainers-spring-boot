@@ -2,7 +2,10 @@ package com.playtika.testcontainer.db2;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -39,19 +41,18 @@ public class EmbeddedDb2BootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "db2")
-    ToxiproxyContainer.ContainerProxy db2ContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                        @Qualifier(BEAN_NAME_EMBEDDED_DB2) Db2Container db2,
-                                                        ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(db2, Db2Container.DB2_PORT);
+    ToxiproxyClientProxy db2ContainerProxy(ToxiproxyClient toxiproxyClient,
+                                            ToxiproxyContainer toxiproxyContainer,
+                                            @Qualifier(BEAN_NAME_EMBEDDED_DB2) Db2Container db2,
+                                            ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                db2,
+                Db2Container.DB2_PORT,
+                "db2");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.db2.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.db2.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.db2.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedDb2ToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started DB2 ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.db2", "embeddedDb2ToxiproxyInfo", environment);
 
         return proxy;
     }

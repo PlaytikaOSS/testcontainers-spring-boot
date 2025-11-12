@@ -2,7 +2,10 @@ package com.playtika.testcontainer.influxdb;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -39,20 +41,19 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "influxdb")
-    ToxiproxyContainer.ContainerProxy influxdbContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                             @Qualifier(EMBEDDED_INFLUX_DB) ConcreteInfluxDbContainer influxdb,
-                                                             InfluxDBProperties properties,
-                                                             ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(influxdb, properties.getPort());
+    ToxiproxyClientProxy influxdbContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                 ToxiproxyContainer toxiproxyContainer,
+                                                 @Qualifier(EMBEDDED_INFLUX_DB) ConcreteInfluxDbContainer influxdb,
+                                                 InfluxDBProperties properties,
+                                                 ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                influxdb,
+                properties.getPort(),
+                "influxdb");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.influxdb.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.influxdb.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.influxdb.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedInfluxDBToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started InfluxDB ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.influxdb", "embeddedInfluxDBToxiproxyInfo", environment);
 
         return proxy;
     }

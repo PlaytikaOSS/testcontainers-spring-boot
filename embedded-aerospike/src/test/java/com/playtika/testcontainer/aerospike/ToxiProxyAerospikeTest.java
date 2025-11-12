@@ -4,17 +4,17 @@ import com.aerospike.client.AerospikeException;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ToxiProxyAerospikeTest extends BaseAerospikeTest {
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy aerospikeContainerProxy;
+    ToxiproxyClientProxy aerospikeContainerProxy;
 
     @Test
     void addsLatency() throws Exception {
