@@ -1,32 +1,20 @@
 package com.playtika.testcontainer.pubsub;
 
-import com.google.api.gax.core.CredentialsProvider;
-import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.api.gax.grpc.GrpcTransportChannel;
-import com.google.api.gax.rpc.FixedTransportChannelProvider;
-import com.google.api.gax.rpc.TransportChannelProvider;
-import com.google.cloud.NoCredentials;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.support.AcknowledgeablePubsubMessage;
 import com.google.pubsub.v1.DeadLetterPolicy;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.TopicName;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
@@ -60,25 +48,6 @@ class EmbeddedPubsubBootstrapConfigurationTest {
     @EnableAutoConfiguration
     @Configuration
     static class TestConfiguration {
-
-        @Bean
-        @Primary
-        @ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)
-        public TransportChannelProvider pubsubTransportChannelProvider(@Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> container,
-                                                                        PubsubProperties properties) {
-            String host = container.getHost();
-            Integer port = container.getMappedPort(properties.getPort());
-            ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
-                    .usePlaintext()
-                    .build();
-            return FixedTransportChannelProvider.create(GrpcTransportChannel.create(channel));
-        }
-
-        @Bean
-        @Primary
-        public CredentialsProvider googleCredentials() {
-            return FixedCredentialsProvider.create(NoCredentials.getInstance());
-        }
     }
 
     @Test

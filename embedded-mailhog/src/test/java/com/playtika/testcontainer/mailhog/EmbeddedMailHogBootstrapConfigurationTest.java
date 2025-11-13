@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -28,6 +29,9 @@ class EmbeddedMailHogBootstrapConfigurationTest {
     private static final String MAILHOG_API_MESSAGES = "/api/v2/messages";
 
     @Autowired
+    ConfigurableEnvironment environment;
+
+    @Autowired
     JavaMailSender mailSender;
 
     @Value("${embedded.mailhog.host}")
@@ -36,27 +40,15 @@ class EmbeddedMailHogBootstrapConfigurationTest {
     @Value("${embedded.mailhog.http-port}")
     String mailhogApiPort;
 
-    @Value("${embedded.mailhog.smtp-port}")
-    String mailhogSmtpPort;
-
-    @Value("${embedded.mailhog.smtp.toxiproxy.host}")
-    String mailhogSmtpToxiproxyHost;
-
-    @Value("${embedded.mailhog.smtp.toxiproxy.port}")
-    String mailhogSmtpToxiproxyPort;
-
-    @Value("${embedded.mailhog.smtp.toxiproxy.proxyName}")
-    String mailhogSmtpToxiproxyProxyName;
-
     @Test
     void propertiesAreAvailable() {
-        assertThat(mailhogSmtpPort).isNotEmpty();
-        assertThat(mailhogApiPort).isNotEmpty();
-        assertThat(mailApiHost).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mailhog.smtp-port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mailhog.http-port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mailhog.host")).isNotEmpty();
 
-        assertThat(mailhogSmtpToxiproxyHost).isNotEmpty();
-        assertThat(mailhogSmtpToxiproxyPort).isNotEmpty();
-        assertThat(mailhogSmtpToxiproxyProxyName).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mailhog.smtp.toxiproxy.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mailhog.smtp.toxiproxy.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mailhog.smtp.toxiproxy.proxyName")).isNotEmpty();
     }
 
     @Test

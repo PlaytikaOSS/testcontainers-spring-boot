@@ -2,6 +2,7 @@ package com.playtika.testcontainer.pubsub;
 
 import com.google.cloud.spring.autoconfigure.core.GcpContextAutoConfiguration;
 import com.google.cloud.spring.autoconfigure.pubsub.GcpPubSubAutoConfiguration;
+import com.google.cloud.spring.autoconfigure.pubsub.GcpPubSubEmulatorAutoConfiguration;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.playtika.testcontainer.common.spring.DependsOnPostProcessor;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -17,7 +18,7 @@ import static com.playtika.testcontainer.pubsub.PubsubProperties.BEAN_NAME_EMBED
 
 @AutoConfiguration
 @AutoConfigureOrder
-@ImportAutoConfiguration(classes = {GcpContextAutoConfiguration.class, GcpPubSubAutoConfiguration.class})
+@ImportAutoConfiguration(classes = {GcpContextAutoConfiguration.class, GcpPubSubEmulatorAutoConfiguration.class, GcpPubSubAutoConfiguration.class})
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnClass(PubSubTemplate.class)
 @ConditionalOnProperty(name = "embedded.google.pubsub.enabled", matchIfMissing = true)

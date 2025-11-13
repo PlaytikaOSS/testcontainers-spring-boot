@@ -15,11 +15,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -54,26 +57,35 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         return proxy;
     }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "localstack")
-    public DynamicPropertyRegistrar localstackToxiProxyDynamicPropertyRegistrar(
-        @Qualifier("localstackContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.localstack.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.localstack.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.localstack.toxiproxy.proxyName", proxy::getName);
-        };
+        MapPropertySource propertySource = new MapPropertySource("embeddedLocalstackToxiproxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        log.info("Started Localstack ToxiProxy connection details {}", map);
+
+        return proxy;
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
-    public LocalStackContainer localStack(LocalStackProperties properties, Optional<Network> network) {
-        LocalStackContainer localStack = new LocalStackContainer(ContainerUtils.getDockerImageName(properties))
+    public LocalStackContainer localStack(ConfigurableEnvironment environment,
+                                          LocalStackProperties properties,
+                                          Optional<Network> network) {
+        LocalStackContainer localStackContainer = new LocalStackContainer(ContainerUtils.getDockerImageName(properties));
+        localStackContainer
                 .withExposedPorts(properties.getEdgePort())
+                .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
+                .withEnv("HOSTNAME", properties.getHostname())
+                .withEnv("LOCALSTACK_HOST", properties.getHostnameExternal())
+                .withEnv("SKIP_SSL_CERT_DOWNLOAD", "1")
                 .withNetworkAliases(LOCALSTACK_NETWORK_ALIAS);
-        network.ifPresent(localStack::withNetwork);
-        configureCommonsAndStart(localStack, properties, log);
-        return localStack;
+
+        network.ifPresent(localStackContainer::withNetwork);
+
+        for (LocalStackContainer.Service service : properties.services) {
+            localStackContainer.withServices(service);
+        }
+        localStackContainer = (LocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
+        registerLocalStackEnvironment(localStackContainer, environment, properties);
+        return localStackContainer;
     }
 
     private void registerLocalStackEnvironment(LocalStackContainer localStack,
