@@ -59,6 +59,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     }
 
     @Bean
+    @ConditionalOnToxiProxyEnabled(module = "azurite")
     public DynamicPropertyRegistrar azuriteBlobToxiProxyDynamicPropertyRegistrar(ToxiproxyContainer.ContainerProxy proxy) {
         return registry -> {
             registry.add("embedded.azurite.toxiproxy.host", proxy::getContainerIpAddress);

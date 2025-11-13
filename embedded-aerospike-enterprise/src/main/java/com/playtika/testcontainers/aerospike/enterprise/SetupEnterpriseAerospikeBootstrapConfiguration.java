@@ -34,7 +34,7 @@ public class SetupEnterpriseAerospikeBootstrapConfiguration {
     private GenericContainer<?> aerospikeContainer;
     private AerospikeProperties aerospikeProperties;
     private AerospikeEnterpriseProperties aerospikeEnterpriseProperties;
-    @Value("embedded.aerospike.dockerImage:")
+    @Value("${embedded.aerospike.dockerImage:}")
     private String dockerImage;
 
     @Autowired

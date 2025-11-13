@@ -57,11 +57,16 @@ public class EmbeddedMailHogBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mailhog")
-    public DynamicPropertyRegistrar mailhogSmtpToxiProxyDynamicPropertyRegistrar(@Qualifier("mailhogSmtpContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
+    public DynamicPropertyRegistrar mailhogSmtpToxiProxyDynamicPropertyRegistrar(
+        @Qualifier("mailhogSmtpContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
         return registry -> {
             registry.add("embedded.mailhog.smtp.toxiproxy.host", proxy::getContainerIpAddress);
             registry.add("embedded.mailhog.smtp.toxiproxy.port", proxy::getProxyPort);
             registry.add("embedded.mailhog.smtp.toxiproxy.proxyName", proxy::getName);
+
+            log.info("Started MailHog SMTP ToxiProxy connection details embedded.mailhog.smtp.toxiproxy.host={}, " +
+                     "embedded.mailhog.smtp.toxiproxy.port={}, embedded.mailhog.smtp.toxiproxy.proxyName={}",
+                proxy.getContainerIpAddress(), proxy.getProxyPort(), proxy.getName());
         };
     }
 
@@ -90,6 +95,13 @@ public class EmbeddedMailHogBootstrapConfiguration {
             registry.add("embedded.mailhog.networkAlias", () -> MAILHOG_NETWORK_ALIAS);
             registry.add("embedded.mailhog.internalSmtpPort", properties::getSmtpPort);
             registry.add("embedded.mailhog.internalHttpPort", properties::getHttpPort);
+
+            log.info("Started MailHog. Connection details: embedded.mailhog.host={}, " +
+                     "embedded.mailhog.smtp-port={}, embedded.mailhog.http-port={}, " +
+                     "embedded.mailhog.networkAlias={}, embedded.mailhog.internalSmtpPort={}, " +
+                     "embedded.mailhog.internalHttpPort={}", mailHog.getHost(), smtpMappedPort, httpMappedPort,
+                MAILHOG_NETWORK_ALIAS, properties.getSmtpPort(), properties.getHttpPort());
+
         };
     }
 

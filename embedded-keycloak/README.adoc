@@ -37,7 +37,7 @@
 * Bean `ToxiproxyContainer.ContainerProxy keycloakContainerProxy`
 
 ==== Example
-To configure for example the `keycloak-spring-boot-starter` use these properties in your test `application.yaml`:
+To configure for example the `keycloak-spring-boot-starter` use these properties in your test `application-test.yaml`:
 
 ./src/test/resources/application.yaml
 [source,yaml]

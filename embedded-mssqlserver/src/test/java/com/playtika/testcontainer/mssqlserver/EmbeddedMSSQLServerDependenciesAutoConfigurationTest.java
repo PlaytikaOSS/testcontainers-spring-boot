@@ -15,7 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         classes = EmbeddedMSSQLServerDependenciesAutoConfigurationTest.TestConfiguration.class,
         properties = {
-                "embedded.mssqlserver.enabled=true"
+                "embedded.mssqlserver.enabled=true",
+                "embedded.mssqlserver.password=Foobar1234!",
+                "embedded.mssqlserver.accept-licence=true",
+                "embedded.mssqlserver.init-script-path=initScript.sql"
         }
 )
 class EmbeddedMSSQLServerDependenciesAutoConfigurationTest {

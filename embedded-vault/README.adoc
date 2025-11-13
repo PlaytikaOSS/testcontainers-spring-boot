@@ -41,7 +41,7 @@
 
 ==== Example
 
-To auto-configure `spring-cloud-vault-config` use these properties in your test `application.yaml`:
+To auto-configure `spring-cloud-vault-config` use these properties in your test `application-test.yaml`:
 
 ./src/test/resources/application.yaml
 [source,yaml]

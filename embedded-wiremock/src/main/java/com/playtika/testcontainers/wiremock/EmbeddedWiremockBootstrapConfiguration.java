@@ -36,12 +36,15 @@ public class EmbeddedWiremockBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_WIREMOCK, destroyMethod = "stop")
     public GenericContainer<?> wiremock(WiremockProperties properties, Optional<Network> network) {
-        GenericContainer<?> container = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> wiremock =
+            new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+                .waitingFor(DEFAULT_WAITER)
+                .withCommand("--port " + properties.getPort())
                 .withExposedPorts(properties.getPort())
                 .withNetworkAliases(WIREMOCK_NETWORK_ALIAS);
-        network.ifPresent(container::withNetwork);
-        configureCommonsAndStart(container, properties, log);
-        return container;
+        network.ifPresent(wiremock::withNetwork);
+        configureCommonsAndStart(wiremock, properties, log);
+        return wiremock;
     }
 
     @Bean
@@ -53,6 +56,10 @@ public class EmbeddedWiremockBootstrapConfiguration {
             registry.add("embedded.wiremock.port", () -> container.getMappedPort(properties.getPort()));
             registry.add("embedded.wiremock.networkAlias", () -> WIREMOCK_NETWORK_ALIAS);
             registry.add("embedded.wiremock.internalPort", properties::getPort);
+
+            log.info("Started wiremock. Connection Details: embedded.wiremock.host={}, embedded.wiremock.port={}," +
+                     "embedded.wiremock.networkAlias={}, embedded.wiremock.internalPort={}",
+                container.getHost(), container.getMappedPort(properties.getPort()), WIREMOCK_NETWORK_ALIAS, properties.getPort());
         };
     }
 }
