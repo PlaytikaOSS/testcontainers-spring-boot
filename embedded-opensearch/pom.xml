@@ -15,7 +15,7 @@
 
     <properties>
         <spring-data-opensearch-starter.version>1.8.1</spring-data-opensearch-starter.version>
-        <opensearch-testcontainers.version>2.1.3</opensearch-testcontainers.version>
+        <opensearch-testcontainers.version>4.0.0</opensearch-testcontainers.version>
     </properties>
 
     <dependencies>
