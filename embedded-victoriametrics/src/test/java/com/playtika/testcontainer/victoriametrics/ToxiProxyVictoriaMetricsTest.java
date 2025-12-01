@@ -2,20 +2,14 @@ package com.playtika.testcontainer.victoriametrics;
 
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
 
-import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.equalTo;
 
 public class ToxiProxyVictoriaMetricsTest extends BaseEmbeddedVictoriaMetricsTest {
 
@@ -23,38 +17,18 @@ public class ToxiProxyVictoriaMetricsTest extends BaseEmbeddedVictoriaMetricsTes
     private ToxiproxyClientProxy victoriaMetricsContainerProxy;
 
     @Test
-    void shouldAddLatency() throws IOException {
-
-        UriComponents uriComponents =
-                UriComponentsBuilder.newInstance()
-                        .scheme("http")
-                        .host(victoriaMetricsToxiProxyHost)
-                        .port(victoriaMetricsToxiProxyPort)
-                        .path("/api/v1/query?query=up")
-                        .build();
-
+    void shouldAddLatency() throws Exception {
         victoriaMetricsContainerProxy.toxics()
                 .latency("latency", ToxicDirection.DOWNSTREAM, 1_100)
                 .setJitter(100);
 
-        RestAssuredConfig config = RestAssured.config()
-                .httpClient(HttpClientConfig.httpClientConfig()
-                        .setParam("http.socket.timeout", 200));
+        assertThatThrownBy(() -> queryUp(victoriaMetricsToxiProxyHost, victoriaMetricsToxiProxyPort, Duration.ofMillis(200)))
+                .isInstanceOf(HttpTimeoutException.class);
 
-        assertThatThrownBy(() -> given()
-                .config(config)
-                .get(uriComponents.toUriString()))
-                .isInstanceOf(SocketTimeoutException.class);
+        victoriaMetricsContainerProxy.toxics().get("latency").remove();
 
-        victoriaMetricsContainerProxy.toxics()
-                .get("latency").remove();
-
-        given()
-                .config(config)
-                .get(uriComponents.toUriString())
-                .then()
-                .assertThat()
-                .body("status", equalTo("success"))
-                .statusCode(200);
+        VictoriaMetricsHttpResponse actual = queryUp(victoriaMetricsToxiProxyHost, victoriaMetricsToxiProxyPort);
+        VictoriaMetricsHttpResponse expected = new VictoriaMetricsHttpResponse(200, new VictoriaMetricsQueryResponse("success"));
+        assertThat(actual).isEqualTo(expected);
     }
 }

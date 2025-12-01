@@ -7,21 +7,24 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.images.builder.Transferable;
-import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
+import org.testcontainers.mongodb.MongoDBContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,9 +34,11 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 import static com.playtika.testcontainer.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MONGODB;
 
 @Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
+@AutoConfigureBefore(name = "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration")
 @ConditionalOnProperty(
         name = "embedded.mongodb.enabled",
         havingValue = "true",
@@ -47,7 +52,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "mongodb")
     ToxiproxyClientProxy mongodbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
-                                               @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb,
+                                               @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) MongoDBContainer mongodb,
                                                MongodbProperties properties) {
         return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
@@ -59,47 +64,41 @@ public class EmbeddedMongodbBootstrapConfiguration {
     }
 
     @Bean(value = BEAN_NAME_EMBEDDED_MONGODB, destroyMethod = "stop")
-    public GenericContainer<?> mongodb(MongodbProperties properties,
-                                       Optional<Network> network) throws IOException, InterruptedException {
+    public MongoDBContainer mongodb(
+                                    MongodbProperties properties,
+                                    Optional<Network> network)  throws IOException, InterruptedException{
 
-        GenericContainer<?> mongodb;
-        if (StringUtils.isBlank(properties.getReplicaSetName())) {
-            mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                    .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
-                    .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
-                    .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
-                    .withExposedPorts(properties.getPort())
-                    .waitingFor(new MongodbWaitStrategy(properties))
-                    .withNetworkAliases(MONGODB_NETWORK_ALIAS);
-        } else {
-            mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                    .withCommand("-f", "/etc/mongod.conf")
-                    .withClasspathResourceMapping("/mongod/gen-keyfile.sh", "/docker-entrypoint-initdb.d/gen-keyfile.sh", BindMode.READ_ONLY)
-                    .withCopyToContainer(
-                            Transferable.of(
-                                    new ClassPathResource("/mongod/mongod.conf")
-                                            .getContentAsString(Charset.defaultCharset())
-                                            .replace("${replica-set-name}", properties.getReplicaSetName())
-                            )
-                            , "/etc/mongod.conf")
-                    .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
-                    .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
-                    .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
-                    .withEnv("MONGO_INITDB_REPL_SET_HOST", properties.getHost())
-                    .withExposedPorts(properties.getPort())
-                    .waitingFor(new MongodbWaitStrategy(properties))
-                    .withNetworkAliases(MONGODB_NETWORK_ALIAS);
+        MongoDBContainer mongodb = new MongoDBContainer(ContainerUtils.getDockerImageName(properties))
+            .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
+            .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
+            .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
+            .waitingFor(new MongodbWaitStrategy(properties))
+            .withNetworkAliases(MONGODB_NETWORK_ALIAS);
+
+        // Configure replica set if provided
+        if (StringUtils.isNotBlank(properties.getReplicaSetName())) {
+            mongodb = mongodb.withReuse(properties.isReuseContainer())
+                .withEnv("MONGO_INITDB_REPL_SET_HOST", properties.getHost())
+                .withCommand("-f", "/etc/mongod.conf")
+                .withClasspathResourceMapping("/mongod/gen-keyfile.sh", "/docker-entrypoint-initdb.d/gen-keyfile.sh", BindMode.READ_ONLY)
+                .withCopyToContainer(
+                    Transferable.of(
+                        new ClassPathResource("/mongod/mongod.conf")
+                            .getContentAsString(Charset.defaultCharset())
+                            .replace("${replica-set-name}", properties.getReplicaSetName())
+                    )
+                    , "/etc/mongod.conf");
         }
 
         network.ifPresent(mongodb::withNetwork);
 
-        mongodb = configureCommonsAndStart(mongodb, properties, log);
+        mongodb = (MongoDBContainer) configureCommonsAndStart(mongodb, properties, log);
         return mongodb;
     }
 
     @Bean
     public DynamicPropertyRegistrar mongodbDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb,
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) MongoDBContainer mongodb,
             MongodbProperties properties) {
         return registry -> {
             registry.add("embedded.mongodb.port", () -> mongodb.getMappedPort(properties.getPort()));

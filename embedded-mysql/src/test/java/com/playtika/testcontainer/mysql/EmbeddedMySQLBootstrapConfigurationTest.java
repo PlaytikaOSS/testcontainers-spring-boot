@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 
@@ -30,10 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         classes = EmbeddedMySQLBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
-                "spring.profiles.active=enabled",
                 "embedded.mysql.init-script-path=initScript.sql",
                 "embedded.toxiproxy.proxies.mysql.enabled=true"
         })
+@ActiveProfiles("enabled")
 public class EmbeddedMySQLBootstrapConfigurationTest {
 
     @Autowired
@@ -138,6 +139,11 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
             poolConfiguration.setTestOnBorrow(true);
             poolConfiguration.setTestOnReturn(true);
             return new org.apache.tomcat.jdbc.pool.DataSource(poolConfiguration);
+        }
+
+        @Bean
+        public JdbcTemplate jdbcTemplate(DataSource customDatasource) {
+            return new JdbcTemplate(customDatasource);
         }
     }
 }

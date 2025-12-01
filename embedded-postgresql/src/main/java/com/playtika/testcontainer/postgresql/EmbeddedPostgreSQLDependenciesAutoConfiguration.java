@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
@@ -20,8 +21,11 @@ import static com.playtika.testcontainer.postgresql.PostgreSQLProperties.BEAN_NA
 @ConditionalOnProperty(name = "embedded.postgresql.enabled", matchIfMissing = true)
 public class EmbeddedPostgreSQLDependenciesAutoConfiguration {
 
-    @Bean
-    public static BeanFactoryPostProcessor datasourcePostgreSqlDependencyPostProcessor() {
-        return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_POSTGRESQL});
+    @Configuration
+    public static class EmbeddedPostgreSQLDataSourceDependencyContext {
+        @Bean
+        public static BeanFactoryPostProcessor datasourcePostgreSqlDependencyPostProcessor() {
+            return new DependsOnPostProcessor(DataSource.class, new String[]{BEAN_NAME_EMBEDDED_POSTGRESQL});
+        }
     }
 }

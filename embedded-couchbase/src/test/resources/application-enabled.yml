@@ -1,0 +1,13 @@
+spring:
+  couchbase:
+    connection-string: couchbase://${embedded.couchbase.host}:${embedded.couchbase.bootstrapCarrierDirectPort}=kv,${embedded.couchbase.host}:${embedded.couchbase.toxiproxy.port}=manager
+    env:
+      timeouts:
+        connect: 20s
+        key-value: 20s
+    password: ${embedded.couchbase.password}
+    username: ${embedded.couchbase.user}
+  data:
+    couchbase:
+      auto-index: true
+      bucket-name: ${embedded.couchbase.bucket}

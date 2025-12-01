@@ -2,6 +2,7 @@ package com.playtika.testcontainer.artifactory;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.postgresql.EmbeddedPostgreSQLBootstrapConfiguration;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
@@ -18,24 +19,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.images.builder.Transferable;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
 
 import static com.playtika.testcontainer.artifactory.ArtifactoryProperties.ARTIFACTORY_BEAN_NAME;
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static java.time.Duration.ofSeconds;
+import static org.testcontainers.postgresql.PostgreSQLContainer.POSTGRESQL_PORT;
 
 @Slf4j
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
+@AutoConfigureAfter({DockerPresenceBootstrapConfiguration.class, EmbeddedPostgreSQLBootstrapConfiguration.class})
 @ConditionalOnProperty(name = "embedded.artifactory.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(ArtifactoryProperties.class)
 public class EmbeddedArtifactoryBootstrapConfiguration {
 
     private static final String ARTIFACTORY_NETWORK_ALIAS = "artifactory.testcontainer.docker";
+    private static final String POSTGRESQL_NETWORK_ALIAS = "postgresql.testcontainer.docker";
 
     @Bean
     @ConditionalOnMissingBean(name = "artifactoryWaitStrategy")
@@ -43,7 +49,8 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
         return new HttpWaitStrategy()
                 .forPath("/")
                 .forPort(properties.getGeneralPort())
-                .forStatusCode(200);
+                .forStatusCode(200)
+                .withStartupTimeout(ofSeconds(properties.getWaitTimeoutInSeconds()));
     }
 
     @Bean
@@ -69,14 +76,54 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
     @Bean(name = ARTIFACTORY_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> artifactory(ArtifactoryProperties properties,
                                            WaitStrategy artifactoryWaitStrategy,
-                                           Optional<Network> network) {
+                                           Network network,
+                                           @Qualifier("embeddedPostgreSql") PostgreSQLContainer postgresql) {
+        String databaseUrl = String.format("jdbc:postgresql://%s:%d/%s",
+                POSTGRESQL_NETWORK_ALIAS,
+                POSTGRESQL_PORT,
+                properties.getDatabaseName());
+
+        String systemYaml = ""
+                + "shared:\n"
+                + "  database:\n"
+                + "    type: postgresql\n"
+                + "    driver: org.postgresql.Driver\n"
+                + "    url: " + databaseUrl + "\n"
+                + "    username: " + properties.getDatabaseUser() + "\n"
+                + "    password: " + properties.getDatabasePassword() + "\n"
+                + "  security:\n"
+                + "    masterKey: " + properties.getSecurityMasterKey() + "\n"
+                + "    joinKey: " + properties.getSecurityJoinKey() + "\n";
         GenericContainer<?> container =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getRestApiPort(), properties.getGeneralPort())
-                        .withNetwork(Network.SHARED)
+                        .withNetwork(network)
                         .withNetworkAliases(properties.getNetworkAlias(), ARTIFACTORY_NETWORK_ALIAS)
+                        .withCopyToContainer(
+                                Transferable.of(systemYaml.getBytes(StandardCharsets.UTF_8), 0666),
+                                "/opt/jfrog/artifactory/var/etc/system.yaml")
+                        .withExtraHost("localhost", "127.0.0.1")
+                        .withEnv("JF_ROUTER_ENTRYPOINTS_INTERNALHOST", "::1")
+                        .withEnv("JF_SHARED_DATABASE_TYPE", "postgresql")
+                        .withEnv("JF_SHARED_DATABASE_URL", databaseUrl)
+                        .withEnv("JF_SHARED_DATABASE_USERNAME", properties.getDatabaseUser())
+                        .withEnv("JF_SHARED_DATABASE_PASSWORD", properties.getDatabasePassword())
+                        .withEnv("JF_SHARED_SECURITY_MASTER_KEY", properties.getSecurityMasterKey())
+                        .withEnv("JF_SHARED_SECURITY_JOIN_KEY", properties.getSecurityJoinKey())
+                        // Some internal services resolve config key as `shared.security.masterKey` / `shared.security.joinKey`
+                        // (camelCase). Provide both variants.
+                        .withEnv("JF_SHARED_SECURITY_MASTERKEY", properties.getSecurityMasterKey())
+                        .withEnv("JF_SHARED_SECURITY_JOINKEY", properties.getSecurityJoinKey())
+                        // Some Artifactory 7.x components still require the key files to exist.
+                        // Provide them explicitly for ephemeral test containers.
+                        .withCopyToContainer(
+                                Transferable.of((properties.getSecurityMasterKey() + "\n").getBytes(StandardCharsets.UTF_8), 0666),
+                                "/opt/jfrog/artifactory/var/etc/security/master.key")
+                        .withCopyToContainer(
+                                Transferable.of((properties.getSecurityJoinKey() + "\n").getBytes(StandardCharsets.UTF_8), 0666),
+                                "/opt/jfrog/artifactory/var/etc/security/join.key")
+                        .dependsOn(postgresql)
                         .waitingFor(artifactoryWaitStrategy);
-        network.ifPresent(container::withNetwork);
         configureCommonsAndStart(container, properties, log);
         Integer mappedPort = container.getMappedPort(properties.generalPort);
         String host = container.getHost();

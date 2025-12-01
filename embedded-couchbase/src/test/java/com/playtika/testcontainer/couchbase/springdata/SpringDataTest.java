@@ -13,6 +13,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -23,6 +24,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+@EnableCouchbaseRepositories(basePackages = "com.playtika.testcontainer.couchbase.springdata", considerNestedRepositories = true)
 public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest {
 
     @Autowired

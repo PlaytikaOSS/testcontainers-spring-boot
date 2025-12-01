@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.DefaultRecordingFileFactory;
@@ -27,6 +26,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,11 +85,10 @@ public class EmbeddedSeleniumBootstrapConfiguration {
                                               Optional<Network> network) {
 
         BrowserWebDriverContainer container = isNotBlank(properties.getDockerImage())
-                ? new BrowserWebDriverContainer<>(ContainerUtils.getDockerImageName(properties))
-                : new BrowserWebDriverContainer<>();
+                ? new BrowserWebDriverContainer(ContainerUtils.getDockerImageName(properties))
+                : new BrowserWebDriverContainer(properties.getDefaultDockerImage());
 
         container.waitingFor(getWaitStrategy());
-        container.withCapabilities(capabilities);
         container.withRecordingFileFactory(getRecordingFileFactory());
         container.withNetworkAliases(SELENIUM_NETWORK_ALIAS);
         network.ifPresent(container::withNetwork);

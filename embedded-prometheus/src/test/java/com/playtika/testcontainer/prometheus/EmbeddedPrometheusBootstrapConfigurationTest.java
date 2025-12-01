@@ -1,29 +1,23 @@
 package com.playtika.testcontainer.prometheus;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
-import static io.restassured.RestAssured.get;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class EmbeddedPrometheusBootstrapConfigurationTest extends BaseEmbeddedPrometheusTest {
 
     @Test
     void shouldHaveMetrics() {
-        UriComponents uriComponents =
-                UriComponentsBuilder.newInstance()
-                        .scheme("http")
-                        .host(prometheusHost)
-                        .port(prometheusPort)
-                        .path("/api/v1/query?query=up")
-                        .build();
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://" + prometheusHost + ":" + prometheusPort + "/api/v1/query?query=up";
 
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-        get(uriComponents.toUriString())
-                .then()
-                .assertThat()
-                .body("status", equalTo("success"))
-                .statusCode(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(JsonPath.parse(response.getBody()).read("$.status", String.class)).isEqualTo("success");
     }
 }

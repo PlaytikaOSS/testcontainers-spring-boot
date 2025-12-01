@@ -1,13 +1,17 @@
 package com.playtika.testcontainer.postgresql;
 
-import com.playtika.testcontainer.postgresql.dummyapp.TestApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -21,7 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AutoConfiguredDatasourceDependsOnTest {
 
     @ActiveProfiles("enabled")
-    @SpringBootTest(classes = TestApplication.class,
+    @SpringBootTest(
+            classes = {
+                    AutoConfiguredDatasourceDependsOnTest.TestConfiguration.class
+            },
             properties = {
                     "embedded.toxiproxy.proxies.postgresql.enabled=true"
             }
@@ -53,7 +60,6 @@ class AutoConfiguredDatasourceDependsOnTest {
 
         private void hasDependsOn(String beanName) {
             assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-                    .isNotNull()
                     .isNotEmpty()
                     .contains(BEAN_NAME_EMBEDDED_POSTGRESQL);
         }
@@ -65,5 +71,14 @@ class AutoConfiguredDatasourceDependsOnTest {
     @Nested
     @DisplayName("AutoConfigured Datasource with timescaledb:latest-pg11")
     class Timescale12Image extends TestDefaults {
+    }
+
+    @EnableAutoConfiguration
+    @ImportAutoConfiguration({
+            DataSourceAutoConfiguration.class,
+            JdbcTemplateAutoConfiguration.class
+    })
+    @Configuration
+    static class TestConfiguration {
     }
 }

@@ -4,12 +4,13 @@ import com.playtika.testcontainer.selenium.DockerHostname;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,6 +42,9 @@ public abstract class BaseEmbeddedSeleniumTest {
     @Value("${embedded.selenium.vnc.password}")
     protected String seleniumVncPassword;
 
+    @Autowired
+    protected MutableCapabilities capabilities;
+
     @LocalServerPort
     private int port;
 
@@ -49,14 +53,14 @@ public abstract class BaseEmbeddedSeleniumTest {
 
     @Test
     public void seleniumShouldWork() {
-        RemoteWebDriver driver = container.getWebDriver();
+        RemoteWebDriver driver = createWebDriver();
         getIndexPage(driver);
         assertThat(driver.getTitle()).isEqualTo("Hello World Page");
     }
 
     @Test
     public void seleniumLinkShouldWorkAndPropertiesAreAvailable() {
-        RemoteWebDriver driver = container.getWebDriver();
+        RemoteWebDriver driver = createWebDriver();
         getIndexPage(driver);
         driver.findElement(By.linkText("Test Link")).click();
         assertThat(driver.getTitle()).isEqualTo("Test Link Page");
@@ -74,8 +78,17 @@ public abstract class BaseEmbeddedSeleniumTest {
         driver.get("http://" + dockerHostname + ":" + port + "/index.html");
     }
 
+    protected RemoteWebDriver createWebDriver() {
+        return new RemoteWebDriver(container.getSeleniumAddress(), capabilities);
+    }
+
     public String getBrowserName() {
-        return (String)container.getWebDriver().getCapabilities().getCapability("browserName");
+        RemoteWebDriver driver = createWebDriver();
+        try {
+            return (String) driver.getCapabilities().getCapability("browserName");
+        } finally {
+            driver.quit();
+        }
     }
 
 }

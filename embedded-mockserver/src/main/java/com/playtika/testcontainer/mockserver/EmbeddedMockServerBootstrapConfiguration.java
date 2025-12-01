@@ -10,8 +10,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.mockserver.MockServerContainer;
 
 import java.util.Optional;
 

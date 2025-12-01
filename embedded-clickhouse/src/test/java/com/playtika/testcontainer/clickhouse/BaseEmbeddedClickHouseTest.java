@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import static com.playtika.testcontainer.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest(classes = BaseEmbeddedClickHouseTest.TestConfiguration.class,
         properties = {
-                "spring.profiles.active=enabled",
                 "embedded.clickhouse.init-script-path=initScript.sql",
                 "embedded.toxiproxy.proxies.clickhouse.enabled=true"
         })
+@ActiveProfiles("enabled")
 public abstract class BaseEmbeddedClickHouseTest {
 
     @Autowired

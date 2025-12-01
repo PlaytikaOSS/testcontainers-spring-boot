@@ -15,9 +15,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.mariadb.MariaDBContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -52,7 +52,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     public MariaDBContainer mariadb(MariaDBProperties properties,
                                     Optional<Network> network) throws Exception {
         MariaDBContainer mariadb =
-                new MariaDBContainer<>(ContainerUtils.getDockerImageName(properties))
+                new MariaDBContainer(ContainerUtils.getDockerImageName(properties))
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())

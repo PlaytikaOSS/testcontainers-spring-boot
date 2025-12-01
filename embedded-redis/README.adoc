@@ -24,6 +24,21 @@
 * `embedded.redis.requirepass` `(true|false, default is true)`
 * `embedded.toxiproxy.proxies.redis.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-redis` container.
 
+==== Redis Client Drivers
+
+The embedded-redis module supports both Jedis and Lettuce Redis client drivers:
+
+* **Jedis**: Synchronous Redis client (default when Jedis is on classpath)
+* **Lettuce**: Asynchronous and reactive Redis client, supports cluster mode and reactive operations
+
+Both drivers are optional dependencies. Spring Boot will auto-configure the appropriate connection factory based on which drivers are available on the classpath. To explicitly use Lettuce, configure:
+
+[source,properties]
+----
+spring.data.redis.client-type=lettuce
+----
+
+The module automatically ensures that `LettuceConnectionFactory` and `JedisConnectionFactory` beans depend on the embedded Redis container, ensuring proper startup order.
 
 ==== Produces
 

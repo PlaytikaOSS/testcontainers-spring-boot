@@ -33,6 +33,6 @@ public class Db2Properties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "ibmcom/db2:11.5.8.0";
+        return "icr.io/db2_community/db2:11.5.8.0";
     }
 }

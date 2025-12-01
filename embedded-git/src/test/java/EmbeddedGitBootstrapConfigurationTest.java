@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 import util.EncryptionUtils;
 
@@ -24,20 +25,20 @@ import java.security.Security;
 
 import static java.io.File.separator;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.io.FileUtils.contentEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.testcontainers.shaded.org.apache.commons.io.FileUtils.contentEquals;
 
 @Slf4j
 @SpringBootTest(
         classes = EmbeddedGitBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
-                "spring.profiles.active=enabled",
                 "embedded.git.enabled=true",
                 "embedded.git.path-to-repositories=src/test/resources/repository",
                 "embedded.git.path-to-authorized-keys=src/test/resources/key/embedded-git.pub"
         }
 )
+@ActiveProfiles("enabled")
 class EmbeddedGitBootstrapConfigurationTest {
 
     @Autowired

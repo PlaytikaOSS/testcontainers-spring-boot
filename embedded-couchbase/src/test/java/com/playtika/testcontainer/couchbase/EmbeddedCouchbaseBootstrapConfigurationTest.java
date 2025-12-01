@@ -6,15 +6,16 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
         classes = {EmbeddedCouchbaseBootstrapConfigurationTest.TestConfiguration.class},
         properties = {
-                "spring.profiles.active=enabled",
                 "embedded.toxiproxy.proxies.couchbase.enabled=true"
         })
+@ActiveProfiles("enabled")
 public abstract class EmbeddedCouchbaseBootstrapConfigurationTest {
 
     @Autowired

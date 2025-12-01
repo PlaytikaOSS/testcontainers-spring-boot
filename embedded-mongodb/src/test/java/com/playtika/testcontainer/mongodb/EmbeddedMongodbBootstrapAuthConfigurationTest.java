@@ -18,16 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(
-        properties = {
-                "embedded.mongodb.username=root",
-                "embedded.mongodb.password=letmein",
-                "spring.data.mongodb.host=${embedded.mongodb.host}",
-                "spring.data.mongodb.port=${embedded.mongodb.port}",
-                "spring.data.mongodb.username=${embedded.mongodb.username}",
-                "spring.data.mongodb.password=${embedded.mongodb.password}",
-                "spring.data.mongodb.database=${embedded.mongodb.database}",
-                "spring.data.mongodb.authentication-database=admin"
-        }
+    properties = {
+        "embedded.mongodb.username=root",
+        "embedded.mongodb.password=letmein",
+        "spring.mongodb.uri=mongodb://${embedded.mongodb.username}:${embedded.mongodb.password}@${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}?authSource=admin"
+    }
         ,classes = EmbeddedMongodbBootstrapAuthConfigurationTest.TestConfiguration.class
 )
 public class EmbeddedMongodbBootstrapAuthConfigurationTest {

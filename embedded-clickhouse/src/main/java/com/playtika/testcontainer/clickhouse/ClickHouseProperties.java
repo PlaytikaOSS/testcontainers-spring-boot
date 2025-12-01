@@ -14,7 +14,7 @@ public class ClickHouseProperties extends CommonContainerProperties {
     String host = "localhost";
     int port = 8123;
     String user = "default";
-    String password = "";
+    String password = "test";
 
     String initScriptPath;
 

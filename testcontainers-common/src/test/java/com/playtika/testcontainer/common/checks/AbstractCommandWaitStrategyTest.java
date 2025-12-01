@@ -1,12 +1,13 @@
 package com.playtika.testcontainer.common.checks;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class AbstractCommandWaitStrategyTest {
 
@@ -17,10 +18,7 @@ public class AbstractCommandWaitStrategyTest {
 
     @Test
     public void should_failStartupChecks_ifHealthCheckCmdIsFailed() {
-        Assertions.assertThrows(
-                ContainerLaunchException.class,
-                () -> startContainerWithWaitStrategy(new NegativeCommandWaitStrategy())
-        );
+        assertThatExceptionOfType(ContainerLaunchException.class).isThrownBy(() -> startContainerWithWaitStrategy(new NegativeCommandWaitStrategy()));
     }
 
     private void startContainerWithWaitStrategy(WaitStrategy waitStrategy) {

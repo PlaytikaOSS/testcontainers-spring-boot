@@ -15,9 +15,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.neo4j.Neo4jContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -56,7 +56,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
     public Neo4jContainer neo4j(Neo4jProperties properties, Optional<Network> network) {
-        Neo4jContainer neo4j = new Neo4jContainer<>(ContainerUtils.getDockerImageName(properties))
+        Neo4jContainer neo4j = new Neo4jContainer(ContainerUtils.getDockerImageName(properties))
                 .withAdminPassword(properties.password)
                 .withNetworkAliases(NEO4J_NETWORK_ALIAS);
 

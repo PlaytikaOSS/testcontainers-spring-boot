@@ -38,6 +38,7 @@
         <module>testcontainers-spring-boot-bom</module>
         <module>testcontainers-spring-boot-parent</module>
         <module>testcontainers-common</module>
+        <module>embedded-toxiproxy</module>
         <module>embedded-kafka</module>
         <module>embedded-native-kafka</module>
         <module>embedded-keycloak</module>
@@ -72,7 +73,6 @@
         <module>embedded-db2</module>
         <module>embedded-artifactory</module>
         <module>embedded-azurite</module>
-        <module>embedded-toxiproxy</module>
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>

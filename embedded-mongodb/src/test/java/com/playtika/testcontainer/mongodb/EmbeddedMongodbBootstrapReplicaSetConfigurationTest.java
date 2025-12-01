@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "embedded.mongodb.username=root",
                 "embedded.mongodb.password=letmein",
                 "embedded.mongodb.replica-set-name=rs0",
-                "spring.data.mongodb.uri=mongodb://${embedded.mongodb.username}:${embedded.mongodb.password}@${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}?replicaSet=${embedded.mongodb.replica-set-name}&directConnection=true&authSource=admin"
+                "spring.mongodb.uri=mongodb://${embedded.mongodb.username}:${embedded.mongodb.password}@${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}?replicaSet=${embedded.mongodb.replica-set-name}&directConnection=true&authSource=admin"
         }
         , classes = EmbeddedMongodbBootstrapReplicaSetConfigurationTest.TestConfiguration.class
 )

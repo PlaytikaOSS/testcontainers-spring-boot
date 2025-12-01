@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DisableNativeKafkaTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
-                    EmbeddedNativeKafkaBootstrapConfiguration.class,
+                EmbeddedNativeKafkaBootstrapConfiguration.class,
                     EmbeddedNativeKafkaTestOperationsAutoConfiguration.class));
 
     @Test

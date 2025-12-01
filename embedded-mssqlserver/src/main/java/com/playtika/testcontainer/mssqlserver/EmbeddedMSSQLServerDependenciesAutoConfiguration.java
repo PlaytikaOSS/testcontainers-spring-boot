@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 import javax.sql.DataSource;
 
-@AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
+@AutoConfiguration(afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @ConditionalOnClass(DataSource.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(name = "embedded.mssqlserver.enabled", matchIfMissing = true)

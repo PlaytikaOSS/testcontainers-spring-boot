@@ -11,8 +11,11 @@ import com.azure.storage.queue.models.SendMessageResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
@@ -59,9 +62,29 @@ class EmbeddedAzuriteBoostrapConfigurationTest {
         queueClient.delete();
     }
 
+    @Configuration
     @EnableAutoConfiguration
     public static class AzuriteTestConfiguration {
 
+        @Bean
+        public BlobServiceClientBuilder blobServiceClientBuilder(
+                @Value("${embedded.azurite.account-name}") String accountName,
+                @Value("${embedded.azurite.account-key}") String accountKey,
+                @Value("${embedded.azurite.blob-endpoint}") String endpoint) {
+            return new BlobServiceClientBuilder()
+                    .connectionString(String.format("DefaultEndpointsProtocol=http;AccountName=%s;AccountKey=%s;BlobEndpoint=%s;",
+                            accountName, accountKey, endpoint));
+        }
+
+        @Bean
+        public QueueServiceClientBuilder queueServiceClientBuilder(
+                @Value("${embedded.azurite.account-name}") String accountName,
+                @Value("${embedded.azurite.account-key}") String accountKey,
+                @Value("${embedded.azurite.queue-endpoint}") String endpoint) {
+            return new QueueServiceClientBuilder()
+                    .connectionString(String.format("DefaultEndpointsProtocol=http;AccountName=%s;AccountKey=%s;QueueEndpoint=%s;",
+                            accountName, accountKey, endpoint));
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -44,8 +45,13 @@ public class EmbeddedFirefoxSeleniumBeanConfigurationTest extends BaseEmbeddedSe
     @Test
     public void testThatTestCapabilityIsSet() {
         // default is true, false is set in localtestconfiguration
-        boolean acceptUnsecureCertificates = (boolean)container.getWebDriver().getCapabilities().getCapability(CapabilityType.ACCEPT_INSECURE_CERTS);
-        assertThat(acceptUnsecureCertificates).isFalse();
+        RemoteWebDriver driver = createWebDriver();
+        try {
+            boolean acceptUnsecureCertificates = (boolean) driver.getCapabilities().getCapability(CapabilityType.ACCEPT_INSECURE_CERTS);
+            assertThat(acceptUnsecureCertificates).isFalse();
+        } finally {
+            driver.quit();
+        }
     }
 
     @TestConfiguration

@@ -4,7 +4,6 @@ import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.policy.WritePolicy;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import static java.time.Duration.ofDays;
 import static java.time.Duration.ofHours;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class AerospikeTimeTravelTest extends BaseAerospikeTest {
 
@@ -91,7 +91,7 @@ public class AerospikeTimeTravelTest extends BaseAerospikeTest {
     @Test
     public void shouldNotSetFutureTime() {
         OffsetDateTime minusDay = DateTimeUtils.now().minusDays(1);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> aerospikeTestOperations.timeTravelTo(minusDay));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> aerospikeTestOperations.timeTravelTo(minusDay));
     }
 
     @Test

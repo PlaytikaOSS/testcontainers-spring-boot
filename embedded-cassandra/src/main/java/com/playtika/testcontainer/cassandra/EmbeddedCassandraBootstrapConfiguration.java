@@ -16,12 +16,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.DynamicPropertyRegistrar;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.delegate.CassandraDatabaseDelegate;
 import org.testcontainers.delegate.DatabaseDelegate;
 import org.testcontainers.ext.ScriptUtils;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import javax.script.ScriptException;
 
@@ -71,7 +71,7 @@ public class EmbeddedCassandraBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")
     public CassandraContainer cassandra(CassandraProperties properties,
                                         Optional<Network> network) throws Exception {
-        CassandraContainer cassandra = new CassandraContainer<>(ContainerUtils.getDockerImageName(properties))
+        CassandraContainer cassandra = new CassandraContainer(ContainerUtils.getDockerImageName(properties))
             .withExposedPorts(properties.getPort())
             .withNetworkAliases(CASSANDRA_NETWORK_ALIAS);
         network.ifPresent(cassandra::withNetwork);
@@ -97,7 +97,7 @@ public class EmbeddedCassandraBootstrapConfiguration {
         };
     }
 
-    private void initKeyspace(CassandraProperties properties, CassandraContainer<?> cassandra) throws ScriptException {
+    private void initKeyspace(CassandraProperties properties, CassandraContainer cassandra) throws ScriptException {
         String initScriptContent = prepareCassandraInitScript(properties);
         try (DatabaseDelegate databaseDelegate = new CassandraDatabaseDelegate(cassandra)) {
             ScriptUtils.executeDatabaseScript(databaseDelegate, "init.cql", initScriptContent);

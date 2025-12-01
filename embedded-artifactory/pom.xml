@@ -23,6 +23,11 @@
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.rest-assured</groupId>

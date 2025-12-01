@@ -86,7 +86,11 @@ An example test class would look like the following:
 
 [source,java]
 -----------------
-import org.openqa.selenium.WebDriver;@RunWith(SpringRunner.class)
+import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
+@RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = SpringBootWebApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -103,11 +107,18 @@ public class TestLoginPage {
     @Autowired
     private BrowserWebDriverContainer webDriverContainer;
 
+    @Autowired
+    private MutableCapabilities capabilities;
+
     @Test
     public void test1() {
-        RemoteWebDriver webDriver = webDriverContainer.getWebDriver();
-        webDriver.get("https://" + hostname +":" + port);
-        assertThat(webDriver.getPageSource()).contains("helloworld");
+        RemoteWebDriver webDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(), capabilities);
+        try {
+            webDriver.get("https://" + hostname +":" + port);
+            assertThat(webDriver.getPageSource()).contains("helloworld");
+        } finally {
+            webDriver.quit();
+        }
     }
 
     @TestConfiguration

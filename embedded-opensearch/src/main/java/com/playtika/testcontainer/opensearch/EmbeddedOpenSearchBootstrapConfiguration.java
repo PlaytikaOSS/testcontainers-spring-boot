@@ -6,7 +6,7 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
-import org.opensearch.testcontainers.OpensearchContainer;
+import org.opensearch.testcontainers.OpenSearchContainer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -39,7 +39,7 @@ public class EmbeddedOpenSearchBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "opensearch")
     ToxiproxyClientProxy opensearchContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
-                                                   @Qualifier(BEAN_NAME_EMBEDDED_OPEN_SEARCH) OpensearchContainer opensearch,
+                                                   @Qualifier(BEAN_NAME_EMBEDDED_OPEN_SEARCH) OpenSearchContainer opensearch,
                                                    OpenSearchProperties properties) {
         return ToxiproxyHelper.createProxy(
                 toxiproxyClient,

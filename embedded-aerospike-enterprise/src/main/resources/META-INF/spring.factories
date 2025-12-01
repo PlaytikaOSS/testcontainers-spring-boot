@@ -1,2 +1,3 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+com.playtika.testcontainer.aerospike.EmbeddedAerospikeBootstrapConfiguration,\
 com.playtika.testcontainers.aerospike.enterprise.SetupEnterpriseAerospikeBootstrapConfiguration

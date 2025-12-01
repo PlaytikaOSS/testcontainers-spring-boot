@@ -15,6 +15,7 @@ import static java.lang.String.format;
 public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     public static final int KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL = 8080;
+    public static final int KEYCLOAK_DEFAULT_HTTPS_PORT_INTERNAL = 8443;
 
     private final KeycloakProperties properties;
     private final ResourceLoader resourceLoader;
@@ -30,6 +31,8 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
     protected void configure() {
         withEnv("HTTP_ENABLED", String.valueOf(true));
         withEnv("HTTP_PORT", String.valueOf(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL));
+        withEnv("KC_HOSTNAME_STRICT", "false");
+        withEnv("KC_HOSTNAME_STRICT_HTTPS", "false");
         withExposedPorts(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
         withEnv("KEYCLOAK_ADMIN", properties.getAdminUser());
         withEnv("KEYCLOAK_ADMIN_PASSWORD", properties.getAdminPassword());
@@ -140,16 +143,20 @@ public class KeycloakContainer extends GenericContainer<KeycloakContainer> {
 
     private WaitStrategy waitForListeningPort() {
         return Wait
-                .forListeningPort()
-                .withStartupTimeout(properties.getTimeoutDuration());
+            .forListeningPort()
+            .withStartupTimeout(properties.getTimeoutDuration());
     }
 
     public String getIp() {
-        return getContainerIpAddress();
+        return getHost();
     }
 
     public Integer getHttpPort() {
         return getMappedPort(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
+    }
+
+    public Integer getHttpsPort() {
+        return getMappedPort(KEYCLOAK_DEFAULT_HTTPS_PORT_INTERNAL);
     }
 
     public String getAuthServerUrl() {

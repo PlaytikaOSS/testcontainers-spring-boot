@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.SolrContainer;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.solr.SolrContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -57,7 +57,7 @@ public class EmbeddedSolrBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_SOLR, destroyMethod = "stop")
-    public GenericContainer<?> solrContainer(SolrProperties properties, Optional<Network> network) {
+    public SolrContainer solrContainer(SolrProperties properties, Optional<Network> network) {
         SolrContainer solrContainer = new SolrContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .withNetworkAliases(SOLR_NETWORK_ALIAS);

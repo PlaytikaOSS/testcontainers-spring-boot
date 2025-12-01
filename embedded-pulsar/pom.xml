@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>pulsar</artifactId>
+            <artifactId>testcontainers-pulsar</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>

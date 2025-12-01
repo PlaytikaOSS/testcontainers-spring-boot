@@ -123,5 +123,10 @@ class EmbeddedOracleBootstrapConfigurationTest {
             poolConfiguration.setTestOnReturn(true);
             return new org.apache.tomcat.jdbc.pool.DataSource(poolConfiguration);
         }
+
+        @Bean
+        public JdbcTemplate jdbcTemplate(DataSource customDatasource) {
+            return new JdbcTemplate(customDatasource);
+        }
     }
 }

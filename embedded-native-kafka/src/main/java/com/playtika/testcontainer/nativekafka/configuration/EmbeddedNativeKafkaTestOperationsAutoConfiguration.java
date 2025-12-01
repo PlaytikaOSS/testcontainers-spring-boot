@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.kafka.KafkaContainer;
 
 import static com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties.NATIVE_KAFKA_BEAN_NAME;
 import static com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties.NATIVE_KAFKA_PACKAGE_PROPERTIES_BEAN_NAME;
@@ -30,7 +30,7 @@ public class EmbeddedNativeKafkaTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller nativeKafkaPackageInstaller(@Qualifier(NATIVE_KAFKA_PACKAGE_PROPERTIES_BEAN_NAME) InstallPackageProperties nativeKafkaPackageProperties,
-                                                       @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka) {
+                                                       @Qualifier(NATIVE_KAFKA_BEAN_NAME) KafkaContainer nativeKafka) {
         return new YumPackageInstaller(nativeKafkaPackageProperties, nativeKafka);
     }
 }

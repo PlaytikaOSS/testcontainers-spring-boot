@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 
@@ -30,10 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         classes = EmbeddedCockroachDBBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
-                "spring.profiles.active=enabled",
                 "embedded.cockroach.init-script-path=initScript.sql",
                 "embedded.toxiproxy.proxies.cockroach.enabled=true"
         })
+@ActiveProfiles("enabled")
 public class EmbeddedCockroachDBBootstrapConfigurationTest {
 
     @Autowired

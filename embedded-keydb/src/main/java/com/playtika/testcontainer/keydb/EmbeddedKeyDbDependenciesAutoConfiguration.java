@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import redis.clients.jedis.Jedis;
 
 import static com.playtika.testcontainer.keydb.KeyDbProperties.BEAN_NAME_EMBEDDED_KEYDB;
@@ -38,6 +39,15 @@ public class EmbeddedKeyDbDependenciesAutoConfiguration {
     @Bean
     public static BeanFactoryPostProcessor redisTemplateDependencyPostProcessor() {
       return new DependsOnPostProcessor(RedisTemplate.class, new String[]{BEAN_NAME_EMBEDDED_KEYDB});
+    }
+  }
+
+  @Configuration
+  @ConditionalOnClass(StringRedisTemplate.class)
+  public static class StringRedisTemplateDependencyContext {
+    @Bean
+    public static BeanFactoryPostProcessor stringRedisTemplateDependencyPostProcessor() {
+      return new DependsOnPostProcessor(StringRedisTemplate.class, new String[]{BEAN_NAME_EMBEDDED_KEYDB});
     }
   }
 

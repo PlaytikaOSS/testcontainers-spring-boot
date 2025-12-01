@@ -1,0 +1,5 @@
+embedded:
+  postgresql:
+    database: artifactory
+    password: password
+    user: artifactory

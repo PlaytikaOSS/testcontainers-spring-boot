@@ -23,10 +23,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.Container;
 
+import java.util.List;
+
 import static io.temporal.api.enums.v1.EventType.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 class EmbeddedTemporalBootstrapConfigurationTest {
 
@@ -72,7 +73,10 @@ class EmbeddedTemporalBootstrapConfigurationTest {
                     .expectStatus().isOk()
                     .expectBody()
                     .jsonPath("$.history.events[*].eventType")
-                    .value(hasItem(EVENT_TYPE_WORKFLOW_EXECUTION_STARTED.toString()));
+                    .value(events -> {
+                        List<String> eventTypes = (List<String>) events;
+                        assertThat(eventTypes).contains(EVENT_TYPE_WORKFLOW_EXECUTION_STARTED.toString());
+                    });
         }
     }
 

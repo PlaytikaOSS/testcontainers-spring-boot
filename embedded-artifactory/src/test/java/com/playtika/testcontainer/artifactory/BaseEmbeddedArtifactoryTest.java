@@ -8,7 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = BaseEmbeddedArtifactoryTest.TestConfiguration.class
+        classes = BaseEmbeddedArtifactoryTest.TestConfiguration.class,
+        properties = {
+                "embedded.postgresql.user=artifactory",
+                "embedded.postgresql.password=password",
+                "embedded.postgresql.database=artifactory"
+        }
 )
 class BaseEmbeddedArtifactoryTest {
     @Value("${embedded.artifactory.host}")

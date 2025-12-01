@@ -57,18 +57,15 @@ public class SpringDataTest extends EmbeddedOpenSearchBootstrapConfigurationTest
     public void shouldSetupDependsOnForNewClient() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
 
-        if (beanNamesForType.length > 0) {
-            assertThat(beanNamesForType)
-                    .as("New client should be present")
-                    .hasSize(1)
-                    .contains("opensearchRestClient");
-            asList(beanNamesForType).forEach(this::hasDependsOn);
-        }
+        assertThat(beanNamesForType)
+                .as("RestClient should be present")
+                .hasSize(1)
+                .contains("opensearchRestClient");
+        asList(beanNamesForType).forEach(this::hasDependsOn);
     }
 
     private void hasDependsOn(String beanName) {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-                .isNotNull()
                 .isNotEmpty()
                 .contains(OpenSearchProperties.BEAN_NAME_EMBEDDED_OPEN_SEARCH);
     }

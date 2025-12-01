@@ -19,9 +19,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -60,7 +60,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
     public CouchbaseContainer couchbase(CouchbaseProperties properties,
                                         Optional<Network> network) {
         BucketDefinition bucketDefinition = new BucketDefinition(properties.getBucket())
-                .withPrimaryIndex(true)
+                .withPrimaryIndex(false)
                 .withQuota(properties.getBucketRamMb());
 
         CouchbaseContainer couchbase = new CouchbaseContainer(ContainerUtils.getDockerImageName(properties))

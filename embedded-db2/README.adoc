@@ -16,7 +16,7 @@
 
 * `embedded.db2.enabled` `(true|false, default is true)`
 * `embedded.db2.reuseContainer` `(true|false, default is false)`
-* `embedded.db2.dockerImage` `(default is 'ibmcom/db2:latest')`
+* `embedded.db2.dockerImage` `(default is 'icr.io/db2_community/db2:11.5.8.0')`
 ** Image versions: https://hub.docker.com/r/ibmcom/db2
 * `embedded.db2.user` `(default is db2inst1)`
 * `embedded.db2.password` `(default is foobar1234)`

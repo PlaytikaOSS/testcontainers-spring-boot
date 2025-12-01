@@ -3,13 +3,19 @@ package com.playtika.testcontainer.kafka;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Order(5)
 @TestPropertySource(properties = {
@@ -32,11 +38,21 @@ class EmbeddedSchemaRegistryAuthTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     void authenticationSucceeded() {
-        TestRestTemplate restTemplate = new TestRestTemplate(new RestTemplateBuilder()
-                .rootUri(String.format("http://%s:%d", host, port))
-                .basicAuthentication(username, password));
+        RestTemplate restTemplate = new RestTemplate();
+        String baseUrl = String.format("http://%s:%d", host, port);
 
-        ResponseEntity<String> response = restTemplate.getForEntity("/", String.class);
+        HttpHeaders headers = new HttpHeaders();
+        String auth = username + ":" + password;
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+        String authHeader = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8);
+        headers.set("Authorization", authHeader);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                baseUrl + "/",
+                org.springframework.http.HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class
+        );
 
         assertThat(response)
                 .extracting(ResponseEntity::getStatusCode)
@@ -45,13 +61,12 @@ class EmbeddedSchemaRegistryAuthTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     void authenticationFailed() {
-        TestRestTemplate restTemplate = new TestRestTemplate(new RestTemplateBuilder()
-                .rootUri(String.format("http://%s:%d", host, port)));
+        RestTemplate restTemplate = new RestTemplate();
+        String baseUrl = String.format("http://%s:%d", host, port);
 
-        ResponseEntity<String> response = restTemplate.getForEntity("/", String.class);
-
-        assertThat(response)
-                .extracting(ResponseEntity::getStatusCode)
+        assertThatThrownBy(() -> restTemplate.getForEntity(baseUrl + "/", String.class))
+                .isInstanceOf(HttpClientErrorException.class)
+                .extracting(ex -> ((HttpClientErrorException) ex).getStatusCode())
                 .isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 }

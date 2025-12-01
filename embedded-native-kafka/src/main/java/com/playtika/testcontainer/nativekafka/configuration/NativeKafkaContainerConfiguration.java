@@ -17,10 +17,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class NativeKafkaContainerConfiguration {
     }
 
     @Bean(name = NATIVE_KAFKA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> nativeKafka(
+    public KafkaContainer nativeKafka(
             NativeKafkaConfigurationProperties nativeKafkaProperties,
             Optional<Network> network) {
 
@@ -83,7 +82,7 @@ public class NativeKafkaContainerConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public NativeKafkaTopicsConfigurer nativeKafkaTopicsConfigurer(
-            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
+            @Qualifier(NATIVE_KAFKA_BEAN_NAME) KafkaContainer nativeKafka,
             NativeKafkaConfigurationProperties nativeKafkaProperties) {
         return new NativeKafkaTopicsConfigurer(nativeKafka, nativeKafkaProperties);
     }
@@ -93,7 +92,7 @@ public class NativeKafkaContainerConfiguration {
     ToxiproxyClientProxy nativeKafkaContainerProxy(
             ToxiproxyClient toxiproxyClient,
             ToxiproxyContainer toxiproxyContainer,
-            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
+            @Qualifier(NATIVE_KAFKA_BEAN_NAME) KafkaContainer nativeKafka,
             NativeKafkaConfigurationProperties properties) {
 
         return ToxiproxyHelper.createProxy(
@@ -123,10 +122,10 @@ public class NativeKafkaContainerConfiguration {
 
     @Bean
     public DynamicPropertyRegistrar nativeKafkaDynamicPropertyRegistrar(
-            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
+            @Qualifier(NATIVE_KAFKA_BEAN_NAME) KafkaContainer nativeKafka,
             NativeKafkaConfigurationProperties nativeKafkaProperties) {
         return registry -> {
-            String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
+            String bootstrapServers = nativeKafka.getBootstrapServers();
             String host = nativeKafka.getHost();
             Integer port = nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort());
 

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 
@@ -21,9 +22,8 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringBootTest(classes = NonAutoConfiguredDatasourceDependsOnTest.TestConfiguration.class,
-        properties = {"spring.profiles.active=enabled"}
-)
+@SpringBootTest(classes = NonAutoConfiguredDatasourceDependsOnTest.TestConfiguration.class)
+@ActiveProfiles("enabled")
 public class NonAutoConfiguredDatasourceDependsOnTest {
 
     @Autowired
@@ -33,12 +33,12 @@ public class NonAutoConfiguredDatasourceDependsOnTest {
     JdbcTemplate jdbcTemplate;
 
     @Test
-    public void shouldConnectToMemSql() throws Exception {
+    public void shouldConnectToMemSql() {
         assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("SingleStoreDB");
     }
 
     @Test
-    public void shouldSetupDependsOnForAllDataSources() throws Exception {
+    public void shouldSetupDependsOnForAllDataSources() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DataSource.class);
         assertThat(beanNamesForType)
                 .as("Non auto-configured datasource should be present")
@@ -77,6 +77,11 @@ public class NonAutoConfiguredDatasourceDependsOnTest {
             poolConfiguration.setTestOnBorrow(true);
             poolConfiguration.setTestOnReturn(true);
             return new org.apache.tomcat.jdbc.pool.DataSource(poolConfiguration);
+        }
+
+        @Bean
+        public JdbcTemplate jdbcTemplate(DataSource customDatasource) {
+            return new JdbcTemplate(customDatasource);
         }
     }
 }

@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.util.StringUtils;
-import org.testcontainers.containers.ClickHouseContainer;
+import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -60,18 +60,16 @@ public class EmbeddedClickHouseBootstrapConfiguration {
     public ClickHouseContainer clickHouseContainer(ClickHouseProperties properties,
                                                    Optional<Network> network) {
         ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties))
+                .withUsername(properties.getUser())
+                .withPassword(properties.getPassword())
                 .withInitScript(properties.getInitScriptPath())
                 .withNetworkAliases(CLICKHOUSE_NETWORK_ALIAS);
         network.ifPresent(clickHouseContainer::withNetwork);
-        String username = !StringUtils.hasLength(properties.getUser()) ? clickHouseContainer.getUsername() : properties.getUser();
-        String password = !StringUtils.hasLength(properties.getPassword()) ? clickHouseContainer.getPassword() : properties.getPassword();
-        clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
-        clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", password == null ? "" : password);
         clickHouseContainer = (ClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
         Integer mappedPort = clickHouseContainer.getMappedPort(properties.port);
         String host = clickHouseContainer.getHost();
         log.info("Started ClickHouse server. Connection details: schema=default, host={}, port={}, user={}, password={}, networkAlias={}, internalPort={}",
-                host, mappedPort, username, password, CLICKHOUSE_NETWORK_ALIAS, properties.getPort());
+                host, mappedPort, clickHouseContainer.getUsername(), clickHouseContainer.getPassword(), CLICKHOUSE_NETWORK_ALIAS, properties.getPort());
         return clickHouseContainer;
     }
 

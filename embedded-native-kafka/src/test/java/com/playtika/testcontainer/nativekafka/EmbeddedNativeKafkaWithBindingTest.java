@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.DockerClientFactory;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.PathUtils;
 
 import java.net.URI;
@@ -30,7 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EmbeddedNativeKafkaWithBindingTest extends EmbeddedNativeKafkaTest {
 
     @AfterAll
-    public static void afterAll(@Autowired NativeKafkaConfigurationProperties nativeKafkaProperties, @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka) throws Exception {
+    public static void afterAll(@Autowired NativeKafkaConfigurationProperties nativeKafkaProperties,
+                                @Qualifier(NATIVE_KAFKA_BEAN_NAME) KafkaContainer nativeKafka) throws Exception {
         Path projectDir = projectDir();
         Path nativeKafkaDataFolder = projectDir.resolve(nativeKafkaProperties.getFileSystemBind().getDataFolder());
 

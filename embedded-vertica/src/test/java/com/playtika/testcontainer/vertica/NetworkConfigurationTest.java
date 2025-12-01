@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
@@ -21,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NetworkConfigurationTest {
 
     @Nested
+    @ActiveProfiles("enabled")
     @SpringBootTest(
         classes = TestConfiguration.class,
         properties = {
-            "spring.profiles.active=enabled",
             "embedded.vertica.enabled=true",
             "embedded.vertica.custom-network=true"
         }
@@ -49,11 +50,9 @@ class NetworkConfigurationTest {
     }
 
     @Nested
+    @ActiveProfiles("enabled")
     @SpringBootTest(
-        classes = TestConfiguration.class,
-        properties = {
-            "spring.profiles.active=enabled",
-        }
+        classes = TestConfiguration.class
     )
     class DefaultNetworkConfigurationTest {
 

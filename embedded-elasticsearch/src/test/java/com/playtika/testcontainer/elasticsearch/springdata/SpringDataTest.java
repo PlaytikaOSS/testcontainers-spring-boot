@@ -1,8 +1,8 @@
 package com.playtika.testcontainer.elasticsearch.springdata;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.playtika.testcontainer.elasticsearch.ElasticSearchProperties;
 import com.playtika.testcontainer.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
-import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +26,11 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
         String key = "test::1";
         String value = "myvalue";
         assertThat(documentRepository).isNotNull();
-        assertThat(documentRepository.findById(key).isPresent()).isFalse();
+        assertThat(documentRepository.findById(key)).isNotPresent();
 
         TestDocument testDocument = saveDocument(key, value);
 
-        assertThat(documentRepository.findById(key).get()).isEqualTo(testDocument);
+        assertThat(documentRepository.findById(key)).contains(testDocument);
     }
 
     @Test
@@ -42,25 +42,24 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
 
         List<TestDocument> resultList = documentRepository.findByTitle(title);
 
-        assertThat(resultList.size()).isEqualTo(2);
+        assertThat(resultList).hasSize(2);
     }
 
     @Test
-    public void shouldSetupDependsOnForNewClient() {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
+    public void shouldSetupDependsOnForElasticsearchClient() {
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, ElasticsearchClient.class);
 
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)
-                    .as("New client should be present")
+                    .as("Elasticsearch client should be present")
                     .hasSize(1)
-                    .contains("elasticsearchRestClient");
+                    .contains("elasticsearchClient");
             asList(beanNamesForType).forEach(this::hasDependsOn);
         }
     }
 
     private void hasDependsOn(String beanName) {
         assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-                .isNotNull()
                 .isNotEmpty()
                 .contains(ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH);
     }

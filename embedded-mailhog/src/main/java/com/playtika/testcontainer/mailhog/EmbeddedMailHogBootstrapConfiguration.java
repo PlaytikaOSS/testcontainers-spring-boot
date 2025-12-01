@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +21,8 @@ import org.springframework.core.Ordered;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +34,7 @@ import static com.playtika.testcontainer.mailhog.MailHogProperties.BEAN_NAME_EMB
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
-@AutoConfigureBefore(MailSenderAutoConfiguration.class)
+@AutoConfigureBefore(name = "org.springframework.boot.mail.autoconfigure.MailSenderAutoConfiguration")
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.mailhog.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MailHogProperties.class)

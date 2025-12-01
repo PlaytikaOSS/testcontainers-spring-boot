@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 
@@ -29,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         classes = EmbeddedMariaDBBootstrapConfigurationTest.TestConfiguration.class,
         properties = {
-                "spring.profiles.active=enabled",
                 "embedded.mariadb.init-script-path=initScript.sql",
                 "embedded.toxiproxy.proxies.mariadb.enabled=true"
         })
+@ActiveProfiles("enabled")
 public class EmbeddedMariaDBBootstrapConfigurationTest {
 
     @Autowired

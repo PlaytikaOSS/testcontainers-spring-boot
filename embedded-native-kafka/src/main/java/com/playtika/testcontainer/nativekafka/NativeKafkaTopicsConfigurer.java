@@ -10,7 +10,6 @@ import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.InitializingBean;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.kafka.KafkaContainer;
 
 import java.util.Collection;
@@ -28,7 +27,7 @@ import static java.util.stream.Collectors.toMap;
 public class NativeKafkaTopicsConfigurer implements InitializingBean {
     private static final int DEFAULT_PARTITION_COUNT = 1;
 
-    private final GenericContainer<?> nativeKafka;
+    private final KafkaContainer nativeKafka;
     private final NativeKafkaConfigurationProperties nativeKafkaProperties;
 
     @Override

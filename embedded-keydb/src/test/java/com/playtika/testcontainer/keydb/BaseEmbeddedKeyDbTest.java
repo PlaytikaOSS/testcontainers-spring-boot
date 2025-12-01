@@ -2,19 +2,20 @@ package com.playtika.testcontainer.keydb;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = BaseEmbeddedKeyDbTest.TestConfiguration.class)
 @ActiveProfiles("enabled")
 public abstract class BaseEmbeddedKeyDbTest {
 
@@ -52,6 +53,11 @@ public abstract class BaseEmbeddedKeyDbTest {
     assertThat(keydbHost).isNotEmpty();
     assertThat(keydbUser).isNotEmpty();
     assertThat(keydbPassword).isNotEmpty();
+  }
+
+  @EnableAutoConfiguration
+  @Configuration
+  static class TestConfiguration {
   }
 
 }

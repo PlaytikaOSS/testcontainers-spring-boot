@@ -1,0 +1,16 @@
+logging:
+    level:
+        com.playtika.testcontainer: info
+        root: error
+    pattern:
+        console: '%d{HH:mm:ss.SSS} |%-5p| %c{1}:%L - %m%n'
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        password: ${embedded.postgresql.password}
+        tomcat:
+            test-on-borrow: true
+            test-on-connect: true
+            validation-query: SELECT 1;
+        url: jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}
+        username: ${embedded.postgresql.user}

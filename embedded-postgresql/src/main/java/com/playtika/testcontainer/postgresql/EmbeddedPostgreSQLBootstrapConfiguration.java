@@ -17,10 +17,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
@@ -60,7 +60,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
     public PostgreSQLContainer postgresql(PostgreSQLProperties properties,
                                           Optional<Network> network) {
         PostgreSQLContainer postgresql =
-                new PostgreSQLContainer<>(ContainerUtils.getDockerImageName(properties))
+                new PostgreSQLContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())

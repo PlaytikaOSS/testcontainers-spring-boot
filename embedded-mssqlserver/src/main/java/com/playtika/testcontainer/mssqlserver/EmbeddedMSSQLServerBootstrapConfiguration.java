@@ -18,9 +18,9 @@ import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 

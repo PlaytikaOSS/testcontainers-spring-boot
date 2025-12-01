@@ -16,12 +16,19 @@
 
 * `embedded.artifactory.enabled` `(true|false, default is true)`
 * `embedded.artifactory.reuseContainer` `(true|false, default is false)`
-* `embedded.artifactory.dockerImage` `(default is 'releases-docker.jfrog.io/jfrog/artifactory-oss:7.77.12')`
+* `embedded.artifactory.dockerImage` `(default is 'releases-docker.jfrog.io/jfrog/artifactory-oss:7.84.14')`
 ** Release notes on https://www.jfrog.com/confluence/display/JFROG/Artifactory+Release+Notes[jfrog.com]
 * `embedded.artifactory.networkAlias` `(default is 'artifactory')`
 * `embedded.artifactory.username` `(default is 'admin')`
 * `embedded.artifactory.password` `(default is 'password')`
+* `embedded.artifactory.databaseName` `(default is 'artifactory')` - Database name for PostgreSQL connection
+* `embedded.artifactory.databaseUser` `(default is 'artifactory')` - Database user for PostgreSQL connection
+* `embedded.artifactory.databasePassword` `(default is 'password')` - Database password for PostgreSQL connection
+* `embedded.artifactory.securityMasterKey` `(default is a fixed 64 hex chars value)` - Master key for Artifactory 7.x bootstrap (env: `JF_SHARED_SECURITY_MASTER_KEY`)
+* `embedded.artifactory.securityJoinKey` `(default is a fixed 64 hex chars value)` - Join key for JFrog platform bootstrap (env: `JF_SHARED_SECURITY_JOIN_KEY`)
 * `embedded.toxiproxy.proxies.artifactory.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-artifactory` container.
+
+NOTE: Artifactory OSS 7.84+ requires PostgreSQL as the database backend. The `embedded-postgresql` module is automatically started as a dependency. Ensure that PostgreSQL database properties (`embedded.postgresql.user`, `embedded.postgresql.password`, `embedded.postgresql.database`) match the Artifactory database properties for proper connection.
 
 ==== Produces
 

@@ -18,15 +18,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.git.GitProperties.BEAN_NAME_EMBEDDED_GIT;
-import static org.testcontainers.shaded.org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.testcontainers.shaded.org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
 @Slf4j

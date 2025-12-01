@@ -34,11 +34,11 @@ public class MongodbProperties extends CommonContainerProperties {
         this.setCapabilities(List.of(Capability.ALL));
     }
 
+    // https://hub.docker.com/_/mongo
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        // https://hub.docker.com/_/mongo
         return "mongodb/mongodb-community-server:8.2.2-ubuntu2204";
     }
 }

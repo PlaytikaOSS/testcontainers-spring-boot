@@ -35,9 +35,7 @@ public class EmbeddedConsulBootstrapConfigurationConfigTest extends EmbeddedCons
 
         // with the loaded config consul should require use of an access token,
         // which is not provided so 403 should be returned by consul
-        OperationException ex = assertThrows(OperationException.class, () -> {
-            client.setKVValue("key", "val");
-        });
+        OperationException ex = assertThrows(OperationException.class, () -> client.setKVValue("key", "val"));
         assertThat(ex.getStatusCode()).isEqualTo(403);
     }
 }

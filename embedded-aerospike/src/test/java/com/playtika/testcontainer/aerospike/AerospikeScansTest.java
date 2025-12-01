@@ -5,7 +5,7 @@ import com.aerospike.client.query.Statement;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class AerospikeScansTest extends BaseAerospikeTest {
 
@@ -15,7 +15,7 @@ public class AerospikeScansTest extends BaseAerospikeTest {
 
         queryWithoutFilter();
 
-        assertThrows(AssertionError.class, () -> aerospikeTestOperations.assertNoScans());
+        assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> aerospikeTestOperations.assertNoScans());
         int scansCount = aerospikeTestOperations.getScans().size();
 
         assertThat(scansCount - initialScansCount).isEqualTo(1);

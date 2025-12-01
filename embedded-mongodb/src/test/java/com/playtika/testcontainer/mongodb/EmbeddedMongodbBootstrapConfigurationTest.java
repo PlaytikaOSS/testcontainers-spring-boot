@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -22,11 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest(
         properties = {
-                "spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.toxiproxy.port}/${embedded.mongodb.database}",
-                "embedded.toxiproxy.proxies.mongodb.enabled=true"
+            "spring.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.toxiproxy.port}/${embedded.mongodb.database}",
+            "embedded.toxiproxy.proxies.mongodb.enabled=true"
         }
         , classes = EmbeddedMongodbBootstrapConfigurationTest.TestConfiguration.class
 )
+@ActiveProfiles("enabled")
 public class EmbeddedMongodbBootstrapConfigurationTest {
 
     @Autowired
