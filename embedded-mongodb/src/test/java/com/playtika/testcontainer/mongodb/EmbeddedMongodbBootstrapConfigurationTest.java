@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mongodb;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -37,7 +37,7 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
     ConfigurableEnvironment environment;
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy mongodbContainerProxy;
+    ToxiproxyClientProxy mongodbContainerProxy;
 
     @Test
     public void shouldSaveAndGet() {

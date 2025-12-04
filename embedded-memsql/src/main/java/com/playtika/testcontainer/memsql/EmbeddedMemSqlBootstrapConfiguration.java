@@ -2,7 +2,10 @@ package com.playtika.testcontainer.memsql;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -20,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -44,20 +46,19 @@ public class EmbeddedMemSqlBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "memsql")
-    ToxiproxyContainer.ContainerProxy memsqlContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                          @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql,
-                                                          MemSqlProperties properties,
-                                                          ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(memsql, properties.getPort());
+    ToxiproxyClientProxy memsqlContainerProxy(ToxiproxyClient toxiproxyClient,
+                                               ToxiproxyContainer toxiproxyContainer,
+                                               @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql,
+                                               MemSqlProperties properties,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                memsql,
+                properties.getPort(),
+                "memsql");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.memsql.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.memsql.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.memsql.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMemsqlToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Memsql ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.memsql", "embeddedMemsqlToxiproxyInfo", environment);
 
         return proxy;
     }

@@ -2,7 +2,10 @@ package com.playtika.testcontainer.vault;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.vault.VaultContainer;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,20 +43,19 @@ public class EmbeddedVaultBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "vault")
-    ToxiproxyContainer.ContainerProxy vaultContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(BEAN_NAME_EMBEDDED_VAULT) VaultContainer vault,
-                                                               ConfigurableEnvironment environment,
-                                                               VaultProperties properties) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(vault, properties.getPort());
+    ToxiproxyClientProxy vaultContainerProxy(ToxiproxyClient toxiproxyClient,
+                                              ToxiproxyContainer toxiproxyContainer,
+                                              @Qualifier(BEAN_NAME_EMBEDDED_VAULT) VaultContainer vault,
+                                              ConfigurableEnvironment environment,
+                                              VaultProperties properties) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                vault,
+                properties.getPort(),
+                "vault");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.vault.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.vault.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.vault.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedVaultToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Vault ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.vault", "embeddedVaultToxiproxyInfo", environment);
 
         return proxy;
     }

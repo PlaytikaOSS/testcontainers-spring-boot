@@ -3,12 +3,12 @@ package com.playtika.testcontainer.aerospike;
 import com.aerospike.client.*;
 import com.aerospike.client.Record;
 import com.aerospike.client.policy.Policy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
 
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EmbeddedAerospikeBootstrapConfigurationTest extends BaseAerospikeTest {
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy aerospikeContainerProxy;
+    ToxiproxyClientProxy aerospikeContainerProxy;
 
     @Test
     public void shouldSave() {

@@ -2,7 +2,10 @@ package com.playtika.testcontainer.mailhog;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -20,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -38,20 +40,19 @@ public class EmbeddedMailHogBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mailhog")
-    ToxiproxyContainer.ContainerProxy mailhogSmtpContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                @Qualifier(BEAN_NAME_EMBEDDED_MAILHOG) GenericContainer<?> mailhogContainer,
-                                                                MailHogProperties properties,
-                                                                ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(mailhogContainer, properties.getSmtpPort());
+    ToxiproxyClientProxy mailhogSmtpContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                    ToxiproxyContainer toxiproxyContainer,
+                                                    @Qualifier(BEAN_NAME_EMBEDDED_MAILHOG) GenericContainer<?> mailhogContainer,
+                                                    MailHogProperties properties,
+                                                    ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                mailhogContainer,
+                properties.getSmtpPort(),
+                "mailhog");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mailhog.smtp.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.mailhog.smtp.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.mailhog.smtp.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMailhogSmtpToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started MailHog SMTP ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mailhog.smtp", "embeddedMailhogSmtpToxiproxyInfo", environment);
 
         return proxy;
     }

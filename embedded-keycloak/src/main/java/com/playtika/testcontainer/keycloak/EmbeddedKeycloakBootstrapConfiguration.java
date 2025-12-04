@@ -1,7 +1,10 @@
 package com.playtika.testcontainer.keycloak;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -11,13 +14,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
@@ -33,20 +33,19 @@ public class EmbeddedKeycloakBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "keycloak")
-    ToxiproxyContainer.ContainerProxy keycloakContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                             @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloakContainer,
-                                                             KeycloakProperties properties,
-                                                             ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(keycloakContainer, keycloakContainer.getHttpPort());
+    ToxiproxyClientProxy keycloakContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                 ToxiproxyContainer toxiproxyContainer,
+                                                 @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloakContainer,
+                                                 KeycloakProperties properties,
+                                                 ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                keycloakContainer,
+                keycloakContainer.getHttpPort(),
+                "keycloak");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.keycloak.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.keycloak.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.keycloak.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedKeycloakToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Keycloak ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.keycloak", "embeddedKeycloakToxiproxyInfo", environment);
 
         return proxy;
     }

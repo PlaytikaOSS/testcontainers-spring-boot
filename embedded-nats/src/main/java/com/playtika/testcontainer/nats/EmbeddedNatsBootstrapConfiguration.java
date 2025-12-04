@@ -3,7 +3,10 @@ package com.playtika.testcontainer.nats;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -23,7 +26,6 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -42,20 +44,19 @@ public class EmbeddedNatsBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "nats")
-    ToxiproxyContainer.ContainerProxy natsContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                         @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
-                                                         NatsProperties properties,
-                                                         ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(natsContainer, properties.getClientPort());
+    ToxiproxyClientProxy natsContainerProxy(ToxiproxyClient toxiproxyClient,
+                                             ToxiproxyContainer toxiproxyContainer,
+                                             @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
+                                             NatsProperties properties,
+                                             ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                natsContainer,
+                properties.getClientPort(),
+                "nats");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.nats.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.nats.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.nats.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedNatsToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started NATS ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.nats", "embeddedNatsToxiproxyInfo", environment);
 
         return proxy;
     }

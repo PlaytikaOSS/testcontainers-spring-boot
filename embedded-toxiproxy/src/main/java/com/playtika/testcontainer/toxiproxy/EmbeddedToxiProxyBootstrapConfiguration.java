@@ -3,6 +3,7 @@ package com.playtika.testcontainer.toxiproxy;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -49,6 +50,11 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
         toxiproxyContainer = (ToxiproxyContainer) ContainerUtils.configureCommonsAndStart(toxiproxyContainer, toxiProxyProperties, log);
         registerEnvironment(toxiproxyContainer, environment);
         return toxiproxyContainer;
+    }
+
+    @Bean
+    ToxiproxyClient toxiproxyClient(ToxiproxyContainer toxiproxy) {
+        return new ToxiproxyClient(toxiproxy.getHost(), toxiproxy.getControlPort());
     }
 
     private void registerEnvironment(ToxiproxyContainer container,

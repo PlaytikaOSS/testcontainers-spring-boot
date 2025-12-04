@@ -4,6 +4,7 @@ import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.playtika.testcontainer.couchbase.EmbeddedCouchbaseBootstrapConfigurationTest;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Disabled;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -32,7 +32,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy couchbaseContainerProxy;
+    ToxiproxyClientProxy couchbaseContainerProxy;
 
     @Autowired
     CouchbaseOperations couchbaseOperations;

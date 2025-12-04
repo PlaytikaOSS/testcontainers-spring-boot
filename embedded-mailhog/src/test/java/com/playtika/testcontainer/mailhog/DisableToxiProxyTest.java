@@ -1,9 +1,9 @@
 package com.playtika.testcontainer.mailhog;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +20,7 @@ class DisableToxiProxyTest {
                 )
                 .run((context) -> assertThat(context)
                         .hasNotFailed()
-                        .doesNotHaveBean(ToxiproxyContainer.ContainerProxy.class));
+                        .doesNotHaveBean(ToxiproxyClientProxy.class));
     }
 
     @Test
@@ -31,6 +31,6 @@ class DisableToxiProxyTest {
                 )
                 .run(context -> assertThat(context)
                         .hasNotFailed()
-                        .doesNotHaveBean(ToxiproxyContainer.ContainerProxy.class));
+                        .doesNotHaveBean(ToxiproxyClientProxy.class));
     }
 }

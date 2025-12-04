@@ -4,7 +4,10 @@ import com.aerospike.client.IAerospikeClient;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -24,7 +27,6 @@ import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
@@ -49,20 +51,19 @@ public class EmbeddedAerospikeBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "aerospike")
-    ToxiproxyContainer.ContainerProxy aerospikeContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              GenericContainer<?> aerospike,
-                                                              AerospikeProperties properties,
-                                                              ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(aerospike, properties.port);
+    ToxiproxyClientProxy aerospikeContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                  ToxiproxyContainer toxiproxyContainer,
+                                                  GenericContainer<?> aerospike,
+                                                  AerospikeProperties properties,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                aerospike,
+                properties.port,
+                "aerospike");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.aerospike.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.aerospike.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.aerospike.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedAerospikeToxiProxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Aerospike ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.aerospike", "embeddedAerospikeToxiProxyInfo", environment);
 
         return proxy;
     }

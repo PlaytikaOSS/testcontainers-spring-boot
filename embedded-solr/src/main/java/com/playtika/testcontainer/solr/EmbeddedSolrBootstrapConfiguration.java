@@ -2,7 +2,10 @@ package com.playtika.testcontainer.solr;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -19,7 +22,6 @@ import org.testcontainers.containers.SolrContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -37,20 +39,19 @@ public class EmbeddedSolrBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "solr")
-    ToxiproxyContainer.ContainerProxy solrContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                         @Qualifier(BEAN_NAME_EMBEDDED_SOLR) SolrContainer solrContainer,
-                                                         SolrProperties properties,
-                                                         ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(solrContainer, properties.getPort());
+    ToxiproxyClientProxy solrContainerProxy(ToxiproxyClient toxiproxyClient,
+                                             ToxiproxyContainer toxiproxyContainer,
+                                             @Qualifier(BEAN_NAME_EMBEDDED_SOLR) SolrContainer solrContainer,
+                                             SolrProperties properties,
+                                             ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                solrContainer,
+                properties.getPort(),
+                "solr");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.solr.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.solr.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.solr.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedSolrToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Solr ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.solr", "embeddedSolrToxiproxyInfo", environment);
 
         return proxy;
     }

@@ -2,7 +2,10 @@ package com.playtika.testcontainer.cockroach;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.cockroach.CockroachDBProperties.BEAN_NAME_EMBEDDED_COCKROACHDB;
@@ -36,19 +38,18 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
-    ToxiproxyContainer.ContainerProxy cockroachContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer,
-                                                                ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(cockroachContainer, CockroachDBProperties.PORT);
+    ToxiproxyClientProxy cockroachContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                  ToxiproxyContainer toxiproxyContainer,
+                                                  @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                cockroachContainer,
+                CockroachDBProperties.PORT,
+                "cockroach");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.cockroach.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.cockroach.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.cockroach.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedСockroachdbToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started СockroachDB ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.cockroach", "embeddedСockroachdbToxiproxyInfo", environment);
 
         return proxy;
     }

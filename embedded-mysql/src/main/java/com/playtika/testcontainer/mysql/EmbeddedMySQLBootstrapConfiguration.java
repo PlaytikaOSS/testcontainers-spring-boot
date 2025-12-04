@@ -2,7 +2,10 @@ package com.playtika.testcontainer.mysql;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -36,20 +38,19 @@ public class EmbeddedMySQLBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mysql")
-    ToxiproxyContainer.ContainerProxy mysqlContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                          @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql,
-                                                          MySQLProperties properties,
-                                                          ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(mysql, properties.getPort());
+    ToxiproxyClientProxy mysqlContainerProxy(ToxiproxyClient toxiproxyClient,
+                                              ToxiproxyContainer toxiproxyContainer,
+                                              @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql,
+                                              MySQLProperties properties,
+                                              ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                mysql,
+                properties.getPort(),
+                "mysql");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mysql.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.mysql.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.mysql.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMysqlToxiProxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Mysql ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mysql", "embeddedMysqlToxiProxyInfo", environment);
 
         return proxy;
     }

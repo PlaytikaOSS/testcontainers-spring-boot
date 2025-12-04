@@ -2,7 +2,10 @@ package com.playtika.testcontainer.oracle;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -38,19 +40,18 @@ public class EmbeddedOracleBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "oracle")
-    ToxiproxyContainer.ContainerProxy oracleContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                           @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle,
-                                                           ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(oracle, ORACLE_PORT);
+    ToxiproxyClientProxy oracleContainerProxy(ToxiproxyClient toxiproxyClient,
+                                               ToxiproxyContainer toxiproxyContainer,
+                                               @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                oracle,
+                ORACLE_PORT,
+                "oracle");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.oracle.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.oracle.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.oracle.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedOracleToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Oracle ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.oracle", "embeddedOracleToxiproxyInfo", environment);
 
         return proxy;
     }

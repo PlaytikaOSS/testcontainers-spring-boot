@@ -2,7 +2,10 @@ package com.playtika.testcontainer.localstack;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -19,7 +22,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -37,20 +39,19 @@ public class EmbeddedLocalStackBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "localstack")
-    ToxiproxyContainer.ContainerProxy localstackContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                          @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
-                                                          LocalStackProperties properties,
-                                                          ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(localStack, properties.getEdgePort());
+    ToxiproxyClientProxy localstackContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                   ToxiproxyContainer toxiproxyContainer,
+                                                   @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
+                                                   LocalStackProperties properties,
+                                                   ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                localStack,
+                properties.getEdgePort(),
+                "localstack");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.localstack.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.localstack.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.localstack.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedLocalstackToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Localstack ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.localstack", "embeddedLocalstackToxiproxyInfo", environment);
 
         return proxy;
     }

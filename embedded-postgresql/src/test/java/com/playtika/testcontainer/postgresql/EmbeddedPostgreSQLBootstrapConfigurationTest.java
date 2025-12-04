@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.postgresql;
 
 import com.playtika.testcontainer.postgresql.dummyapp.TestApplication;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -16,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import javax.sql.DataSource;
 
@@ -49,7 +49,7 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
     private ConfigurableEnvironment environment;
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy postgresqlContainerProxy;
+    ToxiproxyClientProxy postgresqlContainerProxy;
 
     @Test
     void shouldConnectToPostgreSQL() {

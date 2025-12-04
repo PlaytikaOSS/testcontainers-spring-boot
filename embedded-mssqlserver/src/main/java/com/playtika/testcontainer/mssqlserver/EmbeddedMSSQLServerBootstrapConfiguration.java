@@ -2,7 +2,10 @@ package com.playtika.testcontainer.mssqlserver;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -39,19 +41,18 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
-    ToxiproxyContainer.ContainerProxy mssqlserverContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver,
-                                                                ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(mssqlserver, MSSQLServerContainer.MS_SQL_SERVER_PORT);
+    ToxiproxyClientProxy mssqlserverContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                    ToxiproxyContainer toxiproxyContainer,
+                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver,
+                                                    ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                mssqlserver,
+                MSSQLServerContainer.MS_SQL_SERVER_PORT,
+                "mssqlserver");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mssqlserver.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.mssqlserver.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.mssqlserver.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMSSQLServerToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started MSSQLServer ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mssqlserver", "embeddedMSSQLServerToxiproxyInfo", environment);
 
         return proxy;
     }

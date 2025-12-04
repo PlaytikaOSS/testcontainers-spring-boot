@@ -2,7 +2,10 @@ package com.playtika.testcontainer.prometheus;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -49,20 +51,19 @@ public class EmbeddedPrometheusBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "prometheus")
-    ToxiproxyContainer.ContainerProxy prometheusContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(PROMETHEUS_BEAN_NAME) GenericContainer<?> prometheus,
-                                                               ConfigurableEnvironment environment,
-                                                               PrometheusProperties properties) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(prometheus, properties.getPort());
+    ToxiproxyClientProxy prometheusContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                   ToxiproxyContainer toxiproxyContainer,
+                                                   @Qualifier(PROMETHEUS_BEAN_NAME) GenericContainer<?> prometheus,
+                                                   ConfigurableEnvironment environment,
+                                                   PrometheusProperties properties) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                prometheus,
+                properties.getPort(),
+                "prometheus");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.prometheus.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.prometheus.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.prometheus.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedPrometheusToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Prometheus ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.prometheus", "embeddedPrometheusToxiproxyInfo", environment);
 
         return proxy;
     }
