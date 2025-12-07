@@ -38,7 +38,6 @@ public class EmbeddedMongodbBootstrapReplicaSetConfigurationTest {
 
     @Test
     public void shouldSaveAndGet() {
-        System.out.println("mongo-uri=" + environment.getProperty("spring.data.mongodb.uri"));
         String someId = UUID.randomUUID().toString();
         Foo foo = new Foo(someId, "foo", Instant.parse("2019-09-26T07:57:12.801Z"), -42L);
         mongoTemplate.save(foo);
