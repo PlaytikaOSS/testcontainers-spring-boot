@@ -21,7 +21,6 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
@@ -72,13 +71,13 @@ public class EmbeddedMongodbBootstrapConfiguration {
                                        Optional<Network> network) throws IOException, InterruptedException {
 
         GenericContainer<?> mongodb;
-        if (properties.getReplicaSetName() == null) {
+        if (StringUtils.isBlank(properties.getReplicaSetName())) {
             mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                     .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
                     .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                     .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                     .withExposedPorts(properties.getPort())
-                    .waitingFor(new LogMessageWaitStrategy().withRegEx(".*mongod startup complete.*"))
+                    .waitingFor(new MongodbWaitStrategy(properties))
                     .withNetworkAliases(MONGODB_NETWORK_ALIAS);
         } else {
             mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))

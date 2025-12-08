@@ -25,6 +25,9 @@ public class MongodbProperties extends CommonContainerProperties {
     private String username;
     private String password;
     private String database = "test";
+    /**
+     * If provided, mongodb will be started as a replica set with the given name. Default: null (standalone mode).
+     */
     private String replicaSetName;
 
     public MongodbProperties() {
