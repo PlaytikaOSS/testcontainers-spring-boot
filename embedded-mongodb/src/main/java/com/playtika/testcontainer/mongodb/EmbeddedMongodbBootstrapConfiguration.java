@@ -70,15 +70,17 @@ public class EmbeddedMongodbBootstrapConfiguration {
                                        MongodbProperties properties,
                                        Optional<Network> network) throws IOException, InterruptedException {
 
-        GenericContainer<?> mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+        GenericContainer<?> mongodb;
+        if (StringUtils.isBlank(properties.getReplicaSetName())) {
+            mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                     .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
                     .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                     .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
                     .withExposedPorts(properties.getPort())
                     .waitingFor(new MongodbWaitStrategy(properties))
                     .withNetworkAliases(MONGODB_NETWORK_ALIAS);
-        if (StringUtils.isBlank(properties.getReplicaSetName())) {
-            mongodb = mongodb
+        } else {
+            mongodb = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                     .withCommand("-f", "/etc/mongod.conf")
                     .withClasspathResourceMapping("/mongod/gen-keyfile.sh", "/docker-entrypoint-initdb.d/gen-keyfile.sh", BindMode.READ_ONLY)
                     .withCopyToContainer(
@@ -87,7 +89,14 @@ public class EmbeddedMongodbBootstrapConfiguration {
                                             .getContentAsString(Charset.defaultCharset())
                                             .replace("${replica-set-name}", properties.getReplicaSetName())
                             )
-                            , "/etc/mongod.conf");
+                            , "/etc/mongod.conf")
+                    .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
+                    .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
+                    .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
+                    .withEnv("MONGO_INITDB_REPL_SET_HOST", properties.getHost())
+                    .withExposedPorts(properties.getPort())
+                    .waitingFor(new MongodbWaitStrategy(properties))
+                    .withNetworkAliases(MONGODB_NETWORK_ALIAS);
         }
 
         network.ifPresent(mongodb::withNetwork);
