@@ -23,6 +23,7 @@
 * `embedded.mongodb.username`
 * `embedded.mongodb.password`
 * `embedded.mongodb.database` `(default is test)`
+* `embedded.mongodb.replica-set-name` Default is to run in standalone
 * `embedded.toxiproxy.proxies.mongodb.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-mongodb` container.
 
 
@@ -33,6 +34,7 @@
 * `embedded.mongodb.username`
 * `embedded.mongodb.password`
 * `embedded.mongodb.database`
+* `embedded.mongodb.replica-set-name`
 * `embedded.mongodb.toxiproxy.host`
 * `embedded.mongodb.toxiproxy.port`
 * `embedded.mongodb.networkAlias`
@@ -48,3 +50,5 @@ To auto-configure `spring-data-mongodb` use these properties in your test `appli
 ----
 spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
 ----
+
+For replicaset, add additional mongodb properties: `?rs=${embedded.mongodb.replica-set-name}&directConnection=true&authSource=admin`

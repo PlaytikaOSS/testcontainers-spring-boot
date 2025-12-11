@@ -8,7 +8,7 @@
     {
       "name": "embedded.mongodb.dockerImage",
       "type": "java.lang.String",
-      "defaultValue": "mongodb/mongodb-community-server:7.0.12-ubuntu2204"
+      "defaultValue": "mongodb/mongodb-community-server:8.2.2-ubuntu2204"
     },
     {
       "name": "embedded.mongodb.host",

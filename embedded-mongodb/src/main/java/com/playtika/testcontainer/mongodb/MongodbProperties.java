@@ -25,7 +25,10 @@ public class MongodbProperties extends CommonContainerProperties {
     private String username;
     private String password;
     private String database = "test";
-    private String[] checkCommand = new String[]{"mongosh", "admin", "--eval", "\"db['system.version'].find()\""};
+    /**
+     * If provided, mongodb will be started as a replica set with the given name. Default: null (standalone mode).
+     */
+    private String replicaSetName;
 
     public MongodbProperties() {
         this.setCapabilities(List.of(Capability.ALL));
@@ -36,6 +39,6 @@ public class MongodbProperties extends CommonContainerProperties {
         // Please don`t remove this comment.
         // renovate: datasource=docker
         // https://hub.docker.com/_/mongo
-        return "mongodb/mongodb-community-server:8.0.10-ubuntu2204";
+        return "mongodb/mongodb-community-server:8.2.2-ubuntu2204";
     }
 }
