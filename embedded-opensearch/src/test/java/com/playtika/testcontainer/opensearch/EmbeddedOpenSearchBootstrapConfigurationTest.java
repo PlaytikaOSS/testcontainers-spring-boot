@@ -1,19 +1,24 @@
 package com.playtika.testcontainer.opensearch;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.URIScheme;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.RestClientBuilder;
 import org.opensearch.spring.boot.autoconfigure.RestClientBuilderCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
+import org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -27,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableAutoConfiguration(exclude = ElasticsearchDataAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = DataElasticsearchAutoConfiguration.class)
 public abstract class EmbeddedOpenSearchBootstrapConfigurationTest {
 
     @Autowired
@@ -55,7 +60,7 @@ public abstract class EmbeddedOpenSearchBootstrapConfigurationTest {
                     builder.setHttpClientConfigCallback(
                             httpClientBuilder -> {
                                 if (properties.isAllowInsecure()) {
-                                    httpClientBuilder.setSSLContext(sslcontext());
+                                    httpClientBuilder.setConnectionManager(new PoolingAsyncClientConnectionManager(RegistryBuilder.<TlsStrategy>create().register(URIScheme.HTTPS.getId(),new DefaultClientTlsStrategy(sslcontext())).build()));
                                 }
                                 return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider());
                             }
@@ -65,15 +70,15 @@ public abstract class EmbeddedOpenSearchBootstrapConfigurationTest {
                 @Override
                 public void customize(HttpAsyncClientBuilder builder) {
                     if (properties.isAllowInsecure()) {
-                        builder.setSSLContext(sslcontext());
+                        builder.setConnectionManager(new PoolingAsyncClientConnectionManager(RegistryBuilder.<TlsStrategy>create().register(URIScheme.HTTPS.getId(),new DefaultClientTlsStrategy(sslcontext())).build()));
                     }
                     builder.setDefaultCredentialsProvider(credentialsProvider());
                 }
 
                 CredentialsProvider credentialsProvider() {
-                    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                    final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                     credentialsProvider.setCredentials(
-                            AuthScope.ANY, new UsernamePasswordCredentials(properties.getUsername(), properties.getPassword())
+                            new AuthScope(null, -1), new UsernamePasswordCredentials(properties.getUsername(), properties.getPassword().toCharArray())
                     );
                     return credentialsProvider;
                 }

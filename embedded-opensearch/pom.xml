@@ -14,8 +14,8 @@
     <artifactId>embedded-opensearch</artifactId>
 
     <properties>
-        <spring-data-opensearch-starter.version>1.8.1</spring-data-opensearch-starter.version>
-        <opensearch-testcontainers.version>2.1.3</opensearch-testcontainers.version>
+        <spring-data-opensearch-starter.version>3.0.0</spring-data-opensearch-starter.version>
+        <opensearch-testcontainers.version>4.0.0</opensearch-testcontainers.version>
     </properties>
 
     <dependencies>
@@ -36,6 +36,12 @@
             <groupId>org.opensearch.client</groupId>
             <artifactId>spring-data-opensearch-starter</artifactId>
             <version>${spring-data-opensearch-starter.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

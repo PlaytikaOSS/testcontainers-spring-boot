@@ -1,8 +1,8 @@
 package com.playtika.testcontainer.elasticsearch.springdata;
 
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import com.playtika.testcontainer.elasticsearch.ElasticSearchProperties;
 import com.playtika.testcontainer.elasticsearch.EmbeddedElasticSearchBootstrapConfigurationTest;
-import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class SpringDataTest extends EmbeddedElasticSearchBootstrapConfigurationT
 
     @Test
     public void shouldSetupDependsOnForNewClient() {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RestClient.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, Rest5Client.class);
 
         if (beanNamesForType.length > 0) {
             assertThat(beanNamesForType)

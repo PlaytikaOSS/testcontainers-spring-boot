@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>localstack</artifactId>
+            <artifactId>testcontainers-localstack</artifactId>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
