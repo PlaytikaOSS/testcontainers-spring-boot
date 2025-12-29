@@ -7,14 +7,15 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-pulsar</name>
     <artifactId>embedded-pulsar</artifactId>
 
     <properties>
-        <pulsar-clients.version>4.0.5</pulsar-clients.version>
+        <pulsar-clients.version>4.1.2</pulsar-clients.version>
     </properties>
 
     <dependencies>
@@ -35,6 +36,12 @@
             <artifactId>pulsar-client</artifactId>
             <version>${pulsar-clients.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>        
         </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>

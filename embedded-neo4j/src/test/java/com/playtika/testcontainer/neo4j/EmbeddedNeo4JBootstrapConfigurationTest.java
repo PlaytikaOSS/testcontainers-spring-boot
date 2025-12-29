@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.neo4j;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -45,7 +45,7 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
     ConfigurableListableBeanFactory beanFactory;
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy neo4jContainerProxy;
+    ToxiproxyClientProxy neo4jContainerProxy;
 
     @Configuration
     @EnableAutoConfiguration

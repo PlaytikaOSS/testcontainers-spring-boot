@@ -7,14 +7,15 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-mssqlserver</name>
     <artifactId>embedded-mssqlserver</artifactId>
 
     <properties>
-        <mssql-jdbc.version>13.1.0.jre11-preview</mssql-jdbc.version>
+        <mssql-jdbc.version>13.2.1.jre11</mssql-jdbc.version>
     </properties>
 
     <dependencies>

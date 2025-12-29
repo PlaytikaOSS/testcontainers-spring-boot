@@ -6,7 +6,10 @@ import com.playtika.testcontainer.kafka.checks.KafkaStatusCheck;
 import com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.testcontainer.kafka.properties.ZookeeperConfigurationProperties;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,14 +76,19 @@ public class KafkaContainerConfiguration {
 
     @Bean(name = KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
     @ConditionalOnToxiProxyEnabled(module = "kafka")
-    ToxiproxyContainer.ContainerProxy kafkaContainerPlainTextProxy(ToxiproxyContainer toxiproxyContainer,
-                                                                   KafkaConfigurationProperties properties,
-                                                                   ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy plainTextProxy =
-                toxiproxyContainer.getProxy(KAFKA_HOST_NAME, properties.getToxiProxyContainerBrokerPort());
+    ToxiproxyClientProxy kafkaContainerPlainTextProxy(ToxiproxyClient toxiproxyClient,
+                                                       ToxiproxyContainer toxiproxyContainer,
+                                                       KafkaConfigurationProperties properties,
+                                                       ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy plainTextProxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                KAFKA_HOST_NAME,
+                properties.getToxiProxyContainerBrokerPort(),
+                "kafka-plaintext"
+        );
 
         Map<String, Object> map = new LinkedHashMap<>();
-
         String plaintextToxiProxyBrokerList =
                 format("%s:%d", plainTextProxy.getContainerIpAddress(), plainTextProxy.getProxyPort());
         map.put("embedded.kafka.toxiproxy.brokerList", plaintextToxiProxyBrokerList);
@@ -95,14 +103,19 @@ public class KafkaContainerConfiguration {
 
     @Bean(name = KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
     @ConditionalOnToxiProxyEnabled(module = "kafka")
-    ToxiproxyContainer.ContainerProxy kafkaContainerSaslProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              KafkaConfigurationProperties properties,
-                                                              ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy saslProxy =
-                toxiproxyContainer.getProxy(KAFKA_HOST_NAME, properties.getToxiProxySaslPlaintextContainerBrokerPort());
+    ToxiproxyClientProxy kafkaContainerSaslProxy(ToxiproxyClient toxiproxyClient,
+                                                  ToxiproxyContainer toxiproxyContainer,
+                                                  KafkaConfigurationProperties properties,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy saslProxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                KAFKA_HOST_NAME,
+                properties.getToxiProxySaslPlaintextContainerBrokerPort(),
+                "kafka-sasl"
+        );
 
         Map<String, Object> map = new LinkedHashMap<>();
-
         String saslToxiProxyBrokerList =
                 format("%s:%d", saslProxy.getContainerIpAddress(), saslProxy.getProxyPort());
         map.put("embedded.kafka.toxiproxy.saslPlaintext.brokerList", saslToxiProxyBrokerList);
@@ -123,9 +136,9 @@ public class KafkaContainerConfiguration {
             ConfigurableEnvironment environment,
             Network network,
             @Autowired(required = false) @Qualifier(KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
-                    ToxiproxyContainer.ContainerProxy plainTextProxy,
+                    ToxiproxyClientProxy plainTextProxy,
             @Autowired(required = false) @Qualifier(KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
-                    ToxiproxyContainer.ContainerProxy saslProxy) {
+                    ToxiproxyClientProxy saslProxy) {
 
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host

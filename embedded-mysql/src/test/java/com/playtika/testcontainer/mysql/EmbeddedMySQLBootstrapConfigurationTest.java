@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mysql;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
@@ -16,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.containers.ToxiproxyContainer;
 
 import javax.sql.DataSource;
 
@@ -46,7 +46,7 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
     ConfigurableEnvironment environment;
 
     @Autowired
-    ToxiproxyContainer.ContainerProxy mysqlContainerProxy;
+    ToxiproxyClientProxy mysqlContainerProxy;
 
     @Test
     public void shouldConnectToMySQL() {

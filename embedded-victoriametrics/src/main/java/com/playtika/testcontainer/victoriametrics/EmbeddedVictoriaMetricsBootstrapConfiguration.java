@@ -2,7 +2,10 @@ package com.playtika.testcontainer.victoriametrics;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -20,7 +23,6 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -47,20 +49,20 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "victoriametrics")
-    public ToxiproxyContainer.ContainerProxy victoriaMetricsContainerProxy(ToxiproxyContainer toxiproxy,
-                                                                           GenericContainer<?> victoriametrics,
-                                                                           VictoriaMetricsProperties properties,
-                                                                           ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxy.getProxy(victoriametrics, properties.getPort());
+    public ToxiproxyClientProxy victoriaMetricsContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                               ToxiproxyContainer toxiproxyContainer,
+                                                               GenericContainer<?> victoriametrics,
+                                                               VictoriaMetricsProperties properties,
+                                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                victoriametrics,
+                properties.getPort(),
+                "victoriametrics"
+        );
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.victoriametrics.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.victoriametrics.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.victoriametrics.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedVictoriaMetricsToxiProxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started VictoriaMetrics ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.victoriametrics", "embeddedVictoriaMetricsToxiProxyInfo", environment);
 
         return proxy;
     }

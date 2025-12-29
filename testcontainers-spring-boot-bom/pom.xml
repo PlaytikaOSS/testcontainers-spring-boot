@@ -7,11 +7,12 @@
     <parent>
         <groupId>com.playtika.testcontainers</groupId>
         <artifactId>testcontainers-spring-boot</artifactId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
     </parent>
 
     <packaging>pom</packaging>
     <artifactId>testcontainers-spring-boot-bom</artifactId>
+    <name>testcontainers-spring-boot-bom</name>
 
     <dependencyManagement>
         <dependencies>

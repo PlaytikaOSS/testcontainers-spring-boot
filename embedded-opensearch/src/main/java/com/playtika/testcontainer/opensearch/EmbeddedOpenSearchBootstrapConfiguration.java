@@ -1,7 +1,10 @@
 package com.playtika.testcontainer.opensearch;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.testcontainers.OpensearchContainer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +22,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -37,20 +39,19 @@ public class EmbeddedOpenSearchBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "opensearch")
-    ToxiproxyContainer.ContainerProxy opensearchContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(BEAN_NAME_EMBEDDED_OPEN_SEARCH) OpensearchContainer opensearch,
-                                                               OpenSearchProperties properties,
-                                                               ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(opensearch, properties.getHttpPort());
+    ToxiproxyClientProxy opensearchContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                   ToxiproxyContainer toxiproxyContainer,
+                                                   @Qualifier(BEAN_NAME_EMBEDDED_OPEN_SEARCH) OpensearchContainer opensearch,
+                                                   OpenSearchProperties properties,
+                                                   ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                opensearch,
+                properties.getHttpPort(),
+                "opensearch");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.opensearch.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.opensearch.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.opensearch.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedOpenSearchToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started OpenSearch ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.opensearch", "embeddedOpenSearchToxiproxyInfo", environment);
 
         return proxy;
     }

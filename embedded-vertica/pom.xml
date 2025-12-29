@@ -5,15 +5,19 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-vertica</name>
     <artifactId>embedded-vertica</artifactId>
 
     <properties>
         <vertica-jdbc.version>25.3.0-0</vertica-jdbc.version>
+<!--        https://github.com/vertica/vertica-containers/issues/64-->
+<!--        You need to have local image to run tests since vertica does not support community-->
+        <skipTests>true</skipTests>
     </properties>
 
     <dependencies>

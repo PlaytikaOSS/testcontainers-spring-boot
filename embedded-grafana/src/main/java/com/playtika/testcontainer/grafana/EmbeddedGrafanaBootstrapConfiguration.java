@@ -2,7 +2,10 @@ package com.playtika.testcontainer.grafana;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -48,20 +50,19 @@ public class EmbeddedGrafanaBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "grafana")
-    ToxiproxyContainer.ContainerProxy grafanaContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                            @Qualifier(GRAFANA_BEAN_NAME) GenericContainer<?> grafana,
-                                                            GrafanaProperties properties,
-                                                            ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(grafana, properties.getPort());
+    ToxiproxyClientProxy grafanaContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                ToxiproxyContainer toxiproxyContainer,
+                                                @Qualifier(GRAFANA_BEAN_NAME) GenericContainer<?> grafana,
+                                                GrafanaProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                grafana,
+                properties.getPort(),
+                "grafana");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.grafana.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.grafana.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.grafana.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedGrafanaToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Grafana ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.grafana", "embeddedGrafanaToxiproxyInfo", environment);
 
         return proxy;
     }

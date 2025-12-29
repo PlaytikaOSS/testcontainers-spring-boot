@@ -7,14 +7,15 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-k3s</name>
     <artifactId>embedded-k3s</artifactId>
 
     <properties>
-        <bcpkix-jdk18on.version>1.80</bcpkix-jdk18on.version>
+        <bcpkix-jdk18on.version>1.83</bcpkix-jdk18on.version>
     </properties>
 
     <dependencies>

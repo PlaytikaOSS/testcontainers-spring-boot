@@ -1,7 +1,10 @@
 package com.playtika.testcontainer.pulsar;
 
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,20 +36,19 @@ public class EmbeddedPulsarBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "pulsar")
-    ToxiproxyContainer.ContainerProxy pulsarContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                           @Qualifier(EMBEDDED_PULSAR) PulsarContainer embeddedPulsar,
-                                                           PulsarProperties pulsarProperties,
-                                                           ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(embeddedPulsar, pulsarProperties.getBrokerPort());
+    ToxiproxyClientProxy pulsarContainerProxy(ToxiproxyClient toxiproxyClient,
+                                               ToxiproxyContainer toxiproxyContainer,
+                                               @Qualifier(EMBEDDED_PULSAR) PulsarContainer embeddedPulsar,
+                                               PulsarProperties pulsarProperties,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                embeddedPulsar,
+                pulsarProperties.getBrokerPort(),
+                "pulsar");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.pulsar.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.pulsar.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.pulsar.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedPulsarToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Pulsar ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.pulsar", "embeddedPulsarToxiproxyInfo", environment);
 
         return proxy;
     }

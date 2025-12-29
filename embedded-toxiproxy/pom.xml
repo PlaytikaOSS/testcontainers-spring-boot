@@ -5,18 +5,22 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-toxiproxy</name>
     <artifactId>embedded-toxiproxy</artifactId>
-
 
     <dependencies>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>toxiproxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.rekawek.toxiproxy</groupId>
+            <artifactId>toxiproxy-java</artifactId>
         </dependency>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>

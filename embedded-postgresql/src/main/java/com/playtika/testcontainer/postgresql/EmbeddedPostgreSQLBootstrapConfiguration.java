@@ -2,7 +2,10 @@ package com.playtika.testcontainer.postgresql;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -39,19 +41,18 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "postgresql")
-    ToxiproxyContainer.ContainerProxy postgresqlContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(BEAN_NAME_EMBEDDED_POSTGRESQL) PostgreSQLContainer postgresql,
-                                                               ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(postgresql, PostgreSQLContainer.POSTGRESQL_PORT);
+    ToxiproxyClientProxy postgresqlContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                   ToxiproxyContainer toxiproxyContainer,
+                                                   @Qualifier(BEAN_NAME_EMBEDDED_POSTGRESQL) PostgreSQLContainer postgresql,
+                                                   ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                postgresql,
+                PostgreSQLContainer.POSTGRESQL_PORT,
+                "postgresql");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.postgresql.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.postgresql.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.postgresql.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedPostgresqlToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Postgresql ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.postgresql", "embeddedPostgresqlToxiproxyInfo", environment);
 
         return proxy;
     }

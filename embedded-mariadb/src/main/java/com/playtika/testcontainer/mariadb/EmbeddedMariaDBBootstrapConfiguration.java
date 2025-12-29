@@ -2,7 +2,10 @@ package com.playtika.testcontainer.mariadb;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -18,7 +21,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -36,20 +38,19 @@ public class EmbeddedMariaDBBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mariadb")
-    ToxiproxyContainer.ContainerProxy mariadbContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadbContainer,
-                                                            MariaDBProperties properties,
-                                                            ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(mariadbContainer, properties.getPort());
+    ToxiproxyClientProxy mariadbContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                ToxiproxyContainer toxiproxyContainer,
+                                                @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadbContainer,
+                                                MariaDBProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                mariadbContainer,
+                properties.getPort(),
+                "mariadb");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mariadb.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.mariadb.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.mariadb.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMariadbToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started MariaDB ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mariadb", "embeddedMariadbToxiproxyInfo", environment);
 
         return proxy;
     }

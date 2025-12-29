@@ -5,15 +5,16 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-git</name>
     <artifactId>embedded-git</artifactId>
 
     <properties>
-        <bcpkix-jdk18on.version>1.80</bcpkix-jdk18on.version>
+        <bcpkix-jdk18on.version>1.83</bcpkix-jdk18on.version>
     </properties>
 
     <dependencies>

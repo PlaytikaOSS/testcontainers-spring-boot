@@ -5,15 +5,16 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>embedded-postgresql</name>
     <artifactId>embedded-postgresql</artifactId>
 
     <properties>
-        <postgresql-driver.version>42.7.7</postgresql-driver.version>
+        <postgresql-driver.version>42.7.8</postgresql-driver.version>
     </properties>
 
     <dependencies>

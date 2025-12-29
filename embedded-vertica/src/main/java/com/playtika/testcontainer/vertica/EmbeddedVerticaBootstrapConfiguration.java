@@ -2,7 +2,10 @@ package com.playtika.testcontainer.vertica;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -19,7 +22,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -37,20 +39,19 @@ public class EmbeddedVerticaBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "vertica")
-    ToxiproxyContainer.ContainerProxy verticaContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                               @Qualifier(BEAN_NAME_EMBEDDED_VERTICA) GenericContainer<?> embeddedVertica,
-                                                               ConfigurableEnvironment environment,
-                                                               VerticaProperties verticaProperties) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(embeddedVertica, verticaProperties.getPort());
+    ToxiproxyClientProxy verticaContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                ToxiproxyContainer toxiproxyContainer,
+                                                @Qualifier(BEAN_NAME_EMBEDDED_VERTICA) GenericContainer<?> embeddedVertica,
+                                                ConfigurableEnvironment environment,
+                                                VerticaProperties verticaProperties) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                embeddedVertica,
+                verticaProperties.getPort(),
+                "vertica");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.vertica.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.vertica.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.vertica.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedVerticaToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Vertica ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.vertica", "embeddedVerticaToxiproxyInfo", environment);
 
         return proxy;
     }

@@ -7,14 +7,15 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-redis</name>
     <artifactId>embedded-redis</artifactId>
 
     <properties>
-        <jedis.version>6.0.0</jedis.version>
+        <jedis.version>7.2.0</jedis.version>
     </properties>
 
     <dependencies>

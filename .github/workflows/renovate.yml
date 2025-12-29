@@ -19,18 +19,18 @@ on:
           - debug
           - error
           - fatal
-    schedule:
-      - cron: '0 8 * * *'
+  schedule:
+    - cron: '0 8 3 * *'
 
 jobs:
   renovate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v43.0.2
+        uses: renovatebot/github-action@v43.0.20
         with:
           configurationFile: .github/renovate/renovate.json
           token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}

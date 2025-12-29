@@ -30,6 +30,6 @@ public class OpenSearchProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "opensearchproject/opensearch:3.1.0";
+        return "opensearchproject/opensearch:3.3.2";
     }
 }

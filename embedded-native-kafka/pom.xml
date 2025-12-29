@@ -7,14 +7,15 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.15</version>
+        <version>3.1.18</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
+    <name>embedded-native-kafka</name>
     <artifactId>embedded-native-kafka</artifactId>
 
     <properties>
-        <kafka-clients.version>4.0.0</kafka-clients.version>
+        <kafka-clients.version>4.1.1</kafka-clients.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
     </properties>
 

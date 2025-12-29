@@ -2,7 +2,10 @@ package com.playtika.testcontainer.storage;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +24,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,19 +43,18 @@ public class EmbeddedStorageBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "google.storage")
-    ToxiproxyContainer.ContainerProxy googleStorageContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                            @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> storageServer,
-                                                            ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(storageServer, StorageProperties.PORT);
+    ToxiproxyClientProxy googleStorageContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                      ToxiproxyContainer toxiproxyContainer,
+                                                      @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> storageServer,
+                                                      ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                storageServer,
+                StorageProperties.PORT,
+                "storage");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.google.storage.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.google.storage.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.google.storage.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedGoogleStorageToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Google Storage ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.google.storage", "embeddedGoogleStorageToxiproxyInfo", environment);
 
         return proxy;
     }

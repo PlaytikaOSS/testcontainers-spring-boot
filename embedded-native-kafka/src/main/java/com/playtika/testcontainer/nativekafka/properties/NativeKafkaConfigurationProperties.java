@@ -39,7 +39,7 @@ public class NativeKafkaConfigurationProperties extends CommonContainerPropertie
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "apache/kafka-native:4.0.0";
+        return "apache/kafka-native:4.1.1";
     }
 
     @AllArgsConstructor

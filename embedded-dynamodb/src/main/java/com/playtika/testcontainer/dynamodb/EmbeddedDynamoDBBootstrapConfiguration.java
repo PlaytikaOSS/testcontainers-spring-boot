@@ -3,7 +3,10 @@ package com.playtika.testcontainer.dynamodb;
 
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -20,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -38,20 +40,19 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "dynamodb")
-    ToxiproxyContainer.ContainerProxy dynamodbContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                             @Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> dynamoDb,
-                                                             DynamoDBProperties properties,
-                                                             ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(dynamoDb, properties.getPort());
+    ToxiproxyClientProxy dynamodbContainerProxy(ToxiproxyClient toxiproxyClient,
+                                                 ToxiproxyContainer toxiproxyContainer,
+                                                 @Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> dynamoDb,
+                                                 DynamoDBProperties properties,
+                                                 ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                toxiproxyClient,
+                toxiproxyContainer,
+                dynamoDb,
+                properties.getPort(),
+                "dynamodb");
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.dynamodb.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.dynamodb.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.dynamodb.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedDynamoDBToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started DynamoDB ToxiProxy connection details {}", map);
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.dynamodb", "embeddedDynamoDBToxiproxyInfo", environment);
 
         return proxy;
     }
