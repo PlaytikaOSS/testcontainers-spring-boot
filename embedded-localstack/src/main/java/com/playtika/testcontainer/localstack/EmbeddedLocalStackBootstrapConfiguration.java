@@ -87,8 +87,9 @@ public class EmbeddedLocalStackBootstrapConfiguration {
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.localstack.host", host);
+        map.put("embedded.localstack.endpointUrl", localStack.getEndpoint().toString());
         map.put("embedded.localstack.accessKey", localStack.getAccessKey());
-        map.put("embedded.localstack.secretKey", localStack.getSecretKey());
+        map.put("embedded.localstack.secretAccessKey", localStack.getSecretKey());
         map.put("embedded.localstack.networkAlias", LOCALSTACK_NETWORK_ALIAS);
         map.put("embedded.localstack.internalEdgePort", properties.getEdgePort());
         String prefix = "embedded.localstack.";
@@ -105,8 +106,9 @@ public class EmbeddedLocalStackBootstrapConfiguration {
     }
 
     private static void setSystemProperties(LocalStackContainer localStack) {
+        System.setProperty("aws.endpointUrl", localStack.getEndpoint().toString());
         System.setProperty("aws.accessKeyId", localStack.getAccessKey());
-        System.setProperty("aws.secretKey", localStack.getAccessKey());
+        System.setProperty("aws.secretAccessKey", localStack.getSecretKey());
     }
 
 }
