@@ -28,8 +28,9 @@
 ==== Produces
 
 * `embedded.localstack.host`
+* `embedded.localstack.endpointUrl`
 * `embedded.localstack.accessKey`
-* `embedded.localstack.secretKey`
+* `embedded.localstack.secretAccessKey`
 * `embedded.localstack.{service}` (service endpoint for connection)
 * `embedded.localstack.{service}.port` (mapped port for connection)
 * `embedded.localstack.toxiproxy.host`
