@@ -22,7 +22,6 @@ import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -42,33 +41,13 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "couchbase")
     ToxiproxyClientProxy couchbaseContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
-                                                  @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) CouchbaseContainer couchbase,
-                                                  ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                  @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) CouchbaseContainer couchbase) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 couchbase,
                 couchbase.getBootstrapHttpDirectPort(),
                 "couchbase");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.couchbase", "embeddedCouchbaseToxiProxyInfo", environment);
-
-        return proxy;
-    ToxiproxyContainer.ContainerProxy couchbaseContainerProxy(ToxiproxyContainer toxiproxyContainer,
-                                                              @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) CouchbaseContainer couchbase,
-                                                              ConfigurableEnvironment environment) {
-        ToxiproxyContainer.ContainerProxy proxy = toxiproxyContainer.getProxy(couchbase, couchbase.getBootstrapHttpDirectPort());
-
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.couchbase.toxiproxy.host", proxy.getContainerIpAddress());
-        map.put("embedded.couchbase.toxiproxy.port", proxy.getProxyPort());
-        map.put("embedded.couchbase.toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedCouchbaseToxiProxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Couchbase ToxiProxy connection details {}", map);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")

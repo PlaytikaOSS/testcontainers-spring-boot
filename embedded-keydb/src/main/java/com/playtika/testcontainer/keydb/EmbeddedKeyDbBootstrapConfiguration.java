@@ -69,30 +69,20 @@ public class EmbeddedKeyDbBootstrapConfiguration {
   ToxiproxyClientProxy keydbContainerProxy(ToxiproxyClient toxiproxyClient,
                                             ToxiproxyContainer toxiproxyContainer,
                                             @Qualifier(BEAN_NAME_EMBEDDED_KEYDB) GenericContainer<?> keydb,
-                                            KeyDbProperties properties,
-                                            ConfigurableEnvironment environment) {
-    ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                            KeyDbProperties properties) {
+    return ToxiproxyHelper.createProxy(
             toxiproxyClient,
             toxiproxyContainer,
             keydb,
             properties.getPort(),
             "keydb");
-
-    ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.keydb", "embeddedKeyDbToxiProxyInfo", environment);
-
-    return proxy;
   }
 
   @Bean
   @ConditionalOnToxiProxyEnabled(module = "keydb")
   public DynamicPropertyRegistrar keydbToxiProxyDynamicPropertyRegistrar(
-      @Qualifier("keydbToxiProxy") ToxiproxyContainer.ContainerProxy proxy) {
-    return registry -> {
-      registry.add("embedded.keydb.toxiproxy.host", proxy::getContainerIpAddress);
-      registry.add("embedded.keydb.toxiproxy.port", proxy::getProxyPort);
-      registry.add("embedded.keydb.toxiproxy.proxyName", proxy::getName);
-      log.info("Started KeyDb ToxiProxy connection details host={}, port={}, proxyName={}", proxy.getContainerIpAddress(), proxy.getProxyPort(), proxy.getName());
-    };
+      @Qualifier("keydbToxiProxy") ToxiproxyClientProxy proxy) {
+    return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.keydb");
   }
 
   @Bean(name = BEAN_NAME_EMBEDDED_KEYDB, destroyMethod = "stop")

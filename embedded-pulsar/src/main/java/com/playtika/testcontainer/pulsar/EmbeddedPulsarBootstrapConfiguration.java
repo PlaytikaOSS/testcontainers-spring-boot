@@ -39,18 +39,13 @@ public class EmbeddedPulsarBootstrapConfiguration {
     ToxiproxyClientProxy pulsarContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
                                                @Qualifier(EMBEDDED_PULSAR) PulsarContainer embeddedPulsar,
-                                               PulsarProperties pulsarProperties,
-                                               ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                               PulsarProperties pulsarProperties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 embeddedPulsar,
                 pulsarProperties.getBrokerPort(),
                 "pulsar");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.pulsar", "embeddedPulsarToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = EMBEDDED_PULSAR)

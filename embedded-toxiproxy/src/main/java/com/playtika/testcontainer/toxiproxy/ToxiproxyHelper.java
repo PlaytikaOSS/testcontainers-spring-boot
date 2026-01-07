@@ -4,14 +4,11 @@ import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -125,32 +122,13 @@ public class ToxiproxyHelper {
                 .orElseThrow(() -> new IllegalStateException("Cannot determine upstream address for container"));
     }
 
-    /**
-     * Registers environment properties for a toxiproxy connection
-     */
-    public static void registerProxyEnvironment(ToxiproxyClientProxy proxy,
-                                                 String propertyPrefix,
-                                                 String propertySourceName,
-                                                 ConfigurableEnvironment environment) {
-        registerProxyEnvironment(proxy, propertyPrefix, propertySourceName, environment, "port");
-    }
-
-    /**
-     * Registers environment properties for a toxiproxy connection with a custom port key.
-     * This is useful for cases like Azurite which has multiple ports (blobStoragePort, queueStoragePort, etc.)
-     */
-    public static void registerProxyEnvironment(ToxiproxyClientProxy proxy,
-                                                 String propertyPrefix,
-                                                 String propertySourceName,
-                                                 ConfigurableEnvironment environment,
-                                                 String portKey) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put(propertyPrefix + ".toxiproxy.host", proxy.getContainerIpAddress());
-        map.put(propertyPrefix + ".toxiproxy." + portKey, proxy.getProxyPort());
-        map.put(propertyPrefix + ".toxiproxy.proxyName", proxy.getName());
-
-        MapPropertySource propertySource = new MapPropertySource(propertySourceName, map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started {} ToxiProxy connection details {}", propertyPrefix, map);
+     public static DynamicPropertyRegistrar createToxiProxyDynamicPropertyRegistrar(
+            ToxiproxyClientProxy proxy,
+            String propertyPrefix) {
+        return registry -> {
+            registry.add(propertyPrefix + ".toxiproxy.host", proxy::getContainerIpAddress);
+            registry.add(propertyPrefix + ".toxiproxy.port", proxy::getProxyPort);
+            registry.add(propertyPrefix + ".toxiproxy.proxyName", proxy::getName);
+        };
     }
 }

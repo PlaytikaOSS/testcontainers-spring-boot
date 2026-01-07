@@ -1,10 +1,26 @@
 package com.playtika.testcontainer.clickhouse;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class EmbeddedClickHouseBootstrapConfigurationTest extends BaseEmbeddedClickHouseTest {
+
+    @Value("${embedded.clickhouse.schema}")
+    String schema;
+
+    @Value("${embedded.clickhouse.host}")
+    String host;
+
+    @Value("${embedded.clickhouse.port}")
+    String port;
+
+    @Value("${embedded.clickhouse.user}")
+    String user;
+
+    @Value("${embedded.clickhouse.password}")
+    String password;
 
     @Test
     public void shouldExecuteSelectDataFromInitScriptClickHouse() throws Exception {
@@ -13,10 +29,10 @@ public class EmbeddedClickHouseBootstrapConfigurationTest extends BaseEmbeddedCl
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.clickhouse.schema")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.clickhouse.password")).isNotNull();
+        assertThat(schema).isNotEmpty();
+        assertThat(host).isNotEmpty();
+        assertThat(port).isNotEmpty();
+        assertThat(user).isNotEmpty();
+        assertThat(password).isNotNull();
     }
 }

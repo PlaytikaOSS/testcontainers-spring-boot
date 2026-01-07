@@ -26,7 +26,6 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
@@ -54,18 +53,13 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     ToxiproxyClientProxy aerospikeContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
                                                   GenericContainer<?> aerospike,
-                                                  AerospikeProperties properties,
-                                                  ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                  AerospikeProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 aerospike,
                 properties.port,
                 "aerospike");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.aerospike", "embeddedAerospikeToxiProxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
@@ -82,13 +76,8 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "aerospike")
     public DynamicPropertyRegistrar aerospikeToxiProxyDynamicPropertyRegistrar(
-        @Qualifier("aerospikeContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.aerospike.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.aerospike.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.aerospike.toxiproxy.proxyName", proxy::getName);
-            log.info("Started Aerospike ToxiProxy connection details host={}, port={}, proxyName={}", proxy.getContainerIpAddress(), proxy.getProxyPort(), proxy.getName());
-        };
+        @Qualifier("aerospikeContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.aerospike");
     }
 
     @Bean(name = BEAN_NAME_AEROSPIKE, destroyMethod = "stop")

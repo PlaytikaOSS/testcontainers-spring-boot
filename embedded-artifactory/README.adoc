@@ -34,4 +34,4 @@
 * `embedded.artifactory.staticNetworkAlias`
 * `embedded.artifactory.internalRestApiPort`
 * `embedded.artifactory.internalGeneralPort`
-* Bean `ToxiproxyContainer.ContainerProxy artifactoryContainerProxy`
+* Bean `ToxiproxyClientProxy artifactoryContainerProxy`

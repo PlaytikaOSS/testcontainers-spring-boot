@@ -35,7 +35,7 @@
 * `embedded.selenium.toxiproxy.host`
 * `embedded.selenium.toxiproxy.port`
 * `embedded.selenium.networkAlias`
-* Bean `ToxiproxyContainer.ContainerProxy seleniumContainerProxy`
+* Bean `ToxiproxyClientProxy seleniumContainerProxy`
 
 ==== Example
 

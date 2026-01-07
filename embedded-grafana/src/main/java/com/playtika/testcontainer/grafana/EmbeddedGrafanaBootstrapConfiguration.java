@@ -51,18 +51,13 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     ToxiproxyClientProxy grafanaContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(GRAFANA_BEAN_NAME) GenericContainer<?> grafana,
-                                                GrafanaProperties properties,
-                                                ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                GrafanaProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 grafana,
                 properties.getPort(),
                 "grafana");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.grafana", "embeddedGrafanaToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = GRAFANA_BEAN_NAME, destroyMethod = "stop")
@@ -101,11 +96,7 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "grafana")
     public DynamicPropertyRegistrar grafanaToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("grafanaContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.grafana.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.grafana.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.grafana.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("grafanaContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.grafana");
     }
 }

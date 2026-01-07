@@ -39,28 +39,19 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
     ToxiproxyClientProxy elasticsearchContainerProxy(ToxiproxyClient toxiproxyClient,
                                                       ToxiproxyContainer toxiproxyContainer,
                                                       @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) ElasticsearchContainer elasticSearch,
-                                                      ElasticSearchProperties properties,
-                                                      ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                      ElasticSearchProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 elasticSearch,
                 properties.getHttpPort(),
                 "elasticsearch");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.elasticsearch", "embeddedElasticSearchToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "elasticsearch")
-    public DynamicPropertyRegistrar elasticsearchToxiProxyDynamicPropertyRegistrar(@Qualifier("elasticsearchContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.elasticsearch.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.elasticsearch.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.elasticsearch.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar elasticsearchToxiProxyDynamicPropertyRegistrar(@Qualifier("elasticsearchContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.elasticsearch");
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH)

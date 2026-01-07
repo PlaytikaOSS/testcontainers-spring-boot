@@ -6,7 +6,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static com.playtika.testcontainer.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
@@ -23,9 +22,6 @@ public abstract class BaseEmbeddedClickHouseTest {
 
     @Autowired
     protected ConfigurableListableBeanFactory beanFactory;
-
-    @Autowired
-    protected ConfigurableEnvironment environment;
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;

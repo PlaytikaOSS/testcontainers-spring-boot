@@ -52,28 +52,19 @@ public class EmbeddedPrometheusBootstrapConfiguration {
     ToxiproxyClientProxy prometheusContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
                                                    @Qualifier(PROMETHEUS_BEAN_NAME) GenericContainer<?> prometheus,
-                                                   ConfigurableEnvironment environment,
-                                                   PrometheusProperties properties) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                  PrometheusProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 prometheus,
                 properties.getPort(),
                 "prometheus");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.prometheus", "embeddedPrometheusToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "prometheus")
-    public DynamicPropertyRegistrar prometheusToxiProxyDynamicPropertyRegistrar(@Qualifier("prometheusContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.prometheus.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.prometheus.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.prometheus.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar prometheusToxiProxyDynamicPropertyRegistrar(@Qualifier("prometheusContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.prometheus");
     }
 
     @Bean(name = PROMETHEUS_BEAN_NAME, destroyMethod = "stop")

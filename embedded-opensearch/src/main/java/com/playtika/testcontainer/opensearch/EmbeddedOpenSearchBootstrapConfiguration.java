@@ -40,18 +40,13 @@ public class EmbeddedOpenSearchBootstrapConfiguration {
     ToxiproxyClientProxy opensearchContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
                                                    @Qualifier(BEAN_NAME_EMBEDDED_OPEN_SEARCH) OpensearchContainer opensearch,
-                                                   OpenSearchProperties properties,
-                                                   ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                   OpenSearchProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 opensearch,
                 properties.getHttpPort(),
                 "opensearch");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.opensearch", "embeddedOpenSearchToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_OPEN_SEARCH)

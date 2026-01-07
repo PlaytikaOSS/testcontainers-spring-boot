@@ -39,28 +39,19 @@ public class EmbeddedOracleBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "oracle")
     ToxiproxyClientProxy oracleContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
-                                               @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle,
-                                               ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                               @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 oracle,
                 ORACLE_PORT,
                 "oracle");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.oracle", "embeddedOracleToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "oracle")
-    public DynamicPropertyRegistrar oracleToxiProxyDynamicPropertyRegistrar(@Qualifier("oracleContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.oracle.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.oracle.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.oracle.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar oracleToxiProxyDynamicPropertyRegistrar(@Qualifier("oracleContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.oracle");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")

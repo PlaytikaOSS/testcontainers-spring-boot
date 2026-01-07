@@ -44,28 +44,19 @@ public class EmbeddedGitBootstrapConfiguration {
     ToxiproxyClientProxy gitContainerProxy(ToxiproxyClient toxiproxyClient,
                                             ToxiproxyContainer toxiproxyContainer,
                                             @Qualifier(BEAN_NAME_EMBEDDED_GIT) GenericContainer<?> embeddedGit,
-                                            ConfigurableEnvironment environment,
-                                            GitProperties gitProperties) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                           GitProperties gitProperties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 embeddedGit,
                 gitProperties.getPort(),
                 "git");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.git", "embeddedGitToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "git")
-    public DynamicPropertyRegistrar gitToxiProxyDynamicPropertyRegistrar(@Qualifier("gitContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.git.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.git.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.git.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar gitToxiProxyDynamicPropertyRegistrar(@Qualifier("gitContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.git");
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_GIT)

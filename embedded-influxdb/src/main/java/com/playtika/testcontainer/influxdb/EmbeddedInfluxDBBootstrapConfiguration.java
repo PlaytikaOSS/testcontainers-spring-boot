@@ -42,29 +42,20 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     ToxiproxyClientProxy influxdbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
                                                  @Qualifier(EMBEDDED_INFLUX_DB) ConcreteInfluxDbContainer influxdb,
-                                                 InfluxDBProperties properties,
-                                                 ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                 InfluxDBProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 influxdb,
                 properties.getPort(),
                 "influxdb");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.influxdb", "embeddedInfluxDBToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "influxdb")
     public DynamicPropertyRegistrar influxdbToxiProxyDynamicPropertyRegistrar(
-        @Qualifier("influxdbContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.influxdb.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.influxdb.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.influxdb.toxiproxy.proxyName", proxy::getName);
-        };
+        @Qualifier("influxdbContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.influxdb");
     }
 
     @Bean(name = EMBEDDED_INFLUX_DB, destroyMethod = "stop")

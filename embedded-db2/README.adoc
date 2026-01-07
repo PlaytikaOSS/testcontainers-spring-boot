@@ -37,4 +37,4 @@
 * `embedded.db2.toxiproxy.port`
 * `embedded.db2.networkAlias`
 * `embedded.db2.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy db2ContainerProxy`
+* Bean `ToxiproxyClientProxy db2ContainerProxy`

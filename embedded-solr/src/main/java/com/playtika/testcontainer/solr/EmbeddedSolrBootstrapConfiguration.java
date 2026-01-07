@@ -40,28 +40,20 @@ public class EmbeddedSolrBootstrapConfiguration {
     ToxiproxyClientProxy solrContainerProxy(ToxiproxyClient toxiproxyClient,
                                              ToxiproxyContainer toxiproxyContainer,
                                              @Qualifier(BEAN_NAME_EMBEDDED_SOLR) SolrContainer solrContainer,
-                                             SolrProperties properties,
-                                             ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                             SolrProperties properties) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 solrContainer,
                 properties.getPort(),
                 "solr");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.solr", "embeddedSolrToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "solr")
-    public DynamicPropertyRegistrar solrToxiProxyDynamicPropertyRegistrar(@Qualifier("solrContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.solr.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.solr.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.solr.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar solrToxiProxyDynamicPropertyRegistrar(@Qualifier("solrContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.solr");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_SOLR, destroyMethod = "stop")

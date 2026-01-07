@@ -39,28 +39,19 @@ public class EmbeddedNeo4jBootstrapConfiguration {
     ToxiproxyClientProxy neo4jContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) Neo4jContainer neo4j,
-                                              Neo4jProperties properties,
-                                              ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                              Neo4jProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 neo4j,
                 properties.getBoltPort(),
                 "neo4j");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.neo4j", "embeddedNeo4jToxiProxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "neo4j")
-    public DynamicPropertyRegistrar neo4jToxiProxyDynamicPropertyRegistrar(@Qualifier("neo4jContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.neo4j.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.neo4j.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.neo4j.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar neo4jToxiProxyDynamicPropertyRegistrar(@Qualifier("neo4jContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.neo4j");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")

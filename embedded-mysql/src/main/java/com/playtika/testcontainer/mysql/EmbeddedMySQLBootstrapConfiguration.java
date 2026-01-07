@@ -40,18 +40,13 @@ public class EmbeddedMySQLBootstrapConfiguration {
     ToxiproxyClientProxy mysqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql,
-                                              MySQLProperties properties,
-                                              ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                              MySQLProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mysql,
                 properties.getPort(),
                 "mysql");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mysql", "embeddedMysqlToxiProxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MYSQL, destroyMethod = "stop")
@@ -95,11 +90,7 @@ public class EmbeddedMySQLBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "mysql")
     public DynamicPropertyRegistrar mysqlToxiProxyDynamicPropertyRegistrar(
             MySQLProperties properties,
-            @Qualifier("mysqlContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-             registry.add("embedded.mysql.toxiproxy.host", proxy::getContainerIpAddress);
-             registry.add("embedded.mysql.toxiproxy.port", proxy::getProxyPort);
-             registry.add("embedded.mysql.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("mysqlContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.mysql");
     }
 }

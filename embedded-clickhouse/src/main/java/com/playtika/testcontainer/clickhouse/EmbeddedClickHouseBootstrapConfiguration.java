@@ -40,28 +40,20 @@ public class EmbeddedClickHouseBootstrapConfiguration {
     ToxiproxyClientProxy clickhouseContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
                                                    @Qualifier(BEAN_NAME_EMBEDDED_CLICK_HOUSE) ClickHouseContainer clickHouseContainer,
-                                                   ClickHouseProperties properties,
-                                                   ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                   ClickHouseProperties properties) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 clickHouseContainer,
                 properties.getPort(),
                 "clickhouse");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.clickhouse", "embeddedClickHouseToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "clickhouse")
-    public DynamicPropertyRegistrar clickhouseToxiProxyDynamicPropertyRegistrar(@Qualifier("clickhouseContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.clickhouse.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.clickhouse.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.clickhouse.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar clickhouseToxiProxyDynamicPropertyRegistrar(@Qualifier("clickhouseContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.clickhouse");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_CLICK_HOUSE, destroyMethod = "stop")

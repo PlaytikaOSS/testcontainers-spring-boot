@@ -54,7 +54,7 @@ embedded.google.pubsub:
 * `embedded.google.pubsub.toxiproxy.port`
 * `embedded.google.pubsub.networkAlias`
 * `embedded.google.pubsub.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy googlePubSubContainerProxy`
+* Bean `ToxiproxyClientProxy googlePubSubContainerProxy`
 
 ==== Example
 

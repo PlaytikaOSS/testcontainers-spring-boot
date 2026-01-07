@@ -34,7 +34,7 @@
 * `embedded.keycloak.toxiproxy.port`
 * `embedded.keycloak.networkAlias`
 * `embedded.keycloak.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy keycloakContainerProxy`
+* Bean `ToxiproxyClientProxy keycloakContainerProxy`
 
 ==== Example
 To configure for example the `keycloak-spring-boot-starter` use these properties in your test `application-test.yaml`:

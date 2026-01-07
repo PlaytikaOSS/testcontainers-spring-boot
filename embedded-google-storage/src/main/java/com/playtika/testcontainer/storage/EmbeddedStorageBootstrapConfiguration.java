@@ -42,28 +42,19 @@ public class EmbeddedStorageBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "google.storage")
     ToxiproxyClientProxy googleStorageContainerProxy(ToxiproxyClient toxiproxyClient,
                                                       ToxiproxyContainer toxiproxyContainer,
-                                                      @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> storageServer,
-                                                      ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                      @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> storageServer) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 storageServer,
                 StorageProperties.PORT,
                 "storage");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.google.storage", "embeddedGoogleStorageToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "google.storage")
-    public DynamicPropertyRegistrar googleStorageToxiProxyDynamicPropertyRegistrar(@Qualifier("googleStorageContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.google.storage.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.google.storage.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.google.storage.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar googleStorageToxiProxyDynamicPropertyRegistrar(@Qualifier("googleStorageContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.google.storage");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER, destroyMethod = "stop")

@@ -23,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -44,18 +43,13 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
     ToxiproxyClientProxy dynamodbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
                                                  @Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> dynamoDb,
-                                                 DynamoDBProperties properties,
-                                                 ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                 DynamoDBProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 dynamoDb,
                 properties.getPort(),
                 "dynamodb");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.dynamodb", "embeddedDynamoDBToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")

@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 
 /**
  * Wrapper class that bridges between toxiproxy-java's Proxy and the existing API
- * that was previously provided by ToxiproxyContainer.ContainerProxy.
+ * that was previously provided by ToxiproxyClientProxy.
  * This maintains backward compatibility while using the standalone ToxiproxyClient.
  */
 @RequiredArgsConstructor

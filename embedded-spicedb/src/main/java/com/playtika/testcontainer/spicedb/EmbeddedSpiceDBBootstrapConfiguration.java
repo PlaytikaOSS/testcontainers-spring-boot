@@ -43,18 +43,14 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
     ToxiproxyClientProxy spicedbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(BEAN_NAME_EMBEDDED_SPICEDB) GenericContainer<?> spicedbContainer,
-                                                SpiceDBProperties properties,
-                                                ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                SpiceDBProperties properties) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 spicedbContainer,
                 properties.getPort(),
                 "spicedb");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.spicedb", "embeddedSpicedbToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_SPICEDB, destroyMethod = "stop")
@@ -94,11 +90,7 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "spicedb")
     public DynamicPropertyRegistrar spicedbToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("spicedbContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.spicedb.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.spicedb.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.spicedb.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("spicedbContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.spicedb");
     }
 }

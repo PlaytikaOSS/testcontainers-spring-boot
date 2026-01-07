@@ -41,28 +41,20 @@ public class EmbeddedVerticaBootstrapConfiguration {
     ToxiproxyClientProxy verticaContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(BEAN_NAME_EMBEDDED_VERTICA) GenericContainer<?> embeddedVertica,
-                                                ConfigurableEnvironment environment,
-                                                VerticaProperties verticaProperties) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                               VerticaProperties verticaProperties) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 embeddedVertica,
                 verticaProperties.getPort(),
                 "vertica");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.vertica", "embeddedVerticaToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "vertica")
-    public DynamicPropertyRegistrar verticaToxiProxyDynamicPropertyRegistrar(@Qualifier("verticaContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.vertica.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.vertica.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.vertica.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar verticaToxiProxyDynamicPropertyRegistrar(@Qualifier("verticaContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.vertica");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_VERTICA, destroyMethod = "stop")

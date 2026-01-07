@@ -45,28 +45,19 @@ public class EmbeddedNatsBootstrapConfiguration {
     ToxiproxyClientProxy natsContainerProxy(ToxiproxyClient toxiproxyClient,
                                              ToxiproxyContainer toxiproxyContainer,
                                              @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
-                                             NatsProperties properties,
-                                             ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                             NatsProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 natsContainer,
                 properties.getClientPort(),
                 "nats");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.nats", "embeddedNatsToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "nats")
-    public DynamicPropertyRegistrar natsToxiProxyDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY) ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.nats.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.nats.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.nats.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar natsToxiProxyDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY) ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.nats");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_NATS, destroyMethod = "stop")

@@ -52,19 +52,15 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     public ToxiproxyClientProxy victoriaMetricsContainerProxy(ToxiproxyClient toxiproxyClient,
                                                                ToxiproxyContainer toxiproxyContainer,
                                                                GenericContainer<?> victoriametrics,
-                                                               VictoriaMetricsProperties properties,
-                                                               ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                               VictoriaMetricsProperties properties) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 victoriametrics,
                 properties.getPort(),
                 "victoriametrics"
         );
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.victoriametrics", "embeddedVictoriaMetricsToxiProxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_VICTORIA_METRICS, destroyMethod = "stop")
@@ -93,11 +89,7 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "victoriametrics")
     public DynamicPropertyRegistrar victoriaMetricsToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("victoriaMetricsContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.victoriametrics.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.victoriametrics.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.victoriametrics.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("victoriaMetricsContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.victoriametrics");
     }
 }

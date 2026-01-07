@@ -50,18 +50,13 @@ public class EmbeddedMinioBootstrapConfiguration {
     ToxiproxyClientProxy minioContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
-                                              ConfigurableEnvironment environment,
                                               MinioProperties properties) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 minio,
                 properties.getPort(),
                 "minio");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.minio", "embeddedMinioToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MINIO, destroyMethod = "stop")
@@ -105,12 +100,8 @@ public class EmbeddedMinioBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "minio")
     public DynamicPropertyRegistrar minioToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("minioContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.minio.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.minio.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.minio.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("minioContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.minio");
     }
 
 }

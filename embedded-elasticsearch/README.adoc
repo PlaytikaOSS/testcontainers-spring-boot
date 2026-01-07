@@ -34,7 +34,7 @@
 * `embedded.elasticsearch.networkAlias`
 * `embedded.elasticsearch.internalHttpPort`
 * `embedded.elasticsearch.internalTransportPort`
-* Bean `ToxiproxyContainer.ContainerProxy elasticsearchContainerProxy`
+* Bean `ToxiproxyClientProxy elasticsearchContainerProxy`
 
 
 ==== Example

@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.util.StringUtils;
+import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -41,18 +42,14 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
     ToxiproxyClientProxy mssqlserverContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
-                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver,
-                                                    ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mssqlserver,
                 MSSQLServerContainer.MS_SQL_SERVER_PORT,
                 "mssqlserver");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mssqlserver", "embeddedMSSQLServerToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MSSQLSERVER, destroyMethod = "stop")
@@ -106,12 +103,8 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
     public DynamicPropertyRegistrar mssqlServerToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("mssqlServerContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.mssqlserver.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.mssqlserver.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.mssqlserver.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("mssqlServerContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.mssqlserver");
     }
 
 }

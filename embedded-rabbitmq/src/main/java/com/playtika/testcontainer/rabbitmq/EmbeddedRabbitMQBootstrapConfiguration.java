@@ -42,28 +42,19 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
     ToxiproxyClientProxy rabbitmqContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
                                                  @Qualifier(BEAN_NAME_EMBEDDED_RABBITMQ) RabbitMQContainer rabbitmq,
-                                                 ConfigurableEnvironment environment,
                                                  RabbitMQProperties properties) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 rabbitmq,
                 properties.getPort(),
                 "rabbitmq");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.rabbitmq", "embeddedRabbitmqToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "rabbitmq")
-    public DynamicPropertyRegistrar rabbitmqToxiProxyDynamicPropertyRegistrar(@Qualifier("rabbitmqContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.rabbitmq.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.rabbitmq.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.rabbitmq.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar rabbitmqToxiProxyDynamicPropertyRegistrar(@Qualifier("rabbitmqContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.rabbitmq");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_RABBITMQ, destroyMethod = "stop")

@@ -41,5 +41,5 @@ To manipulate ToxiProxy inject the following bean into your tests:
 [source,java]
 ----
 @Autowired
-ToxiproxyContainer.ContainerProxy victoriaMetricsContainerProxy;
+ToxiproxyClientProxy victoriaMetricsContainerProxy;
 ----

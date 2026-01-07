@@ -47,28 +47,19 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     ToxiproxyClientProxy memsqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
                                                @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql,
-                                               MemSqlProperties properties,
-                                               ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                               MemSqlProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 memsql,
                 properties.getPort(),
                 "memsql");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.memsql", "embeddedMemsqlToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "memsql")
-    public DynamicPropertyRegistrar memsqlToxiProxyDynamicPropertyRegistrar(@Qualifier("memsqlContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.memsql.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.memsql.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.memsql.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar memsqlToxiProxyDynamicPropertyRegistrar(@Qualifier("memsqlContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.memsql");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")

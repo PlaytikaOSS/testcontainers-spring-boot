@@ -37,6 +37,6 @@
 * `embedded.localstack.toxiproxy.port`
 * `embedded.localstack.networkAlias`
 * `embedded.localstack.internalEdgePort`
-* Bean `ToxiproxyContainer.ContainerProxy localstackContainerProxy`
+* Bean `ToxiproxyClientProxy localstackContainerProxy`
 
 // TODO: missing example

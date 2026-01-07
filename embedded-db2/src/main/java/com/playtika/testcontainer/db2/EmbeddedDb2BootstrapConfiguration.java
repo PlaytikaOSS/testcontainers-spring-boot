@@ -41,28 +41,19 @@ public class EmbeddedDb2BootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "db2")
     ToxiproxyClientProxy db2ContainerProxy(ToxiproxyClient toxiproxyClient,
                                             ToxiproxyContainer toxiproxyContainer,
-                                            @Qualifier(BEAN_NAME_EMBEDDED_DB2) Db2Container db2,
-                                            ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                            @Qualifier(BEAN_NAME_EMBEDDED_DB2) Db2Container db2) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 db2,
                 Db2Container.DB2_PORT,
                 "db2");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.db2", "embeddedDb2ToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "db2")
-    public DynamicPropertyRegistrar db2ToxiProxyDynamicPropertyRegistrar(@Qualifier("db2ContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.db2.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.db2.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.db2.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar db2ToxiProxyDynamicPropertyRegistrar(@Qualifier("db2ContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.db2");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_DB2, destroyMethod = "stop")

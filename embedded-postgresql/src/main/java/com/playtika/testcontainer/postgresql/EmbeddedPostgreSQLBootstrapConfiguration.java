@@ -41,28 +41,19 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "postgresql")
     ToxiproxyClientProxy postgresqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
-                                                   @Qualifier(BEAN_NAME_EMBEDDED_POSTGRESQL) PostgreSQLContainer postgresql,
-                                                   ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                   @Qualifier(BEAN_NAME_EMBEDDED_POSTGRESQL) PostgreSQLContainer postgresql) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 postgresql,
                 PostgreSQLContainer.POSTGRESQL_PORT,
                 "postgresql");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.postgresql", "embeddedPostgresqlToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "postgresql")
-    public DynamicPropertyRegistrar postgresqlToxiProxyDynamicPropertyRegistrar(@Qualifier("postgresqlContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.postgresql.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.postgresql.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.postgresql.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar postgresqlToxiProxyDynamicPropertyRegistrar(@Qualifier("postgresqlContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.postgresql");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_POSTGRESQL, destroyMethod = "stop")

@@ -23,7 +23,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -44,18 +43,13 @@ public class EmbeddedMailHogBootstrapConfiguration {
     ToxiproxyClientProxy mailhogSmtpContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
                                                     @Qualifier(BEAN_NAME_EMBEDDED_MAILHOG) GenericContainer<?> mailhogContainer,
-                                                    MailHogProperties properties,
-                                                    ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                    MailHogProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mailhogContainer,
                 properties.getSmtpPort(),
                 "mailhog");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mailhog.smtp", "embeddedMailhogSmtpToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_MAILHOG)

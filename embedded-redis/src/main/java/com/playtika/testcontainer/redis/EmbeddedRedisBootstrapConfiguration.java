@@ -69,28 +69,22 @@ public class EmbeddedRedisBootstrapConfiguration {
     ToxiproxyClientProxy redisContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis,
-                                              RedisProperties properties,
-                                              ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                              RedisProperties properties) {
+
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 redis,
                 properties.getPort(),
                 "redis");
-
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "redis")
     public DynamicPropertyRegistrar redisToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("redisContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.redis.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.redis.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.redis.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("redisContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.redis");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")

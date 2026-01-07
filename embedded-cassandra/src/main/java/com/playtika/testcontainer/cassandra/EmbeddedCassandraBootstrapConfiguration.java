@@ -6,7 +6,6 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -53,29 +52,20 @@ public class EmbeddedCassandraBootstrapConfiguration {
     ToxiproxyClientProxy cassandraContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
                                                   @Qualifier(BEAN_NAME_EMBEDDED_CASSANDRA) CassandraContainer cassandra,
-                                                  CassandraProperties properties,
-                                                  ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                  CassandraProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 cassandra,
                 properties.getPort(),
                 "cassandra");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.cassandra", "embeddedCassandraToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "cassandra")
     public DynamicPropertyRegistrar cassandraToxiProxyDynamicPropertyRegistrar(
-        @Qualifier("cassandraContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.cassandra.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.cassandra.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.cassandra.toxiproxy.proxyName", proxy::getName);
-        };
+        @Qualifier("cassandraContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.cassandra");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")

@@ -52,7 +52,7 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
             @Qualifier("toxiproxy") ToxiproxyContainer toxiproxy) {
         return registry -> {
             registry.add("embedded.toxiproxy.host", toxiproxy::getHost);
-            registry.add("embedded.toxiproxy.controlPort", () -> toxiproxy.getControlPort());
+            registry.add("embedded.toxiproxy.controlPort", toxiproxy::getControlPort);
             registry.add("embedded.toxiproxy.networkAlias", () -> TOXIPROXY_NETWORK_ALIAS);
         };
     }
@@ -62,16 +62,4 @@ public class EmbeddedToxiProxyBootstrapConfiguration {
         return new ToxiproxyClient(toxiproxy.getHost(), toxiproxy.getControlPort());
     }
 
-    private void registerEnvironment(ToxiproxyContainer container,
-                                     ConfigurableEnvironment environment) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.toxiproxy.host", container.getHost());
-        map.put("embedded.toxiproxy.controlPort", container.getControlPort());
-        map.put("embedded.toxiproxy.networkAlias", TOXIPROXY_NETWORK_ALIAS);
-
-        log.info("Started ToxiProxy server. Connection details {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedToxiProxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-    }
 }

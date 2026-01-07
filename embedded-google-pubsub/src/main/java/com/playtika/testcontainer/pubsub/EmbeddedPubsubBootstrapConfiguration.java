@@ -25,7 +25,6 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -49,18 +48,13 @@ public class EmbeddedPubsubBootstrapConfiguration {
     ToxiproxyClientProxy googlePubSubContainerProxy(ToxiproxyClient toxiproxyClient,
                                                      ToxiproxyContainer toxiproxyContainer,
                                                      @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub,
-                                                     PubsubProperties properties,
-                                                     ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                     PubsubProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 pubsub,
                 properties.getPort(),
                 "pubsub");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.google.pubsub", "embeddedGooglePubSubToxiproxyInfo", environment);
-
-        return proxy;
     }
 
 

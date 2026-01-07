@@ -38,29 +38,19 @@ public class EmbeddedKeycloakBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "keycloak")
     ToxiproxyClientProxy keycloakContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
-                                                 @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloakContainer,
-                                                 KeycloakProperties properties,
-                                                 ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                 @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloakContainer) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 keycloakContainer,
                 keycloakContainer.getHttpPort(),
                 "keycloak");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.keycloak", "embeddedKeycloakToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "keycloak")
-    public DynamicPropertyRegistrar keycloakToxiProxyDynamicPropertyRegistrar(@Qualifier("keycloakContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.keycloak.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.keycloak.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.keycloak.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar keycloakToxiProxyDynamicPropertyRegistrar(@Qualifier("keycloakContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.keycloak");
     }
 
     /**

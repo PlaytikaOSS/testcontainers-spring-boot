@@ -24,7 +24,6 @@ import org.testcontainers.vault.VaultContainer;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -47,18 +46,14 @@ public class EmbeddedVaultBootstrapConfiguration {
     ToxiproxyClientProxy vaultContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_VAULT) VaultContainer vault,
-                                              ConfigurableEnvironment environment,
                                               VaultProperties properties) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 vault,
                 properties.getPort(),
                 "vault");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.vault", "embeddedVaultToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_VAULT, destroyMethod = "stop")

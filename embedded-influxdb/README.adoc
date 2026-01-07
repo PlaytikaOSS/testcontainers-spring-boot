@@ -40,7 +40,7 @@
 * `embedded.influxdb.toxiproxy.port`
 * `embedded.influxdb.networkAlias`
 * `embedded.influxdb.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy influxdbContainerProxy`
+* Bean `ToxiproxyClientProxy influxdbContainerProxy`
 
 ==== Example
 

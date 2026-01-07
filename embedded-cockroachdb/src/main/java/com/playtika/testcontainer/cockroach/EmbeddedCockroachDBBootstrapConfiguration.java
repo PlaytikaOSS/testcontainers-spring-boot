@@ -38,18 +38,14 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
     ToxiproxyClientProxy cockroachContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
-                                                  @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer,
-                                                  ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                  @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 cockroachContainer,
                 CockroachDBProperties.PORT,
                 "cockroach");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.cockroach", "embeddedСockroachdbToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_COCKROACHDB, destroyMethod = "stop")
@@ -82,11 +78,7 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
     public DynamicPropertyRegistrar cockroachToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("cockroachContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.cockroach.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.cockroach.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.cockroach.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("cockroachContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.cockroach");
     }
 }

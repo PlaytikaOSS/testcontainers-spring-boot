@@ -39,18 +39,13 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     ToxiproxyClientProxy mariadbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadbContainer,
-                                                MariaDBProperties properties,
-                                                ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                MariaDBProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mariadbContainer,
                 properties.getPort(),
                 "mariadb");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mariadb", "embeddedMariadbToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
@@ -93,11 +88,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "mariadb")
     public DynamicPropertyRegistrar mariadbToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("mariadbContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.mariadb.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.mariadb.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.mariadb.toxiproxy.proxyName", proxy::getName);
-        };
+            @Qualifier("mariadbContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.mariadb");
     }
 }

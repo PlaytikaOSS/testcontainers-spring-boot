@@ -17,12 +17,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -43,25 +43,13 @@ public class EmbeddedLocalStackBootstrapConfiguration {
     ToxiproxyClientProxy localstackContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
                                                    @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
-                                                   LocalStackProperties properties,
-                                                   ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                   LocalStackProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 localStack,
                 properties.getEdgePort(),
                 "localstack");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.localstack", "embeddedLocalstackToxiproxyInfo", environment);
-
-        return proxy;
-    }
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedLocalstackToxiproxyInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
-        log.info("Started Localstack ToxiProxy connection details {}", map);
-
-        return proxy;
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
@@ -84,12 +72,10 @@ public class EmbeddedLocalStackBootstrapConfiguration {
             localStackContainer.withServices(service);
         }
         localStackContainer = (LocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
-        registerLocalStackEnvironment(localStackContainer, environment, properties);
         return localStackContainer;
     }
 
     private void registerLocalStackEnvironment(LocalStackContainer localStack,
-                                               ConfigurableEnvironment environment,
                                                LocalStackProperties properties) {
         String host = localStack.getHost();
 
@@ -109,7 +95,6 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         log.info("Started Localstack. Connection details: {}", map);
 
         MapPropertySource propertySource = new MapPropertySource("embeddedLocalStackInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
         setSystemProperties(localStack);
     }
 
@@ -117,6 +102,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         System.setProperty("aws.endpointUrl", localStack.getEndpoint().toString());
         System.setProperty("aws.accessKeyId", localStack.getAccessKey());
         System.setProperty("aws.secretAccessKey", localStack.getSecretKey());
+    }
+
     @Bean
     public DynamicPropertyRegistrar localStackDynamicPropertyRegistrar(
             @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,

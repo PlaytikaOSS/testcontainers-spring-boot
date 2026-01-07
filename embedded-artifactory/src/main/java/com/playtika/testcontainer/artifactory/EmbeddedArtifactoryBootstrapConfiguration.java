@@ -22,7 +22,6 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.artifactory.ArtifactoryProperties.ARTIFACTORY_BEAN_NAME;
@@ -52,29 +51,19 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
     ToxiproxyClientProxy artifactoryContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
                                                     @Qualifier(ARTIFACTORY_BEAN_NAME) GenericContainer<?> artifactory,
-                                                    ArtifactoryProperties properties,
-                                                    ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                    ArtifactoryProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 artifactory,
                 properties.getRestApiPort(),
                 "artifactory");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.artifactory", "embeddedArtifactoryToxiproxyInfo", environment);
-        log.info("Started Artifactory ToxiProxy connection details host={}, port={}, proxyName={}", proxy.getContainerIpAddress(), proxy.getProxyPort(), proxy.getName());
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "artifactory")
-    public DynamicPropertyRegistrar artifactoryToxiProxyDynamicPropertyRegistrar(@Qualifier("artifactoryContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.artifactory.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.artifactory.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.artifactory.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar artifactoryToxiProxyDynamicPropertyRegistrar(@Qualifier("artifactoryContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.artifactory");
     }
 
     @Bean(name = ARTIFACTORY_BEAN_NAME, destroyMethod = "stop")

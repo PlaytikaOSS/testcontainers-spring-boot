@@ -41,28 +41,19 @@ public class EmbeddedConsulBootstrapConfiguration {
     ToxiproxyClientProxy consulContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
                                                @Qualifier(BEAN_NAME_EMBEDDED_CONSUL) GenericContainer<?> consulContainer,
-                                               ConsulProperties properties,
-                                               ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                               ConsulProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 consulContainer,
                 properties.getPort(),
                 "consul");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.consul", "embeddedConsulToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "consul")
-    public DynamicPropertyRegistrar consulToxiProxyDynamicPropertyRegistrar(@Qualifier("consulContainerProxy") ToxiproxyContainer.ContainerProxy proxy) {
-        return registry -> {
-            registry.add("embedded.consul.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.consul.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.consul.toxiproxy.proxyName", proxy::getName);
-        };
+    public DynamicPropertyRegistrar consulToxiProxyDynamicPropertyRegistrar(@Qualifier("consulContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.consul");
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
