@@ -62,10 +62,6 @@
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

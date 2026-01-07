@@ -23,27 +23,13 @@
             <artifactId>testcontainers-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>toxiproxy</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>eu.rekawek.toxiproxy</groupId>
-            <artifactId>toxiproxy-java</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.nats</groupId>
             <artifactId>jnats</artifactId>
             <version>${jnats.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
         </dependency>
     </dependencies>
 </project>
