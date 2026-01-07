@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    vault:
+      enabled: true
+      scheme: http
+      host: ${embedded.vault.host}
+      port: ${embedded.vault.port}
+      token: ${embedded.vault.token}
+      kv:
+        enabled: true
