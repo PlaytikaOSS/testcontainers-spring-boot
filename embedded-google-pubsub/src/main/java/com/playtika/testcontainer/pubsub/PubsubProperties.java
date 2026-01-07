@@ -18,10 +18,11 @@ public class PubsubProperties extends CommonContainerProperties {
     private String projectId = "my-project-id";
     private Collection<TopicAndSubscription> topicsAndSubscriptions = Collections.emptyList();
 
+    // Using gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators as default PubSubEmulatorContainer uses this image by default
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "google/cloud-sdk:542.0.0";
+        return "google/cloud-sdk:551.0.0";
     }
 }

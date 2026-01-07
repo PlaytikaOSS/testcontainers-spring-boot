@@ -20,14 +20,12 @@ import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
-import static java.lang.String.format;
 
 @Slf4j
 @Configuration
@@ -57,21 +55,10 @@ public class EmbeddedPubsubBootstrapConfiguration {
 
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
-    public GenericContainer<?> pubsub(PubsubProperties properties,
-                                      Optional<Network> network) {
+    public GenericContainer<?> pubsub(PubsubProperties properties, Optional<Network> network) {
         GenericContainer<?> pubsubContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort())
-                .withCommand(
-                        "/bin/sh",
-                        "-c",
-                        format(
-                                "gcloud beta emulators pubsub start --project %s --host-port=%s:%d",
-                                properties.getProjectId(),
-                                properties.getHost(),
-                                properties.getPort()
-                        )
-                ).waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
-                .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS);
+                .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS)
+                .withEnv("PUBSUB_PROJECT_ID", properties.getProjectId());
 
         network.ifPresent(pubsubContainer::withNetwork);
 
@@ -84,14 +71,17 @@ public class EmbeddedPubsubBootstrapConfiguration {
             @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> container,
             PubsubProperties properties) {
         return registry -> {
-            registry.add("embedded.google.pubsub.port", () -> container.getMappedPort(properties.getPort()));
-            registry.add("embedded.google.pubsub.host", container::getHost);
+            String host = container.getHost();
+            Integer port = container.getMappedPort(properties.getPort());
+
+            registry.add("embedded.google.pubsub.port", () -> port);
+            registry.add("embedded.google.pubsub.host", () -> host);
             registry.add("embedded.google.pubsub.project-id", properties::getProjectId);
             registry.add("embedded.google.pubsub.networkAlias", () -> GOOGLE_PUB_SUB_NETWORK_ALIAS);
             registry.add("embedded.google.pubsub.internalPort", properties::getPort);
 
             log.info("Started Google Cloud Pubsub emulator. Connection details: host={}, port={}, project-id={}",
-                    container.getHost(), container.getMappedPort(properties.getPort()), properties.getProjectId());
+                    host, port, properties.getProjectId());
             log.info("Consult with the doc https://cloud.google.com/pubsub/docs/emulator for more details");
         };
     }
@@ -106,8 +96,8 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
     public ManagedChannel managedChannel(@Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub, PubsubProperties properties) {
         return ManagedChannelBuilder
-                .forAddress(pubsub.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
-                .build();
+            .forAddress(pubsub.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
+            .build();
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_RESOURCES_GENERATOR)
