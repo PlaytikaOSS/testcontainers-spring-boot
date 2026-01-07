@@ -20,7 +20,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
-import java.util.LinkedHashMap;
+import java.time.Duration;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -35,6 +35,7 @@ import static com.playtika.testcontainer.vertica.VerticaProperties.BEAN_NAME_EMB
 public class EmbeddedVerticaBootstrapConfiguration {
 
     private static final String VERTICA_NETWORK_ALIAS = "vertica.testcontainer.docker";
+    private static final int VERTICA_STARTUP_TIMEOUT_IN_SECONDS = 120;
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "vertica")
@@ -42,7 +43,6 @@ public class EmbeddedVerticaBootstrapConfiguration {
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(BEAN_NAME_EMBEDDED_VERTICA) GenericContainer<?> embeddedVertica,
                                                VerticaProperties verticaProperties) {
-
         return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
@@ -60,13 +60,19 @@ public class EmbeddedVerticaBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_VERTICA, destroyMethod = "stop")
     public GenericContainer<?> embeddedVertica(VerticaProperties properties,
                                                Optional<Network> network) {
-        GenericContainer<?> verticaContainer = createContainer(properties)
+        GenericContainer<?> verticaContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+            .withExposedPorts(properties.getPort())
+            .withEnv("DATABASE_NAME", properties.getDatabase())
+            .withEnv("DATABASE_PASSWORD", properties.getPassword())
+            .withStartupTimeout(Duration.ofSeconds(VERTICA_STARTUP_TIMEOUT_IN_SECONDS))
+            .waitingFor(new HostPortWaitStrategy())
             .withNetwork(Network.SHARED)
             .withNetworkAliases(VERTICA_NETWORK_ALIAS);
 
         network.ifPresent(verticaContainer::withNetwork);
 
         verticaContainer = configureCommonsAndStart(verticaContainer, properties, log);
+
         Integer mappedPort = verticaContainer.getMappedPort(properties.getPort());
         String host = verticaContainer.getHost();
         log.info("Started Vertica server. Connection details: port={}, host={}, database={}, user={}, password={}, networkAlias={}, internalPort={}",
@@ -87,14 +93,4 @@ public class EmbeddedVerticaBootstrapConfiguration {
         };
     }
 
-    private GenericContainer<?> createContainer(VerticaProperties properties) {
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        map.put("DATABASE_NAME", properties.getDatabase());
-        map.put("DATABASE_PASSWORD", properties.getPassword());
-
-        return new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort())
-                .withEnv(map)
-                .waitingFor(new HostPortWaitStrategy());
-    }
 }

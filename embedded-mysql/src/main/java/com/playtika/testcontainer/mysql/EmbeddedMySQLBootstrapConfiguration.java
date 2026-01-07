@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.Network;
@@ -50,8 +49,7 @@ public class EmbeddedMySQLBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MYSQL, destroyMethod = "stop")
-    public MySQLContainer mysql(ConfigurableEnvironment environment,
-                                MySQLProperties properties,
+    public MySQLContainer mysql(MySQLProperties properties,
                                 Optional<Network> network) {
 
         MySQLContainer mysql = new MySQLContainer<>(ContainerUtils.getDockerImageName(properties))

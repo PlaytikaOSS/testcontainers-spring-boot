@@ -14,14 +14,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -51,8 +49,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
-    public CouchbaseContainer couchbase(ConfigurableEnvironment environment,
-                                        CouchbaseProperties properties,
+    public CouchbaseContainer couchbase(CouchbaseProperties properties,
                                         Optional<Network> network) {
         BucketDefinition bucketDefinition = new BucketDefinition(properties.getBucket())
                 .withPrimaryIndex(true)
@@ -66,36 +63,41 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
 
         network.ifPresent(couchbase::withNetwork);
         couchbase = (CouchbaseContainer) configureCommonsAndStart(couchbase, properties, log);
-
-        registerCouchbaseEnvironment(couchbase, environment, properties);
         return couchbase;
     }
 
-    private void registerCouchbaseEnvironment(CouchbaseContainer couchbase,
-                                              ConfigurableEnvironment environment,
-                                              CouchbaseProperties properties) {
+    @Bean
+    public DynamicPropertyRegistrar couchbaseDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) CouchbaseContainer couchbase,
+            CouchbaseProperties properties) {
+        return registry -> {
+            Integer mappedHttpPort = couchbase.getBootstrapHttpDirectPort();
+            Integer mappedCarrierPort = couchbase.getBootstrapCarrierDirectPort();
+            String host = couchbase.getHost();
 
-        Integer mappedHttpPort = couchbase.getBootstrapHttpDirectPort();
-        Integer mappedCarrierPort = couchbase.getBootstrapCarrierDirectPort();
-        String host = couchbase.getHost();
+            // System properties must be set before client initialization
+            // These are required by Couchbase SDK for auto-discovery
+            System.setProperty("com.couchbase.bootstrapHttpDirectPort", String.valueOf(mappedHttpPort));
+            System.setProperty("com.couchbase.bootstrapCarrierDirectPort", String.valueOf(mappedCarrierPort));
 
-        System.setProperty("com.couchbase.bootstrapHttpDirectPort", String.valueOf(mappedHttpPort));
-        System.setProperty("com.couchbase.bootstrapCarrierDirectPort", String.valueOf(mappedCarrierPort));
+            registry.add("embedded.couchbase.bootstrapHttpDirectPort", () -> mappedHttpPort);
+            registry.add("embedded.couchbase.bootstrapCarrierDirectPort", () -> mappedCarrierPort);
+            registry.add("embedded.couchbase.host", () -> host);
+            registry.add("embedded.couchbase.bucket", properties::getBucket);
+            registry.add("embedded.couchbase.user", properties::getUser);
+            registry.add("embedded.couchbase.password", properties::getPassword);
+            registry.add("embedded.couchbase.networkAlias", () -> COUCHBASE_NETWORK_ALIAS);
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.couchbase.bootstrapHttpDirectPort", mappedHttpPort);
-        map.put("embedded.couchbase.bootstrapCarrierDirectPort", mappedCarrierPort);
-        map.put("embedded.couchbase.host", host);
-        map.put("embedded.couchbase.bucket", properties.bucket);
-        map.put("embedded.couchbase.user", properties.user);
-        map.put("embedded.couchbase.password", properties.password);
-        map.put("embedded.couchbase.networkAlias", COUCHBASE_NETWORK_ALIAS);
+            log.info("Started couchbase server. Connection details: host={}, httpPort={}, carrierPort={}, user={}, password={}, " +
+                            "Admin UI: http://localhost:{}",
+                    host, mappedHttpPort, mappedCarrierPort, properties.getUser(), properties.getPassword(), mappedHttpPort);
+        };
+    }
 
-        log.info("Started couchbase server. Connection details {},  " +
-                        "Admin UI: http://localhost:{}, user: {}, password: {}",
-                map, mappedHttpPort, properties.getUser(), properties.getPassword());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedCouchbaseInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "couchbase")
+    public DynamicPropertyRegistrar couchbaseToxiProxyDynamicPropertyRegistrar(
+            @Qualifier("couchbaseContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.couchbase");
     }
 }

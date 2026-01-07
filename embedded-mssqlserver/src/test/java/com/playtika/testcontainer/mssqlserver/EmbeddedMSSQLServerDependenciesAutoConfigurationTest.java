@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "embedded.mssqlserver.init-script-path=initScript.sql"
         }
 )
+@ActiveProfiles("test")
 class EmbeddedMSSQLServerDependenciesAutoConfigurationTest {
     @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;

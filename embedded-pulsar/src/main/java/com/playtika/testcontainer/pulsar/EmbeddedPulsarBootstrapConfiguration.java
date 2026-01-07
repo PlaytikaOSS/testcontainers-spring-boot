@@ -13,14 +13,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.pulsar.PulsarProperties.EMBEDDED_PULSAR;
@@ -50,7 +47,6 @@ public class EmbeddedPulsarBootstrapConfiguration {
 
     @Bean(name = EMBEDDED_PULSAR)
     public PulsarContainer embeddedPulsar(PulsarProperties pulsarProperties,
-                                          ConfigurableEnvironment environment,
                                           @Deprecated @Value("${embedded.pulsar.imageTag:#{null}}") String deprImageTag,
                                           Optional<Network> network) {
         if (deprImageTag != null) {
@@ -61,23 +57,28 @@ public class EmbeddedPulsarBootstrapConfiguration {
 
         network.ifPresent(pulsarContainer::withNetwork);
         pulsarContainer = (PulsarContainer) ContainerUtils.configureCommonsAndStart(pulsarContainer, pulsarProperties, log);
-        registerEmbeddedPulsarEnvironment(environment, pulsarContainer, pulsarProperties);
         return pulsarContainer;
     }
 
-    private static void registerEmbeddedPulsarEnvironment(final ConfigurableEnvironment environment,
-                                                          final PulsarContainer pulsarContainer,
-                                                          PulsarProperties properties) {
-        String pulsarBrokerUrl = pulsarContainer.getPulsarBrokerUrl();
-        String pulsarHttpServiceUrl = pulsarContainer.getHttpServiceUrl();
+    @Bean
+    public DynamicPropertyRegistrar pulsarDynamicPropertyRegistrar(
+            @Qualifier(EMBEDDED_PULSAR) PulsarContainer pulsarContainer,
+            PulsarProperties properties) {
+        return registry -> {
+            registry.add("embedded.pulsar.brokerUrl", pulsarContainer::getPulsarBrokerUrl);
+            registry.add("embedded.pulsar.httpServiceUrl", pulsarContainer::getHttpServiceUrl);
+            registry.add("embedded.pulsar.networkAlias", () -> PULSAR_NETWORK_ALIAS);
+            registry.add("embedded.pulsar.internalBrokerPort", properties::getBrokerPort);
 
-        Map<String, Object> pulsarEnv = new LinkedHashMap<>();
-        pulsarEnv.put("embedded.pulsar.brokerUrl", pulsarBrokerUrl);
-        pulsarEnv.put("embedded.pulsar.httpServiceUrl", pulsarHttpServiceUrl);
-        pulsarEnv.put("embedded.pulsar.networkAlias", PULSAR_NETWORK_ALIAS);
-        pulsarEnv.put("embedded.pulsar.internalBrokerPort", properties.getBrokerPort());
+            log.info("Started Pulsar. brokerUrl={}, httpServiceUrl={}",
+                    pulsarContainer.getPulsarBrokerUrl(), pulsarContainer.getHttpServiceUrl());
+        };
+    }
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedPulsarInfo", pulsarEnv);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "pulsar")
+    public DynamicPropertyRegistrar pulsarToxiProxyDynamicPropertyRegistrar(
+            @Qualifier("pulsarContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.pulsar");
     }
 }
