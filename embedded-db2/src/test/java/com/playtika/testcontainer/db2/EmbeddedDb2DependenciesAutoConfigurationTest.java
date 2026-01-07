@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.Db2Container;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "embedded.db2.enabled=true"
         }
 )
+@ActiveProfiles("test")
 class EmbeddedDb2DependenciesAutoConfigurationTest {
 
     @Autowired(required = false)

@@ -64,6 +64,7 @@ public class EmbeddedDb2BootstrapConfiguration {
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())
                 .withInitScript(properties.getInitScriptPath())
+                .acceptLicense()
                 .withNetworkAliases(DB2_NETWORK_ALIAS);
         network.ifPresent(db2Container::withNetwork);
         String startupLogCheckRegex = properties.getStartupLogCheckRegex();
