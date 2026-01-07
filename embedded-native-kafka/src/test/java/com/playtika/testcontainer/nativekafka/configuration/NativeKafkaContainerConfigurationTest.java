@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.nativekafka.configuration;
 
+import com.playtika.testcontainer.common.properties.CommonContainerProperties;
 import com.playtika.testcontainer.nativekafka.NativeKafkaTopicsConfigurer;
 import com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +18,11 @@ import org.testcontainers.kafka.KafkaContainer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
@@ -69,13 +70,13 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            GenericContainer<?> result = configuration.nativeKafka(properties, network);
+            GenericContainer<?> result = configuration.nativeKafka(properties, Optional.of(network));
 
             assertThat(result).isEqualTo(kafkaContainer);
-            containerUtilsMock.verify(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()));
+            containerUtilsMock.verify(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()));
         }
     }
 
@@ -91,10 +92,10 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            GenericContainer<?> result = configuration.nativeKafka(properties, network);
+            GenericContainer<?> result = configuration.nativeKafka(properties, Optional.of(network));
 
             assertThat(result).isEqualTo(kafkaContainer);
 
@@ -115,10 +116,10 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            GenericContainer<?> result = configuration.nativeKafka(properties, network);
+            GenericContainer<?> result = configuration.nativeKafka(properties, Optional.of(network));
 
             assertThat(result).isEqualTo(kafkaContainer);
             assertThat(Files.exists(tempDir.resolve("embedded-native-kafka-data"))).isFalse();
@@ -134,10 +135,10 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, network);
+            configuration.nativeKafka(properties, Optional.of(network));
         }
     }
 
@@ -165,10 +166,10 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, network);
+            configuration.nativeKafka(properties, Optional.of(network));
 
             assertThat(Files.exists(testPath)).isTrue();
             assertThat(Files.isDirectory(testPath)).isTrue();
@@ -191,10 +192,10 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, network);
+            configuration.nativeKafka(properties, Optional.of(network));
 
             assertThat(Files.exists(parentPath)).isTrue();
             assertThat(Files.exists(testPath)).isTrue();
@@ -223,10 +224,10 @@ class NativeKafkaContainerConfigurationTest {
         try (MockedStatic<com.playtika.testcontainer.common.utils.ContainerUtils> containerUtilsMock =
                 mockStatic(com.playtika.testcontainer.common.utils.ContainerUtils.class)) {
 
-            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), eq(properties), any()))
+            containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, network);
+            configuration.nativeKafka(properties, Optional.of(network));
 
             assertThat(Files.exists(existingPath)).isTrue();
         }
