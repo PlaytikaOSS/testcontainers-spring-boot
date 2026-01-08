@@ -24,5 +24,6 @@ public class PubsubProperties extends CommonContainerProperties {
         // Please don`t remove this comment.
         // renovate: datasource=docker
         return "google/cloud-sdk:551.0.0";
+        //551.0.0-slim
     }
 }

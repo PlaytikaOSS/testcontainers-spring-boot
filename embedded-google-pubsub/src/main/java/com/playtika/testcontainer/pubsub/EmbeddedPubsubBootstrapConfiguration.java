@@ -20,12 +20,14 @@ import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
+import static java.lang.String.format;
 
 @Slf4j
 @Configuration
@@ -57,12 +59,31 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
     public GenericContainer<?> pubsub(PubsubProperties properties, Optional<Network> network) {
         GenericContainer<?> pubsubContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS)
-                .withEnv("PUBSUB_PROJECT_ID", properties.getProjectId());
+            .withExposedPorts(properties.getPort())
+            .withCommand(
+                "/bin/sh",
+                "-c",
+                format(
+                    "gcloud beta emulators pubsub start --project %s --host-port=%s:%d",
+                    properties.getProjectId(),
+                    properties.getHost(),
+                    properties.getPort()
+                )
+            ).waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
+            .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS);
 
         network.ifPresent(pubsubContainer::withNetwork);
 
         pubsubContainer = configureCommonsAndStart(pubsubContainer, properties, log);
+
+        // Set PUBSUB_EMULATOR_HOST system property immediately after container starts
+        // This is needed for Spring Cloud GCP to detect emulator mode
+        String emulatorHost = format("%s:%d", pubsubContainer.getHost(), pubsubContainer.getMappedPort(properties.getPort()));
+        System.setProperty("PUBSUB_EMULATOR_HOST", emulatorHost);
+        // Also set as Spring Boot property to ensure it's available during auto-configuration
+        System.setProperty("spring.cloud.gcp.pubsub.emulatorHost", emulatorHost);
+        System.setProperty("spring.cloud.gcp.pubsub.emulator-host", emulatorHost);
+
         return pubsubContainer;
     }
 
@@ -73,12 +94,22 @@ public class EmbeddedPubsubBootstrapConfiguration {
         return registry -> {
             String host = container.getHost();
             Integer port = container.getMappedPort(properties.getPort());
+            String emulatorHost = format("%s:%d", host, port);
 
             registry.add("embedded.google.pubsub.port", () -> port);
             registry.add("embedded.google.pubsub.host", () -> host);
             registry.add("embedded.google.pubsub.project-id", properties::getProjectId);
             registry.add("embedded.google.pubsub.networkAlias", () -> GOOGLE_PUB_SUB_NETWORK_ALIAS);
             registry.add("embedded.google.pubsub.internalPort", properties::getPort);
+
+            // Register Spring Cloud GCP properties for auto-configuration
+            // Support both camelCase and kebab-case property names
+            registry.add("spring.cloud.gcp.pubsub.emulatorHost", () -> emulatorHost);
+            registry.add("spring.cloud.gcp.pubsub.emulator-host", () -> emulatorHost);
+            registry.add("spring.cloud.gcp.project-id", properties::getProjectId);
+
+            // Set PUBSUB_EMULATOR_HOST system property for Google Cloud SDK clients
+            System.setProperty("PUBSUB_EMULATOR_HOST", emulatorHost);
 
             log.info("Started Google Cloud Pubsub emulator. Connection details: host={}, port={}, project-id={}",
                     host, port, properties.getProjectId());

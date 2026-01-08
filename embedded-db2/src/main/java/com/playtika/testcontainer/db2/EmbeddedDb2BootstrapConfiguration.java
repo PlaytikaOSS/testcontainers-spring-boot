@@ -20,7 +20,6 @@ import org.testcontainers.containers.Db2Container;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import java.util.Optional;
 
@@ -64,17 +63,17 @@ public class EmbeddedDb2BootstrapConfiguration {
                 .withUsername(properties.getUser())
                 .withPassword(properties.getPassword())
                 .withInitScript(properties.getInitScriptPath())
-                .acceptLicense()
                 .withNetworkAliases(DB2_NETWORK_ALIAS);
         network.ifPresent(db2Container::withNetwork);
-        String startupLogCheckRegex = properties.getStartupLogCheckRegex();
-        if (StringUtils.hasLength(startupLogCheckRegex)) {
-            WaitStrategy waitStrategy = new LogMessageWaitStrategy()
-                    .withRegEx(startupLogCheckRegex);
-            db2Container.waitingFor(waitStrategy);
+        if (StringUtils.hasLength(properties.getStartupLogCheckRegex())) {
+            db2Container = db2Container.waitingFor(new LogMessageWaitStrategy()
+                    .withRegEx(properties.getStartupLogCheckRegex()));
         }
         if (properties.isAcceptLicence()) {
-            db2Container.acceptLicense();
+            db2Container = db2Container.acceptLicense();
+        }
+        if ("aarch".equals(System.getProperty("system.arch"))){
+            db2Container = db2Container.withCommand("platform", "linux/amd64");
         }
         db2Container = (Db2Container) configureCommonsAndStart(db2Container, properties, log);
         Integer mappedPort = db2Container.getMappedPort(Db2Container.DB2_PORT);

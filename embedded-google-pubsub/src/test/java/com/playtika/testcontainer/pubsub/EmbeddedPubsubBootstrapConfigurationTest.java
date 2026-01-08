@@ -125,7 +125,9 @@ class EmbeddedPubsubBootstrapConfigurationTest {
                 .isInstanceOf(GenericContainer.class)
                 .satisfies(genericContainer -> {
                     GenericContainer<?> container = (GenericContainer<?>) genericContainer;
-                    assertThat(container.getExposedPorts()).containsExactly(8085);
+                    assertThat(container.getExposedPorts()).containsExactly(8089);
+                    assertThat(container.getCommandParts())
+                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --project my-project-id --host-port=0.0.0.0:8089");
                 });
     }
 
