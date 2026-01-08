@@ -1,10 +1,10 @@
 package com.playtika.testcontainer.mongodb;
 
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
@@ -35,19 +35,19 @@ public class EmbeddedMongodbBootstrapAuthConfigurationTest {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.port}")
+    @Value("${embedded.mongodb.port}")
     String mongodbPort;
 
-    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.host}")
+    @Value("${embedded.mongodb.host}")
     String mongodbHost;
 
-    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.username}")
+    @Value("${embedded.mongodb.username}")
     String mongodbUsername;
 
-    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.password}")
+    @Value("${embedded.mongodb.password}")
     String mongodbPassword;
 
-    @org.springframework.beans.factory.annotation.Value("${embedded.mongodb.database}")
+    @Value("${embedded.mongodb.database}")
     String mongodbDatabase;
 
     @Test
@@ -68,13 +68,7 @@ public class EmbeddedMongodbBootstrapAuthConfigurationTest {
         assertThat(mongodbDatabase).isNotEmpty();
     }
 
-    @Value
-    static class Foo {
-        @Id
-        String someId;
-        String someString;
-        Instant someTimestamp;
-        Long someNumber;
+    record Foo(@Id String someId, String someString, Instant someTimestamp, Long someNumber) {
     }
 
     @EnableAutoConfiguration
