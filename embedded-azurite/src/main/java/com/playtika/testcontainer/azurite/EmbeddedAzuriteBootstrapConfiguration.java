@@ -9,11 +9,14 @@ import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -29,6 +32,11 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
+@AutoConfigureBefore(name = {
+        "com.azure.spring.cloud.autoconfigure.storage.blob.AzureStorageBlobAutoConfiguration",
+        "com.azure.spring.cloud.autoconfigure.storage.queue.AzureStorageQueueAutoConfiguration"
+})
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.azurite.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(AzuriteProperties.class)
 public class EmbeddedAzuriteBootstrapConfiguration {
@@ -83,11 +91,11 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     public DynamicPropertyRegistrar azuriteQueueToxiProxyDynamicPropertyRegistrar(ToxiproxyClientProxy azuriteQueueContainerProxy) {
         return registry -> {
             registry.add("embedded.azurite.toxiproxy.host", azuriteQueueContainerProxy::getContainerIpAddress);
-            registry.add("embedded.azurite.toxiproxy.queueStoragePor", azuriteQueueContainerProxy::getProxyPort);
+            registry.add("embedded.azurite.toxiproxy.queueStoragePort", azuriteQueueContainerProxy::getProxyPort);
             registry.add("embedded.azurite.toxiproxy.proxyName", azuriteQueueContainerProxy::getName);
             log.info("Started Azurite ToxiProxy connection details {}", Map.of(
                 "embedded.azurite.toxiproxy.host", azuriteQueueContainerProxy.getContainerIpAddress(),
-                "embedded.azurite.toxiproxy.queueStoragePor", azuriteQueueContainerProxy.getProxyPort(),
+                "embedded.azurite.toxiproxy.queueStoragePort", azuriteQueueContainerProxy.getProxyPort(),
                 "embedded.azurite.toxiproxy.proxyName", azuriteQueueContainerProxy.getName()
             ));
         };
@@ -157,7 +165,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
 
             registry.add("embedded.azurite.host", () -> host);
             registry.add("embedded.azurite.blobStoragePort", () -> mappedBlobStoragePort);
-            registry.add("embedded.azurite.queueStoragePor", () -> mappedQueueStoragePort);
+            registry.add("embedded.azurite.queueStoragePort", () -> mappedQueueStoragePort);
             registry.add("embedded.azurite.tableStoragePort", () -> mappedTableStoragePort);
             registry.add("embedded.azurite.account-name", () -> AzuriteProperties.ACCOUNT_NAME);
             registry.add("embedded.azurite.account-key", () -> AzuriteProperties.ACCOUNT_KEY);
