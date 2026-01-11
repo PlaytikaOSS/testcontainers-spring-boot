@@ -9,11 +9,14 @@ import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -29,6 +32,11 @@ import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
+@AutoConfigureBefore(name = {
+        "org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration",
+        "org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration"
+})
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(name = "embedded.couchbase.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class EmbeddedCouchbaseBootstrapConfiguration {
