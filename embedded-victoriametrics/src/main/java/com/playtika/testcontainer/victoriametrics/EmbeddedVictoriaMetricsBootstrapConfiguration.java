@@ -51,7 +51,7 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "victoriametrics")
     public ToxiproxyClientProxy victoriaMetricsContainerProxy(ToxiproxyClient toxiproxyClient,
                                                                ToxiproxyContainer toxiproxyContainer,
-                                                               GenericContainer<?> victoriametrics,
+                                                               @Qualifier(BEAN_NAME_EMBEDDED_VICTORIA_METRICS) GenericContainer<?> victoriametrics,
                                                                VictoriaMetricsProperties properties) {
 
         return ToxiproxyHelper.createProxy(
@@ -65,10 +65,12 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_VICTORIA_METRICS, destroyMethod = "stop")
     public GenericContainer<?> victoriaMetrics(VictoriaMetricsProperties properties,
-                                              Optional<Network> network) {
+                                              Optional<Network> network,
+                                              WaitStrategy victoriaMetricsWaitStrategy) {
         GenericContainer<?> victoriaMetrics = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.port)
-                .withNetworkAliases("victoriametrics.testcontainer.docker");
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(VICTORIAMETRICS_NETWORK_ALIAS)
+                .waitingFor(victoriaMetricsWaitStrategy);
         network.ifPresent(victoriaMetrics::withNetwork);
         configureCommonsAndStart(victoriaMetrics, properties, log);
         return victoriaMetrics;
@@ -80,9 +82,9 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
             VictoriaMetricsProperties properties) {
         return registry -> {
             registry.add("embedded.victoriametrics.host", victoriaMetrics::getHost);
-            registry.add("embedded.victoriametrics.port", () -> victoriaMetrics.getMappedPort(properties.port));
-            registry.add("embedded.victoriametrics.networkAlias", () -> "victoriametrics.testcontainer.docker");
-            registry.add("embedded.victoriametrics.internalPort", () -> properties.port);
+            registry.add("embedded.victoriametrics.port", () -> victoriaMetrics.getMappedPort(properties.getPort()));
+            registry.add("embedded.victoriametrics.networkAlias", () -> VICTORIAMETRICS_NETWORK_ALIAS);
+            registry.add("embedded.victoriametrics.internalPort", () -> properties.getPort());
         };
     }
 
