@@ -25,10 +25,7 @@ public class SpringTestApplication {
     private String client;
 
     @Bean
-    public JwtDecoder jwtDecoder(@Value("${embedded.keycloak.host}") String host,
-                                 @Value("${embedded.keycloak.http-port}") String port,
-                                 @Value("${testing.keycloak.realm}") String realm) {
-        String jwkSetUri = String.format("http://%s:%s/realms/%s/protocol/openid-connect/certs", host, port, realm);
+    public JwtDecoder jwtDecoder(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String jwkSetUri) {
         return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
     }
 

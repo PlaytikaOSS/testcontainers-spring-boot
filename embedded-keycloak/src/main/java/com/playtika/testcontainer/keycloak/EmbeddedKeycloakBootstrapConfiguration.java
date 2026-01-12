@@ -8,6 +8,7 @@ import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -28,6 +29,7 @@ import static com.playtika.testcontainer.keycloak.KeycloakProperties.BEAN_NAME_E
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
+@AutoConfigureBefore(name = "org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerJwtConfiguration")
 @EnableConfigurationProperties(KeycloakProperties.class)
 @ConditionalOnProperty(name = "embedded.keycloak.enabled", matchIfMissing = true)
 public class EmbeddedKeycloakBootstrapConfiguration {

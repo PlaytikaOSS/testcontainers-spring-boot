@@ -24,7 +24,7 @@ import static org.springframework.http.HttpMethod.GET;
 @SpringBootTest(
         classes = {SpringTestApplication.class, KeycloakClientTestConfiguration.class},
         webEnvironment = RANDOM_PORT)
-@ActiveProfiles({"enabled", "realm"})
+@ActiveProfiles({"enabled", "realm", "test"})
 public class EmbeddedKeycloakBootstrapConfigurationTest {
 
     @Autowired
