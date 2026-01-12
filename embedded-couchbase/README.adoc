@@ -35,7 +35,7 @@
 * `embedded.couchbase.toxiproxy.host`
 * `embedded.couchbase.toxiproxy.port`
 * `embedded.couchbase.networkAlias`
-* Bean `ToxiproxyContainer.ContainerProxy couchbaseContainerProxy`
+* Bean `ToxiproxyClientProxy couchbaseContainerProxy`
 
 ==== Notes
 

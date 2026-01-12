@@ -35,6 +35,6 @@
 * `embedded.mysql.toxiproxy.port`
 * `embedded.mysql.networkAlias`
 * `embedded.mysql.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy mysqlContainerProxy`
+* Bean `ToxiproxyClientProxy mysqlContainerProxy`
 
 // TODO: missing example

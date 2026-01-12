@@ -1,0 +1,4 @@
+spring:
+  mail:
+    host: ${embedded.mailhog.smtp.toxiproxy.host:localhost}
+    port: ${embedded.mailhog.smtp.toxiproxy.port:1025}

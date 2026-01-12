@@ -14,13 +14,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,23 +39,17 @@ public class EmbeddedMySQLBootstrapConfiguration {
     ToxiproxyClientProxy mysqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql,
-                                              MySQLProperties properties,
-                                              ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                              MySQLProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mysql,
                 properties.getPort(),
                 "mysql");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mysql", "embeddedMysqlToxiProxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MYSQL, destroyMethod = "stop")
-    public MySQLContainer mysql(ConfigurableEnvironment environment,
-                                MySQLProperties properties,
+    public MySQLContainer mysql(MySQLProperties properties,
                                 Optional<Network> network) {
 
         MySQLContainer mysql = new MySQLContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -74,30 +66,29 @@ public class EmbeddedMySQLBootstrapConfiguration {
 
         network.ifPresent(mysql::withNetwork);
         mysql = (MySQLContainer) configureCommonsAndStart(mysql, properties, log);
-        registerMySQLEnvironment(mysql, environment, properties);
         return mysql;
     }
 
-    private void registerMySQLEnvironment(MySQLContainer mysql,
-                                          ConfigurableEnvironment environment,
-                                          MySQLProperties properties) {
-        Integer mappedPort = mysql.getMappedPort(properties.getPort());
-        String host = mysql.getHost();
+    @Bean
+    public DynamicPropertyRegistrar mysqlDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql,
+            MySQLProperties properties) {
+        return registry -> {
+            registry.add("embedded.mysql.port", () -> mysql.getMappedPort(properties.getPort()));
+            registry.add("embedded.mysql.host", mysql::getHost);
+            registry.add("embedded.mysql.schema", properties::getDatabase);
+            registry.add("embedded.mysql.user", properties::getUser);
+            registry.add("embedded.mysql.password", properties::getPassword);
+            registry.add("embedded.mysql.networkAlias", () -> MYSQL_NETWORK_ALIAS);
+            registry.add("embedded.mysql.internalPort", properties::getPort);
+        };
+    }
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.mysql.port", mappedPort);
-        map.put("embedded.mysql.host", host);
-        map.put("embedded.mysql.schema", properties.getDatabase());
-        map.put("embedded.mysql.user", properties.getUser());
-        map.put("embedded.mysql.password", properties.getPassword());
-        map.put("embedded.mysql.networkAlias", MYSQL_NETWORK_ALIAS);
-        map.put("embedded.mysql.internalPort", properties.getPort());
-
-        String jdbcURL = "jdbc:mysql://{}:{}/{}";
-        log.info("Started mysql server. Connection details: {}, " +
-                "JDBC connection url: " + jdbcURL, map, host, mappedPort, properties.getDatabase());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedMySQLInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "mysql")
+    public DynamicPropertyRegistrar mysqlToxiProxyDynamicPropertyRegistrar(
+            MySQLProperties properties,
+            @Qualifier("mysqlContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.mysql");
     }
 }

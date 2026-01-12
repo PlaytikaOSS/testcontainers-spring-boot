@@ -3,20 +3,19 @@ package com.playtika.testcontainers.wiremock;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -35,37 +34,32 @@ public class EmbeddedWiremockBootstrapConfiguration {
             .withMethod("GET")
             .forStatusCode(200);
 
-    @Bean(value = BEAN_NAME_EMBEDDED_WIREMOCK, destroyMethod = "stop")
-    public GenericContainer<?> wiremockContainer(ConfigurableEnvironment environment,
-                                                 WiremockProperties properties,
-                                                 Optional<Network> network) {
+    @Bean(name = BEAN_NAME_EMBEDDED_WIREMOCK, destroyMethod = "stop")
+    public GenericContainer<?> wiremock(WiremockProperties properties, Optional<Network> network) {
         GenericContainer<?> wiremock =
-                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                        .waitingFor(DEFAULT_WAITER)
-                        .withCommand("--port " + properties.getPort())
-                        .withExposedPorts(properties.getPort())
-                        .withNetworkAliases(WIREMOCK_NETWORK_ALIAS);
-
+            new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+                .waitingFor(DEFAULT_WAITER)
+                .withCommand("--port " + properties.getPort())
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(WIREMOCK_NETWORK_ALIAS);
         network.ifPresent(wiremock::withNetwork);
-
-        wiremock = configureCommonsAndStart(wiremock, properties, log);
-        registerWiremockEnvironment(wiremock, environment, properties);
+        configureCommonsAndStart(wiremock, properties, log);
         return wiremock;
     }
 
-    private void registerWiremockEnvironment(GenericContainer<?> container, ConfigurableEnvironment environment, WiremockProperties properties) {
-        Integer mappedPort = container.getMappedPort(properties.getPort());
-        String host = container.getHost();
+    @Bean
+    public DynamicPropertyRegistrar wiremockDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_WIREMOCK) GenericContainer<?> container,
+            WiremockProperties properties) {
+        return registry -> {
+            registry.add("embedded.wiremock.host", container::getHost);
+            registry.add("embedded.wiremock.port", () -> container.getMappedPort(properties.getPort()));
+            registry.add("embedded.wiremock.networkAlias", () -> WIREMOCK_NETWORK_ALIAS);
+            registry.add("embedded.wiremock.internalPort", properties::getPort);
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.wiremock.port", mappedPort);
-        map.put("embedded.wiremock.host", host);
-        map.put("embedded.wiremock.networkAlias", WIREMOCK_NETWORK_ALIAS);
-        map.put("embedded.wiremock.internalPort", properties.getPort());
-
-        log.info("Started wiremock. Connection Details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedWiremockInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+            log.info("Started wiremock. Connection Details: embedded.wiremock.host={}, embedded.wiremock.port={}," +
+                     "embedded.wiremock.networkAlias={}, embedded.wiremock.internalPort={}",
+                container.getHost(), container.getMappedPort(properties.getPort()), WIREMOCK_NETWORK_ALIAS, properties.getPort());
+        };
     }
 }

@@ -1,11 +1,10 @@
 package com.playtika.testcontainer.elasticsearch;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,15 +16,24 @@ import static org.assertj.core.api.Assertions.assertThat;
         })
 public abstract class EmbeddedElasticSearchBootstrapConfigurationTest {
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.elasticsearch.clusterName}")
+    String elasticsearchClusterName;
+
+    @Value("${embedded.elasticsearch.host}")
+    String elasticsearchHost;
+
+    @Value("${embedded.elasticsearch.httpPort}")
+    String elasticsearchHttpPort;
+
+    @Value("${embedded.elasticsearch.transportPort}")
+    String elasticsearchTransportPort;
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.elasticsearch.clusterName")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.elasticsearch.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.elasticsearch.httpPort")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.elasticsearch.transportPort")).isNotEmpty();
+        assertThat(elasticsearchClusterName).isNotEmpty();
+        assertThat(elasticsearchHost).isNotEmpty();
+        assertThat(elasticsearchHttpPort).isNotEmpty();
+        assertThat(elasticsearchTransportPort).isNotEmpty();
     }
 
     @Configuration

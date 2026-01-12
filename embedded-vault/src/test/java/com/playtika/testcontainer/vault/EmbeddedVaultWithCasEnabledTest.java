@@ -2,10 +2,11 @@ package com.playtika.testcontainer.vault;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.vault.VaultException;
 import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.core.VaultTemplate;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
+@ActiveProfiles("test")
 @SpringBootTest(properties = {
         "embedded.vault.secrets.secret_one=password1",
         "embedded.vault.cas-enabled=true"
@@ -29,8 +31,20 @@ public class EmbeddedVaultWithCasEnabledTest {
     private static final String CHECK_AND_SET_REQUIRED_ERROR = "check-and-set parameter required for this call";
     private static final String SECRET_MOUNT_NAME = "secret";
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.vault.host}")
+    private String vaultHost;
+
+    @Value("${embedded.vault.port}")
+    private Integer vaultPort;
+
+    @Value("${embedded.vault.token}")
+    private String vaultToken;
+
+    @Value("${secret_one}")
+    private String secretOne;
+
+    @Value("${embedded.vault.cas-enabled}")
+    private Boolean casEnabled;
 
     @Autowired
     private VaultOperations vaultOperations;
@@ -40,11 +54,11 @@ public class EmbeddedVaultWithCasEnabledTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.vault.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.token")).isNotEmpty();
-        assertThat(environment.getProperty("secret_one")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.cas-enabled")).isNotEmpty();
+        assertThat(vaultHost).isNotEmpty();
+        assertThat(vaultPort).isNotNull();
+        assertThat(vaultToken).isNotEmpty();
+        assertThat(secretOne).isNotEmpty();
+        assertThat(casEnabled).isTrue();
     }
 
     @Test

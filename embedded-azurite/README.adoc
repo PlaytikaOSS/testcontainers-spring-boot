@@ -38,9 +38,9 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 * `embedded.azurite.toxiproxy.queueStoragePort`
 * `embedded.azurite.toxiproxy.tableStoragePort`
 * `embedded.azurite.networkAlias`
-* Bean `ToxiproxyContainer.ContainerProxy azuriteBlobContainerProxy`
-* Bean `ToxiproxyContainer.ContainerProxy azuriteQueueContainerProxy`
-* Bean `ToxiproxyContainer.ContainerProxy azuriteTableContainerProxy`
+* Bean `ToxiproxyClientProxy azuriteBlobContainerProxy`
+* Bean `ToxiproxyClientProxy azuriteQueueContainerProxy`
+* Bean `ToxiproxyClientProxy azuriteTableContainerProxy`
 ==== Example
 
 Use `com.azure.spring:spring-cloud-azure-starter-storage-blob` (see https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-storage)

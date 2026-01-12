@@ -14,7 +14,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -45,8 +44,23 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.postgresql.port}")
+    String postgresqlPort;
+
+    @Value("${embedded.postgresql.host}")
+    String postgresqlHost;
+
+    @Value("${embedded.postgresql.schema}")
+    String postgresqlSchema;
+
+    @Value("${embedded.postgresql.user}")
+    String postgresqlUser;
+
+    @Value("${embedded.postgresql.password}")
+    String postgresqlPassword;
+
+    @Value("${embedded.postgresql.init-script-path}")
+    String postgresqlInitScriptPath;
 
     @Autowired
     ToxiproxyClientProxy postgresqlContainerProxy;
@@ -87,12 +101,12 @@ class EmbeddedPostgreSQLBootstrapConfigurationTest {
 
     @Test
     void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.postgresql.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.postgresql.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.postgresql.schema")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.postgresql.user")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.postgresql.password")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.postgresql.init-script-path")).isNotEmpty();
+        assertThat(postgresqlPort).isNotEmpty();
+        assertThat(postgresqlHost).isNotEmpty();
+        assertThat(postgresqlSchema).isNotEmpty();
+        assertThat(postgresqlUser).isNotEmpty();
+        assertThat(postgresqlPassword).isNotEmpty();
+        assertThat(postgresqlInitScriptPath).isNotEmpty();
     }
 
     @Test

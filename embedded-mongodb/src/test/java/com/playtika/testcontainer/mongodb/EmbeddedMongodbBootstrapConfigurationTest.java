@@ -2,15 +2,14 @@ package com.playtika.testcontainer.mongodb;
 
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -33,8 +32,14 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Autowired
-    ConfigurableEnvironment environment;
+    @Value("${embedded.mongodb.port}")
+    String mongodbPort;
+
+    @Value("${embedded.mongodb.host}")
+    String mongodbHost;
+
+    @Value("${embedded.mongodb.database}")
+    String mongodbDatabase;
 
     @Autowired
     ToxiproxyClientProxy mongodbContainerProxy;
@@ -63,9 +68,9 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.mongodb.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.mongodb.database")).isNotEmpty();
+        assertThat(mongodbPort).isNotEmpty();
+        assertThat(mongodbHost).isNotEmpty();
+        assertThat(mongodbDatabase).isNotEmpty();
     }
 
     private static long durationOf(Callable<?> op) throws Exception {
@@ -74,13 +79,7 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
         return System.currentTimeMillis() - start;
     }
 
-    @Value
-    static class Foo {
-        @Id
-        String someId;
-        String someString;
-        Instant someTimestamp;
-        Long someNumber;
+    record Foo(@Id String someId, String someString, Instant someTimestamp, Long someNumber) {
     }
 
     @EnableAutoConfiguration

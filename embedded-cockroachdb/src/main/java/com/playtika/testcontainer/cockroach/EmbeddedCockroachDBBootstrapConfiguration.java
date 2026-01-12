@@ -14,13 +14,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.CockroachContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.cockroach.CockroachDBProperties.BEAN_NAME_EMBEDDED_COCKROACHDB;
@@ -40,25 +38,19 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "cockroach")
     ToxiproxyClientProxy cockroachContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
-                                                  @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer,
-                                                  ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                  @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroachContainer) {
+
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 cockroachContainer,
                 CockroachDBProperties.PORT,
                 "cockroach");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.cockroach", "embeddedСockroachdbToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_COCKROACHDB, destroyMethod = "stop")
-    public CockroachContainer cockroach(ConfigurableEnvironment environment,
-                                          CockroachDBProperties properties,
-                                          Optional<Network> network) throws Exception {
-
+    public CockroachContainer cockroach(CockroachDBProperties properties,
+                                        Optional<Network> network) throws Exception {
         CockroachContainer cockroachContainer = new CockroachContainer(ContainerUtils.getDockerImageName(properties))
                 .withInitScript(properties.getInitScriptPath())
                 .withNetworkAliases(COCKROACHDB_NETWORK_ALIAS);
@@ -66,29 +58,27 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
         network.ifPresent(cockroachContainer::withNetwork);
 
         cockroachContainer = (CockroachContainer) configureCommonsAndStart(cockroachContainer, properties, log);
-        registerCockroachDBEnvironment(cockroachContainer, environment);
         return cockroachContainer;
     }
 
-    private void registerCockroachDBEnvironment(CockroachContainer cockroach,
-                                                ConfigurableEnvironment environment) {
-        Integer mappedPort = cockroach.getMappedPort(CockroachDBProperties.PORT);
-        String host = cockroach.getHost();
+    @Bean
+    public DynamicPropertyRegistrar cockroachDynamicPropertyRegistrar(
+            @Qualifier(BEAN_NAME_EMBEDDED_COCKROACHDB) CockroachContainer cockroach) {
+        return registry -> {
+            registry.add("embedded.cockroach.port", () -> cockroach.getMappedPort(CockroachDBProperties.PORT));
+            registry.add("embedded.cockroach.host", cockroach::getHost);
+            registry.add("embedded.cockroach.schema", cockroach::getDatabaseName);
+            registry.add("embedded.cockroach.user", cockroach::getUsername);
+            registry.add("embedded.cockroach.password", cockroach::getPassword);
+            registry.add("embedded.cockroach.networkAlias", () -> COCKROACHDB_NETWORK_ALIAS);
+            registry.add("embedded.cockroach.internalPort", () -> CockroachDBProperties.PORT);
+        };
+    }
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.cockroach.port", mappedPort);
-        map.put("embedded.cockroach.host", host);
-        map.put("embedded.cockroach.schema", cockroach.getDatabaseName());
-        map.put("embedded.cockroach.user", cockroach.getUsername());
-        map.put("embedded.cockroach.password", cockroach.getPassword());
-        map.put("embedded.cockroach.networkAlias", COCKROACHDB_NETWORK_ALIAS);
-        map.put("embedded.cockroach.internalPort", CockroachDBProperties.PORT);
-
-        String jdbcURL = "jdbc:postgresql://{}:{}/{}";
-        log.info("Started CockroachDB server. Connection details: {}, " +
-                "JDBC connection url: " + jdbcURL, map, host, mappedPort, cockroach.getDatabaseName());
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedCockroachDBInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "cockroach")
+    public DynamicPropertyRegistrar cockroachToxiProxyDynamicPropertyRegistrar(
+            @Qualifier("cockroachContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.cockroach");
     }
 }

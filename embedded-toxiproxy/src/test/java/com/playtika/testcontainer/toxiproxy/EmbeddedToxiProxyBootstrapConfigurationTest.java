@@ -10,7 +10,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.containers.ToxiproxyContainer;
 
 import java.util.List;
@@ -26,9 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedToxiProxyBootstrapConfigurationTest {
 
     @Autowired
-    ConfigurableEnvironment environment;
-
-    @Autowired
     ConfigurableListableBeanFactory beanFactory;
 
     @Value("${embedded.toxiproxy.host}")
@@ -40,8 +36,8 @@ class EmbeddedToxiProxyBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.toxiproxy.controlPort")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.toxiproxy.host")).isNotEmpty();
+        assertThat(controlPort).isNotNull();
+        assertThat(host).isNotEmpty();
     }
 
     @Test

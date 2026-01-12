@@ -40,12 +40,12 @@
 * `embedded.influxdb.toxiproxy.port`
 * `embedded.influxdb.networkAlias`
 * `embedded.influxdb.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy influxdbContainerProxy`
+* Bean `ToxiproxyClientProxy influxdbContainerProxy`
 
 ==== Example
 
 There is currently no starter library for using InfluxDB server version 1.x because it uses basic HTTP protocol to communicate.
-You can anyway create your own properties using those values for example in your test `application.yaml`:
+You can anyway create your own properties using those values for example in your test `application-test.yaml`:
 
 ./src/test/resources/application.yaml
 [source,yaml]

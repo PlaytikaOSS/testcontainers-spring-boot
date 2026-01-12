@@ -1,21 +1,23 @@
 package com.playtika.testcontainer.kafka.configuration;
 
 import com.playtika.testcontainer.common.utils.ContainerUtils;
+import com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties;
 import com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
 import java.util.LinkedHashMap;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.kafka.configuration.KafkaContainerConfiguration.KAFKA_HOST_NAME;
+import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties.SCHEMA_REGISTRY_BEAN_NAME;
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
@@ -29,10 +31,12 @@ public class SchemaRegistryContainerConfiguration {
 
     @Bean(name = SCHEMA_REGISTRY_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> schemaRegistry(
-            ConfigurableEnvironment environment,
             SchemaRegistryConfigurationProperties properties,
-            @Value("${embedded.kafka.containerBrokerList}") String kafkaContainerBrokerList,
+            @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka,
+            KafkaConfigurationProperties kafkaProperties,
             Network network) {
+
+        String kafkaContainerBrokerList = String.format("%s:%d", KAFKA_HOST_NAME, kafkaProperties.getContainerBrokerPort());
 
         GenericContainer<?> schemaRegistry = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(SCHEMA_REGISTRY_HOST_NAME))
@@ -55,12 +59,11 @@ public class SchemaRegistryContainerConfiguration {
         }
 
         schemaRegistry = configureCommonsAndStart(schemaRegistry, properties, log);
-        registerSchemaRegistryEnvironment(schemaRegistry, environment, properties);
+        registerSchemaRegistryEnvironment(schemaRegistry, properties);
         return schemaRegistry;
     }
 
-    private void registerSchemaRegistryEnvironment(GenericContainer<?> schemaRegistry, ConfigurableEnvironment environment,
-                                                   SchemaRegistryConfigurationProperties properties) {
+    private void registerSchemaRegistryEnvironment(GenericContainer<?> schemaRegistry, SchemaRegistryConfigurationProperties properties) {
 
         String host = schemaRegistry.getHost();
         Integer port = schemaRegistry.getMappedPort(properties.getPort());
@@ -74,8 +77,24 @@ public class SchemaRegistryContainerConfiguration {
         }
 
         log.info("Started Schema Registry. Connection Details: {}, Connection URI: http://{}:{}", map, host, port);
+    }
 
-        MapPropertySource propertySource = new MapPropertySource("embeddedSchemaRegistryInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar schemaRegistryDynamicPropertyRegistrar(@Qualifier(SCHEMA_REGISTRY_BEAN_NAME) GenericContainer<?> schemaRegistry, SchemaRegistryConfigurationProperties properties) {
+        return registry -> {
+            String host = schemaRegistry.getHost();
+            Integer port = schemaRegistry.getMappedPort(properties.getPort());
+            registry.add("embedded.kafka.schema-registry.host", () -> host);
+            registry.add("embedded.kafka.schema-registry.port", () -> port);
+            if (properties.isBasicAuthenticationEnabled()) {
+                registry.add("embedded.kafka.schema-registry.username", () -> SchemaRegistryConfigurationProperties.USERNAME);
+                registry.add("embedded.kafka.schema-registry.password", () -> SchemaRegistryConfigurationProperties.PASSWORD);
+            }
+            log.info("Started Schema Registry. Connection Details: host={}, port={}, username={}, password={}, Connection URI: http://{}:{}",
+                host, port,
+                properties.isBasicAuthenticationEnabled() ? SchemaRegistryConfigurationProperties.USERNAME : null,
+                properties.isBasicAuthenticationEnabled() ? SchemaRegistryConfigurationProperties.PASSWORD : null,
+                host, port);
+        };
     }
 }

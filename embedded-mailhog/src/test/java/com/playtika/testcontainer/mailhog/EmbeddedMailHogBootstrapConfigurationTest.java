@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "embedded.toxiproxy.proxies.mailhog.enabled=true"
         }
 )
+@ActiveProfiles("test")
 class EmbeddedMailHogBootstrapConfigurationTest {
 
     private static final String MAILHOG_API_MESSAGES = "/api/v2/messages";

@@ -43,18 +43,13 @@ public class EmbeddedDynamoDBBootstrapConfiguration {
     ToxiproxyClientProxy dynamodbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
                                                  @Qualifier(BEAN_NAME_EMBEDDED_DYNAMODB) GenericContainer<?> dynamoDb,
-                                                 DynamoDBProperties properties,
-                                                 ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                 DynamoDBProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 dynamoDb,
                 properties.getPort(),
                 "dynamodb");
-
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.dynamodb", "embeddedDynamoDBToxiproxyInfo", environment);
-
-        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_DYNAMODB, destroyMethod = "stop")

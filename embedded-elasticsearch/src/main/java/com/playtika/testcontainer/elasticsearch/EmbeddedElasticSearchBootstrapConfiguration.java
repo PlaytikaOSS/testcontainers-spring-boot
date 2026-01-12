@@ -14,13 +14,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,53 +39,47 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
     ToxiproxyClientProxy elasticsearchContainerProxy(ToxiproxyClient toxiproxyClient,
                                                       ToxiproxyContainer toxiproxyContainer,
                                                       @Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) ElasticsearchContainer elasticSearch,
-                                                      ElasticSearchProperties properties,
-                                                      ConfigurableEnvironment environment) {
-        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
+                                                      ElasticSearchProperties properties) {
+        return ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 elasticSearch,
                 properties.getHttpPort(),
                 "elasticsearch");
+    }
 
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.elasticsearch", "embeddedElasticSearchToxiproxyInfo", environment);
-
-        return proxy;
+    @Bean
+    @ConditionalOnToxiProxyEnabled(module = "elasticsearch")
+    public DynamicPropertyRegistrar elasticsearchToxiProxyDynamicPropertyRegistrar(@Qualifier("elasticsearchContainerProxy") ToxiproxyClientProxy proxy) {
+        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.elasticsearch");
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH)
     @Bean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH, destroyMethod = "stop")
-    public ElasticsearchContainer elasticSearch(ConfigurableEnvironment environment,
-                                                ElasticSearchProperties properties,
+    public ElasticsearchContainer elasticSearch(ElasticSearchProperties properties,
                                                 Optional<Network> network) {
-
         ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties)
                 .withNetworkAliases(ELASTICSEARCH_NETWORK_ALIAS);
         network.ifPresent(elasticSearch::withNetwork);
         elasticSearch = (ElasticsearchContainer) configureCommonsAndStart(elasticSearch, properties, log);
-        registerElasticSearchEnvironment(elasticSearch, environment, properties);
-        return elasticSearch;
-    }
-
-    private void registerElasticSearchEnvironment(ElasticsearchContainer elasticSearch,
-                                                  ConfigurableEnvironment environment,
-                                                  ElasticSearchProperties properties) {
         Integer httpPort = elasticSearch.getMappedPort(properties.getHttpPort());
         Integer transportPort = elasticSearch.getMappedPort(properties.getTransportPort());
         String host = elasticSearch.getHost();
+        log.info("Started ElasticSearch server. Connection details: clusterName={}, host={}, httpPort={}, transportPort={}, networkAlias={}, internalHttpPort={}, internalTransportPort={}",
+                properties.getClusterName(), host, httpPort, transportPort, ELASTICSEARCH_NETWORK_ALIAS, properties.getHttpPort(), properties.getTransportPort());
+        return elasticSearch;
+    }
 
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.elasticsearch.clusterName", properties.getClusterName());
-        map.put("embedded.elasticsearch.host", host);
-        map.put("embedded.elasticsearch.httpPort", httpPort);
-        map.put("embedded.elasticsearch.transportPort", transportPort);
-        map.put("embedded.elasticsearch.networkAlias", ELASTICSEARCH_NETWORK_ALIAS);
-        map.put("embedded.elasticsearch.internalHttpPort", properties.getHttpPort());
-        map.put("embedded.elasticsearch.internalTransportPort", properties.getTransportPort());
-
-        log.info("Started ElasticSearch server. Connection details: {}", map);
-
-        MapPropertySource propertySource = new MapPropertySource("embeddedElasticSearchInfo", map);
-        environment.getPropertySources().addFirst(propertySource);
+    @Bean
+    public DynamicPropertyRegistrar elasticsearchDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_ELASTIC_SEARCH) ElasticsearchContainer elasticSearch, ElasticSearchProperties properties) {
+        return registry -> {
+            registry.add("embedded.elasticsearch.clusterName", properties::getClusterName);
+            registry.add("embedded.elasticsearch.host", elasticSearch::getHost);
+            registry.add("embedded.elasticsearch.httpPort", () -> elasticSearch.getMappedPort(properties.getHttpPort()));
+            registry.add("embedded.elasticsearch.transportPort", () -> elasticSearch.getMappedPort(properties.getTransportPort()));
+            registry.add("embedded.elasticsearch.networkAlias", () -> ELASTICSEARCH_NETWORK_ALIAS);
+            registry.add("embedded.elasticsearch.internalHttpPort", properties::getHttpPort);
+            registry.add("embedded.elasticsearch.internalTransportPort", properties::getTransportPort);
+        };
     }
 }

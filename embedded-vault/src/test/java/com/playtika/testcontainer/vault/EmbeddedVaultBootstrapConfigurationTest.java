@@ -2,10 +2,11 @@ package com.playtika.testcontainer.vault;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.support.Versioned;
 
@@ -14,24 +15,34 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
+@ActiveProfiles("test")
 @SpringBootTest(properties = {
         "embedded.vault.secrets.secret_one=password1"
 }
 ,classes = EmbeddedVaultBootstrapConfigurationTest.TestConfiguration.class)
 public class EmbeddedVaultBootstrapConfigurationTest {
 
-    @Autowired
-    private ConfigurableEnvironment environment;
+    @Value("${embedded.vault.host}")
+    private String vaultHost;
+
+    @Value("${embedded.vault.port}")
+    private Integer vaultPort;
+
+    @Value("${embedded.vault.token}")
+    private String vaultToken;
+
+    @Value("${secret_one}")
+    private String secretOne;
 
     @Autowired
     private VaultOperations vaultOperations;
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(environment.getProperty("embedded.vault.host")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.port")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.vault.token")).isNotEmpty();
-        assertThat(environment.getProperty("secret_one")).isNotEmpty();
+        assertThat(vaultHost).isNotEmpty();
+        assertThat(vaultPort).isNotNull();
+        assertThat(vaultToken).isNotEmpty();
+        assertThat(secretOne).isNotEmpty();
     }
 
     @Test
