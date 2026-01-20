@@ -15,13 +15,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -51,17 +53,21 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     ToxiproxyClientProxy grafanaContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(GRAFANA_BEAN_NAME) GenericContainer<?> grafana,
-                                                GrafanaProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                GrafanaProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 grafana,
                 properties.getPort(),
                 "grafana");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.grafana", "embeddedGrafanaToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = GRAFANA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> grafana(GrafanaProperties properties,
+    public GenericContainer<?> grafana(ConfigurableEnvironment environment,
+                                       GrafanaProperties properties,
                                        WaitStrategy grafanaWaitStrategy,
                                        Optional<Network> network) {
         GenericContainer<?> container =
@@ -76,27 +82,22 @@ public class EmbeddedGrafanaBootstrapConfiguration {
         network.ifPresent(container::withNetwork);
 
         configureCommonsAndStart(container, properties, log);
+        registerGrafanaEnvironment(container, environment, properties);
         return container;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar grafanaDynamicPropertyRegistrar(
-            @Qualifier(GRAFANA_BEAN_NAME) GenericContainer<?> grafana,
-            GrafanaProperties properties) {
-        return registry -> {
-            registry.add("embedded.grafana.host", grafana::getHost);
-            registry.add("embedded.grafana.port", () -> grafana.getMappedPort(properties.port));
-            registry.add("embedded.grafana.username", properties::getUsername);
-            registry.add("embedded.grafana.password", properties::getPassword);
-            registry.add("embedded.grafana.networkAlias", () -> GRAFANA_NETWORK_ALIAS);
-            registry.add("embedded.grafana.internalPort", properties::getPort);
-        };
-    }
+    private void registerGrafanaEnvironment(GenericContainer<?> grafana,
+                                            ConfigurableEnvironment environment,
+                                            GrafanaProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.grafana.host", grafana.getHost());
+        map.put("embedded.grafana.port", grafana.getMappedPort(properties.port));
+        map.put("embedded.grafana.username", properties.getUsername());
+        map.put("embedded.grafana.password", properties.getPassword());
+        map.put("embedded.grafana.networkAlias", GRAFANA_NETWORK_ALIAS);
+        map.put("embedded.grafana.internalPort", properties.getPort());
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "grafana")
-    public DynamicPropertyRegistrar grafanaToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("grafanaContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.grafana");
+        MapPropertySource propertySource = new MapPropertySource("embeddedGrafanaInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

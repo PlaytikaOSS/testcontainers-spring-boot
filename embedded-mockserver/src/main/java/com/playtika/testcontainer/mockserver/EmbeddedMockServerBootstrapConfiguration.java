@@ -9,10 +9,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -29,7 +31,8 @@ public class EmbeddedMockServerBootstrapConfiguration {
     private static final String MOCKSERVER_NETWORK_ALIAS = "mockserver.testcontainer.docker";
 
     @Bean(name = EMBEDDED_MOCK_SERVER, destroyMethod = "stop")
-    public MockServerContainer mockServerContainer(MockServerProperties properties,
+    public MockServerContainer mockServerContainer(ConfigurableEnvironment environment,
+                                                   MockServerProperties properties,
                                                    Optional<Network> network) {
         MockServerContainer mockServerContainer = new MockServerContainer(ContainerUtils.getDockerImageName(properties));
         mockServerContainer
@@ -39,21 +42,26 @@ public class EmbeddedMockServerBootstrapConfiguration {
         network.ifPresent(mockServerContainer::withNetwork);
 
         mockServerContainer = (MockServerContainer) configureCommonsAndStart(mockServerContainer, properties, log);
+        registerMockServerEnvironment(mockServerContainer, environment, properties);
+        return mockServerContainer;
+    }
+
+    private void registerMockServerEnvironment(MockServerContainer mockServerContainer,
+                                               ConfigurableEnvironment environment,
+                                               MockServerProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.mockserver.host", mockServerContainer.getHost());
+        map.put("embedded.mockserver.port", mockServerContainer.getMappedPort(properties.getPort()));
+        map.put("embedded.mockserver.networkAlias", MOCKSERVER_NETWORK_ALIAS);
+        map.put("embedded.mockserver.internalPort", properties.getPort());
+
         log.info("Started MockServer server. Connection details: host={}, port={}, networkAlias={}, internalPort={}",
                 mockServerContainer.getHost(),
                 mockServerContainer.getMappedPort(properties.getPort()),
                 MOCKSERVER_NETWORK_ALIAS,
                 properties.getPort());
-        return mockServerContainer;
-    }
 
-    @Bean
-    public DynamicPropertyRegistrar mockServerDynamicPropertyRegistrar(MockServerContainer mockServerContainer, MockServerProperties properties) {
-        return registry -> {
-            registry.add("embedded.mockserver.host", mockServerContainer::getHost);
-            registry.add("embedded.mockserver.port", () -> mockServerContainer.getMappedPort(properties.getPort()));
-            registry.add("embedded.mockserver.networkAlias", () -> MOCKSERVER_NETWORK_ALIAS);
-            registry.add("embedded.mockserver.internalPort", properties::getPort);
-        };
+        MapPropertySource propertySource = new MapPropertySource("embeddedMockServerInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

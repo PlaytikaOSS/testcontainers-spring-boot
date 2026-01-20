@@ -19,12 +19,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,18 +50,35 @@ public class EmbeddedMailHogBootstrapConfiguration {
     ToxiproxyClientProxy mailhogSmtpContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
                                                     @Qualifier(BEAN_NAME_EMBEDDED_MAILHOG) GenericContainer<?> mailhogContainer,
-                                                    MailHogProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                    MailHogProperties properties,
+                                                    ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mailhogContainer,
                 properties.getSmtpPort(),
                 "mailhog");
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.mailhog.smtp.toxiproxy.host", proxy.getContainerIpAddress());
+        map.put("embedded.mailhog.smtp.toxiproxy.port", proxy.getProxyPort());
+        map.put("embedded.mailhog.smtp.toxiproxy.proxyName", proxy.getName());
+
+        log.info("Started MailHog ToxiProxy connection details {}", Map.of(
+                "embedded.mailhog.smtp.toxiproxy.host", proxy.getContainerIpAddress(),
+                "embedded.mailhog.smtp.toxiproxy.port", proxy.getProxyPort(),
+                "embedded.mailhog.smtp.toxiproxy.proxyName", proxy.getName()
+        ));
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedMailhogToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+
+        return proxy;
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_MAILHOG)
     @Bean(name = BEAN_NAME_EMBEDDED_MAILHOG, destroyMethod = "stop")
-    public GenericContainer<?> mailHog(MailHogProperties properties, Optional<Network> network) {
+    public GenericContainer<?> mailHog(MailHogProperties properties, ConfigurableEnvironment environment, Optional<Network> network) {
         GenericContainer<?> mailHog = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getSmtpPort(), properties.getHttpPort())
                 .withNetworkAliases(MAILHOG_NETWORK_ALIAS)
@@ -67,50 +86,34 @@ public class EmbeddedMailHogBootstrapConfiguration {
 
         network.ifPresent(mailHog::withNetwork);
 
-        return configureCommonsAndStart(mailHog, properties, log);
+        mailHog = configureCommonsAndStart(mailHog, properties, log);
+        registerMailhogEnvironment(mailHog, environment, properties);
+        return mailHog;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar mailHogDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_MAILHOG) GenericContainer<?> mailHog, MailHogProperties properties) {
-        return registry -> {
-            Integer smtpMappedPort = mailHog.getMappedPort(properties.getSmtpPort());
-            Integer httpMappedPort = mailHog.getMappedPort(properties.getHttpPort());
-            String host = mailHog.getHost();
+    private void registerMailhogEnvironment(GenericContainer<?> mailHog, ConfigurableEnvironment environment, MailHogProperties properties) {
+        Integer smtpMappedPort = mailHog.getMappedPort(properties.getSmtpPort());
+        Integer httpMappedPort = mailHog.getMappedPort(properties.getHttpPort());
+        String host = mailHog.getHost();
 
-            registry.add("embedded.mailhog.host", () -> host);
-            registry.add("embedded.mailhog.smtp-port", () -> smtpMappedPort);
-            registry.add("embedded.mailhog.http-port", () -> httpMappedPort);
-            registry.add("embedded.mailhog.networkAlias", () -> MAILHOG_NETWORK_ALIAS);
-            registry.add("embedded.mailhog.internalSmtpPort", () -> properties.getSmtpPort());
-            registry.add("embedded.mailhog.internalHttpPort", () -> properties.getHttpPort());
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.mailhog.host", host);
+        map.put("embedded.mailhog.smtp-port", smtpMappedPort);
+        map.put("embedded.mailhog.http-port", httpMappedPort);
+        map.put("embedded.mailhog.networkAlias", MAILHOG_NETWORK_ALIAS);
+        map.put("embedded.mailhog.internalSmtpPort", properties.getSmtpPort());
+        map.put("embedded.mailhog.internalHttpPort", properties.getHttpPort());
 
-            log.info("Started MailHog. Connection details: {}", Map.of(
-                    "embedded.mailhog.host", host,
-                    "embedded.mailhog.smtp-port", smtpMappedPort,
-                    "embedded.mailhog.http-port", httpMappedPort,
-                    "embedded.mailhog.networkAlias", MAILHOG_NETWORK_ALIAS,
-                    "embedded.mailhog.internalSmtpPort", properties.getSmtpPort(),
-                    "embedded.mailhog.internalHttpPort", properties.getHttpPort()
-            ));
-        };
+        log.info("Started MailHog. Connection details: {}", Map.of(
+                "embedded.mailhog.host", host,
+                "embedded.mailhog.smtp-port", smtpMappedPort,
+                "embedded.mailhog.http-port", httpMappedPort,
+                "embedded.mailhog.networkAlias", MAILHOG_NETWORK_ALIAS,
+                "embedded.mailhog.internalSmtpPort", properties.getSmtpPort(),
+                "embedded.mailhog.internalHttpPort", properties.getHttpPort()
+        ));
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedMailhogInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "mailhog")
-    public DynamicPropertyRegistrar mailHogToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("mailhogSmtpContainerProxy") ToxiproxyClientProxy proxy) {
-        return registry -> {
-            registry.add("embedded.mailhog.smtp.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.mailhog.smtp.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.mailhog.smtp.toxiproxy.proxyName", proxy::getName);
-
-            log.info("Started MailHog ToxiProxy connection details {}", Map.of(
-                    "embedded.mailhog.smtp.toxiproxy.host", proxy.getContainerIpAddress(),
-                    "embedded.mailhog.smtp.toxiproxy.port", proxy.getProxyPort(),
-                    "embedded.mailhog.smtp.toxiproxy.proxyName", proxy.getName()
-            ));
-        };
-    }
-
 }

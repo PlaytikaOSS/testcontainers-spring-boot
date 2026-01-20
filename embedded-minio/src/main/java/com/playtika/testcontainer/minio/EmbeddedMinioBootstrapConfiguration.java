@@ -14,11 +14,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -50,18 +52,24 @@ public class EmbeddedMinioBootstrapConfiguration {
     ToxiproxyClientProxy minioContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
-                                              MinioProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                              MinioProperties properties,
+                                              ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 minio,
                 properties.getPort(),
                 "minio");
+
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.minio", "embeddedMinioToxiProxyInfo", environment);
+
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MINIO, destroyMethod = "stop")
     public GenericContainer<?> minio(MinioWaitStrategy minioWaitStrategy,
                                      MinioProperties properties,
+                                     ConfigurableEnvironment environment,
                                      Optional<Network> network) {
         GenericContainer<?> minio =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -77,31 +85,23 @@ public class EmbeddedMinioBootstrapConfiguration {
 
         network.ifPresent(minio::withNetwork);
         minio = configureCommonsAndStart(minio, properties, log);
+        registerMinioEnvironment(minio, environment, properties);
         return minio;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar minioDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
-            MinioProperties properties) {
-        return registry -> {
-            registry.add("embedded.minio.host", minio::getHost);
-            registry.add("embedded.minio.port", () -> minio.getMappedPort(properties.port));
-            registry.add("embedded.minio.consolePort", () -> minio.getMappedPort(properties.consolePort));
-            registry.add("embedded.minio.accessKey", properties::getAccessKey);
-            registry.add("embedded.minio.secretKey", properties::getSecretKey);
-            registry.add("embedded.minio.region", properties::getRegion);
-            registry.add("embedded.minio.networkAlias", () -> MINIO_NETWORK_ALIAS);
-            registry.add("embedded.minio.internalPort", properties::getPort);
-            registry.add("embedded.minio.internalConsolePort", properties::getConsolePort);
-        };
-    }
+    private void registerMinioEnvironment(GenericContainer<?> minio, ConfigurableEnvironment environment, MinioProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.minio.host", minio.getHost());
+        map.put("embedded.minio.port", minio.getMappedPort(properties.port));
+        map.put("embedded.minio.consolePort", minio.getMappedPort(properties.consolePort));
+        map.put("embedded.minio.accessKey", properties.getAccessKey());
+        map.put("embedded.minio.secretKey", properties.getSecretKey());
+        map.put("embedded.minio.region", properties.getRegion());
+        map.put("embedded.minio.networkAlias", MINIO_NETWORK_ALIAS);
+        map.put("embedded.minio.internalPort", properties.getPort());
+        map.put("embedded.minio.internalConsolePort", properties.getConsolePort());
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "minio")
-    public DynamicPropertyRegistrar minioToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("minioContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.minio");
+        MapPropertySource propertySource = new MapPropertySource("embeddedMinioInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
-
 }

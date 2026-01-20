@@ -19,8 +19,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -30,6 +31,7 @@ import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -69,24 +71,23 @@ public class EmbeddedKeyDbBootstrapConfiguration {
   ToxiproxyClientProxy keydbContainerProxy(ToxiproxyClient toxiproxyClient,
                                             ToxiproxyContainer toxiproxyContainer,
                                             @Qualifier(BEAN_NAME_EMBEDDED_KEYDB) GenericContainer<?> keydb,
-                                            KeyDbProperties properties) {
-    return ToxiproxyHelper.createProxy(
+                                            KeyDbProperties properties,
+                                            ConfigurableEnvironment environment) {
+    ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
             toxiproxyClient,
             toxiproxyContainer,
             keydb,
             properties.getPort(),
             "keydb");
-  }
 
-  @Bean
-  @ConditionalOnToxiProxyEnabled(module = "keydb")
-  public DynamicPropertyRegistrar keydbToxiProxyDynamicPropertyRegistrar(
-      @Qualifier("keydbToxiProxy") ToxiproxyClientProxy proxy) {
-    return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.keydb");
+    ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.keydb", "embeddedKeydbToxiProxyInfo", environment);
+
+    return proxy;
   }
 
   @Bean(name = BEAN_NAME_EMBEDDED_KEYDB, destroyMethod = "stop")
   public GenericContainer<?> keydb(@Qualifier(KEYDB_WAIT_STRATEGY_BEAN_NAME) WaitStrategy keydbStartupCheckStrategy,
+                                   ConfigurableEnvironment environment,
                                    Optional<Network> network) throws Exception {
     GenericContainer<?> keydb =
       new FixedHostPortGenericContainer(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
@@ -101,18 +102,20 @@ public class EmbeddedKeyDbBootstrapConfiguration {
         .withNetworkAliases(KEYDB_NETWORK_ALIAS);
     network.ifPresent(keydb::withNetwork);
     keydb = configureCommonsAndStart(keydb, properties, log);
+    registerKeydbEnvironment(keydb, environment, properties);
     return keydb;
   }
 
-  @Bean
-  public DynamicPropertyRegistrar keydbDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_KEYDB) GenericContainer<?> keydb, KeyDbProperties properties) {
-    return registry -> {
-      registry.add("embedded.keydb.port", properties::getPort);
-      registry.add("embedded.keydb.host", keydb::getHost);
-      registry.add("embedded.keydb.password", properties::getPassword);
-      registry.add("embedded.keydb.user", properties::getUser);
-      registry.add("embedded.keydb.networkAlias", () -> KEYDB_NETWORK_ALIAS);
-    };
+  private void registerKeydbEnvironment(GenericContainer<?> keydb, ConfigurableEnvironment environment, KeyDbProperties properties) {
+    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+    map.put("embedded.keydb.port", properties.getPort());
+    map.put("embedded.keydb.host", keydb.getHost());
+    map.put("embedded.keydb.password", properties.getPassword());
+    map.put("embedded.keydb.user", properties.getUser());
+    map.put("embedded.keydb.networkAlias", KEYDB_NETWORK_ALIAS);
+
+    MapPropertySource propertySource = new MapPropertySource("embeddedKeydbInfo", map);
+    environment.getPropertySources().addFirst(propertySource);
   }
 
   private Path prepareKeyDbConf() throws IOException {

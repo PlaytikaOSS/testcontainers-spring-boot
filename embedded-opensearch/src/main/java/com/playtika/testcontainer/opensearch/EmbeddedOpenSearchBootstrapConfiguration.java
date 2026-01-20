@@ -15,11 +15,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -51,30 +53,37 @@ public class EmbeddedOpenSearchBootstrapConfiguration {
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_OPEN_SEARCH)
     @Bean(name = BEAN_NAME_EMBEDDED_OPEN_SEARCH, destroyMethod = "stop")
-    public GenericContainer openSearch(OpenSearchProperties properties,
+    public GenericContainer openSearch(ConfigurableEnvironment environment,
+                                       OpenSearchProperties properties,
                                        Optional<Network> network) {
         GenericContainer openSearch = OpenSearchContainerFactory.create(properties)
                 .withNetworkAliases(OPENSEARCH_NETWORK_ALIAS);
         network.ifPresent(openSearch::withNetwork);
         openSearch = configureCommonsAndStart(openSearch, properties, log);
-        Integer httpPort = openSearch.getMappedPort(properties.getHttpPort());
-        Integer transportPort = openSearch.getMappedPort(properties.getTransportPort());
-        String host = openSearch.getHost();
-        log.info("Started OpenSearch server. Connection details: clusterName={}, host={}, httpPort={}, transportPort={}, networkAlias={}, internalHttpPort={}, internalTransportPort={}",
-                properties.getClusterName(), host, httpPort, transportPort, OPENSEARCH_NETWORK_ALIAS, properties.getHttpPort(), properties.getTransportPort());
+        registerOpenSearchEnvironment(openSearch, environment, properties);
         return openSearch;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar opensearchDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_OPEN_SEARCH) GenericContainer<?> openSearch, OpenSearchProperties properties) {
-        return registry -> {
-            registry.add("embedded.opensearch.clusterName", properties::getClusterName);
-            registry.add("embedded.opensearch.host", openSearch::getHost);
-            registry.add("embedded.opensearch.httpPort", () -> openSearch.getMappedPort(properties.getHttpPort()));
-            registry.add("embedded.opensearch.transportPort", () -> openSearch.getMappedPort(properties.getTransportPort()));
-            registry.add("embedded.opensearch.networkAlias", () -> OPENSEARCH_NETWORK_ALIAS);
-            registry.add("embedded.opensearch.internalHttpPort", properties::getHttpPort);
-            registry.add("embedded.opensearch.internalTransportPort", properties::getTransportPort);
-        };
+    private void registerOpenSearchEnvironment(GenericContainer<?> openSearch,
+                                               ConfigurableEnvironment environment,
+                                               OpenSearchProperties properties) {
+        Integer httpPort = openSearch.getMappedPort(properties.getHttpPort());
+        Integer transportPort = openSearch.getMappedPort(properties.getTransportPort());
+        String host = openSearch.getHost();
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.opensearch.clusterName", properties.getClusterName());
+        map.put("embedded.opensearch.host", host);
+        map.put("embedded.opensearch.httpPort", httpPort);
+        map.put("embedded.opensearch.transportPort", transportPort);
+        map.put("embedded.opensearch.networkAlias", OPENSEARCH_NETWORK_ALIAS);
+        map.put("embedded.opensearch.internalHttpPort", properties.getHttpPort());
+        map.put("embedded.opensearch.internalTransportPort", properties.getTransportPort());
+
+        log.info("Started OpenSearch server. Connection details: clusterName={}, host={}, httpPort={}, transportPort={}, networkAlias={}, internalHttpPort={}, internalTransportPort={}",
+                properties.getClusterName(), host, httpPort, transportPort, OPENSEARCH_NETWORK_ALIAS, properties.getHttpPort(), properties.getTransportPort());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedOpensearchInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

@@ -19,7 +19,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
@@ -38,6 +39,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -75,48 +77,46 @@ public class KafkaContainerConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "kafka")
     ToxiproxyClientProxy kafkaContainerPlainTextProxy(ToxiproxyClient toxiproxyClient,
                                                        ToxiproxyContainer toxiproxyContainer,
-                                                       KafkaConfigurationProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                       KafkaConfigurationProperties properties,
+                                                       ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 KAFKA_HOST_NAME,
                 properties.getToxiProxyContainerBrokerPort(),
                 "kafka-plaintext"
         );
-    }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "kafka")
-    public DynamicPropertyRegistrar kafkaPlainTextToxiProxyDynamicPropertyRegistrar(@Qualifier(KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME) ToxiproxyClientProxy proxy) {
-        return registry -> {
-            registry.add("embedded.kafka.toxiproxy.brokerList", () ->
-                format("%s:%d", proxy.getContainerIpAddress(), proxy.getProxyPort()));
-            registry.add("embedded.kafka.toxiproxy.proxyName", proxy::getName);
-        };
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.kafka.toxiproxy.brokerList", format("%s:%d", proxy.getContainerIpAddress(), proxy.getProxyPort()));
+        map.put("embedded.kafka.toxiproxy.proxyName", proxy.getName());
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaPlainTextToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+
+        return proxy;
     }
 
     @Bean(name = KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
     @ConditionalOnToxiProxyEnabled(module = "kafka")
     ToxiproxyClientProxy kafkaContainerSaslProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
-                                                  KafkaConfigurationProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                  KafkaConfigurationProperties properties,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 KAFKA_HOST_NAME,
                 properties.getToxiProxySaslPlaintextContainerBrokerPort(),
                 "kafka-sasl"
         );
-    }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "kafka")
-    public DynamicPropertyRegistrar kafkaSaslToxiProxyDynamicPropertyRegistrar(@Qualifier(KAFKA_SASL_TOXI_PROXY_BEAN_NAME) ToxiproxyClientProxy proxy) {
-        return registry -> {
-            registry.add("embedded.kafka.toxiproxy.saslPlaintext.brokerList", () ->
-                format("%s:%d", proxy.getContainerIpAddress(), proxy.getProxyPort()));
-            registry.add("embedded.kafka.toxiproxy.saslPlaintext.proxyName", proxy::getName);
-        };
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.kafka.toxiproxy.saslPlaintext.brokerList", format("%s:%d", proxy.getContainerIpAddress(), proxy.getProxyPort()));
+        map.put("embedded.kafka.toxiproxy.saslPlaintext.proxyName", proxy.getName());
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaSaslToxiProxyInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+
+        return proxy;
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
@@ -125,6 +125,7 @@ public class KafkaContainerConfiguration {
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties,
             Network network,
+            ConfigurableEnvironment environment,
             @Autowired(required = false) @Qualifier(KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
                     ToxiproxyClientProxy plainTextProxy,
             @Autowired(required = false) @Qualifier(KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
@@ -208,7 +209,33 @@ public class KafkaContainerConfiguration {
         zookeeperFileSystemBind(zookeeperProperties, kafka);
 
         kafka = (KafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
+        registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;
+    }
+
+    private void registerKafkaEnvironment(GenericContainer<?> kafka, ConfigurableEnvironment environment, KafkaConfigurationProperties kafkaProperties) {
+        String host = kafka.getHost();
+        Integer mappedBrokerPort = kafka.getMappedPort(kafkaProperties.getBrokerPort());
+        String kafkaBrokerList = format("%s:%d", host, mappedBrokerPort);
+
+        Integer mappedSaslBrokerPort = kafka.getMappedPort(kafkaProperties.getSaslPlaintextBrokerPort());
+        String saslPlaintextKafkaBrokerList = format("%s:%d", host, mappedSaslBrokerPort);
+
+        Integer containerPort = kafkaProperties.getContainerBrokerPort();
+        String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, containerPort);
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.kafka.brokerList", kafkaBrokerList);
+        map.put("embedded.kafka.saslPlaintext.brokerList", saslPlaintextKafkaBrokerList);
+        map.put("embedded.kafka.saslPlaintext.user", KafkaConfigurationProperties.KAFKA_USER);
+        map.put("embedded.kafka.saslPlaintext.password", KafkaConfigurationProperties.KAFKA_PASSWORD);
+        map.put("embedded.kafka.networkAlias", KAFKA_HOST_NAME);
+        map.put("embedded.kafka.internalPort", kafkaProperties.getInternalBrokerPort());
+        map.put("embedded.kafka.internalSaslPlaintextPort", kafkaProperties.getInternalSaslPlaintextBrokerPort());
+        map.put("embedded.kafka.containerBrokerList", kafkaBrokerListForContainers);
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 
     private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, KafkaContainer kafka) {
@@ -242,29 +269,6 @@ public class KafkaContainerConfiguration {
             createPathAndParentOrMakeWritable(zkTransactionLogs);
             kafka.addFileSystemBind(zkTransactionLogs.toString(), "/var/lib/zookeeper/log", BindMode.READ_WRITE);
         }
-    }
-
-    @Bean
-    public DynamicPropertyRegistrar kafkaDynamicPropertyRegistrar(@Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka, KafkaConfigurationProperties kafkaProperties) {
-        return registry -> {
-            String host = kafka.getHost();
-            Integer mappedBrokerPort = kafka.getMappedPort(kafkaProperties.getBrokerPort());
-            String kafkaBrokerList = format("%s:%d", host, mappedBrokerPort);
-            registry.add("embedded.kafka.brokerList", () -> kafkaBrokerList);
-
-            Integer mappedSaslBrokerPort = kafka.getMappedPort(kafkaProperties.getSaslPlaintextBrokerPort());
-            String saslPlaintextKafkaBrokerList = format("%s:%d", host, mappedSaslBrokerPort);
-            registry.add("embedded.kafka.saslPlaintext.brokerList", () -> saslPlaintextKafkaBrokerList);
-            registry.add("embedded.kafka.saslPlaintext.user", () -> KafkaConfigurationProperties.KAFKA_USER);
-            registry.add("embedded.kafka.saslPlaintext.password", () -> KafkaConfigurationProperties.KAFKA_PASSWORD);
-            registry.add("embedded.kafka.networkAlias", () -> KAFKA_HOST_NAME);
-            registry.add("embedded.kafka.internalPort", kafkaProperties::getInternalBrokerPort);
-            registry.add("embedded.kafka.internalSaslPlaintextPort", kafkaProperties::getInternalSaslPlaintextBrokerPort);
-
-            Integer containerPort = kafkaProperties.getContainerBrokerPort();
-            String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, containerPort);
-            registry.add("embedded.kafka.containerBrokerList", () -> kafkaBrokerListForContainers);
-        };
     }
 
     /**

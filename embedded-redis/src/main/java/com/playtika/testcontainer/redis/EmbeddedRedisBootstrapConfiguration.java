@@ -19,8 +19,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -30,6 +31,7 @@ import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -64,31 +66,30 @@ public class EmbeddedRedisBootstrapConfiguration {
         return new DefaultRedisClusterWaitStrategy(properties);
     }
 
+
+
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "redis")
     ToxiproxyClientProxy redisContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis,
-                                              RedisProperties properties) {
-
-
-        return ToxiproxyHelper.createProxy(
+                                              RedisProperties properties,
+                                              ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 redis,
                 properties.getPort(),
                 "redis");
-    }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "redis")
-    public DynamicPropertyRegistrar redisToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("redisContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.redis");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.redis", "embeddedRedisToxiProxyInfo", environment);
+
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
     public GenericContainer<?> redis(@Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy,
+                                     ConfigurableEnvironment environment,
                                      Optional<Network> network) throws Exception {
         GenericContainer<?> redis =
                 new FixedHostPortGenericContainer(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
@@ -103,18 +104,22 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withNetworkAliases(REDIS_NETWORK_ALIAS);
         network.ifPresent(redis::withNetwork);
         redis = configureCommonsAndStart(redis, properties, log);
+        registerRedisEnvironment(redis, environment, properties);
         return redis;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar redisDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis, RedisProperties properties) {
-        return registry -> {
-            registry.add("embedded.redis.port", properties::getPort);
-            registry.add("embedded.redis.host", redis::getHost);
-            registry.add("embedded.redis.password", properties::getPassword);
-            registry.add("embedded.redis.user", properties::getUser);
-            registry.add("embedded.redis.networkAlias", () -> REDIS_NETWORK_ALIAS);
-        };
+    private void registerRedisEnvironment(GenericContainer<?> redis, ConfigurableEnvironment environment, RedisProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.redis.port", properties.getPort());
+        map.put("embedded.redis.host", redis.getHost());
+        map.put("embedded.redis.password", properties.getPassword());
+        map.put("embedded.redis.user", properties.getUser());
+        map.put("embedded.redis.networkAlias", REDIS_NETWORK_ALIAS);
+
+        log.info("Started Redis. Connection details: {}", map);
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedRedisInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 
     private Path prepareRedisConf() throws IOException {

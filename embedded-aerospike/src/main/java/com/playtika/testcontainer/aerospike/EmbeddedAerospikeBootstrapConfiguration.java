@@ -9,7 +9,6 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -18,7 +17,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -26,6 +26,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
@@ -53,35 +54,21 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     ToxiproxyClientProxy aerospikeContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
                                                   GenericContainer<?> aerospike,
-                                                  AerospikeProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                  AerospikeProperties properties,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 aerospike,
                 properties.port,
                 "aerospike");
-    }
-
-    @Bean
-    public DynamicPropertyRegistrar aerospikeDynamicPropertyRegistrar(GenericContainer<?> aerospike, AerospikeProperties properties) {
-        return registry -> {
-            registry.add("embedded.aerospike.host", aerospike::getHost);
-            registry.add("embedded.aerospike.port", () -> aerospike.getMappedPort(properties.port));
-            registry.add("embedded.aerospike.namespace", () -> properties.namespace);
-            registry.add("embedded.aerospike.networkAlias", () -> AEROSPIKE_NETWORK_ALIAS);
-            registry.add("embedded.aerospike.internalPort", () -> properties.port);
-        };
-    }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "aerospike")
-    public DynamicPropertyRegistrar aerospikeToxiProxyDynamicPropertyRegistrar(
-        @Qualifier("aerospikeContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.aerospike");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.aerospike", "embeddedAerospikeToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_AEROSPIKE, destroyMethod = "stop")
-    public GenericContainer<?> aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
+    public GenericContainer<?> aerospike(ConfigurableEnvironment environment,
+                                      AerospikeWaitStrategy aerospikeWaitStrategy,
                                       AerospikeProperties properties,
                                       Optional<Network> network) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
@@ -108,8 +95,24 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                 .withEnv("FEATURE_KEY_FILE", "env-b64:FEATURES");
         }
         aerospike = configureCommonsAndStart(aerospike, properties, log);
+        registerAerospikeEnvironment(aerospike, environment, properties);
+        return aerospike;
+    }
+
+    private void registerAerospikeEnvironment(GenericContainer<?> aerospike,
+                                              ConfigurableEnvironment environment,
+                                              AerospikeProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.aerospike.host", aerospike.getHost());
+        map.put("embedded.aerospike.port", aerospike.getMappedPort(properties.port));
+        map.put("embedded.aerospike.namespace", properties.namespace);
+        map.put("embedded.aerospike.networkAlias", AEROSPIKE_NETWORK_ALIAS);
+        map.put("embedded.aerospike.internalPort", properties.port);
+
         log.info("Started aerospike server. Connection details host={}, port={}, namespace={}, networkAlias={}, internalPort={}",
                 aerospike.getHost(), aerospike.getMappedPort(properties.port), properties.namespace, AEROSPIKE_NETWORK_ALIAS, properties.port);
-        return aerospike;
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedAerospikeInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

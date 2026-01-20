@@ -14,7 +14,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.Network;
@@ -22,6 +23,7 @@ import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -42,18 +44,21 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
     ToxiproxyClientProxy mssqlserverContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
-                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver) {
-
-        return ToxiproxyHelper.createProxy(
+                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver,
+                                                    ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mssqlserver,
                 MSSQLServerContainer.MS_SQL_SERVER_PORT,
                 "mssqlserver");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mssqlserver", "embeddedMssqlServerToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MSSQLSERVER, destroyMethod = "stop")
-    public EmbeddedMSSQLServerContainer mssqlServer(MSSQLServerProperties properties,
+    public EmbeddedMSSQLServerContainer mssqlServer(ConfigurableEnvironment environment,
+                                                    MSSQLServerProperties properties,
                                                     Optional<Network> network) {
         EmbeddedMSSQLServerContainer mssqlServerContainer = new EmbeddedMSSQLServerContainer(ContainerUtils.getDockerImageName(properties))
             .withPassword(properties.getPassword())
@@ -74,37 +79,31 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
         }
 
         mssqlServerContainer = (EmbeddedMSSQLServerContainer) configureCommonsAndStart(mssqlServerContainer, properties, log);
-
+        registerMssqlServerEnvironment(mssqlServerContainer, environment, properties);
         return mssqlServerContainer;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar mssqlServerDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlServerContainer,
-            MSSQLServerProperties properties) {
-        return registry -> {
-            Integer mappedPort = mssqlServerContainer.getMappedPort(MS_SQL_SERVER_PORT);
-            String host = mssqlServerContainer.getHost();
+    private void registerMssqlServerEnvironment(EmbeddedMSSQLServerContainer mssqlServerContainer,
+                                                 ConfigurableEnvironment environment,
+                                                 MSSQLServerProperties properties) {
+        Integer mappedPort = mssqlServerContainer.getMappedPort(MS_SQL_SERVER_PORT);
+        String host = mssqlServerContainer.getHost();
 
-            registry.add("embedded.mssqlserver.port", () -> mappedPort);
-            registry.add("embedded.mssqlserver.host", () -> host);
-            registry.add("embedded.mssqlserver.database", () -> "master");
-            registry.add("embedded.mssqlserver.user", () -> "sa");
-            registry.add("embedded.mssqlserver.password", properties::getPassword);
-            registry.add("embedded.mssqlserver.networkAlias", () -> MSSQLSERVER_NETWORK_ALIAS);
-            registry.add("embedded.mssqlserver.internalPort", () -> MS_SQL_SERVER_PORT);
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.mssqlserver.port", mappedPort);
+        map.put("embedded.mssqlserver.host", host);
+        map.put("embedded.mssqlserver.database", "master");
+        map.put("embedded.mssqlserver.user", "sa");
+        map.put("embedded.mssqlserver.password", properties.getPassword());
+        map.put("embedded.mssqlserver.networkAlias", MSSQLSERVER_NETWORK_ALIAS);
+        map.put("embedded.mssqlserver.internalPort", MS_SQL_SERVER_PORT);
 
-            log.info("""
-                Started mssql server. Connection details: embedded.mssqlserver.user=sa, embedded.mssqlserver.password={}, embedded.mssqlserver.database = master,
-                JDBC connection url: jdbc:sqlserver://{}:{};databaseName={};trustServerCertificate=true""", properties.getPassword(), host, mappedPort, "master");
-        };
-    }
+        log.info("""
+            Started mssql server. Connection details: embedded.mssqlserver.user=sa, embedded.mssqlserver.password={}, embedded.mssqlserver.database = master,
+            JDBC connection url: jdbc:sqlserver://{}:{};databaseName={};trustServerCertificate=true""", properties.getPassword(), host, mappedPort, "master");
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
-    public DynamicPropertyRegistrar mssqlServerToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("mssqlServerContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.mssqlserver");
+        MapPropertySource propertySource = new MapPropertySource("embeddedMssqlServerInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 
 }

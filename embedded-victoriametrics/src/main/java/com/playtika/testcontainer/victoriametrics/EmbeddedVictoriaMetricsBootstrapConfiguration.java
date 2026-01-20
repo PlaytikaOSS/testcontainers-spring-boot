@@ -16,13 +16,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -52,19 +54,22 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     public ToxiproxyClientProxy victoriaMetricsContainerProxy(ToxiproxyClient toxiproxyClient,
                                                                ToxiproxyContainer toxiproxyContainer,
                                                                @Qualifier(BEAN_NAME_EMBEDDED_VICTORIA_METRICS) GenericContainer<?> victoriametrics,
-                                                               VictoriaMetricsProperties properties) {
-
-        return ToxiproxyHelper.createProxy(
+                                                               VictoriaMetricsProperties properties,
+                                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 victoriametrics,
                 properties.getPort(),
                 "victoriametrics"
         );
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.victoriametrics", "embeddedVictoriametricsToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_VICTORIA_METRICS, destroyMethod = "stop")
-    public GenericContainer<?> victoriaMetrics(VictoriaMetricsProperties properties,
+    public GenericContainer<?> victoriaMetrics(ConfigurableEnvironment environment,
+                                              VictoriaMetricsProperties properties,
                                               Optional<Network> network,
                                               WaitStrategy victoriaMetricsWaitStrategy) {
         GenericContainer<?> victoriaMetrics = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -73,25 +78,20 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
                 .waitingFor(victoriaMetricsWaitStrategy);
         network.ifPresent(victoriaMetrics::withNetwork);
         configureCommonsAndStart(victoriaMetrics, properties, log);
+        registerVictoriaMetricsEnvironment(victoriaMetrics, environment, properties);
         return victoriaMetrics;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar victoriaMetricsDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_VICTORIA_METRICS) GenericContainer<?> victoriaMetrics,
-            VictoriaMetricsProperties properties) {
-        return registry -> {
-            registry.add("embedded.victoriametrics.host", victoriaMetrics::getHost);
-            registry.add("embedded.victoriametrics.port", () -> victoriaMetrics.getMappedPort(properties.getPort()));
-            registry.add("embedded.victoriametrics.networkAlias", () -> VICTORIAMETRICS_NETWORK_ALIAS);
-            registry.add("embedded.victoriametrics.internalPort", () -> properties.getPort());
-        };
-    }
+    private void registerVictoriaMetricsEnvironment(GenericContainer<?> victoriaMetrics,
+                                                    ConfigurableEnvironment environment,
+                                                    VictoriaMetricsProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.victoriametrics.host", victoriaMetrics.getHost());
+        map.put("embedded.victoriametrics.port", victoriaMetrics.getMappedPort(properties.getPort()));
+        map.put("embedded.victoriametrics.networkAlias", VICTORIAMETRICS_NETWORK_ALIAS);
+        map.put("embedded.victoriametrics.internalPort", properties.getPort());
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "victoriametrics")
-    public DynamicPropertyRegistrar victoriaMetricsToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("victoriaMetricsContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.victoriametrics");
+        MapPropertySource propertySource = new MapPropertySource("embeddedVictoriametricsInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

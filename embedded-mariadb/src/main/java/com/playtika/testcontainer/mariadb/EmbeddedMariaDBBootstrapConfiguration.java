@@ -14,11 +14,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -39,17 +41,21 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     ToxiproxyClientProxy mariadbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadbContainer,
-                                                MariaDBProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                MariaDBProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 mariadbContainer,
                 properties.getPort(),
                 "mariadb");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.mariadb", "embeddedMariaDBToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
-    public MariaDBContainer mariadb(MariaDBProperties properties,
+    public MariaDBContainer mariadb(ConfigurableEnvironment environment,
+                                    MariaDBProperties properties,
                                     Optional<Network> network) throws Exception {
         MariaDBContainer mariadb =
                 new MariaDBContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -67,28 +73,23 @@ public class EmbeddedMariaDBBootstrapConfiguration {
 
         network.ifPresent(mariadb::withNetwork);
         mariadb = (MariaDBContainer) configureCommonsAndStart(mariadb, properties, log);
+        registerMariaDBEnvironment(mariadb, environment, properties);
         return mariadb;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar mariadbDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadb,
-            MariaDBProperties properties) {
-        return registry -> {
-            registry.add("embedded.mariadb.port", () -> mariadb.getMappedPort(properties.getPort()));
-            registry.add("embedded.mariadb.host", mariadb::getHost);
-            registry.add("embedded.mariadb.schema", properties::getDatabase);
-            registry.add("embedded.mariadb.user", properties::getUser);
-            registry.add("embedded.mariadb.password", properties::getPassword);
-            registry.add("embedded.mariadb.networkAlias", () -> MARIADB_NETWORK_ALIAS);
-            registry.add("embedded.mariadb.internalPort", properties::getPort);
-        };
-    }
+    private void registerMariaDBEnvironment(MariaDBContainer mariadb,
+                                            ConfigurableEnvironment environment,
+                                            MariaDBProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.mariadb.port", mariadb.getMappedPort(properties.getPort()));
+        map.put("embedded.mariadb.host", mariadb.getHost());
+        map.put("embedded.mariadb.schema", properties.getDatabase());
+        map.put("embedded.mariadb.user", properties.getUser());
+        map.put("embedded.mariadb.password", properties.getPassword());
+        map.put("embedded.mariadb.networkAlias", MARIADB_NETWORK_ALIAS);
+        map.put("embedded.mariadb.internalPort", properties.getPort());
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "mariadb")
-    public DynamicPropertyRegistrar mariadbToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("mariadbContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.mariadb");
+        MapPropertySource propertySource = new MapPropertySource("embeddedMariaDBInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

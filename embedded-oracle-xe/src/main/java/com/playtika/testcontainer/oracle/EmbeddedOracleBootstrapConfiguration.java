@@ -14,11 +14,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -39,23 +41,22 @@ public class EmbeddedOracleBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "oracle")
     ToxiproxyClientProxy oracleContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
-                                               @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle) {
-        return ToxiproxyHelper.createProxy(
+                                               @Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 oracle,
                 ORACLE_PORT,
                 "oracle");
-    }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "oracle")
-    public DynamicPropertyRegistrar oracleToxiProxyDynamicPropertyRegistrar(@Qualifier("oracleContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.oracle");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.oracle", "embeddedOracleToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")
-    public OracleContainer oracle(OracleProperties properties, Optional<Network> network) {
+    public OracleContainer oracle(ConfigurableEnvironment environment,
+                                  OracleProperties properties,
+                                  Optional<Network> network) {
         OracleContainer oracle =
                 new OracleContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
@@ -65,21 +66,27 @@ public class EmbeddedOracleBootstrapConfiguration {
 
         network.ifPresent(oracle::withNetwork);
         oracle = (OracleContainer) configureCommonsAndStart(oracle, properties, log);
+        registerOracleEnvironment(oracle, environment, properties);
         return oracle;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar oracleDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_ORACLE) OracleContainer oracle, OracleProperties properties) {
-        return registry -> {
-            Integer mappedPort = oracle.getMappedPort(ORACLE_PORT);
-            String host = oracle.getHost();
-            registry.add("embedded.oracle.port", () -> mappedPort);
-            registry.add("embedded.oracle.host", () -> host);
-            registry.add("embedded.oracle.database", properties::getDatabase);
-            registry.add("embedded.oracle.user", properties::getUser);
-            registry.add("embedded.oracle.password", properties::getPassword);
-            registry.add("embedded.oracle.networkAlias", () -> ORACLE_NETWORK_ALIAS);
-            registry.add("embedded.oracle.internalPort", () -> ORACLE_PORT);
-        };
+    private void registerOracleEnvironment(OracleContainer oracle,
+                                           ConfigurableEnvironment environment,
+                                           OracleProperties properties) {
+        Integer mappedPort = oracle.getMappedPort(ORACLE_PORT);
+        String host = oracle.getHost();
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.oracle.port", mappedPort);
+        map.put("embedded.oracle.host", host);
+        map.put("embedded.oracle.database", properties.getDatabase());
+        map.put("embedded.oracle.user", properties.getUser());
+        map.put("embedded.oracle.password", properties.getPassword());
+        map.put("embedded.oracle.networkAlias", ORACLE_NETWORK_ALIAS);
+        map.put("embedded.oracle.internalPort", ORACLE_PORT);
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedOracleInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
+
 }

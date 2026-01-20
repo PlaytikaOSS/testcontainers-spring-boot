@@ -14,13 +14,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -41,23 +43,22 @@ public class EmbeddedConsulBootstrapConfiguration {
     ToxiproxyClientProxy consulContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
                                                @Qualifier(BEAN_NAME_EMBEDDED_CONSUL) GenericContainer<?> consulContainer,
-                                               ConsulProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                               ConsulProperties properties,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 consulContainer,
                 properties.getPort(),
                 "consul");
-    }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "consul")
-    public DynamicPropertyRegistrar consulToxiProxyDynamicPropertyRegistrar(@Qualifier("consulContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.consul");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.consul", "embeddedConsulToxiProxyInfo", environment);
+
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
-    public GenericContainer<?> consulContainer(ConsulProperties properties, Optional<Network> network) {
+    public GenericContainer<?> consulContainer(ConsulProperties properties, ConfigurableEnvironment environment, Optional<Network> network) {
         GenericContainer<?> consul = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .waitingFor(
@@ -75,16 +76,18 @@ public class EmbeddedConsulBootstrapConfiguration {
         }
 
         consul = configureCommonsAndStart(consul, properties, log);
+        registerConsulEnvironment(consul, environment, properties);
         return consul;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar consulDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_CONSUL) GenericContainer<?> consul, ConsulProperties properties) {
-        return registry -> {
-            registry.add("embedded.consul.port", () -> consul.getMappedPort(properties.getPort()));
-            registry.add("embedded.consul.host", consul::getHost);
-            registry.add("embedded.consul.networkAlias", () -> CONSUL_NETWORK_ALIAS);
-            registry.add("embedded.consul.internalPort", properties::getPort);
-        };
+    private void registerConsulEnvironment(GenericContainer<?> consul, ConfigurableEnvironment environment, ConsulProperties properties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.consul.port", consul.getMappedPort(properties.getPort()));
+        map.put("embedded.consul.host", consul.getHost());
+        map.put("embedded.consul.networkAlias", CONSUL_NETWORK_ALIAS);
+        map.put("embedded.consul.internalPort", properties.getPort());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedConsulInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

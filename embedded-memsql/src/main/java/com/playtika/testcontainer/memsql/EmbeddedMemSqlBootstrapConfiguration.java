@@ -15,12 +15,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.utility.MountableFile;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -47,24 +49,24 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     ToxiproxyClientProxy memsqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
                                                @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql,
-                                               MemSqlProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                               MemSqlProperties properties,
+                                               ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 memsql,
                 properties.getPort(),
                 "memsql");
-    }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "memsql")
-    public DynamicPropertyRegistrar memsqlToxiProxyDynamicPropertyRegistrar(@Qualifier("memsqlContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.memsql");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.memsql", "embeddedMemsqlToxiProxyInfo", environment);
+
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
     public GenericContainer<?> memsql(MemSqlProperties properties,
                                       MemSqlStatusCheck memSqlStatusCheck,
+                                      ConfigurableEnvironment environment,
                                       Optional<Network> network) {
         GenericContainer<?> memsql = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
@@ -82,21 +84,24 @@ public class EmbeddedMemSqlBootstrapConfiguration {
         }
         network.ifPresent(memsql::withNetwork);
         memsql = configureCommonsAndStart(memsql, properties, log);
+        registerMemsqlEnvironment(memsql, environment, properties);
         return memsql;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar memsqlDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql, MemSqlProperties properties) {
-        return registry -> {
-            Integer mappedPort = memsql.getMappedPort(properties.port);
-            String host = memsql.getHost();
-            registry.add("embedded.memsql.port", () -> mappedPort);
-            registry.add("embedded.memsql.host", () -> host);
-            registry.add("embedded.memsql.schema", properties::getDatabase);
-            registry.add("embedded.memsql.user", properties::getUser);
-            registry.add("embedded.memsql.password", properties::getPassword);
-            registry.add("embedded.memsql.networkAlias", () -> MEMSQL_NETWORK_ALIAS);
-            registry.add("embedded.memsql.internalPort", properties::getPort);
-        };
+    private void registerMemsqlEnvironment(GenericContainer<?> memsql, ConfigurableEnvironment environment, MemSqlProperties properties) {
+        Integer mappedPort = memsql.getMappedPort(properties.port);
+        String host = memsql.getHost();
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.memsql.port", mappedPort);
+        map.put("embedded.memsql.host", host);
+        map.put("embedded.memsql.schema", properties.getDatabase());
+        map.put("embedded.memsql.user", properties.getUser());
+        map.put("embedded.memsql.password", properties.getPassword());
+        map.put("embedded.memsql.networkAlias", MEMSQL_NETWORK_ALIAS);
+        map.put("embedded.memsql.internalPort", properties.getPort());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedMemsqlInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }

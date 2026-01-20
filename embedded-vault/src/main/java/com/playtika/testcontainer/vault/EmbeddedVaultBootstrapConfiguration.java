@@ -15,12 +15,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.vault.VaultContainer;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,18 +46,21 @@ public class EmbeddedVaultBootstrapConfiguration {
     ToxiproxyClientProxy vaultContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
                                               @Qualifier(BEAN_NAME_EMBEDDED_VAULT) VaultContainer vault,
-                                              VaultProperties properties) {
-
-        return ToxiproxyHelper.createProxy(
+                                              VaultProperties properties,
+                                              ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 vault,
                 properties.getPort(),
                 "vault");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.vault", "embeddedVaultToxiProxyInfo", environment);
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_VAULT, destroyMethod = "stop")
-    public VaultContainer vault(VaultProperties properties,
+    public VaultContainer vault(ConfigurableEnvironment environment,
+                                VaultProperties properties,
                                 Optional<Network> network) {
 
         VaultContainer vault = new VaultContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -83,53 +88,42 @@ public class EmbeddedVaultBootstrapConfiguration {
         }
 
         vault = (VaultContainer) configureCommonsAndStart(vault, properties, log);
-
-        // Set Spring Cloud Vault properties as system properties for bootstrap phase
-        // These are needed for Spring Cloud Vault to initialize during bootstrap
-        // The actual configuration structure is in application-test.yml
-        Integer mappedPort = vault.getMappedPort(properties.getPort());
-        String host = vault.getHost();
-        System.setProperty("spring.cloud.vault.host", host);
-        System.setProperty("spring.cloud.vault.port", String.valueOf(mappedPort));
-        System.setProperty("spring.cloud.vault.token", properties.getToken());
-        System.setProperty("spring.cloud.vault.scheme", "http");
-        System.setProperty("spring.cloud.vault.kv.enabled", "true");
-
+        registerVaultEnvironment(vault, environment, properties);
         return vault;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar vaultDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_VAULT) VaultContainer vault,
-            VaultProperties properties) {
-        return registry -> {
-            Integer mappedPort = vault.getMappedPort(properties.getPort());
-            String host = vault.getHost();
-            String token = properties.getToken();
+    private void registerVaultEnvironment(VaultContainer vault,
+                                          ConfigurableEnvironment environment,
+                                          VaultProperties properties) {
+        Integer mappedPort = vault.getMappedPort(properties.getPort());
+        String host = vault.getHost();
+        String token = properties.getToken();
 
-            registry.add("embedded.vault.host", () -> host);
-            registry.add("embedded.vault.port", () -> mappedPort);
-            registry.add("embedded.vault.token", () -> token);
-            registry.add("embedded.vault.networkAlias", () -> VAULT_NETWORK_ALIAS);
-            registry.add("embedded.vault.internalPort", properties::getPort);
+        // Set Spring Cloud Vault properties as system properties for bootstrap phase
+        System.setProperty("spring.cloud.vault.host", host);
+        System.setProperty("spring.cloud.vault.port", String.valueOf(mappedPort));
+        System.setProperty("spring.cloud.vault.token", token);
+        System.setProperty("spring.cloud.vault.scheme", "http");
+        System.setProperty("spring.cloud.vault.kv.enabled", "true");
 
-            // Register Spring Cloud Vault properties for test context (application-test.yml references these)
-            registry.add("spring.cloud.vault.host", () -> host);
-            registry.add("spring.cloud.vault.port", () -> mappedPort);
-            registry.add("spring.cloud.vault.token", () -> token);
-            registry.add("spring.cloud.vault.scheme", () -> "http");
-            registry.add("spring.cloud.vault.kv.enabled", () -> "true");
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.vault.host", host);
+        map.put("embedded.vault.port", mappedPort);
+        map.put("embedded.vault.token", token);
+        map.put("embedded.vault.networkAlias", VAULT_NETWORK_ALIAS);
+        map.put("embedded.vault.internalPort", properties.getPort());
+        // Register Spring Cloud Vault properties for test context
+        map.put("spring.cloud.vault.host", host);
+        map.put("spring.cloud.vault.port", mappedPort);
+        map.put("spring.cloud.vault.token", token);
+        map.put("spring.cloud.vault.scheme", "http");
+        map.put("spring.cloud.vault.kv.enabled", "true");
 
-            log.info("Started vault. Connection Details: host={}, port={}, Connection URI: http://{}:{}",
-                    host, mappedPort, host, mappedPort);
-        };
-    }
+        log.info("Started vault. Connection Details: host={}, port={}, Connection URI: http://{}:{}",
+                host, mappedPort, host, mappedPort);
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "vault")
-    public DynamicPropertyRegistrar vaultToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("vaultContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.vault");
+        MapPropertySource propertySource = new MapPropertySource("embeddedVaultInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 
     private void enableCasForSubPaths(List<String> subPaths, VaultContainer vault) {

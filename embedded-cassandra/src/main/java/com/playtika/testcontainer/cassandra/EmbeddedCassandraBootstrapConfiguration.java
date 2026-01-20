@@ -14,8 +14,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -25,6 +26,7 @@ import org.testcontainers.ext.ScriptUtils;
 
 import javax.script.ScriptException;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
@@ -52,24 +54,23 @@ public class EmbeddedCassandraBootstrapConfiguration {
     ToxiproxyClientProxy cassandraContainerProxy(ToxiproxyClient toxiproxyClient,
                                                   ToxiproxyContainer toxiproxyContainer,
                                                   @Qualifier(BEAN_NAME_EMBEDDED_CASSANDRA) CassandraContainer cassandra,
-                                                  CassandraProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                  CassandraProperties properties,
+                                                  ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 cassandra,
                 properties.getPort(),
                 "cassandra");
-    }
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "cassandra")
-    public DynamicPropertyRegistrar cassandraToxiProxyDynamicPropertyRegistrar(
-        @Qualifier("cassandraContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.cassandra");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.cassandra", "embeddedCassandraToxiProxyInfo", environment);
+
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")
     public CassandraContainer cassandra(CassandraProperties properties,
+                                        ConfigurableEnvironment environment,
                                         Optional<Network> network) throws Exception {
         CassandraContainer cassandra = new CassandraContainer<>(ContainerUtils.getDockerImageName(properties))
             .withExposedPorts(properties.getPort())
@@ -77,24 +78,27 @@ public class EmbeddedCassandraBootstrapConfiguration {
         network.ifPresent(cassandra::withNetwork);
         cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
         initKeyspace(properties, cassandra);
-        String host = cassandra.getHost();
-        Integer mappedPort = cassandra.getMappedPort(properties.getPort());
-        log.info("Started Cassandra. Connection details: host={}, port={}, datacenter={}, keyspace-name={}, networkAlias={}, internalPort={}",
-            host, mappedPort, DEFAULT_DATACENTER, properties.keyspaceName, CASSANDRA_NETWORK_ALIAS, properties.getPort());
+        registerCassandraEnvironment(cassandra, environment, properties);
         return cassandra;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar cassandraDynamicPropertyRegistrar(
-        @Qualifier(BEAN_NAME_EMBEDDED_CASSANDRA) CassandraContainer cassandra, CassandraProperties properties) {
-        return registry -> {
-            registry.add("embedded.cassandra.port", () -> cassandra.getMappedPort(properties.getPort()));
-            registry.add("embedded.cassandra.host", cassandra::getHost);
-            registry.add("embedded.cassandra.datacenter", () -> DEFAULT_DATACENTER);
-            registry.add("embedded.cassandra.keyspace-name", () -> properties.keyspaceName);
-            registry.add("embedded.cassandra.networkAlias", () -> CASSANDRA_NETWORK_ALIAS);
-            registry.add("embedded.cassandra.internalPort", properties::getPort);
-        };
+    private void registerCassandraEnvironment(CassandraContainer cassandra, ConfigurableEnvironment environment, CassandraProperties properties) {
+        String host = cassandra.getHost();
+        Integer mappedPort = cassandra.getMappedPort(properties.getPort());
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.cassandra.port", mappedPort);
+        map.put("embedded.cassandra.host", host);
+        map.put("embedded.cassandra.datacenter", DEFAULT_DATACENTER);
+        map.put("embedded.cassandra.keyspace-name", properties.keyspaceName);
+        map.put("embedded.cassandra.networkAlias", CASSANDRA_NETWORK_ALIAS);
+        map.put("embedded.cassandra.internalPort", properties.getPort());
+
+        log.info("Started Cassandra. Connection details: host={}, port={}, datacenter={}, keyspace-name={}, networkAlias={}, internalPort={}",
+            host, mappedPort, DEFAULT_DATACENTER, properties.keyspaceName, CASSANDRA_NETWORK_ALIAS, properties.getPort());
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedCassandraInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 
     private void initKeyspace(CassandraProperties properties, CassandraContainer<?> cassandra) throws ScriptException {

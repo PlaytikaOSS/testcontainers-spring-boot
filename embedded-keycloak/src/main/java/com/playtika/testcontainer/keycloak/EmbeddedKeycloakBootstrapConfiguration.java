@@ -14,11 +14,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -40,19 +42,16 @@ public class EmbeddedKeycloakBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "keycloak")
     ToxiproxyClientProxy keycloakContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
-                                                 @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloakContainer) {
-        return ToxiproxyHelper.createProxy(
+                                                 @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloakContainer,
+                                                 ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 keycloakContainer,
                 keycloakContainer.getHttpPort(),
                 "keycloak");
-    }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "keycloak")
-    public DynamicPropertyRegistrar keycloakToxiProxyDynamicPropertyRegistrar(@Qualifier("keycloakContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.keycloak");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.keycloak", "embeddedKeycloakToxiProxyInfo", environment);
+        return proxy;
     }
 
     /**
@@ -64,24 +63,29 @@ public class EmbeddedKeycloakBootstrapConfiguration {
      * @return The created {@link KeycloakContainer} instance to be registered as bean
      */
     @Bean(name = BEAN_NAME_EMBEDDED_KEYCLOAK, destroyMethod = "stop")
-    public KeycloakContainer keycloak(KeycloakProperties properties, ResourceLoader resourceLoader, Optional<Network> network) {
+    public KeycloakContainer keycloak(ConfigurableEnvironment environment,
+                                      KeycloakProperties properties,
+                                      ResourceLoader resourceLoader,
+                                      Optional<Network> network) {
         KeycloakContainer keycloak = new KeycloakContainer(properties, resourceLoader)
                 .withNetworkAliases(KEYCLOAK_NETWORK_ALIAS);
         network.ifPresent(keycloak::withNetwork);
-        return (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);
+        keycloak = (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);
+        registerKeycloakEnvironment(keycloak, environment);
+        return keycloak;
     }
 
-    @Bean
-    public DynamicPropertyRegistrar keycloakDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_KEYCLOAK) KeycloakContainer keycloak,
-            KeycloakProperties properties) {
-        return registry -> {
-            registry.add("embedded.keycloak.host", keycloak::getHost);
-            registry.add("embedded.keycloak.http-port", keycloak::getHttpPort);
-            registry.add("embedded.keycloak.auth-server-url", keycloak::getAuthServerUrl);
-            registry.add("embedded.keycloak.port", () -> keycloak.getMappedPort(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL));
-            registry.add("embedded.keycloak.networkAlias", () -> KEYCLOAK_NETWORK_ALIAS);
-            registry.add("embedded.keycloak.internalPort", () -> KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
-        };
+    private void registerKeycloakEnvironment(KeycloakContainer keycloak,
+                                             ConfigurableEnvironment environment) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.keycloak.host", keycloak.getHost());
+        map.put("embedded.keycloak.http-port", keycloak.getHttpPort());
+        map.put("embedded.keycloak.auth-server-url", keycloak.getAuthServerUrl());
+        map.put("embedded.keycloak.port", keycloak.getMappedPort(KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL));
+        map.put("embedded.keycloak.networkAlias", KEYCLOAK_NETWORK_ALIAS);
+        map.put("embedded.keycloak.internalPort", KEYCLOAK_DEFAULT_HTTP_PORT_INTERNAL);
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedKeycloakInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }
