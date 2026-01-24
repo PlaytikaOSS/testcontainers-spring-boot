@@ -1,0 +1,10 @@
+[[rules]]
+    id = "playtika-internal-host"
+    description = "Internal Playtika Infrastructure Discovery"
+    regex = '''(?i)(internal|staging|qa|prod-admin)\.playtika\.com'''
+    tags = ["recon"]
+
+[[rules]]
+    id = "aws-s3-leak"
+    description = "Playtika S3 Bucket Pattern"
+    regex = '''playtika-[a-z0-9-]+-(dev|prod|qa)'''
