@@ -66,4 +66,8 @@ public abstract class PackageInstaller implements InitializingBean {
         return ContainerUtils.executeAndCheckExitCode(container, command);
     }
 
+    protected Container.ExecResult executeCommand(String... command) {
+        return ContainerUtils.executeInContainer(container, command);
+    }
+
 }
