@@ -12,8 +12,8 @@ public class YumPackageInstaller extends PackageInstaller {
 
     @Override
     protected boolean shouldInstall(String packageToInstall) {
-        Container.ExecResult execResult = executeCommandAndCheckExitCode("yum", "list", "installed");
-        return !execResult.getStdout().contains(packageToInstall);
+        Container.ExecResult execResult = executeCommand("rpm", "-q", packageToInstall);
+        return execResult.getExitCode() != 0;
     }
 
     @Override
