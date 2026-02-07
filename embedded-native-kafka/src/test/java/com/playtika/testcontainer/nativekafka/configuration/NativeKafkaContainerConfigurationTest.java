@@ -11,6 +11,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.mock.env.MockEnvironment;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
@@ -41,6 +43,8 @@ class NativeKafkaContainerConfigurationTest {
 
     @Mock
     private GenericContainer<?> genericContainer;
+
+    private ConfigurableEnvironment environment = new MockEnvironment();
 
     @TempDir
     private Path tempDir;
@@ -73,7 +77,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            GenericContainer<?> result = configuration.nativeKafka(properties, Optional.of(network));
+            GenericContainer<?> result = configuration.nativeKafka(environment, properties, Optional.of(network));
 
             assertThat(result).isEqualTo(kafkaContainer);
             containerUtilsMock.verify(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()));
@@ -95,7 +99,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            GenericContainer<?> result = configuration.nativeKafka(properties, Optional.of(network));
+            GenericContainer<?> result = configuration.nativeKafka(environment, properties, Optional.of(network));
 
             assertThat(result).isEqualTo(kafkaContainer);
 
@@ -119,7 +123,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            GenericContainer<?> result = configuration.nativeKafka(properties, Optional.of(network));
+            GenericContainer<?> result = configuration.nativeKafka(environment, properties, Optional.of(network));
 
             assertThat(result).isEqualTo(kafkaContainer);
             assertThat(Files.exists(tempDir.resolve("embedded-native-kafka-data"))).isFalse();
@@ -138,7 +142,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, Optional.of(network));
+            configuration.nativeKafka(environment, properties, Optional.of(network));
         }
     }
 
@@ -169,7 +173,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, Optional.of(network));
+            configuration.nativeKafka(environment, properties, Optional.of(network));
 
             assertThat(Files.exists(testPath)).isTrue();
             assertThat(Files.isDirectory(testPath)).isTrue();
@@ -195,7 +199,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, Optional.of(network));
+            configuration.nativeKafka(environment, properties, Optional.of(network));
 
             assertThat(Files.exists(parentPath)).isTrue();
             assertThat(Files.exists(testPath)).isTrue();
@@ -227,7 +231,7 @@ class NativeKafkaContainerConfigurationTest {
             containerUtilsMock.when(() -> configureCommonsAndStart(any(KafkaContainer.class), any(CommonContainerProperties.class), any()))
                     .thenReturn(kafkaContainer);
 
-            configuration.nativeKafka(properties, Optional.of(network));
+            configuration.nativeKafka(environment, properties, Optional.of(network));
 
             assertThat(Files.exists(existingPath)).isTrue();
         }
