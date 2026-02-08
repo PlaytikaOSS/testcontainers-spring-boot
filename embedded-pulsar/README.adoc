@@ -28,7 +28,7 @@
 * `embedded.pulsar.toxiproxy.port`
 * `embedded.pulsar.networkAlias`
 * `embedded.pulsar.internalBrokerPort`
-* Bean `ToxiproxyClientProxy pulsarContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy pulsarContainerProxy`
 
 ==== Example
 

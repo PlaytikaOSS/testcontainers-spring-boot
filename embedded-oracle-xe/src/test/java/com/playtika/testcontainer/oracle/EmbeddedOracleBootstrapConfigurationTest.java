@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -33,23 +34,8 @@ class EmbeddedOracleBootstrapConfigurationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Value("${embedded.oracle.port}")
-    String oraclePort;
-
-    @Value("${embedded.oracle.host}")
-    String oracleHost;
-
-    @Value("${embedded.oracle.database}")
-    String oracleDatabase;
-
-    @Value("${embedded.oracle.user}")
-    String oracleUser;
-
-    @Value("${embedded.oracle.password}")
-    String oraclePassword;
-
-    @Value("${embedded.oracle.init-script-path}")
-    String oracleInitScriptPath;
+    @Autowired
+    private ConfigurableEnvironment environment;
 
 
     @Test
@@ -72,12 +58,12 @@ class EmbeddedOracleBootstrapConfigurationTest {
 
     @Test
     void propertiesAreAvailable() {
-        assertThat(oraclePort).isNotEmpty();
-        assertThat(oracleHost).isNotEmpty();
-        assertThat(oracleDatabase).isNotEmpty();
-        assertThat(oracleUser).isNotEmpty();
-        assertThat(oraclePassword).isNotEmpty();
-        assertThat(oracleInitScriptPath).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.database")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.oracle.init-script-path")).isNotEmpty();
     }
 
     @Test

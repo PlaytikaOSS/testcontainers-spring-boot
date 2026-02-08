@@ -45,7 +45,7 @@ purposes only during the Evaluation Period**. See https://github.com/aerospike/a
 * `embedded.aerospike.networkAlias`
 * `embedded.aerospike.internalPort`
 * Bean `AerospikeTestOperations aerospikeTestOperations`
-* Bean `ToxiproxyClientProxy aerospikeContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`
 
 ==== Example
 

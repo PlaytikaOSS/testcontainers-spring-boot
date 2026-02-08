@@ -34,7 +34,7 @@
 * `embedded.mailhog.networkAlias`
 * `embedded.mailhog.internalSmtpPort`
 * `embedded.mailhog.internalHttpPort`
-* Bean `ToxiproxyClientProxy mailhogSmtpContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy mailhogSmtpContainerProxy`
 
 ==== Example (Spring Boot)
 

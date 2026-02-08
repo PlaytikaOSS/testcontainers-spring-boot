@@ -19,13 +19,13 @@ public class EmbeddedConsulBootstrapConfigurationConfigTest extends EmbeddedCons
 
     @Test
     public void propertiesAvailable() {
-        assertThat(consulEnabled)
+        assertThat(environment.getProperty("embedded.consul.enabled"))
                 .isEqualTo("true");
-        assertThat(consulHost)
+        assertThat(environment.getProperty("embedded.consul.host"))
                 .isEqualTo(consulContainer.getHost());
-        assertThat(consulPort)
+        assertThat(environment.getProperty("embedded.consul.port"))
                 .isEqualTo(consulContainer.getFirstMappedPort().toString());
-        assertThat(consulConfigurationFile)
+        assertThat(environment.getProperty("embedded.consul.configurationFile"))
                 .isEqualTo("consul.hcl");
     }
 

@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,17 +24,8 @@ public abstract class BaseEmbeddedRedisTest {
     @Autowired
     protected StringRedisTemplate template;
 
-    @Value("${embedded.redis.port}")
-    protected String redisPort;
-
-    @Value("${embedded.redis.host}")
-    protected String redisHost;
-
-    @Value("${embedded.redis.user}")
-    protected String redisUser;
-
-    @Value("${embedded.redis.password}")
-    protected String redisPassword;
+    @Autowired
+    protected ConfigurableEnvironment environment;
 
     @Test
     public void springDataRedisShouldWork() {
@@ -48,9 +39,9 @@ public abstract class BaseEmbeddedRedisTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(redisPort).isNotEmpty();
-        assertThat(redisHost).isNotEmpty();
-        assertThat(redisUser).isNotEmpty();
-        assertThat(redisPassword).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.redis.password")).isNotEmpty();
     }
 }

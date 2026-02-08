@@ -33,7 +33,7 @@
 * `embedded.vertica.toxiproxy.port`
 * `embedded.vertica.networkAlias`
 * `embedded.vertica.internalPort`
-* Bean `ToxiproxyClientProxy verticaContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy verticaContainerProxy`
 
 ==== Notes
 

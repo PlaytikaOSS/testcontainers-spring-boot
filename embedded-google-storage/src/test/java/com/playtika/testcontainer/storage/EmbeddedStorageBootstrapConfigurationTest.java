@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 
@@ -38,20 +39,8 @@ public class EmbeddedStorageBootstrapConfigurationTest {
     @Autowired
     private ConfigurableListableBeanFactory beanFactory;
 
-    @Value("${embedded.google.storage.host}")
-    private String storageHost;
-
-    @Value("${embedded.google.storage.port}")
-    private String storagePort;
-
-    @Value("${embedded.google.storage.endpoint}")
-    private String storageEndpoint;
-
-    @Value("${embedded.google.storage.project-id}")
-    private String projectId;
-
-    @Value("${embedded.google.storage.bucket-location}")
-    private String bucketLocation;
+    @Autowired
+    private ConfigurableEnvironment environment;
 
     @Autowired
     private Storage storage;
@@ -76,12 +65,12 @@ public class EmbeddedStorageBootstrapConfigurationTest {
     @Test
     public void propertiesAreAvailable() {
         // host could be allocated dynamically
-        assertThat(storageHost).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.storage.host")).isNotEmpty();
         // port is assigned dynamically
-        assertThat(storagePort).isNotEmpty();
-        assertThat(storageEndpoint).isNotEmpty();
-        assertThat(projectId).isEqualTo("my-project-id-enabled");
-        assertThat(bucketLocation).isEqualTo("US-EAST1");
+        assertThat(environment.getProperty("embedded.google.storage.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.storage.endpoint")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.google.storage.project-id")).isEqualTo("my-project-id-enabled");
+        assertThat(environment.getProperty("embedded.google.storage.bucket-location")).isEqualTo("US-EAST1");
     }
 
     @Test

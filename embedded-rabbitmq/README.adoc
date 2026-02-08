@@ -39,7 +39,7 @@
 * `embedded.rabbitmq.networkAlias`
 * `embedded.rabbitmq.internalPort`
 * `embedded.rabbitmq.internalHttpPort`
-* Bean `ToxiproxyClientProxy rabbitmqContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy rabbitmqContainerProxy`
 * `embedded.rabbitmq.additionalPorts.x` (where `x` is the port from the container, e.g. `5552`; the value is the mapped port within the Docker container)
 
 ==== Example

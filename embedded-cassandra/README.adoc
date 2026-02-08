@@ -33,7 +33,7 @@
 * `embedded.cassandra.toxiproxy.port`
 * `embedded.cassandra.networkAlias`
 * `embedded.cassandra.internalPort`
-* Bean `ToxiproxyClientProxy cassandraContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy cassandraContainerProxy`
 
 ==== Example
 

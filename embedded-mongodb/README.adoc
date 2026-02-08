@@ -39,7 +39,7 @@
 * `embedded.mongodb.toxiproxy.port`
 * `embedded.mongodb.networkAlias`
 * `embedded.mongodb.internalPort`
-* Bean `ToxiproxyClientProxy mongodbContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy mongodbContainerProxy`
 
 ==== Example
 

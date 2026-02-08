@@ -1,13 +1,14 @@
 package com.playtika.testcontainer.mongodb;
 
 
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -31,23 +32,8 @@ public class EmbeddedMongodbBootstrapReplicaSetConfigurationTest {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Value("${embedded.mongodb.port}")
-    String mongodbPort;
-
-    @Value("${embedded.mongodb.host}")
-    String mongodbHost;
-
-    @Value("${embedded.mongodb.username}")
-    String mongodbUsername;
-
-    @Value("${embedded.mongodb.password}")
-    String mongodbPassword;
-
-    @Value("${embedded.mongodb.database}")
-    String mongodbDatabase;
-
-    @Value("${embedded.mongodb.replica-set-name}")
-    String mongodbReplicaSetName;
+    @Autowired
+    ConfigurableEnvironment environment;
 
 
     @Test
@@ -61,15 +47,21 @@ public class EmbeddedMongodbBootstrapReplicaSetConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(mongodbPort).isNotEmpty();
-        assertThat(mongodbHost).isNotEmpty();
-        assertThat(mongodbUsername).isNotEmpty();
-        assertThat(mongodbPassword).isNotEmpty();
-        assertThat(mongodbDatabase).isNotEmpty();
-        assertThat(mongodbReplicaSetName).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mongodb.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mongodb.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mongodb.username")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mongodb.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mongodb.database")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mongodb.replica-set-name")).isNotEmpty();
     }
 
-    record Foo(@Id String someId, String someString, Instant someTimestamp, Long someNumber) {
+    @Value
+    static class Foo {
+        @Id
+        String someId;
+        String someString;
+        Instant someTimestamp;
+        Long someNumber;
     }
 
     @EnableAutoConfiguration

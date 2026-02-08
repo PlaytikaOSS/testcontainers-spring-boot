@@ -31,7 +31,7 @@
 * `embedded.dynamodb.toxiproxy.port`
 * `embedded.dynamodb.networkAlias`
 * `embedded.dynamodb.internalPort`
-* Bean `ToxiproxyClientProxy dynamodbContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy dynamodbContainerProxy`
 
 
 //TODO: example missing

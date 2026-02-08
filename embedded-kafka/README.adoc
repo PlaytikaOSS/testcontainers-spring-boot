@@ -60,8 +60,8 @@ By default, to your projects `target` folder. You can configure binding using pr
 * `embedded.kafka.networkAlias`
 * `embedded.kafka.internalPort`
 * `embedded.kafka.internalSaslPlaintextPort`
-* Bean `ToxiproxyClientProxy kafkaPlainTextContainerProxy`
-* Bean `ToxiproxyClientProxy kafkaSaslContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy kafkaPlainTextContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy kafkaSaslContainerProxy`
 
 ==== Using `SASL_PLAINTEXT`
 

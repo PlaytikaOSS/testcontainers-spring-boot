@@ -37,7 +37,7 @@ ToxiProxy is a great tool for simulating network conditions, meaning that you ca
 * `embedded.aerospike.networkAlias`
 * `embedded.aerospike.internalPort`
 * Bean `AerospikeTestOperations aerospikeTestOperations`
-* Bean `ToxiproxyClientProxy aerospikeContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy aerospikeContainerProxy`
 
 ==== Example
 
@@ -92,7 +92,7 @@ public AerospikeClient aerospikeToxicClient(@Value("${embedded.aerospike.toxipro
     String namespace;
 
     @Autowired
-    ToxiproxyClientProxy aerospikeContainerProxy;
+    ToxiproxyContainer.ContainerProxy aerospikeContainerProxy;
 
     @Qualifier("aerospikeToxicClient")
     @Autowired
@@ -150,5 +150,5 @@ To manipulate ToxiProxy inject the following bean into your tests:
 [source,java]
 ----
 @Autowired
-ToxiproxyClientProxy aerospikeContainerProxy;
+ToxiproxyContainer.ContainerProxy aerospikeContainerProxy;
 ----

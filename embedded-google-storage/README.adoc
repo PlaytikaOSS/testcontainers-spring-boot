@@ -41,7 +41,7 @@
 * `embedded.google.storage.toxiproxy.port`
 * `embedded.google.storage.networkAlias`
 * `embedded.google.storage.internalPort`
-* Bean `ToxiproxyClientProxy googleStorageContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy googleStorageContainerProxy`
 
 ==== Example
 

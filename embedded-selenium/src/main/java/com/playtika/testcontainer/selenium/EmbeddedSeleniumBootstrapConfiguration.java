@@ -8,14 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerLaunchException;
@@ -79,7 +79,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
 
     @Bean(name = BEAN_NAME_EMBEDDED_SELENIUM, destroyMethod = "stop")
     @ConditionalOnMissingBean
-    public BrowserWebDriverContainer selenium(
+    public BrowserWebDriverContainer selenium(ConfigurableEnvironment environment,
                                               SeleniumProperties properties,
                                               MutableCapabilities capabilities,
                                               Optional<Network> network) {
@@ -101,7 +101,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
 
         ContainerUtils.configureCommonsAndStart(container, properties, log);
 
-        Map<String, Object> seleniumEnv = registerSeleniumEnvironment(container, properties.getVnc().getMode().convert(), recordingDirOrNull);
+        Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, container, properties.getVnc().getMode().convert(), recordingDirOrNull);
         log.info("Started Selenium server. Connection details: {}", seleniumEnv);
         return container;
     }
@@ -152,7 +152,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         return new DefaultRecordingFileFactory();
     }
 
-    private Map<String, Object> registerSeleniumEnvironment(BrowserWebDriverContainer container, BrowserWebDriverContainer.VncRecordingMode vncMode, File recordingDirOrNull) {
+    private Map<String, Object> registerSeleniumEnvironment(ConfigurableEnvironment environment, BrowserWebDriverContainer container, BrowserWebDriverContainer.VncRecordingMode vncMode, File recordingDirOrNull) {
         URL seleniumAddress = container.getSeleniumAddress();
         String vncAddress = container.getVncAddress();
         URI vncURI = URI.create(vncAddress);
@@ -169,6 +169,8 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         map.put("embedded.selenium.dockerhost", getHostName(container));
         map.put("embedded.selenium.networkAlias", SELENIUM_NETWORK_ALIAS);
 
+        MapPropertySource propertySource = new MapPropertySource("embeddedSeleniumInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
         return map;
     }
 
@@ -222,29 +224,5 @@ public class EmbeddedSeleniumBootstrapConfiguration {
 
     private boolean isNotBlank(String str) {
         return str != null && !str.trim().isEmpty();
-    }
-
-    @Bean
-    public DynamicPropertyRegistrar seleniumDynamicPropertyRegistrar(@Qualifier(BEAN_NAME_EMBEDDED_SELENIUM) BrowserWebDriverContainer selenium,
-                                                                    SeleniumProperties properties) {
-        return registry -> {
-            URL seleniumAddress = selenium.getSeleniumAddress();
-            String vncAddress = selenium.getVncAddress();
-            URI vncURI = URI.create(vncAddress);
-            registry.add("embedded.selenium.port", seleniumAddress::getPort);
-            registry.add("embedded.selenium.host", seleniumAddress::getHost);
-            registry.add("embedded.selenium.vnc.port", vncURI::getPort);
-            registry.add("embedded.selenium.vnc.host", vncURI::getHost);
-            registry.add("embedded.selenium.vnc.username", () -> DEFINED_VNC_USERNAME);
-            registry.add("embedded.selenium.vnc.password", () -> DEFINED_VNC_PASSWORD);
-            registry.add("embedded.selenium.vnc.recording-dir", () -> properties.getVnc().getRecordingDir());
-            registry.add("embedded.selenium.vnc.mode", () -> properties.getVnc().getMode());
-            registry.add("embedded.selenium.dockerhost", () -> getHostName(selenium));
-            registry.add("embedded.selenium.networkAlias", () -> SELENIUM_NETWORK_ALIAS);
-            log.info("Started Selenium server. Connection details: port={}, host={}, vnc.port={}, vnc.host={}, vnc.username={}, vnc.password={}, vnc.recording-dir={}, vnc.mode={}, dockerhost={}, networkAlias={}",
-                seleniumAddress.getPort(), seleniumAddress.getHost(), vncURI.getPort(), vncURI.getHost(),
-                DEFINED_VNC_USERNAME, DEFINED_VNC_PASSWORD, properties.getVnc().getRecordingDir(), properties.getVnc().getMode(),
-                getHostName(selenium), SELENIUM_NETWORK_ALIAS);
-        };
     }
 }
