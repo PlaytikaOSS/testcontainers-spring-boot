@@ -25,6 +25,6 @@ public class PostgreSQLProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "postgres:17-alpine";
+        return "postgres:18-alpine";
     }
 }
