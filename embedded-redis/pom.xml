@@ -15,7 +15,7 @@
     <artifactId>embedded-redis</artifactId>
 
     <properties>
-        <jedis.version>7.2.0</jedis.version>
+        <jedis.version>7.2.1</jedis.version>
     </properties>
 
     <dependencies>
