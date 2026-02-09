@@ -37,7 +37,7 @@
 * `embedded.mariadb.toxiproxy.port`
 * `embedded.mariadb.networkAlias`
 * `embedded.mariadb.internalPort`
-* Bean `ToxiproxyContainer.ContainerProxy mariadbContainerProxy`
+* Bean `ToxiproxyClientProxy mariadbContainerProxy`
 
 
 //TODO: example missing

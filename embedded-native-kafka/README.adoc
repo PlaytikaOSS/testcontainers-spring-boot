@@ -41,6 +41,55 @@ By default, to your projects `target` folder. You can configure binding using pr
 * `embedded.kafka.host`
 * `embedded.kafka.port`
 
+==== Toxiproxy Support
+
+The module supports https://github.com/Shopify/toxiproxy[Toxiproxy] for simulating network conditions.
+
+To enable Toxiproxy for native Kafka:
+
+[source,properties]
+----
+embedded.toxiproxy.proxies.kafka.enabled=true
+----
+
+This will create a proxy between your test and the Kafka container, allowing you to simulate various network conditions.
+
+===== Produces (when Toxiproxy is enabled)
+
+* `embedded.kafka.toxiproxy.bootstrapServers` - Proxied bootstrap servers
+* `embedded.kafka.toxiproxy.brokerList` - Same as bootstrapServers for compatibility
+* `embedded.kafka.toxiproxy.host` - Toxiproxy host
+* `embedded.kafka.toxiproxy.port` - Toxiproxy port  
+* `embedded.kafka.toxiproxy.proxyName` - Name of the proxy for programmatic access
+
+===== Example with Toxiproxy
+
+[source,java]
+----
+@SpringBootTest
+@TestPropertySource(properties = {
+    "embedded.toxiproxy.proxies.kafka.enabled=true"
+})
+class NativeKafkaWithToxiproxyTest {
+    
+    @Value("${embedded.kafka.toxiproxy.bootstrapServers}")
+    String proxiedBootstrapServers;
+    
+    @Autowired(required = false)
+    @Qualifier("nativeKafkaContainerProxy")
+    ToxiproxyClientProxy proxy;
+    
+    @Test
+    void testWithLatency() {
+        // Add 500ms latency
+        proxy.toxics()
+            .latency("latency", ToxicDirection.DOWNSTREAM, 500);
+        
+        // Test Kafka with network latency
+    }
+}
+----
+
 ==== Example configuration
 
 .`embedded-native-kafka` configuration (via `bootstrap.properties`)
