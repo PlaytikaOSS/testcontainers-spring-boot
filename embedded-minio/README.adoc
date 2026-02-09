@@ -39,6 +39,6 @@
 * `embedded.minio.networkAlias`
 * `embedded.minio.internalPort`
 * `embedded.minio.internalConsolePort`
-* Bean `ToxiproxyClientProxy minioContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy minioContainerProxy`
 
 //TODO: example missing

@@ -2,24 +2,17 @@ package com.playtika.testcontainer.nativekafka.configuration;
 
 import com.playtika.testcontainer.nativekafka.NativeKafkaTopicsConfigurer;
 import com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties;
-import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
-import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
-import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
-import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
-import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -33,7 +26,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -42,7 +35,6 @@ import static com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfi
 
 @Slf4j
 @Configuration
-@AutoConfigureAfter(EmbeddedToxiProxyBootstrapConfiguration.class)
 @ConditionalOnProperty(value = "embedded.kafka.enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(value = {NativeKafkaConfigurationProperties.class})
 public class NativeKafkaContainerConfiguration {
@@ -60,16 +52,16 @@ public class NativeKafkaContainerConfiguration {
     @Bean(name = NATIVE_KAFKA_BEAN_NAME, destroyMethod = "stop")
     public GenericContainer<?> nativeKafka(
             NativeKafkaConfigurationProperties nativeKafkaProperties,
-            Optional<Network> network) {
+            ConfigurableEnvironment environment,
+            Network network) {
 
         DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage())
                 .asCompatibleSubstituteFor("confluentinc/cp-kafka");
 
         KafkaContainer nativeKafka = new KafkaContainer(nativeKafkaImageName)
+                .withNetwork(network)
                 .withNetworkAliases(NATIVE_KAFKA_HOST_NAME)
                 .withExtraHost(NATIVE_KAFKA_HOST_NAME, "127.0.0.1");
-
-        network.ifPresent(nativeKafka::withNetwork);
 
         // Configure file system bind if enabled
         configureFileSystemBind(nativeKafkaProperties, nativeKafka);
@@ -77,68 +69,18 @@ public class NativeKafkaContainerConfiguration {
         // Configure and start the container using common utilities
         nativeKafka = (KafkaContainer) configureCommonsAndStart(nativeKafka, nativeKafkaProperties, log);
 
+        // Register environment properties
+        registerNativeKafkaEnvironment(nativeKafka, environment, nativeKafkaProperties);
+
         return nativeKafka;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public NativeKafkaTopicsConfigurer nativeKafkaTopicsConfigurer(
-            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
+            GenericContainer<?> nativeKafka,
             NativeKafkaConfigurationProperties nativeKafkaProperties) {
         return new NativeKafkaTopicsConfigurer(nativeKafka, nativeKafkaProperties);
-    }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "kafka")
-    ToxiproxyClientProxy nativeKafkaContainerProxy(
-            ToxiproxyClient toxiproxyClient,
-            ToxiproxyContainer toxiproxyContainer,
-            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
-            NativeKafkaConfigurationProperties properties) {
-
-        return ToxiproxyHelper.createProxy(
-                toxiproxyClient,
-                toxiproxyContainer,
-                nativeKafka,
-                properties.getKafkaPort(),
-                "native-kafka");
-    }
-
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "kafka")
-    public DynamicPropertyRegistrar nativeKafkaToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("nativeKafkaContainerProxy") ToxiproxyClientProxy proxy) {
-
-        return registry -> {
-            String proxyBootstrapServers = String.format("%s:%d",
-                    proxy.getContainerIpAddress(), proxy.getProxyPort());
-
-            registry.add("embedded.kafka.toxiproxy.bootstrapServers", () -> proxyBootstrapServers);
-            registry.add("embedded.kafka.toxiproxy.brokerList", () -> proxyBootstrapServers);
-            registry.add("embedded.kafka.toxiproxy.host", proxy::getContainerIpAddress);
-            registry.add("embedded.kafka.toxiproxy.port", proxy::getProxyPort);
-            registry.add("embedded.kafka.toxiproxy.proxyName", proxy::getName);
-        };
-    }
-
-    @Bean
-    public DynamicPropertyRegistrar nativeKafkaDynamicPropertyRegistrar(
-            @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka,
-            NativeKafkaConfigurationProperties nativeKafkaProperties) {
-        return registry -> {
-            String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
-            String host = nativeKafka.getHost();
-            Integer port = nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort());
-
-            registry.add("embedded.kafka.bootstrapServers", () -> bootstrapServers);
-            registry.add("embedded.kafka.brokerList", () -> bootstrapServers);
-            registry.add("embedded.kafka.networkAlias", () -> NATIVE_KAFKA_HOST_NAME);
-            registry.add("embedded.kafka.host", () -> host);
-            registry.add("embedded.kafka.port", () -> port);
-
-            log.info("Started native kafka broker. Connection details: bootstrapServers={}, host={}, port={}, networkAlias={}",
-                    bootstrapServers, host, port, NATIVE_KAFKA_HOST_NAME);
-        };
     }
 
     private void configureFileSystemBind(NativeKafkaConfigurationProperties nativeKafkaProperties, KafkaContainer nativeKafka) {
@@ -154,6 +96,24 @@ public class NativeKafkaContainerConfiguration {
         }
     }
 
+    private void registerNativeKafkaEnvironment(GenericContainer<?> nativeKafka,
+                                              ConfigurableEnvironment environment,
+                                              NativeKafkaConfigurationProperties nativeKafkaProperties) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+
+        String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
+        map.put("embedded.kafka.bootstrapServers", bootstrapServers);
+        map.put("embedded.kafka.brokerList", bootstrapServers);
+        map.put("embedded.kafka.networkAlias", NATIVE_KAFKA_HOST_NAME);
+        map.put("embedded.kafka.host", nativeKafka.getHost());
+        map.put("embedded.kafka.port", nativeKafka.getMappedPort(nativeKafkaProperties.getKafkaPort()));
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedKafkaInfo", map);
+
+        log.info("Started native kafka broker. Connection details: {}", map);
+
+        environment.getPropertySources().addFirst(propertySource);
+    }
 
     private void createPathAndParentOrMakeWritable(Path path) {
         Stream.of(path.getParent(), path).forEach(p -> {

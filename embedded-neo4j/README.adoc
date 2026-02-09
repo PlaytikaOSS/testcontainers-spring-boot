@@ -36,6 +36,6 @@
 * `embedded.neo4j.internalHttpsPort`
 * `embedded.neo4j.internalHttpPort`
 * `embedded.neo4j.internalBoltPort`
-* Bean `ToxiproxyClientProxy neo4jContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy neo4jContainerProxy`
 
 //TODO: example missing

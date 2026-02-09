@@ -33,4 +33,4 @@
 * `embedded.cockroach.toxiproxy.port`
 * `embedded.cockroach.networkAlias`
 * `embedded.cockroach.internalPort`
-* Bean `ToxiproxyClientProxy cockroachContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy cockroachContainerProxy`

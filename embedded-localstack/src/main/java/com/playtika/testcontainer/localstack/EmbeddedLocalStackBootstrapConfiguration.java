@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.localstack;
 
+import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
@@ -15,11 +16,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -28,7 +30,7 @@ import static com.playtika.testcontainer.localstack.LocalStackProperties.BEAN_NA
 @Slf4j
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
-@AutoConfigureAfter(name = "com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration")
+@AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
 @ConditionalOnProperty(name = "embedded.localstack.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(LocalStackProperties.class)
 public class EmbeddedLocalStackBootstrapConfiguration {
@@ -40,13 +42,18 @@ public class EmbeddedLocalStackBootstrapConfiguration {
     ToxiproxyClientProxy localstackContainerProxy(ToxiproxyClient toxiproxyClient,
                                                    ToxiproxyContainer toxiproxyContainer,
                                                    @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
-                                                   LocalStackProperties properties) {
-        return ToxiproxyHelper.createProxy(
+                                                   LocalStackProperties properties,
+                                                   ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 localStack,
                 properties.getEdgePort(),
                 "localstack");
+
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.localstack", "embeddedLocalstackToxiproxyInfo", environment);
+
+        return proxy;
     }
 
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
@@ -69,37 +76,39 @@ public class EmbeddedLocalStackBootstrapConfiguration {
             localStackContainer.withServices(service);
         }
         localStackContainer = (LocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
+        registerLocalStackEnvironment(localStackContainer, environment, properties);
         return localStackContainer;
     }
 
+    private void registerLocalStackEnvironment(LocalStackContainer localStack,
+                                               ConfigurableEnvironment environment,
+                                               LocalStackProperties properties) {
+        String host = localStack.getHost();
+
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("embedded.localstack.host", host);
+        map.put("embedded.localstack.endpointUrl", localStack.getEndpoint().toString());
+        map.put("embedded.localstack.accessKey", localStack.getAccessKey());
+        map.put("embedded.localstack.secretAccessKey", localStack.getSecretKey());
+        map.put("embedded.localstack.networkAlias", LOCALSTACK_NETWORK_ALIAS);
+        map.put("embedded.localstack.internalEdgePort", properties.getEdgePort());
+        String prefix = "embedded.localstack.";
+        Integer mappedPort = localStack.getMappedPort(properties.getEdgePort());
+        for (LocalStackContainer.Service service : properties.services) {
+            map.put(prefix + service, localStack.getEndpointOverride(service));
+            map.put(prefix + service + ".port", mappedPort);
+        }
+        log.info("Started Localstack. Connection details: {}", map);
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedLocalStackInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
+        setSystemProperties(localStack);
+    }
 
     private static void setSystemProperties(LocalStackContainer localStack) {
         System.setProperty("aws.endpointUrl", localStack.getEndpoint().toString());
         System.setProperty("aws.accessKeyId", localStack.getAccessKey());
         System.setProperty("aws.secretAccessKey", localStack.getSecretKey());
-    }
-
-    @Bean
-    public DynamicPropertyRegistrar localStackDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_LOCALSTACK) LocalStackContainer localStack,
-            LocalStackProperties properties) {
-        return registry -> {
-            String host = localStack.getHost();
-            Integer mappedPort = localStack.getMappedPort(properties.getEdgePort());
-            registry.add("embedded.localstack.host", () -> host);
-            registry.add("embedded.localstack.port", () -> mappedPort);
-            registry.add("embedded.localstack.endpointUrl", () -> localStack.getEndpoint().toString());
-            registry.add("embedded.localstack.accessKey", localStack::getAccessKey);
-            registry.add("embedded.localstack.secretAccessKey", localStack::getSecretKey);
-            registry.add("embedded.localstack.networkAlias", () -> LOCALSTACK_NETWORK_ALIAS);
-            registry.add("embedded.localstack.internalPort", properties::getEdgePort);
-            registry.add("embedded.localstack.internalEdgePort", properties::getEdgePort);
-            for (LocalStackContainer.Service service : properties.services) {
-                registry.add("embedded.localstack." + service, () -> localStack.getEndpointOverride(service));
-                registry.add("embedded.localstack." + service + ".port", () -> mappedPort);
-            }
-            setSystemProperties(localStack);
-        };
     }
 
 }

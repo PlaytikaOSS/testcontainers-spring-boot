@@ -10,11 +10,11 @@ import org.neo4j.driver.Session;
 import org.neo4j.driver.types.Node;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -47,26 +47,14 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
     @Autowired
     ToxiproxyClientProxy neo4jContainerProxy;
 
-    @Value("${embedded.neo4j.httpsPort}")
-    String neo4jHttpsPort;
-
-    @Value("${embedded.neo4j.boltPort}")
-    String neo4jBoltPort;
-
-    @Value("${embedded.neo4j.host}")
-    String neo4jHost;
-
-    @Value("${embedded.neo4j.user}")
-    String neo4jUser;
-
-    @Value("${embedded.neo4j.password}")
-    String neo4jPassword;
-
     @Configuration
     @EnableAutoConfiguration
     @EnableNeo4jRepositories
     static class TestConfiguration {
     }
+
+    @Autowired
+    ConfigurableEnvironment environment;
 
 
     @Test
@@ -131,10 +119,10 @@ public class EmbeddedNeo4JBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(neo4jHttpsPort).isNotEmpty();
-        assertThat(neo4jBoltPort).isNotEmpty();
-        assertThat(neo4jHost).isNotEmpty();
-        assertThat(neo4jUser).isNotEmpty();
-        assertThat(neo4jPassword).isNotEmpty();
+        assertThat(environment.getProperty("embedded.neo4j.httpsPort")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.neo4j.boltPort")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.neo4j.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.neo4j.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.neo4j.password")).isNotEmpty();
     }
 }

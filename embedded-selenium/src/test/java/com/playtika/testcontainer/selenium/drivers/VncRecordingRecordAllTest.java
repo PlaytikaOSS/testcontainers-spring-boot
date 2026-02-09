@@ -3,7 +3,6 @@ package com.playtika.testcontainer.selenium.drivers;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.File;
@@ -20,12 +19,6 @@ public class VncRecordingRecordAllTest extends BaseEmbeddedSeleniumTest {
     @Autowired
     public ChromeOptions options;
 
-    @Value("${embedded.selenium.vnc.mode}")
-    String seleniumVncMode;
-
-    @Value("${embedded.selenium.vnc.recording-dir:}")
-    String seleniumVncRecordingDir;
-
     @Test
     public void testThatIsChromium() {
         assertThat(getBrowserName()).isEqualTo("chrome");
@@ -33,19 +26,16 @@ public class VncRecordingRecordAllTest extends BaseEmbeddedSeleniumTest {
 
     @Test
     public void propertiesAreSet() {
-        assertThat(seleniumPort).isNotEmpty();
-        assertThat(seleniumHost).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.host")).isNotEmpty();
 
-        assertThat(seleniumVncHost).isNotEmpty();
-        assertThat(seleniumVncPort).isNotEmpty();
-        assertThat(seleniumVncUsername).isNotEmpty();
-        assertThat(seleniumVncPassword).isNotEmpty();
-        assertThat(seleniumVncMode).isEqualTo("RECORD_ALL");
-
-        // Only check recording directory if it's set
-        if (!seleniumVncRecordingDir.isEmpty()) {
-            File recordDir = new File(seleniumVncRecordingDir);
-            assertThat(recordDir).exists();
-        }
+        assertThat(environment.getProperty("embedded.selenium.vnc.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.username")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.mode")).isEqualTo("RECORD_ALL");
+        assertThat(environment.getProperty("embedded.selenium.vnc.recording-dir")).isNotEmpty();
+        File recordDir = new File(environment.getProperty("embedded.selenium.vnc.recording-dir"));
+        assertThat(recordDir).exists();
     }
 }

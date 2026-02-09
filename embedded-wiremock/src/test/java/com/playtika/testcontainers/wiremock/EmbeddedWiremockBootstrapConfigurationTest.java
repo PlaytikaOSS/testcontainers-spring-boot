@@ -5,10 +5,12 @@ import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -26,17 +28,14 @@ import static org.hamcrest.Matchers.equalTo;
 )
 public class EmbeddedWiremockBootstrapConfigurationTest {
 
+    @Autowired
+    ConfigurableEnvironment environment;
+
     @Value("${embedded.wiremock.host}")
     String wiremockHost;
 
     @Value("${embedded.wiremock.port}")
     int wiremockPort;
-
-    @Value("${embedded.wiremock.networkAlias}")
-    String wiremockNetworkAlias;
-
-    @Value("${embedded.wiremock.internalPort}")
-    String wiremockInternalPort;
 
     @BeforeEach
     void setUp() {
@@ -60,10 +59,10 @@ public class EmbeddedWiremockBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(String.valueOf(wiremockPort)).isNotEmpty();
-        assertThat(wiremockHost).isNotEmpty();
-        assertThat(wiremockNetworkAlias).isNotEmpty();
-        assertThat(wiremockInternalPort).isNotEmpty();
+        assertThat(environment.getProperty("embedded.wiremock.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.wiremock.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.wiremock.networkAlias")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.wiremock.internalPort")).isNotEmpty();
     }
 
     @EnableAutoConfiguration

@@ -35,7 +35,7 @@
 * `embedded.clickhouse.toxiproxy.port`
 * `embedded.clickhouse.networkAlias`
 * `embedded.clickhouse.internalPort`
-* Bean `ToxiproxyClientProxy clickhouseContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy clickhouseContainerProxy`
 
 ==== Example
 

@@ -33,7 +33,7 @@
 * `embedded.nats.internalClientPort`
 * `embedded.nats.internalHttpMonitorPort`
 * `embedded.nats.internalRouteConnectionsPort`
-* Bean `ToxiproxyClientProxy natsContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy natsContainerProxy`
 
 ==== Notes
 
@@ -57,7 +57,7 @@ embedded.toxiproxy.proxies.nats.enabled=true
 [source,java]
 ----
 @Autowired
-ToxiproxyClientProxy natsContainerProxy;
+ToxiproxyContainer.ContainerProxy natsContainerProxy;
 ----
 
 

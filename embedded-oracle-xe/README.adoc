@@ -34,6 +34,6 @@
 * `embedded.oracle.toxiproxy.port`
 * `embedded.oracle.networkAlias`
 * `embedded.oracle.internalPort`
-* Bean `ToxiproxyClientProxy oracleContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy oracleContainerProxy`
 
 // TODO: missing example

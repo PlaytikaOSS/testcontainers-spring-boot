@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,23 +23,8 @@ public abstract class BaseEmbeddedSeleniumTest {
     @Autowired
     protected BrowserWebDriverContainer container;
 
-    @Value("${embedded.selenium.port}")
-    protected String seleniumPort;
-
-    @Value("${embedded.selenium.host}")
-    protected String seleniumHost;
-
-    @Value("${embedded.selenium.vnc.host}")
-    protected String seleniumVncHost;
-
-    @Value("${embedded.selenium.vnc.port}")
-    protected String seleniumVncPort;
-
-    @Value("${embedded.selenium.vnc.username}")
-    protected String seleniumVncUsername;
-
-    @Value("${embedded.selenium.vnc.password}")
-    protected String seleniumVncPassword;
+    @Autowired
+    protected ConfigurableEnvironment environment;
 
     @LocalServerPort
     private int port;
@@ -61,13 +46,13 @@ public abstract class BaseEmbeddedSeleniumTest {
         driver.findElement(By.linkText("Test Link")).click();
         assertThat(driver.getTitle()).isEqualTo("Test Link Page");
 
-        assertThat(seleniumPort).isNotEmpty();
-        assertThat(seleniumHost).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.host")).isNotEmpty();
 
-        assertThat(seleniumVncHost).isNotEmpty();
-        assertThat(seleniumVncPort).isNotEmpty();
-        assertThat(seleniumVncUsername).isNotEmpty();
-        assertThat(seleniumVncPassword).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.username")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.selenium.vnc.password")).isNotEmpty();
     }
 
     private void getIndexPage(RemoteWebDriver driver) {

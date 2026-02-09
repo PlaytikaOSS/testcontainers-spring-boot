@@ -1,7 +1,7 @@
 {
   "realm": "test-realm",
   "enabled": true,
-  "sslRequired": "none",
+  "sslRequired": "external",
   "clients": [
     {
       "id": "9b60057a-9bb1-44dd-8851-2794de9369ab",

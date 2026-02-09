@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    driver-class-name: com.ibm.db2.jcc.DB2Driver
-    password: ${embedded.db2.password}
-    url: jdbc:db2://${embedded.db2.host}:${embedded.db2.port}/${embedded.db2.database}
-    username: ${embedded.db2.user}

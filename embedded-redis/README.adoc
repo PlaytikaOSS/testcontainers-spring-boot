@@ -34,6 +34,6 @@
 * `embedded.redis.toxiproxy.host`
 * `embedded.redis.toxiproxy.port`
 * `embedded.redis.networkAlias`
-* Bean `ToxiproxyClientProxy redisContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy redisContainerProxy`
 
 //TODO: example missing

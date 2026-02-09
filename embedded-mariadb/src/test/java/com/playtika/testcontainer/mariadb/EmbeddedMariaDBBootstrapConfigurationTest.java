@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -41,23 +42,8 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Value("${embedded.mariadb.port}")
-    String mariadbPort;
-
-    @Value("${embedded.mariadb.host}")
-    String mariadbHost;
-
-    @Value("${embedded.mariadb.schema}")
-    String mariadbSchema;
-
-    @Value("${embedded.mariadb.user}")
-    String mariadbUser;
-
-    @Value("${embedded.mariadb.password}")
-    String mariadbPassword;
-
-    @Value("${embedded.mariadb.init-script-path}")
-    String mariadbInitScriptPath;
+    @Autowired
+    ConfigurableEnvironment environment;
 
     @Autowired
     ToxiproxyClientProxy mariadbContainerProxy;
@@ -98,12 +84,12 @@ public class EmbeddedMariaDBBootstrapConfigurationTest {
 
     @Test
     public void propertiesAreAvailable() {
-        assertThat(mariadbPort).isNotEmpty();
-        assertThat(mariadbHost).isNotEmpty();
-        assertThat(mariadbSchema).isNotEmpty();
-        assertThat(mariadbUser).isNotEmpty();
-        assertThat(mariadbPassword).isNotEmpty();
-        assertThat(mariadbInitScriptPath).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.port")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.host")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.schema")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.user")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.password")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.mariadb.init-script-path")).isNotEmpty();
     }
 
     @Test

@@ -39,7 +39,7 @@
 * `embedded.postgresql.toxiproxy.port`
 * `embedded.postgresql.networkAlias`
 * `embedded.postgresql.internalPort`
-* Bean `ToxiproxyClientProxy postgresqlContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy postgresqlContainerProxy`
 
 ==== Example (Spring Boot)
 

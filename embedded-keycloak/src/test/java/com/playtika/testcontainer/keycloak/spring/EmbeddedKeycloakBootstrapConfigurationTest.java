@@ -1,12 +1,13 @@
 package com.playtika.testcontainer.keycloak.spring;
 
+import com.playtika.testcontainer.keycloak.KeycloakContainer;
 import com.playtika.testcontainer.keycloak.util.KeyCloakToken;
-import com.playtika.testcontainer.keycloak.util.KeycloakClient;
-import com.playtika.testcontainer.keycloak.util.KeycloakClientTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import static com.playtika.testcontainer.keycloak.KeycloakProperties.DEFAULT_REALM;
+import static com.playtika.testcontainer.keycloak.util.KeycloakClient.newKeycloakClient;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -22,13 +24,17 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 
 @SpringBootTest(
-        classes = {SpringTestApplication.class, KeycloakClientTestConfiguration.class},
+        classes = SpringTestApplication.class,
         webEnvironment = RANDOM_PORT)
-@ActiveProfiles({"enabled", "realm", "test"})
+@ActiveProfiles({"enabled", "realm"})
 public class EmbeddedKeycloakBootstrapConfigurationTest {
 
     @Autowired
-    private KeycloakClient keycloakClient;
+    private Environment environment;
+    @Autowired
+    private ConfigurableListableBeanFactory beanFactory;
+    @Autowired
+    private KeycloakContainer keycloakContainer;
 
     @LocalServerPort
     private int httpPort;
@@ -39,13 +45,26 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
     }
 
     @Test
+    public void propertiesAreAvailable() {
+        assertThat(environment.getProperty("embedded.keycloak.auth-server-url"))
+                .isEqualTo(format("http://%s:%d/", keycloakContainer.getHost(),
+                        keycloakContainer.getHttpPort()));
+
+        assertThat(environment.getProperty("embedded.keycloak.host"))
+                .isEqualTo(keycloakContainer.getIp());
+
+        assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
+                .isEqualTo(keycloakContainer.getHttpPort());
+    }
+
+    @Test
     public void shouldGetMasterRealmInfoFromKeycloak() {
-        String realmInfo = keycloakClient.getRealmInfo(DEFAULT_REALM).getRealm();
+        String realmInfo = newKeycloakClient(environment).getRealmInfo(DEFAULT_REALM).getRealm();
         assertThat(realmInfo).isEqualTo(DEFAULT_REALM);
     }
 
     private String callSecuredPingEndpoint() {
-        KeyCloakToken keyCloakToken = keycloakClient.keycloakToken();
+        KeyCloakToken keyCloakToken = newKeycloakClient(environment).keycloakToken();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, format("Bearer %s", keyCloakToken.getAccessToken()));

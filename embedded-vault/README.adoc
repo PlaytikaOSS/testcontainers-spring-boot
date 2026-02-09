@@ -37,11 +37,11 @@
 * `embedded.vault.toxiproxy.port`
 * `embedded.vault.networkAlias`
 * `embedded.vault.internalPort`
-* Bean `ToxiproxyClientProxy vaultContainerProxy`
+* Bean `ToxiproxyContainer.ContainerProxy vaultContainerProxy`
 
 ==== Example
 
-To auto-configure `spring-cloud-vault-config` use these properties in your test `application-test.yaml`:
+To auto-configure `spring-cloud-vault-config` use these properties in your test `application.yaml`:
 
 ./src/test/resources/application.yaml
 [source,yaml]

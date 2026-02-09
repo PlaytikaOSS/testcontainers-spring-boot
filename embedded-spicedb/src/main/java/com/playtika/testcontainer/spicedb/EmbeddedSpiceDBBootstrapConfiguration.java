@@ -15,7 +15,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistrar;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -23,10 +24,12 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.spicedb.SpiceDBProperties.BEAN_NAME_EMBEDDED_SPICEDB;
+import static com.playtika.testcontainer.spicedb.SpiceDBProperties.BEAN_NAME_EMBEDDED_SPICEDB_TOXI_PROXY;
 
 @Slf4j
 @Configuration
@@ -38,59 +41,63 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
 
     private static final String NATS_NETWORK_ALIAS = "spicedb.testcontainer.docker";
 
-    @Bean
+    @Bean(name = BEAN_NAME_EMBEDDED_SPICEDB_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "spicedb")
     ToxiproxyClientProxy spicedbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
                                                 @Qualifier(BEAN_NAME_EMBEDDED_SPICEDB) GenericContainer<?> spicedbContainer,
-                                                SpiceDBProperties properties) {
-
-        return ToxiproxyHelper.createProxy(
+                                                SpiceDBProperties properties,
+                                                ConfigurableEnvironment environment) {
+        ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 spicedbContainer,
                 properties.getPort(),
                 "spicedb");
+
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.spicedb", "embeddedSpicedbToxiproxyInfo", environment);
+
+        return proxy;
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_SPICEDB, destroyMethod = "stop")
-    public GenericContainer<?> spicedb(SpiceDBProperties properties,
-                                       Optional<Network> network) {
+    public GenericContainer<?> spicedbContainer(ConfigurableEnvironment environment,
+                                                SpiceDBProperties properties,
+                                                Optional<Network> network) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
-            .withStrategy(new HostPortWaitStrategy())
-            .withStartupTimeout(properties.getTimeoutDuration());
+                .withStrategy(new HostPortWaitStrategy())
+                .withStartupTimeout(properties.getTimeoutDuration());
 
         GenericContainer<?> spicedbContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-            .withExposedPorts(properties.getPort())
-            .withCommand("serve", "--grpc-preshared-key", properties.getPresharedKey(), "--skip-release-check")
-            .waitingFor(waitStrategy)
-            .withNetworkAliases(NATS_NETWORK_ALIAS);
+                .withExposedPorts(properties.getPort())
+                .withCommand("serve", "--grpc-preshared-key", properties.getPresharedKey(), "--skip-release-check")
+                .waitingFor(waitStrategy)
+                .withNetworkAliases(NATS_NETWORK_ALIAS);
 
         network.ifPresent(spicedbContainer::withNetwork);
 
         spicedbContainer = configureCommonsAndStart(spicedbContainer, properties, log);
 
+        registerNatsEnvironment(spicedbContainer, environment, properties);
         return spicedbContainer;
     }
 
+    private void registerNatsEnvironment(GenericContainer<?> natsContainer,
+                                         ConfigurableEnvironment environment,
+                                         SpiceDBProperties properties) {
+        Integer clientMappedPort = natsContainer.getMappedPort(properties.getPort());
+        String host = natsContainer.getHost();
 
-    @Bean
-    public DynamicPropertyRegistrar spicedbDynamicPropertyRegistrar(
-            @Qualifier(BEAN_NAME_EMBEDDED_SPICEDB) GenericContainer<?> spicedb,
-            SpiceDBProperties properties) {
-        return registry -> {
-            registry.add("embedded.spicedb.host", spicedb::getHost);
-            registry.add("embedded.spicedb.port", () -> spicedb.getMappedPort(properties.getPort()));
-            registry.add("embedded.spicedb.networkAlias", () -> "spicedb.testcontainer.docker");
-            registry.add("embedded.spicedb.token", properties::getPresharedKey);
-            registry.add("embedded.spicedb.internalPort", properties::getPort);
-        };
-    }
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
-    @Bean
-    @ConditionalOnToxiProxyEnabled(module = "spicedb")
-    public DynamicPropertyRegistrar spicedbToxiProxyDynamicPropertyRegistrar(
-            @Qualifier("spicedbContainerProxy") ToxiproxyClientProxy proxy) {
-        return ToxiproxyHelper.createToxiProxyDynamicPropertyRegistrar(proxy, "embedded.spicedb");
+        map.put("embedded.spicedb.host", host);
+        map.put("embedded.spicedb.port", clientMappedPort);
+        map.put("embedded.spicedb.token", properties.getPresharedKey());
+        map.put("embedded.spicedb.networkAlias", NATS_NETWORK_ALIAS);
+
+        log.info("Started SpiceDb server. Connection details {}", map);
+
+        MapPropertySource propertySource = new MapPropertySource("embeddedSpicedbInfo", map);
+        environment.getPropertySources().addFirst(propertySource);
     }
 }
