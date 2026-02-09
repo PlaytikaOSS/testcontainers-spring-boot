@@ -38,7 +38,7 @@
 * `embedded.opensearch.networkAlias`
 * `embedded.opensearch.internalHttpPort`
 * `embedded.opensearch.internalTransportPort`
-* Bean `ToxiproxyContainer.ContainerProxy opensearchContainerProxy`
+* Bean `ToxiproxyClientProxy opensearchContainerProxy`
 
 
 ==== Example

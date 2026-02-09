@@ -34,6 +34,6 @@
 * `embedded.keydb.toxiproxy.host`
 * `embedded.keydb.toxiproxy.port`
 * `embedded.keydb.networkAlias`
-* Bean `ToxiproxyContainer.ContainerProxy keyDbContainerProxy`
+* Bean `ToxiproxyClientProxy keyDbContainerProxy`
 
 //TODO: example missing

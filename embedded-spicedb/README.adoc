@@ -29,4 +29,4 @@
 * `embedded.spicedb.toxiproxy.host`
 * `embedded.spicedb.toxiproxy.port`
 * `embedded.spicedb.networkAlias`
-* Bean `ToxiproxyContainer.ContainerProxy spicedbContainerProxy`
+* Bean `ToxiproxyClientProxy spicedbContainerProxy`
