@@ -14,7 +14,7 @@
     <artifactId>embedded-nats</artifactId>
 
     <properties>
-        <jnats.version>2.25.1</jnats.version>
+        <jnats.version>2.25.2</jnats.version>
     </properties>
 
     <dependencies>
