@@ -20,6 +20,6 @@ public class K3sProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "rancher/k3s:v1.35.0-k3s1";
+        return "rancher/k3s:v1.35.1-k3s1";
     }
 }
