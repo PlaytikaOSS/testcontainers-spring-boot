@@ -1,16 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: "maven"
-    directory: "/"
-    target-branch: "develop"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 50
-    ignore:
-      - dependency-name: "com.amazonaws:*"
-        update-types: ["version-update:semver-patch"]
-      - dependency-name: "software.amazon.awssdk:*"
-        update-types: ["version-update:semver-patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
     target-branch: "develop"
@@ -18,7 +7,3 @@ updates:
       - "housekeeping"
     schedule:
       interval: "monthly"
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
