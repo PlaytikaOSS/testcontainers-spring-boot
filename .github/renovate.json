@@ -11,7 +11,7 @@
     "before 8am"
   ],
   "labels": [
-    "docker-update-images"
+    "dependencies"
   ],
   "platformAutomerge": true,
   "customManagers": [
@@ -54,13 +54,16 @@
   ],
   "packageRules": [
     {
-      "description": "Automerge minor and patch updates for custom Docker regex managers",
-      "matchManagers": [
-        "custom.regex"
-      ],
+      "description": "Apply specific label for all Docker-related updates",
       "matchDatasources": [
         "docker"
       ],
+      "labels": [
+        "docker-update-images"
+      ]
+    },
+    {
+      "description": "Automerge minor and patch updates universally",
       "matchUpdateTypes": [
         "minor",
         "patch",
