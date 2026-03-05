@@ -15,7 +15,7 @@
     <artifactId>embedded-native-kafka</artifactId>
 
     <properties>
-        <kafka-clients.version>4.1.1</kafka-clients.version>
+        <kafka-clients.version>4.2.0</kafka-clients.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
     </properties>
 
