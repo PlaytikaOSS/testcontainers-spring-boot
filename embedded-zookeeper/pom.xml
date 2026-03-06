@@ -14,7 +14,7 @@
     <artifactId>embedded-zookeeper</artifactId>
 
     <properties>
-        <zookeeper-client.version>3.9.4</zookeeper-client.version>
+        <zookeeper-client.version>3.9.5</zookeeper-client.version>
     </properties>
 
     <dependencies>
