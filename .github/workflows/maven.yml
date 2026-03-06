@@ -64,9 +64,8 @@ jobs:
             --no-snapshot-updates \
             --batch-mode \
             --no-transfer-progress \
-            -Dgib.enabled=true \
             -Dgib.referenceBranch=$BASE_REF \
-            -Dgib.buildDownstream=true
+            -Dgib.buildDownstream=always
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
