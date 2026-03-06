@@ -16,7 +16,7 @@ on:
       - support/3.0.X
 
 jobs:
-  build-jdk8:
+  build-jdk21:
     runs-on: ubuntu-latest
     name: Build project
     concurrency:
@@ -27,20 +27,47 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Required by GIB to calculate Git diffs
+
       - name: Cache Maven packages
         uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
           distribution: 'corretto'
           java-version: '21'
+
+      - name: Determine GIB Reference
+        id: gib-base
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # For PRs, compare against the remote target branch
+            echo "BASE_REF=refs/remotes/origin/${{ github.base_ref }}" >> $GITHUB_ENV
+          else
+            # For pushes, compare against the previous commit
+            echo "BASE_REF=${{ github.event.before }}" >> $GITHUB_ENV
+          fi
+
       - name: Build with Maven
-        run: ./mvnw -version && whoami && umask -S && umask a+rw && umask -S && ./mvnw clean verify -P docker-clean -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 --no-snapshot-updates --batch-mode --no-transfer-progress
+        run: |
+          ./mvnw -version && whoami && umask -S && umask a+rw && umask -S && \
+          ./mvnw clean verify \
+            -P docker-clean \
+            -Dhttp.keepAlive=false \
+            -Dmaven.wagon.http.pool=false \
+            -Dmaven.wagon.http.retryHandler.count=3 \
+            --no-snapshot-updates \
+            --batch-mode \
+            --no-transfer-progress \
+            -Dgib.enabled=true \
+            -Dgib.referenceBranch=$BASE_REF \
+            -Dgib.buildDownstream=true
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         env:
