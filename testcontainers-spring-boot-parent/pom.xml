@@ -15,7 +15,7 @@
     <description>Parent pom for all embedded testcontainers</description>
 
     <properties>
-        <spring.boot.version>3.5.10</spring.boot.version>
+        <spring.boot.version>3.5.11</spring.boot.version>
         <spring.cloud.version>2025.0.1</spring.cloud.version>
         <spring.cloud.gcp.version>7.4.5</spring.cloud.gcp.version>
         <equalsverifier.version>4.3.1</equalsverifier.version>
