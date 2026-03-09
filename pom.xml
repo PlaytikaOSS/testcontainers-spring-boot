@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>3.1.20</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>testcontainers-spring-boot</name>
@@ -247,7 +247,6 @@
                                         <exclude>log4j:log4j</exclude>
                                         <exclude>org.slf4j:slf4j-log4j12</exclude>
                                         <exclude>org.springframework.boot:spring-boot-starter-logging</exclude>
-                                        <exclude>commons-logging:commons-logging</exclude>
                                         <exclude>ch.qos.logback:logback-core</exclude>
                                         <exclude>ch.qos.logback:logback-classic</exclude>
                                     </excludes>

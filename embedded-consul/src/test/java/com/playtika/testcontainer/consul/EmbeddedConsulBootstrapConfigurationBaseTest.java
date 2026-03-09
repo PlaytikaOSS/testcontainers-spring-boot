@@ -1,6 +1,8 @@
 package com.playtika.testcontainer.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
+import io.vertx.core.Vertx;
+import io.vertx.ext.consul.ConsulClient;
+import io.vertx.ext.consul.ConsulClientOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.testcontainers.containers.GenericContainer;
@@ -13,6 +15,9 @@ public class EmbeddedConsulBootstrapConfigurationBaseTest {
     protected GenericContainer<?> consulContainer;
 
     protected ConsulClient buildClient() {
-        return new ConsulClient(consulContainer.getHost(), consulContainer.getFirstMappedPort());
+        Vertx vertx = Vertx.builder().build();
+        ConsulClientOptions options = new ConsulClientOptions()
+                .setHost(consulContainer.getHost()).setPort(consulContainer.getFirstMappedPort());
+        return ConsulClient.create(vertx, options);
     }
 }

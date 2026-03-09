@@ -1,9 +1,9 @@
 package com.playtika.testcontainer.mssqlserver;
 
-import org.testcontainers.containers.MSSQLServerContainer;
+import org.testcontainers.mssqlserver.MSSQLServerContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public class EmbeddedMSSQLServerContainer extends MSSQLServerContainer<EmbeddedMSSQLServerContainer> {
+public class EmbeddedMSSQLServerContainer extends MSSQLServerContainer {
 
     public EmbeddedMSSQLServerContainer(DockerImageName dockerImageName) {
         super(dockerImageName);

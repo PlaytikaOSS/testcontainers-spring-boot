@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.testcontainers.mssqlserver.MSSQLServerContainer;
 
 import java.util.Map;
 
@@ -23,7 +24,7 @@ class EmbeddedMSSQLServerDependenciesAutoConfigurationTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private EmbeddedMSSQLServerContainer mssqlServerContainer;
+    private MSSQLServerContainer mssqlServerContainer;
 
     @Test
     void injectedJdbs() {

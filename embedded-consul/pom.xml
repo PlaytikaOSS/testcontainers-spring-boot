@@ -6,7 +6,7 @@
   <parent>
     <artifactId>testcontainers-spring-boot-parent</artifactId>
     <groupId>com.playtika.testcontainers</groupId>
-    <version>3.1.20</version>
+    <version>4.0.0-SNAPSHOT</version>
     <relativePath>../testcontainers-spring-boot-parent</relativePath>
   </parent>
 
@@ -14,7 +14,7 @@
   <artifactId>embedded-consul</artifactId>
 
   <properties>
-    <consul-api-version>1.4.5</consul-api-version>
+    <vertx-consul-client-version>5.0.8</vertx-consul-client-version>
   </properties>
 
   <dependencies>
@@ -27,16 +27,14 @@
       <artifactId>embedded-toxiproxy</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.ecwid.consul</groupId>
-      <artifactId>consul-api</artifactId>
-      <version>${consul-api-version}</version>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-consul</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-consul-client</artifactId>
+      <version>${vertx-consul-client-version}</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 

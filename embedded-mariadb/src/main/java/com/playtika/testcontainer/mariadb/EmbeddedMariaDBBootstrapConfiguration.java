@@ -16,9 +16,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.mariadb.MariaDBContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "mariadb")
     ToxiproxyClientProxy mariadbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
-                                                @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) MariaDBContainer mariadbContainer,
+                                                @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer<?> mariadbContainer,
                                                 MariaDBProperties properties,
                                                 ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -61,7 +62,7 @@ public class EmbeddedMariaDBBootstrapConfiguration {
                                     Optional<Network> network) throws Exception {
 
         MariaDBContainer mariadb =
-                new MariaDBContainer<>(ContainerUtils.getDockerImageName(properties))
+                new MariaDBContainer(ContainerUtils.getDockerImageName(properties))
                         .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
