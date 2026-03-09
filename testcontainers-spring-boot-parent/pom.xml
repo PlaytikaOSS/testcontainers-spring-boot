@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,13 +15,15 @@
     <description>Parent pom for all embedded testcontainers</description>
 
     <properties>
-        <spring.boot.version>3.5.11</spring.boot.version>
-        <spring.cloud.version>2025.0.1</spring.cloud.version>
-        <spring.cloud.gcp.version>7.4.5</spring.cloud.gcp.version>
+        <spring.boot.version>4.0.3</spring.boot.version>
+        <spring.cloud.version>2025.1.1</spring.cloud.version>
+        <spring.cloud.gcp.version>8.0.0</spring.cloud.gcp.version>
         <equalsverifier.version>4.4.1</equalsverifier.version>
         <junit-jupiter.version>6.0.3</junit-jupiter.version>
+        <spring.cloud.aws.version>4.0.0</spring.cloud.aws.version>
         <spring.cloud.azure.version>7.0.0</spring.cloud.azure.version>
         <toxiproxy-java.version>2.1.11</toxiproxy-java.version>
+        <rest-assured.version>5.5.6</rest-assured.version>
     </properties>
 
     <dependencyManagement>
@@ -55,6 +57,13 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>io.awspring.cloud</groupId>
+                <artifactId>spring-cloud-aws-dependencies</artifactId>
+                <version>${spring.cloud.aws.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.azure.spring</groupId>
                 <artifactId>spring-cloud-azure-dependencies</artifactId>
                 <version>${spring.cloud.azure.version}</version>
@@ -80,6 +89,13 @@
                 <groupId>eu.rekawek.toxiproxy</groupId>
                 <artifactId>toxiproxy-java</artifactId>
                 <version>${toxiproxy-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured-bom</artifactId>
+                <version>${rest-assured.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
