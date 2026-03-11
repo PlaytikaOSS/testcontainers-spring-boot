@@ -380,3 +380,6 @@ embedded:
 ** mailto:iyova@playtika.com[iyova@playtika.com]
 ** mailto:admitrov@playtika.com[admitrov@playtika.com]
 ** mailto:rkvasnytskyi@playtika.com[rkvasnytskyi@playtika.com]
+
+
+
