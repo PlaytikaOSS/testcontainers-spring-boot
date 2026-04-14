@@ -78,7 +78,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
 
         if (properties.getEnabledPlugins() != null && !properties.getEnabledPlugins().isEmpty()) {
             List<String> command = new ArrayList<>(properties.getEnabledPlugins().size() + 2);
-            command.addAll(Arrays.asList("rabbitmq-plugins", "enable"));
+            command.add("rabbitmq-plugins");
+            command.add("enable");
             command.addAll(properties.getEnabledPlugins());
             rabbitMQ.execInContainer(command.toArray(new String[0]));
         }
