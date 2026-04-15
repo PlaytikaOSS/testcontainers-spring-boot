@@ -252,6 +252,11 @@
                                         <exclude>ch.qos.logback:logback-classic</exclude>
                                     </excludes>
                                 </bannedDependencies>
+                                <requireReleaseDeps>
+                                    <message>SNAPSHOT dependencies are not allowed.</message>
+                                    <onlyWhenRelease>false</onlyWhenRelease>
+                                    <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                                </requireReleaseDeps>
                             </rules>
                         </configuration>
                         <goals>
