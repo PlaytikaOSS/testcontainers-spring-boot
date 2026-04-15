@@ -6,7 +6,7 @@
   "prConcurrentLimit": 20,
   "dependencyDashboard": true,
   "commitBodyTable": true,
-  "rebaseWhen": "auto",
+  "rebaseWhen": "behind-base-branch",
   "schedule": [
     "before 8am"
   ],
