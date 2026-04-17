@@ -26,11 +26,18 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
+    
       - name: Checkout
         uses: actions/checkout@v6
         with:
           ref: ${{github.event.release.target_commitish}}
-          token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -60,6 +67,6 @@ jobs:
         if: ${{ success() }}
         uses: actions-js/push@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.app-token.outputs.token }}
           message: 'Release ${{github.event.release.tag_name}}'
           branch: ${{ github.event.release.target_commitish }}
