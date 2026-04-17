@@ -14,7 +14,7 @@
     <artifactId>embedded-solr</artifactId>
 
     <properties>
-        <solr-solrj.version>9.10.1</solr-solrj.version>
+        <solr-solrj.version>10.0.0</solr-solrj.version>
     </properties>
 
     <dependencies>
