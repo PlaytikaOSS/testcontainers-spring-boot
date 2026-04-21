@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.neo4j.Neo4jContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -59,7 +59,7 @@ public class EmbeddedNeo4jBootstrapConfiguration {
     public Neo4jContainer neo4j(ConfigurableEnvironment environment,
                                 Neo4jProperties properties,
                                 Optional<Network> network) {
-        Neo4jContainer neo4j = new Neo4jContainer<>(ContainerUtils.getDockerImageName(properties))
+        Neo4jContainer neo4j = new Neo4jContainer(ContainerUtils.getDockerImageName(properties))
                 .withAdminPassword(properties.password)
                 .withNetworkAliases(NEO4J_NETWORK_ALIAS);
 

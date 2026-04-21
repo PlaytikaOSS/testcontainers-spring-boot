@@ -1,12 +1,11 @@
 package com.playtika.testcontainer.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.OperationException;
+import io.vertx.core.VertxException;
+import io.vertx.ext.consul.ConsulClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(
         properties = {
@@ -35,9 +34,9 @@ public class EmbeddedConsulBootstrapConfigurationConfigTest extends EmbeddedCons
 
         // with the loaded config consul should require use of an access token,
         // which is not provided so 403 should be returned by consul
-        OperationException ex = assertThrows(OperationException.class, () -> {
-            client.setKVValue("key", "val");
+       client.putValue("key", "val").onComplete(res -> {
+            assertThat(res.succeeded()).isFalse();
+            assertThat(res.cause()).isInstanceOf(VertxException.class);
         });
-        assertThat(ex.getStatusCode()).isEqualTo(403);
     }
 }

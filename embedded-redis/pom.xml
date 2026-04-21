@@ -28,8 +28,8 @@
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-data-redis</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;

@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.mysql.MySQLContainer;
 
 import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL_PACKAGE_PROPERTIES;

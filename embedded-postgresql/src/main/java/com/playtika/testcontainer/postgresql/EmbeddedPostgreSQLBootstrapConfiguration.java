@@ -19,9 +19,9 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;

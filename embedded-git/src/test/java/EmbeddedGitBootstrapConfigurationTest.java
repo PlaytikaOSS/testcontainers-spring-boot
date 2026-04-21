@@ -24,9 +24,9 @@ import java.security.Security;
 
 import static java.io.File.separator;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.io.FileUtils.contentEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.testcontainers.shaded.org.apache.commons.io.FileUtils.contentEquals;
 
 @Slf4j
 @SpringBootTest(

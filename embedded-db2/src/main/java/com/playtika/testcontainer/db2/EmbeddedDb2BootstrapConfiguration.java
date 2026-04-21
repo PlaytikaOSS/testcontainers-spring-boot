@@ -18,10 +18,11 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Db2Container;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -43,7 +44,7 @@ public class EmbeddedDb2BootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "db2")
     ToxiproxyClientProxy db2ContainerProxy(ToxiproxyClient toxiproxyClient,
                                             ToxiproxyContainer toxiproxyContainer,
-                                            @Qualifier(BEAN_NAME_EMBEDDED_DB2) Db2Container db2,
+                                            @Qualifier(BEAN_NAME_EMBEDDED_DB2) GenericContainer<?> db2,
                                             ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
