@@ -14,7 +14,6 @@
     <artifactId>embedded-dynamodb</artifactId>
 
     <properties>
-        <!--<spring-data-dynamodb.version>5.1.0</spring-data-dynamodb.version>-->
         <aws-java-sdk-dynamodb.version>2.41.31</aws-java-sdk-dynamodb.version>
     </properties>
 
