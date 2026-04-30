@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.containers.Db2Container;
+import org.testcontainers.db2.Db2Container;
 
 import java.util.Map;
 

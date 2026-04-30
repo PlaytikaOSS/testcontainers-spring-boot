@@ -15,7 +15,6 @@
     <artifactId>embedded-mysql</artifactId>
 
     <properties>
-        <mysql-driver.version>8.0.33</mysql-driver.version>
     </properties>
 
     <dependencies>
@@ -28,18 +27,17 @@
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-driver.version}</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>mysql</artifactId>
+            <artifactId>testcontainers-mysql</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jdbc</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

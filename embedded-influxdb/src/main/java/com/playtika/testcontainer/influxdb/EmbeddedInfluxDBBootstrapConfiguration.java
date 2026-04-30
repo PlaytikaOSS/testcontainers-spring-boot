@@ -18,16 +18,16 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.InfluxDBContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.influxdb.InfluxDBProperties.EMBEDDED_INFLUX_DB;
+import static org.testcontainers.containers.InfluxDBContainer.INFLUXDB_PORT;
 
 @Slf4j
 @Configuration
@@ -43,7 +43,7 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "influxdb")
     ToxiproxyClientProxy influxdbContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
-                                                 @Qualifier(EMBEDDED_INFLUX_DB) ConcreteInfluxDbContainer influxdb,
+                                                 @Qualifier(EMBEDDED_INFLUX_DB) InfluxDBContainer influxdb,
                                                  InfluxDBProperties properties,
                                                  ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -59,10 +59,10 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     }
 
     @Bean(name = EMBEDDED_INFLUX_DB, destroyMethod = "stop")
-    public ConcreteInfluxDbContainer influxdb(ConfigurableEnvironment environment,
+    public InfluxDBContainer influxdb(ConfigurableEnvironment environment,
                                               InfluxDBProperties properties,
                                               Optional<Network> network) {
-        ConcreteInfluxDbContainer influxDBContainer = new ConcreteInfluxDbContainer(ContainerUtils.getDockerImageName(properties));
+        InfluxDBContainer influxDBContainer = new InfluxDBContainer(ContainerUtils.getDockerImageName(properties));
         influxDBContainer
                 .withAdmin(properties.getAdminUser())
                 .withAdminPassword(properties.getAdminPassword())
@@ -71,18 +71,19 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
                 .withPassword(properties.getPassword())
                 .withDatabase(properties.getDatabase())
                 .withExposedPorts(properties.getPort())
-                .withNetworkAliases(INFLUXDB_NETWORK_ALIAS);
+                .withNetworkAliases(INFLUXDB_NETWORK_ALIAS)
+                .withExposedPorts(INFLUXDB_PORT);
 
         network.ifPresent(influxDBContainer::withNetwork);
 
         influxDBContainer.waitingFor(getInfluxWaitStrategy(properties.getUser(), properties.getPassword()));
 
-        influxDBContainer = (ConcreteInfluxDbContainer) configureCommonsAndStart(influxDBContainer, properties, log);
+        influxDBContainer = (InfluxDBContainer) configureCommonsAndStart(influxDBContainer, properties, log);
         registerInfluxEnvironment(influxDBContainer, environment, properties);
         return influxDBContainer;
     }
 
-    private void registerInfluxEnvironment(ConcreteInfluxDbContainer influx,
+    private void registerInfluxEnvironment(InfluxDBContainer influx,
                                            ConfigurableEnvironment environment,
                                            InfluxDBProperties properties) {
         Integer mappedPort = influx.getMappedPort(properties.getPort());
@@ -103,13 +104,6 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
 
         MapPropertySource propertySource = new MapPropertySource("embeddedInfluxDBInfo", map);
         environment.getPropertySources().addFirst(propertySource);
-    }
-
-    private static class ConcreteInfluxDbContainer extends InfluxDBContainer<ConcreteInfluxDbContainer> {
-        ConcreteInfluxDbContainer(final DockerImageName dockerImageName) {
-            super(dockerImageName);
-            addExposedPort(INFLUXDB_PORT);
-        }
     }
 
     private WaitAllStrategy getInfluxWaitStrategy(String user, String password) {

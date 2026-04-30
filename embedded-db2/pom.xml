@@ -15,7 +15,7 @@
     <artifactId>embedded-db2</artifactId>
 
     <properties>
-        <db2.jcc.version>12.1.3.0_special_74723</db2.jcc.version>
+        <db2.jcc.version>12.1.4.0</db2.jcc.version>
     </properties>
 
     <dependencies>
@@ -29,11 +29,11 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>db2</artifactId>
+            <artifactId>testcontainers-db2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jdbc</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

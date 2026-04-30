@@ -2,7 +2,7 @@ package com.playtika.testcontainer.solr;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -27,7 +27,7 @@ public abstract class BaseSolrTest {
         @Bean(destroyMethod = "close")
         public SolrClient solrClient(@Value("${embedded.solr.host}") String host,
                                      @Value("${embedded.solr.port}") int port) {
-            return new HttpSolrClient.Builder("http://" + host + ":" + port + "/solr")
+            return new HttpJdkSolrClient.Builder("http://" + host + ":" + port + "/solr")
                     .build();
         }
     }

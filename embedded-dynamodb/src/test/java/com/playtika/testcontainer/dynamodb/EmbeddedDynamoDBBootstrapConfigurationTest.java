@@ -1,13 +1,8 @@
 package com.playtika.testcontainer.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.util.TableUtils;
-import com.playtika.testcontainer.dynamodb.springdata.DynamoDBConfig;
 import com.playtika.testcontainer.dynamodb.springdata.User;
-import com.playtika.testcontainer.dynamodb.springdata.UserRepository;
+import io.awspring.cloud.autoconfigure.dynamodb.DynamoDbAutoConfiguration;
+import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,11 +14,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
-import java.util.List;
-
-import static com.playtika.testcontainer.dynamodb.DynamoDBProperties.BEAN_NAME_EMBEDDED_DYNAMODB;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -36,74 +33,73 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EmbeddedDynamoDBBootstrapConfigurationTest {
 
     @Autowired
-    private UserRepository repository;
+    DynamoDbTemplate dynamoDbTemplate;
 
     @Autowired
     ConfigurableListableBeanFactory beanFactory;
 
     @Test
     public void sampleTestCase() {
-        User gosling = new User("James", "Gosling");
-        repository.save(gosling);
+        User gosling = new User("1", "James");
+        dynamoDbTemplate.save(gosling);
 
-        User hoeller = new User("Juergen", "Hoeller");
-        repository.save(hoeller);
+        User hoeller = new User("2", "Juergen");
+        dynamoDbTemplate.save(hoeller);
 
-        List<User> result = repository.findByLastName("Gosling");
-        Assertions.assertThat(result.size()).isOne();
-        Assertions.assertThat(result).contains(gosling);
-        log.info("Found in table: {}", result.get(0));
+        QueryEnhancedRequest request =  QueryEnhancedRequest.builder().queryConditional(QueryConditional.keyEqualTo(Key.builder().partitionValue("1").build())).build();
+        PageIterable<User> result = dynamoDbTemplate.query(request, User.class);
+        Assertions.assertThat(result.items().stream().count()).isOne();
+        Assertions.assertThat(result.items()).contains(gosling);
+        log.info("Found in table: {}", result.stream().findFirst());
     }
 
     @Test
     public void shouldSetupDependsOnForAllDataAmazonDBs() throws Exception {
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, AmazonDynamoDB.class);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, DynamoDbClient.class);
         assertThat(beanNamesForType)
-                .as("Auto-configured AmazonDynamoDB should be present")
+                .as("Auto-configured DynamoDbClient should be present")
                 .hasSize(1)
-                .contains("amazonDynamoDB");
-        asList(beanNamesForType).forEach(this::hasDependsOn);
-    }
-
-    private void hasDependsOn(String beanName) {
-        assertThat(beanFactory.getBeanDefinition(beanName).getDependsOn())
-                .isNotNull()
-                .isNotEmpty()
-                .contains(BEAN_NAME_EMBEDDED_DYNAMODB);
+                .contains("dynamoDbClient");
     }
 
 
     @Slf4j
     @EnableAutoConfiguration
     @Configuration
-    @Import(DynamoDBConfig.class)
+    @Import(DynamoDbAutoConfiguration.class)
     static class TestConfiguration implements InitializingBean {
 
         @Autowired
-        private AmazonDynamoDB amazonDynamoDB;
-
-        @Autowired
-        private DynamoDBMapper mapper;
+        DynamoDbClient dynamoDbClient;
 
         @Override
         public void afterPropertiesSet() throws Exception {
             setupTable();
         }
 
-        void setupTable() throws InterruptedException {
+        void setupTable() {
 
-            CreateTableRequest ctr = mapper.generateCreateTableRequest(User.class)
-                    .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
+            ProvisionedThroughput throughput =  ProvisionedThroughput.builder().readCapacityUnits(5L).writeCapacityUnits(5L).build();
 
-            boolean tableWasCreatedForTest = TableUtils.createTableIfNotExists(amazonDynamoDB, ctr);
+           final KeySchemaElement[] keySchemes = {KeySchemaElement.builder().keyType(KeyType.HASH).attributeName("id").build(),
+                    KeySchemaElement.builder().keyType(KeyType.RANGE).attributeName("firstName").build()};
 
-            if (tableWasCreatedForTest) {
-                log.info("Created table {}", ctr.getTableName());
+            AttributeDefinition[] attributeDefinitions = {AttributeDefinition.builder().attributeName("id").attributeType(ScalarAttributeType.S).build(),
+                    AttributeDefinition.builder().attributeName("firstName").attributeType(ScalarAttributeType.S).build()};
+
+            CreateTableRequest ctr = CreateTableRequest.builder().tableName("user")
+                    .keySchema(keySchemes)
+                    .attributeDefinitions(attributeDefinitions)
+                    .provisionedThroughput(throughput).build();
+
+            CreateTableResponse response = dynamoDbClient.createTable(ctr);
+            TableDescription tableDescription = response.tableDescription();
+            TableStatus tableStatus = tableDescription.tableStatus();
+            if (tableStatus == TableStatus.CREATING) {
+                log.info("Creating table {}", tableDescription.tableName());
+            }else if (tableStatus == TableStatus.ACTIVE) {
+                log.info("Table {} is active", tableDescription.tableName());
             }
-
-            TableUtils.waitUntilActive(amazonDynamoDB, ctr.getTableName());
-
-            log.info("Table {} is active", ctr.getTableName());
         }
     }
 }

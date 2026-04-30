@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 
 import static com.playtika.testcontainer.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_RABBITMQ;
 
-@AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration")
+@AutoConfiguration(afterName = "org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration")
 @AutoConfigureOrder
 @ConditionalOnClass(RabbitTemplate.class)
 @ConditionalOnExpression("${embedded.containers.enabled:true}")

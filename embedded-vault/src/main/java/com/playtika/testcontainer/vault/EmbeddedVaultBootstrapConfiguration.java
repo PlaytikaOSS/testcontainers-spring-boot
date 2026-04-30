@@ -18,7 +18,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import org.testcontainers.vault.VaultContainer;
 
 import java.util.Arrays;

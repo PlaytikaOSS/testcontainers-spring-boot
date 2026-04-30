@@ -16,11 +16,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -58,10 +59,10 @@ public class EmbeddedConsulBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
-    public GenericContainer<?> consulContainer(ConfigurableEnvironment environment,
-                                               ConsulProperties properties,
-                                               Optional<Network> network) {
-        GenericContainer<?> consul = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+    public ConsulContainer consulContainer(ConfigurableEnvironment environment,
+                                              ConsulProperties properties,
+                                              Optional<Network> network) {
+        ConsulContainer consul = new ConsulContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .waitingFor(
                         Wait.forHttp("/v1/status/leader")
@@ -77,7 +78,7 @@ public class EmbeddedConsulBootstrapConfiguration {
                     BindMode.READ_ONLY);
         }
 
-        consul = configureCommonsAndStart(consul, properties, log);
+        consul = (ConsulContainer) configureCommonsAndStart(consul, properties, log);
         registerConsulEnvironment(consul, environment, properties);
         return consul;
     }

@@ -1,6 +1,7 @@
 package util;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
 import org.bouncycastle.openssl.PEMKeyPair;
@@ -8,7 +9,6 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.bouncycastle.util.encoders.Base64;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

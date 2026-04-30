@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.List;
 
