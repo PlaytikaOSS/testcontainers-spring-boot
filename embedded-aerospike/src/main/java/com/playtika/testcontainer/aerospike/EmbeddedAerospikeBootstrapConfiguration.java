@@ -25,6 +25,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
+import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -82,7 +83,10 @@ public class EmbeddedAerospikeBootstrapConfiguration {
         GenericContainer<?> aerospike =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.port)
-                        // see https://github.com/aerospike/aerospike-server.docker/blob/develop/aerospike.template.conf
+                        // Override the image-shipped template — see aerospike.template.conf for rationale
+                        .withCopyFileToContainer(
+                                MountableFile.forClasspathResource("aerospike.template.conf"),
+                                "/etc/aerospike/aerospike.template.conf")
                         .withEnv("NAMESPACE", properties.namespace)
                         .withEnv("SERVICE_PORT", String.valueOf(properties.port))
                         .withEnv("MEM_GB", String.valueOf(1))
