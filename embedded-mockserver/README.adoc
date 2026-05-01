@@ -16,8 +16,8 @@
 
 * `embedded.mockserver.enabled` `(true|false, default is true)`
 * `embedded.mockserver.reuseContainer` `(true|false, default is false)`
-* `embedded.mockserver.dockerImage` `(default is 'jamesdbloom/mockserver:mockserver-5.13.2')`
-** Image versions on https://hub.docker.com/r/jamesdbloom/mockserver/tags[dockerhub]
+* `embedded.mockserver.dockerImage` `(default is 'mockserver/mockserver:5.15.0')`
+** Image versions on https://hub.docker.com/r/mockserver/mockserver/tags[dockerhub]
 
 ==== Produces
 

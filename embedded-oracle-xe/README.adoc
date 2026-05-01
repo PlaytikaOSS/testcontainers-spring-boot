@@ -17,8 +17,8 @@
 * `embedded.oracle.enabled` `(true|false, default is true)`
 * `embedded.oracle.reuseContainer` `(true|false, default is false)`
 * `embedded.oracle.waitTimeoutInSeconds` `(default is 60 seconds)`
-* `embedded.oracle.dockerImage` `(default is 'oracleinanutshell/oracle-xe-11g')`
-** Image versions on https://hub.docker.com/r/oracleinanutshell/oracle-xe-11g/tags[dockerhub]
+* `embedded.oracle.dockerImage` `(default is 'gvenzl/oracle-xe:21.3.0-slim')`
+** Image versions on https://hub.docker.com/r/gvenzl/oracle-xe/tags[dockerhub]
 * `embedded.oracle.user` `(default is 'system')`
 * `embedded.oracle.password` `(default is 'oracle')`
 * `embedded.oracle.initScriptPath` `(default is null)`
