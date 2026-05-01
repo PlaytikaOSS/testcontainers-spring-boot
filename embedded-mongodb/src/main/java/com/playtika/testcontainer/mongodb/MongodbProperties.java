@@ -36,9 +36,9 @@ public class MongodbProperties extends CommonContainerProperties {
 
     @Override
     public String getDefaultDockerImage() {
+        // https://hub.docker.com/_/mongo
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        // https://hub.docker.com/_/mongo
-        return "mongodb/mongodb-community-server:8.2.2-ubuntu2204";
+        return "mongodb/mongodb-community-server:8.2.5-ubuntu2204";
     }
 }
