@@ -7,7 +7,6 @@ import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnab
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,8 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PulsarContainer;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.pulsar.PulsarContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,11 +55,7 @@ public class EmbeddedPulsarBootstrapConfiguration {
     @Bean(name = EMBEDDED_PULSAR)
     public PulsarContainer embeddedPulsar(PulsarProperties pulsarProperties,
                                           ConfigurableEnvironment environment,
-                                          @Deprecated @Value("${embedded.pulsar.imageTag:#{null}}") String deprImageTag,
                                           Optional<Network> network) {
-        if (deprImageTag != null) {
-            throw new IllegalArgumentException("Property `embedded.pulsar.imageTag` is deprecated. Please replace property `embedded.pulsar.imageTag` with `embedded.pulsar.dockerImageVersion`.");
-        }
         PulsarContainer pulsarContainer = new PulsarContainer(ContainerUtils.getDockerImageName(pulsarProperties))
                 .withNetworkAliases(PULSAR_NETWORK_ALIAS);
 

@@ -13,8 +13,8 @@ public class ClickHouseProperties extends CommonContainerProperties {
 
     String host = "localhost";
     int port = 8123;
-    String user = "default";
-    String password = "";
+    String user = "test";
+    String password = "test";
 
     String initScriptPath;
 
@@ -24,6 +24,6 @@ public class ClickHouseProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "clickhouse/clickhouse-server:25.1.1";
+        return "clickhouse/clickhouse-server:26.3.9";
     }
 }

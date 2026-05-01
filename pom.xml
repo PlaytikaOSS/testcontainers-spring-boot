@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>3.1.20</version>
+    <version>3.1.24</version>
     <packaging>pom</packaging>
 
     <name>testcontainers-spring-boot</name>
@@ -104,11 +104,11 @@
         <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <spotless-maven-plugin.version>3.2.1</spotless-maven-plugin.version>
-        <gitflow-incremental-builder.version>4.5.1</gitflow-incremental-builder.version>
+        <spotless-maven-plugin.version>3.3.0</spotless-maven-plugin.version>
+        <gitflow-incremental-builder.version>4.6.0</gitflow-incremental-builder.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 
         <!-- GPG -->
@@ -247,11 +247,15 @@
                                         <exclude>log4j:log4j</exclude>
                                         <exclude>org.slf4j:slf4j-log4j12</exclude>
                                         <exclude>org.springframework.boot:spring-boot-starter-logging</exclude>
-                                        <exclude>commons-logging:commons-logging</exclude>
                                         <exclude>ch.qos.logback:logback-core</exclude>
                                         <exclude>ch.qos.logback:logback-classic</exclude>
                                     </excludes>
                                 </bannedDependencies>
+                                <requireReleaseDeps>
+                                    <message>SNAPSHOT dependencies are not allowed.</message>
+                                    <onlyWhenRelease>false</onlyWhenRelease>
+                                    <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                                </requireReleaseDeps>
                             </rules>
                         </configuration>
                         <goals>

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>3.1.24</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
     <properties>
         <grpc-protobuf.version>1.79.0</grpc-protobuf.version>
         <authzed.version>1.5.4</authzed.version>
-        <protobuf-java.version>4.33.5</protobuf-java.version>
+        <protobuf-java.version>4.34.1</protobuf-java.version>
     </properties>
 
     <dependencies>

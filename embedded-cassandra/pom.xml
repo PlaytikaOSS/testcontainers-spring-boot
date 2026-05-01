@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>3.1.24</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -25,11 +25,11 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>cassandra</artifactId>
+            <artifactId>testcontainers-cassandra</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-cassandra</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-data-cassandra</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>

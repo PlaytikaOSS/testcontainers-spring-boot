@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>3.1.24</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -15,9 +15,9 @@
     <artifactId>embedded-kafka</artifactId>
 
     <properties>
-        <camel.version>4.17.0</camel.version>
+        <camel.version>4.18.0</camel.version>
         <!-- https://spring.io/projects/spring-kafka#kafka-client-compatibility Confluent Platform 6.2 provides Kafka 2.8 -->
-        <kafka-clients.version>4.1.1</kafka-clients.version>
+        <kafka-clients.version>4.2.0</kafka-clients.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
     </properties>
 
@@ -35,6 +35,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Override camel-bom 4.18.0 bug: camel-test declared as 4.18.0-SNAPSHOT -->
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-test</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -49,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>kafka</artifactId>
+            <artifactId>testcontainers-kafka</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -92,6 +98,16 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-resttestclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-restclient</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

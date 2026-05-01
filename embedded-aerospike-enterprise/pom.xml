@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>3.1.24</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -15,7 +15,7 @@
     <artifactId>embedded-aerospike-enterprise</artifactId>
 
     <properties>
-        <aerospike-client.version>7.2.0</aerospike-client.version>
+        <aerospike-client.version>7.2.3</aerospike-client.version>
     </properties>
 
     <dependencies>

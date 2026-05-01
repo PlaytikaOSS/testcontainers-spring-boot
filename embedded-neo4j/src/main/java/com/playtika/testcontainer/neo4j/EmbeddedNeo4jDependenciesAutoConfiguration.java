@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import static com.playtika.testcontainer.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Slf4j
-@AutoConfiguration(afterName = "org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration")
+@AutoConfiguration(afterName = "org.springframework.boot.neo4j.autoconfigure.Neo4jDataAutoConfiguration")
 @AutoConfigureOrder
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @ConditionalOnProperty(name = "embedded.neo4j.enabled", matchIfMissing = true)

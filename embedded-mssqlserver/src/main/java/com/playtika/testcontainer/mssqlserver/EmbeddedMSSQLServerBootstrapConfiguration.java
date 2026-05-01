@@ -17,11 +17,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
-import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.mssqlserver.MSSQLServerContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -43,7 +43,7 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "mssqlserver")
     ToxiproxyClientProxy mssqlserverContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
-                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) EmbeddedMSSQLServerContainer mssqlserver,
+                                                    @Qualifier(BEAN_NAME_EMBEDDED_MSSQLSERVER) MSSQLServerContainer mssqlserver,
                                                     ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
@@ -58,11 +58,11 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MSSQLSERVER, destroyMethod = "stop")
-    public EmbeddedMSSQLServerContainer mssqlserver(ConfigurableEnvironment environment,
+    public MSSQLServerContainer mssqlserver(ConfigurableEnvironment environment,
                                                     MSSQLServerProperties properties,
                                                     Optional<Network> network) {
 
-        EmbeddedMSSQLServerContainer mssqlServerContainer = new EmbeddedMSSQLServerContainer(ContainerUtils.getDockerImageName(properties))
+        MSSQLServerContainer mssqlServerContainer = new MSSQLServerContainer(ContainerUtils.getDockerImageName(properties))
                 .withPassword(properties.getPassword())
                 .withInitScript(properties.getInitScriptPath())
                 .withNetworkAliases(MSSQLSERVER_NETWORK_ALIAS);
@@ -80,13 +80,13 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
             mssqlServerContainer.acceptLicense();
         }
 
-        mssqlServerContainer = (EmbeddedMSSQLServerContainer) configureCommonsAndStart(mssqlServerContainer, properties, log);
+        mssqlServerContainer = (MSSQLServerContainer) configureCommonsAndStart(mssqlServerContainer, properties, log);
         registerMSSQLServerEnvironment(mssqlServerContainer, environment, properties);
 
         return mssqlServerContainer;
     }
 
-    private void registerMSSQLServerEnvironment(MSSQLServerContainer<?> mssqlServerContainer,
+    private void registerMSSQLServerEnvironment(MSSQLServerContainer mssqlServerContainer,
                                                 ConfigurableEnvironment environment,
                                                 MSSQLServerProperties properties) {
         Integer mappedPort = mssqlServerContainer.getMappedPort(MSSQLServerContainer.MS_SQL_SERVER_PORT);

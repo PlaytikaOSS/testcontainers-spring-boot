@@ -16,7 +16,7 @@
 
 * `embedded.mongodb.enabled` `(true|false, default is true)`
 * `embedded.mongodb.reuseContainer` `(true|false, default is false)`
-* `embedded.mongodb.dockerImage` `(default is 'mongodb/mongodb-community-server:8.2.4-ubuntu2204')`
+* `embedded.mongodb.dockerImage` `(default is 'mongodb/mongodb-community-server:8.2.5-ubuntu2204')`
 ** Image versions on https://hub.docker.com/_/mongo?tab=tags[dockerhub]
 * `embedded.mongodb.host` `(default is localhost)`
 * `embedded.mongodb.port` `(default is 27017)`
@@ -48,7 +48,7 @@ To auto-configure `spring-data-mongodb` use these properties in your test `appli
 ./src/test/resources/application.properties
 [source,properties]
 ----
-spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
+spring.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
 ----
 
 For replicaset, add additional mongodb properties: `?rs=${embedded.mongodb.replica-set-name}&directConnection=true&authSource=admin`

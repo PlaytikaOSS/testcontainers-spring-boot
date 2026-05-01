@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest(
         properties = {
-                "spring.data.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.toxiproxy.port}/${embedded.mongodb.database}",
+                "spring.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.toxiproxy.port}/${embedded.mongodb.database}",
                 "embedded.toxiproxy.proxies.mongodb.enabled=true"
         }
         , classes = EmbeddedMongodbBootstrapConfigurationTest.TestConfiguration.class

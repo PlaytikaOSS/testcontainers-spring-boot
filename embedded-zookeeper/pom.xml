@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>3.1.24</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
     <artifactId>embedded-zookeeper</artifactId>
 
     <properties>
-        <zookeeper-client.version>3.9.4</zookeeper-client.version>
+        <zookeeper-client.version>3.9.5</zookeeper-client.version>
     </properties>
 
     <dependencies>

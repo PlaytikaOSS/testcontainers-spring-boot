@@ -22,12 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
         properties = {
                 "embedded.mongodb.username=root",
                 "embedded.mongodb.password=letmein",
-                "spring.data.mongodb.host=${embedded.mongodb.host}",
-                "spring.data.mongodb.port=${embedded.mongodb.port}",
-                "spring.data.mongodb.username=${embedded.mongodb.username}",
-                "spring.data.mongodb.password=${embedded.mongodb.password}",
-                "spring.data.mongodb.database=${embedded.mongodb.database}",
-                "spring.data.mongodb.authentication-database=admin"
+                "spring.mongodb.host=${embedded.mongodb.host}",
+                "spring.mongodb.port=${embedded.mongodb.port}",
+                "spring.mongodb.username=${embedded.mongodb.username}",
+                "spring.mongodb.password=${embedded.mongodb.password}",
+                "spring.mongodb.database=${embedded.mongodb.database}",
+                "spring.mongodb.authentication-database=admin"
         }
         ,classes = EmbeddedMongodbBootstrapAuthConfigurationTest.TestConfiguration.class
 )

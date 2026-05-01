@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.20</version>
+        <version>3.1.24</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -15,7 +15,7 @@
     <artifactId>embedded-couchbase</artifactId>
 
     <properties>
-        <couchbase-java-client-3.x.version>3.11.0</couchbase-java-client-3.x.version>
+        <couchbase-java-client-3.x.version>3.11.2</couchbase-java-client-3.x.version>
         <okhttp.version>4.12.0</okhttp.version>
     </properties>
 
@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>couchbase</artifactId>
+            <artifactId>testcontainers-couchbase</artifactId>
         </dependency>
         <dependency>
             <groupId>com.querydsl</groupId>
@@ -48,8 +48,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-couchbase</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-data-couchbase</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -16,13 +16,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.RabbitMQContainer;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
@@ -42,7 +42,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "rabbitmq")
     ToxiproxyClientProxy rabbitmqContainerProxy(ToxiproxyClient toxiproxyClient,
                                                  ToxiproxyContainer toxiproxyContainer,
-                                                 @Qualifier(BEAN_NAME_EMBEDDED_RABBITMQ) RabbitMQContainer rabbitmq,
+                                                 @Qualifier(BEAN_NAME_EMBEDDED_RABBITMQ) GenericContainer<?> rabbitmq,
                                                  ConfigurableEnvironment environment,
                                                  RabbitMQProperties properties) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -60,7 +60,7 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_RABBITMQ, destroyMethod = "stop")
     public RabbitMQContainer rabbitmq(ConfigurableEnvironment environment,
                                       RabbitMQProperties properties,
-                                      Optional<Network> network) {
+                                      Optional<Network> network) throws IOException, InterruptedException {
 
         Integer[] exposedPorts = Stream.concat(properties.getAdditionalPorts().stream(), Stream.of(properties.getPort(), properties.getHttpPort()))
                 .distinct()
@@ -73,12 +73,17 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                         .withExposedPorts(exposedPorts)
                         .withNetworkAliases(RABBITMQ_NETWORK_ALIAS);
 
-        if (properties.getEnabledPlugins() != null && properties.getEnabledPlugins().size() != 0) {
-            rabbitMQ = rabbitMQ.withPluginsEnabled(properties.getEnabledPlugins().toArray(new String[0]));
-        }
-
         network.ifPresent(rabbitMQ::withNetwork);
         rabbitMQ = (RabbitMQContainer) configureCommonsAndStart(rabbitMQ, properties, log);
+
+        if (properties.getEnabledPlugins() != null && !properties.getEnabledPlugins().isEmpty()) {
+            List<String> command = new ArrayList<>(properties.getEnabledPlugins().size() + 2);
+            command.add("rabbitmq-plugins");
+            command.add("enable");
+            command.addAll(properties.getEnabledPlugins());
+            rabbitMQ.execInContainer(command.toArray(new String[0]));
+        }
+
         registerRabbitMQEnvironment(rabbitMQ, environment, properties);
         return rabbitMQ;
     }

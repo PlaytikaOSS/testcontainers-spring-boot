@@ -17,8 +17,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.ToxiproxyContainer;
+import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -67,13 +68,13 @@ public class EmbeddedMinioBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MINIO, destroyMethod = "stop")
-    public GenericContainer<?> minio(MinioWaitStrategy minioWaitStrategy,
+    public MinIOContainer minio(MinioWaitStrategy minioWaitStrategy,
                                      ConfigurableEnvironment environment,
                                      MinioProperties properties,
                                      Optional<Network> network) {
 
-        GenericContainer<?> minio =
-                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+        MinIOContainer minio =
+                new MinIOContainer(ContainerUtils.getDockerImageName(properties))
                         .withExposedPorts(properties.getPort(), properties.getConsolePort())
                         .withEnv("MINIO_ROOT_USER", properties.getAccessKey())
                         .withEnv("MINIO_ROOT_PASSWORD", properties.getSecretKey())
@@ -85,12 +86,12 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withNetworkAliases(MINIO_NETWORK_ALIAS);
 
         network.ifPresent(minio::withNetwork);
-        minio = configureCommonsAndStart(minio, properties, log);
+        minio = (MinIOContainer) configureCommonsAndStart(minio, properties, log);
         registerEnvironment(minio, environment, properties);
         return minio;
     }
 
-    private void registerEnvironment(GenericContainer<?> container,
+    private void registerEnvironment(MinIOContainer container,
                                      ConfigurableEnvironment environment,
                                      MinioProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
