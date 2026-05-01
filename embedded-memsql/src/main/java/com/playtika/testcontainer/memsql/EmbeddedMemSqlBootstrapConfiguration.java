@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +19,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
-import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -39,16 +37,10 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     private static final String MEMSQL_NETWORK_ALIAS = "memsql.testcontainer.docker";
 
     @Bean
-    @ConditionalOnMissingBean
-    MemSqlStatusCheck memSqlStartupCheckStrategy(MemSqlProperties properties) {
-        return new MemSqlStatusCheck(properties);
-    }
-
-    @Bean
     @ConditionalOnToxiProxyEnabled(module = "memsql")
     ToxiproxyClientProxy memsqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
-                                               @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql,
+                                               @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) MemSqlContainer memsql,
                                                MemSqlProperties properties,
                                                ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -64,26 +56,21 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
-    public GenericContainer<?> memsql(ConfigurableEnvironment environment,
+    public MemSqlContainer memsql(
+                                  ConfigurableEnvironment environment,
                                       MemSqlProperties properties,
-                                      MemSqlStatusCheck memSqlStatusCheck,
-                                      Optional<Network> network) {
-        GenericContainer<?> memsql = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
-                .withEnv("SINGLESTORE_SET_GLOBAL_DEFAULT_PARTITIONS_PER_LEAF", "1")
-                .withEnv("LICENSE_KEY", properties.getLicenseKey())
-                .withEnv("SINGLESTORE_LICENSE", properties.getLicenseKey())
-                .withEnv("ROOT_PASSWORD", properties.getPassword())
-                .withEnv("START_AFTER_INIT", "Y")
-                .withExposedPorts(properties.port)
-                .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
-                .waitingFor(memSqlStatusCheck)
+
+                                  Optional<Network> network) {
+        MemSqlContainer memsql = new MemSqlContainer(ContainerUtils.getDockerImageName(properties))
+                .withLicenseKey(properties.getLicenseKey())
+                .withUsername(properties.getUser())
+                .withPassword(properties.getPassword())
+                .withDatabaseName(properties.getDatabase())
+                .withInitScript("mem.sql")
                 .withNetworkAliases(MEMSQL_NETWORK_ALIAS);
-        if ("aarch".equals(System.getProperty("system.arch"))){
-            memsql = memsql.withCommand("platform", "linux/amd64");
-        }
+
         network.ifPresent(memsql::withNetwork);
-        memsql = configureCommonsAndStart(memsql, properties, log);
+        memsql = (MemSqlContainer) configureCommonsAndStart(memsql, properties, log);
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;
     }

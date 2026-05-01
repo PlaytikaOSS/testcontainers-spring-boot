@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 
@@ -20,10 +21,8 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@SpringBootTest(classes = EmbeddedMemSqlBootstrapConfigurationTest.TestConfiguration.class,
-        properties = {
-                "spring.profiles.active=enabled"
-        })
+@SpringBootTest(classes = EmbeddedMemSqlBootstrapConfigurationTest.TestConfiguration.class)
+@ActiveProfiles("enabled")
 public class EmbeddedMemSqlBootstrapConfigurationTest {
 
     @Autowired
@@ -35,9 +34,6 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
     @Autowired
     ConfigurableEnvironment environment;
 
-//    @Autowired
-//    NetworkTestOperations memsqlNetworkTestOperations;
-
     @Test
     public void shouldConnectToMemSQL() throws Exception {
         assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("SingleStoreDB");
@@ -45,21 +41,6 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
         jdbcTemplate.execute("insert into foo values (1), (2), (3);");
         assertThat(jdbcTemplate.queryForList("select * from foo")).hasSize(3);
     }
-
-//    @Test
-//    @Disabled("image doesn't support to simply install tc")
-//    public void shouldEmulateLatency() throws Exception {
-//        jdbcTemplate.execute("create table bar (id int primary key);");
-//        jdbcTemplate.execute("insert into bar values (1), (2), (3);");
-//
-//        memsqlNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-//                () -> assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
-//                        .isGreaterThan(1000L)
-//        );
-//
-//        assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
-//                .isLessThan(100L);
-//    }
 
     @Test
     public void shouldSetupDependsOnForAllDataSources() throws Exception {
