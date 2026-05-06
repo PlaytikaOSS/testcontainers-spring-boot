@@ -16,11 +16,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.azure.AzuriteContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.azurite.AzuriteProperties.AZURITE_BEAN_NAME;
@@ -40,7 +43,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "azurite")
     ToxiproxyClientProxy azuriteBlobContainerProxy(ToxiproxyClient toxiproxyClient,
                                                     ToxiproxyContainer toxiproxyContainer,
-                                                    @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                    @Qualifier(AZURITE_BEAN_NAME) AzuriteContainer azurite,
                                                     AzuriteProperties properties,
                                                     ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -59,7 +62,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "azurite")
     ToxiproxyClientProxy azuriteQueueContainerProxy(ToxiproxyClient toxiproxyClient,
                                                      ToxiproxyContainer toxiproxyContainer,
-                                                     @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                     @Qualifier(AZURITE_BEAN_NAME) AzuriteContainer azurite,
                                                      AzuriteProperties properties,
                                                      ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -78,7 +81,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "azurite")
     ToxiproxyClientProxy azuriteTableContainerProxy(ToxiproxyClient toxiproxyClient,
                                                      ToxiproxyContainer toxiproxyContainer,
-                                                     @Qualifier(AZURITE_BEAN_NAME) GenericContainer<?> azurite,
+                                                     @Qualifier(AZURITE_BEAN_NAME) AzuriteContainer azurite,
                                                      AzuriteProperties properties,
                                                      ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -94,30 +97,25 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     }
 
     @Bean(name = AZURITE_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> azurite(ConfigurableEnvironment environment,
-                                       AzuriteProperties properties,
-                                       Optional<Network> network) {
-        GenericContainer<?> azuriteContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getBlobStoragePort(), properties.getQueueStoragePort(), properties.getTableStoragePort())
+    public AzuriteContainer azurite(ConfigurableEnvironment environment,
+                                    AzuriteProperties properties,
+                                    Optional<Network> network) {
+        AzuriteContainer azuriteContainer = new AzuriteContainer(ContainerUtils.getDockerImageName(properties))
                 .withNetworkAliases(AZURITE_BLOB_NETWORK_ALIAS)
-                .withCommand("azurite",
-                        "-l", "/data",
-                        "--blobHost", "0.0.0.0",
-                        "--blobPort", String.valueOf(properties.getBlobStoragePort()),
-                        "--queueHost", "0.0.0.0",
-                        "--queuePort", String.valueOf(properties.getQueueStoragePort()),
-                        "--tableHost", "0.0.0.0",
-                        "--tablePort", String.valueOf(properties.getTableStoragePort()),
-                        "--skipApiVersionCheck");
+                .withCreateContainerCmdModifier(cmd -> {
+                    List<String> args = new ArrayList<>(Arrays.asList(cmd.getCmd()));
+                    args.add("--skipApiVersionCheck");
+                    cmd.withCmd(args);
+                });
 
         network.ifPresent(azuriteContainer::withNetwork);
 
-        configureCommonsAndStart(azuriteContainer, properties, log);
+        azuriteContainer = (AzuriteContainer) configureCommonsAndStart(azuriteContainer, properties, log);
         registerEnvironment(azuriteContainer, environment, properties);
         return azuriteContainer;
     }
 
-    private void registerEnvironment(GenericContainer<?> azurite,
+    private void registerEnvironment(AzuriteContainer azurite,
                                      ConfigurableEnvironment environment,
                                      AzuriteProperties properties) {
 
