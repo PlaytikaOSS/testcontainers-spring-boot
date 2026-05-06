@@ -12,18 +12,12 @@ public class KeycloakProperties extends CommonContainerProperties {
 
     public static final String BEAN_NAME_EMBEDDED_KEYCLOAK = "embeddedKeycloak";
 
-    public static final String[] DEFAULT_COMMAND = {"start-dev", "--import-realm"};
-
     public static final String DEFAULT_ADMIN_USER = "admin";
     public static final String DEFAULT_ADMIN_PASSWORD = "letmein";
     public static final String DEFAULT_REALM = "master";
     public static final String DEFAULT_AUTH_BASE_PATH = "/";
     public static final String DEFAULT_DB_VENDOR = "dev-mem";
 
-    /**
-     * The command string issued to the container.
-     */
-    private String[] command = DEFAULT_COMMAND;
     /**
      * The admin username to use.
      */
@@ -76,6 +70,11 @@ public class KeycloakProperties extends CommonContainerProperties {
      * Specify user's password to use to authenticate to the database via file input (alternative to DB_PASSWORD).
      */
     private String dbPasswordFile;
+
+    @Override
+    public String[] getCommand() {
+        return null;
+    }
 
     @Override
     public String getDefaultDockerImage() {
