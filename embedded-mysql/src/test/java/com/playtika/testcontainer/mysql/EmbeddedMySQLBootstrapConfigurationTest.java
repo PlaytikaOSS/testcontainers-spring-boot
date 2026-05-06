@@ -50,7 +50,7 @@ public class EmbeddedMySQLBootstrapConfigurationTest {
 
     @Test
     public void shouldConnectToMySQL() {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.5.");
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.7.");
     }
 
     @Test
