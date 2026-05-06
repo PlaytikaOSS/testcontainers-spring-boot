@@ -23,8 +23,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -129,7 +129,7 @@ public class KafkaContainerConfiguration {
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> kafka(
+    public KafkaContainer kafka(
             KafkaStatusCheck kafkaStatusCheck,
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties,
@@ -172,7 +172,6 @@ public class KafkaContainerConfiguration {
         }
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
-                .withEmbeddedZookeeper()
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
                 //see: https://github.com/wurstmeister/kafka-docker/blob/develop/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
