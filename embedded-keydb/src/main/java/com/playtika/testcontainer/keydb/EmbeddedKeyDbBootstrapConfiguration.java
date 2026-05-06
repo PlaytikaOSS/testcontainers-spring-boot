@@ -8,6 +8,7 @@ import com.playtika.testcontainer.keydb.wait.KeyDbStatusCheck;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import com.redis.testcontainers.RedisContainer;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -86,14 +86,14 @@ public class EmbeddedKeyDbBootstrapConfiguration {
   }
 
   @Bean(name = BEAN_NAME_EMBEDDED_KEYDB, destroyMethod = "stop")
-  public GenericContainer<?> keydb(ConfigurableEnvironment environment,
+  public RedisContainer keydb(ConfigurableEnvironment environment,
                                    @Qualifier(KEYDB_WAIT_STRATEGY_BEAN_NAME) WaitStrategy keydbStartupCheckStrategy,
                                    Optional<Network> network) throws Exception {
 
     // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
     // container must be the same
-    GenericContainer<?> keydb =
-      new FixedHostPortGenericContainer(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
+    RedisContainer keydb =
+      new KeyDbContainerWithExposedPort(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
         .withFixedExposedPort(properties.getPort(), properties.getPort())
         .withExposedPorts(properties.getPort())
         .withEnv("KEYDB_USER", properties.getUser())
@@ -104,7 +104,7 @@ public class EmbeddedKeyDbBootstrapConfiguration {
         .waitingFor(keydbStartupCheckStrategy)
         .withNetworkAliases(KEYDB_NETWORK_ALIAS);
     network.ifPresent(keydb::withNetwork);
-    keydb = configureCommonsAndStart(keydb, properties, log);
+    keydb = (RedisContainer) configureCommonsAndStart(keydb, properties, log);
     Map<String, Object> keydbEnv = registerKeyDbEnvironment(environment, keydb, properties, properties.getPort());
     log.info("Started KeyDb cluster. Connection details: {}", keydbEnv);
     return keydb;
@@ -124,4 +124,15 @@ public class EmbeddedKeyDbBootstrapConfiguration {
       .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
   }
 
+  private static class KeyDbContainerWithExposedPort extends RedisContainer {
+    public KeyDbContainerWithExposedPort(String dockerImageName) {
+      super(dockerImageName);
+    }
+
+    public RedisContainer withFixedExposedPort(int hostPort, int containerPort) {
+      super.addFixedExposedPort(hostPort, containerPort);
+
+      return self();
+    }
+  }
 }
