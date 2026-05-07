@@ -71,10 +71,10 @@ class ContainerUtilsTest {
         assertThat(echoContainer.isShouldBeReused()).isTrue();
         assertThat(echoContainer.getEnvMap()).containsAllEntriesOf(env);
         assertThat(echoContainer.getLogConsumers()).hasSize(1);
-        Condition<Map.Entry<MountableFile, String>> hasCopyToFileContainerPath = new Condition<Map.Entry<MountableFile, String>>() {
+        Condition<Map.Entry<MountableFile, String>> hasCopyToFileContainerPath = new Condition<>() {
             public boolean matches(Map.Entry<MountableFile, String> mountableFileObjectEntry) {
                 return mountableFileObjectEntry.getKey().getResolvedPath().endsWith(classpathResource)
-                        && mountableFileObjectEntry.getValue().equals(containerPath);
+                       && mountableFileObjectEntry.getValue().equals(containerPath);
             }
         };
         assertThat(echoContainer.getCopyToFileContainerPathMap()).hasEntrySatisfying(hasCopyToFileContainerPath);
