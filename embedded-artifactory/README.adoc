@@ -23,6 +23,24 @@
 * `embedded.artifactory.password` `(default is 'password')`
 * `embedded.toxiproxy.proxies.artifactory.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-artifactory` container.
 
+==== PostgreSQL backing store
+
+Artifactory uses PostgreSQL as its backing database, provided by the `embedded-postgresql` module.
+Configure the database via `embedded.postgresql.*` properties:
+
+* `embedded.postgresql.user` `(default is 'postgresql')`
+* `embedded.postgresql.password` `(default is 'letmein')`
+* `embedded.postgresql.database` `(default is 'test_db')`
+* `embedded.postgresql.dockerImage` `(default is 'postgres:18-alpine')`
+
+Example override in `bootstrap.properties`:
+[source,properties]
+----
+embedded.postgresql.user=artifactory
+embedded.postgresql.password=artifactory
+embedded.postgresql.database=artifactory
+----
+
 ==== Produces
 
 * `embedded.artifactory.host`
