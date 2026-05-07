@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>3.1.24</version>
+    <version>4.0.0</version>
     <packaging>pom</packaging>
 
     <name>testcontainers-spring-boot</name>
@@ -38,6 +38,7 @@
         <module>testcontainers-spring-boot-bom</module>
         <module>testcontainers-spring-boot-parent</module>
         <module>testcontainers-common</module>
+        <module>embedded-toxiproxy</module>
         <module>embedded-kafka</module>
         <module>embedded-native-kafka</module>
         <module>embedded-keycloak</module>
@@ -72,7 +73,6 @@
         <module>embedded-db2</module>
         <module>embedded-artifactory</module>
         <module>embedded-azurite</module>
-        <module>embedded-toxiproxy</module>
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>
@@ -107,7 +107,7 @@
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <spotless-maven-plugin.version>3.3.0</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>3.4.0</spotless-maven-plugin.version>
         <gitflow-incremental-builder.version>4.6.0</gitflow-incremental-builder.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 
