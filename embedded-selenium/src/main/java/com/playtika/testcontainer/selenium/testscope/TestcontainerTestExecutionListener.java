@@ -22,9 +22,7 @@ public class TestcontainerTestExecutionListener extends AbstractTestExecutionLis
     public void afterTestMethod(TestContext testContext) {
         TestcontainerScope scope = TestcontainerScope.getFrom(testContext.getApplicationContext());
         scope.afterTestMethod(testContext);
-        if (scope != null ) {
-            testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE,
-                    Boolean.TRUE);
-        }
+        testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE,
+            Boolean.TRUE);
     }
 }
