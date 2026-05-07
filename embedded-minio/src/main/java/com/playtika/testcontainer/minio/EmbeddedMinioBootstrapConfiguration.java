@@ -10,15 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
@@ -31,28 +31,17 @@ import static com.playtika.testcontainer.minio.MinioProperties.BEAN_NAME_EMBEDDE
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter(DockerPresenceBootstrapConfiguration.class)
+@EnableConfigurationProperties(MinioProperties.class)
 @ConditionalOnProperty(value = "embedded.minio.enabled", matchIfMissing = true)
 public class EmbeddedMinioBootstrapConfiguration {
 
     private static final String MINIO_NETWORK_ALIAS = "minio.testcontainer.docker";
 
     @Bean
-    @ConditionalOnMissingBean
-    MinioProperties minioProperties() {
-        return new MinioProperties();
-    }
-
-    @Bean(name = "minioWaitStrategy")
-    @ConditionalOnMissingBean
-    public MinioWaitStrategy minioWaitStrategy(MinioProperties properties) {
-        return new DefaultMinioWaitStrategy(properties);
-    }
-
-    @Bean
     @ConditionalOnToxiProxyEnabled(module = "minio")
     ToxiproxyClientProxy minioContainerProxy(ToxiproxyClient toxiproxyClient,
                                               ToxiproxyContainer toxiproxyContainer,
-                                              @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
+                                              @Qualifier(BEAN_NAME_EMBEDDED_MINIO) MinIOContainer minio,
                                               ConfigurableEnvironment environment,
                                               MinioProperties properties) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -68,21 +57,19 @@ public class EmbeddedMinioBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MINIO, destroyMethod = "stop")
-    public MinIOContainer minio(MinioWaitStrategy minioWaitStrategy,
-                                     ConfigurableEnvironment environment,
-                                     MinioProperties properties,
-                                     Optional<Network> network) {
-
+    public MinIOContainer minio(ConfigurableEnvironment environment,
+                                MinioProperties properties,
+                                Optional<Network> network) {
         MinIOContainer minio =
                 new MinIOContainer(ContainerUtils.getDockerImageName(properties))
-                        .withExposedPorts(properties.getPort(), properties.getConsolePort())
-                        .withEnv("MINIO_ROOT_USER", properties.getAccessKey())
-                        .withEnv("MINIO_ROOT_PASSWORD", properties.getSecretKey())
+                        .withUserName(properties.getAccessKey())
+                        .withPassword(properties.getSecretKey())
                         .withEnv("MINIO_SITE_REGION", properties.getRegion())
                         .withEnv("MINIO_WORM", properties.getWorm())
                         .withEnv("MINIO_BROWSER", properties.getBrowser())
-                        .withCommand("server", properties.getDirectory(), "--console-address", ":" + properties.getConsolePort())
-                        .waitingFor(minioWaitStrategy)
+                        .waitingFor(Wait.forHttp("/minio/health/live")
+                                .forPort(properties.getPort())
+                                .withStartupTimeout(properties.getTimeoutDuration()))
                         .withNetworkAliases(MINIO_NETWORK_ALIAS);
 
         network.ifPresent(minio::withNetwork);
@@ -110,5 +97,4 @@ public class EmbeddedMinioBootstrapConfiguration {
         MapPropertySource propertySource = new MapPropertySource("embeddedMinioInfo", map);
         environment.getPropertySources().addFirst(propertySource);
     }
-
 }
