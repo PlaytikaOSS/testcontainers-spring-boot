@@ -18,7 +18,6 @@
 * `embedded.wiremock.reuseContainer` `(true|false, default is false)`
 * `embedded.wiremock.dockerImage` `(default is 'wiremock/wiremock:3.13.2')`
 * `embedded.wiremock.host` `(default is 'localhost')`
-* `embedded.wiremock.port` `(int, default is 8990)`
 
 
 ==== Produces
@@ -27,7 +26,7 @@
 * `embedded.wiremock.port` (mapped HTTP port)
 * `embedded.wiremock.networkAlias`
 * `embedded.wiremock.internalPort`
-* Bean `GenericContainer<?> embeddedWiremock`
+* Bean `WireMockContainer embeddedWiremock`
 
 
 ==== Example
