@@ -17,12 +17,16 @@ public class GrafanaProperties extends CommonContainerProperties {
     String username = "admin";
     String password = "password";
     int port = 3000;
+    int lokiPort = 3100;
+    int tempoPort = 3200;
+    int otlpGrpcPort = 4317;
+    int otlpHttpPort = 4318;
 
-    // https://hub.docker.com/r/grafana/grafana
+    // https://hub.docker.com/r/grafana/otel-lgtm
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "grafana/grafana:13.1.0";
+        return "grafana/otel-lgtm:0.9.3";
     }
 }
