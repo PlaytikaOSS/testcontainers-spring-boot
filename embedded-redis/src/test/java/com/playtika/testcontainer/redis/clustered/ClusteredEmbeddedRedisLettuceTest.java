@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
                 "embedded.redis.clustered=true"
         }
 )
-public class ClusteredEmbeddedRedisLettuceTest extends BaseEmbeddedRedisTest {
+class ClusteredEmbeddedRedisLettuceTest extends BaseEmbeddedRedisTest {
 
     @Test
-    public void shouldSetupDependsOnForLettuceConnectionFactory() throws Exception {
+    void shouldSetupDependsOnForLettuceConnectionFactory() throws Exception {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, RedisConnectionFactory.class);
         assertThat(beanNamesForType)
                 .as("RedisConnectionFactory should be present")
@@ -48,7 +48,7 @@ public class ClusteredEmbeddedRedisLettuceTest extends BaseEmbeddedRedisTest {
     }
 
     @Test
-    public void shouldUseLettuceConnectionFactory() {
+    void shouldUseLettuceConnectionFactory() {
         RedisConnectionFactory connectionFactory = beanFactory.getBean(RedisConnectionFactory.class);
         assertThat(connectionFactory)
                 .as("Should use LettuceConnectionFactory")
@@ -67,7 +67,7 @@ public class ClusteredEmbeddedRedisLettuceTest extends BaseEmbeddedRedisTest {
     static class TestConfiguration {
 
         @Bean
-        public RedisConnectionFactory connectionFactory(RedisProperties redisProperties) {
+        RedisConnectionFactory connectionFactory(RedisProperties redisProperties) {
             log.info(format("Connecting to Redis Cluster node with Lettuce: %s:%s", redisProperties.getHost(), redisProperties.getPort()));
             RedisClusterConfiguration redisConfiguration = new RedisClusterConfiguration(
                     Collections.singletonList(format("%s:%s", redisProperties.getHost(), redisProperties.getPort())));
