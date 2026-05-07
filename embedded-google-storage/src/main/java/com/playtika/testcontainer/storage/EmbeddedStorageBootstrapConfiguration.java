@@ -6,6 +6,7 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
+import io.aiven.testcontainers.fakegcsserver.FakeGcsServerContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,17 +19,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.storage.StorageProperties.BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER;
-import static java.lang.String.format;
 
 @Slf4j
 @Configuration
@@ -45,7 +43,7 @@ public class EmbeddedStorageBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "google.storage")
     ToxiproxyClientProxy googleStorageContainerProxy(ToxiproxyClient toxiproxyClient,
                                                       ToxiproxyContainer toxiproxyContainer,
-                                                      @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) GenericContainer<?> storageServer,
+                                                      @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) FakeGcsServerContainer storageServer,
                                                       ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
@@ -60,46 +58,36 @@ public class EmbeddedStorageBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER, destroyMethod = "stop")
-    GenericContainer<?> storageServer(ConfigurableEnvironment environment,
-                                      StorageProperties properties,
-                                      Optional<Network> network) throws IOException {
-
-        GenericContainer<?> storageContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(StorageProperties.PORT)
-                .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
-                        "/bin/fake-gcs-server",
-                        "-backend", "memory",
-                        "-scheme", "http",
-                        "-host", "0.0.0.0",
-                        "-port", String.valueOf(StorageProperties.PORT),
-                        "-location", properties.getBucketLocation()
-                ))
-                .withNetworkAliases(GOOGLE_STORAGE_NETWORK_ALIAS);
+    FakeGcsServerContainer storageServer(ConfigurableEnvironment environment,
+                                         StorageProperties properties,
+                                         Optional<Network> network) {
+        FakeGcsServerContainer storageContainer =
+                new FakeGcsServerContainer(ContainerUtils.getDockerImageName(properties))
+                        .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
+                                "/bin/fake-gcs-server",
+                                "-backend", "memory",
+                                "-scheme", "http",
+                                "-host", "0.0.0.0",
+                                "-port", String.valueOf(StorageProperties.PORT),
+                                "-location", properties.getBucketLocation()
+                        ))
+                        .withNetworkAliases(GOOGLE_STORAGE_NETWORK_ALIAS);
 
         network.ifPresent(storageContainer::withNetwork);
 
-        storageContainer = configureCommonsAndStart(storageContainer, properties, log);
-        prepareContainerConfiguration(storageContainer);
+        storageContainer = (FakeGcsServerContainer) configureCommonsAndStart(storageContainer, properties, log);
         registerStorageEnvironment(storageContainer, environment, properties);
         return storageContainer;
     }
 
-    private void prepareContainerConfiguration(GenericContainer<?> container) throws IOException {
-        String containerEndpoint = buildContainerEndpoint(container);
-
-        log.info("Google Cloud Fake Storage Server with externalUrl={}", containerEndpoint);
-        new GoogleCloudStorageHttpClient()
-                .sendUpdateConfigRequest(containerEndpoint);
-    }
-
     private void registerStorageEnvironment(
-            GenericContainer<?> container,
+            FakeGcsServerContainer container,
             ConfigurableEnvironment environment,
             StorageProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.google.storage.host", container.getHost());
         map.put("embedded.google.storage.port", container.getMappedPort(StorageProperties.PORT));
-        map.put("embedded.google.storage.endpoint", buildContainerEndpoint(container));
+        map.put("embedded.google.storage.endpoint", container.url());
         map.put("embedded.google.storage.project-id", properties.getProjectId());
         map.put("embedded.google.storage.bucket-location", properties.getBucketLocation());
         map.put("embedded.google.storage.networkAlias", GOOGLE_STORAGE_NETWORK_ALIAS);
@@ -117,12 +105,5 @@ public class EmbeddedStorageBootstrapConfiguration {
             @Value("${embedded.google.storage.endpoint}") String endpoint,
             StorageProperties storageProperties) {
         return new StorageResourcesGenerator(endpoint, storageProperties);
-    }
-
-    private String buildContainerEndpoint(GenericContainer<?> container) {
-        return format(
-                "http://%s:%d",
-                container.getHost(),
-                container.getMappedPort(StorageProperties.PORT));
     }
 }
