@@ -2,7 +2,6 @@ package com.playtika.testcontainer.mongodb;
 
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
@@ -74,13 +73,7 @@ public class EmbeddedMongodbBootstrapConfigurationTest {
         return System.currentTimeMillis() - start;
     }
 
-    @Value
-    static class Foo {
-        @Id
-        String someId;
-        String someString;
-        Instant someTimestamp;
-        Long someNumber;
+    record Foo(@Id String someId, String someString, Instant someTimestamp, Long someNumber) {
     }
 
     @EnableAutoConfiguration

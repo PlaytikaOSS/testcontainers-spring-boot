@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
@@ -230,7 +229,7 @@ public class KafkaContainerConfiguration {
             log.info("Writing kafka data to: {}", kafkaData);
             createPathAndParentOrMakeWritable(kafkaData);
 
-            kafka.addFileSystemBind(kafkaData.toString(), "/var/lib/kafka/data", BindMode.READ_WRITE);
+            kafka.withCopyToContainer(MountableFile.forHostPath(kafkaData.toString()), "/var/lib/kafka/data");
         }
     }
 
@@ -248,9 +247,9 @@ public class KafkaContainerConfiguration {
             log.info("Writing zookeeper transaction logs to: {}", zkTransactionLogs);
 
             createPathAndParentOrMakeWritable(zkData);
-            kafka.addFileSystemBind(zkData.toString(), "/var/lib/zookeeper/data", BindMode.READ_WRITE);
+            kafka.withCopyToContainer(MountableFile.forHostPath(zkData.toString()), "/var/lib/zookeeper/data");
             createPathAndParentOrMakeWritable(zkTransactionLogs);
-            kafka.addFileSystemBind(zkTransactionLogs.toString(), "/var/lib/zookeeper/log", BindMode.READ_WRITE);
+            kafka.withCopyToContainer(MountableFile.forHostPath(zkTransactionLogs.toString()), "/var/lib/zookeeper/log");
         }
     }
 
