@@ -16,31 +16,25 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.DefaultRecordingFileFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.RecordingFileFactory;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.selenium.SeleniumProperties.BEAN_NAME_EMBEDDED_SELENIUM;
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 
 @Slf4j
@@ -81,17 +75,11 @@ public class EmbeddedSeleniumBootstrapConfiguration {
     @ConditionalOnMissingBean
     public BrowserWebDriverContainer selenium(ConfigurableEnvironment environment,
                                               SeleniumProperties properties,
-                                              MutableCapabilities capabilities,
                                               Optional<Network> network) {
 
-        BrowserWebDriverContainer container = isNotBlank(properties.getDockerImage())
-                ? new BrowserWebDriverContainer<>(ContainerUtils.getDockerImageName(properties))
-                : new BrowserWebDriverContainer<>();
-
-        container.waitingFor(getWaitStrategy());
-        container.withCapabilities(capabilities);
-        container.withRecordingFileFactory(getRecordingFileFactory());
-        container.withNetworkAliases(SELENIUM_NETWORK_ALIAS);
+        BrowserWebDriverContainer container = new BrowserWebDriverContainer(ContainerUtils.getDockerImageName(properties))
+            .withRecordingFileFactory(getRecordingFileFactory())
+            .withNetworkAliases(SELENIUM_NETWORK_ALIAS);
         network.ifPresent(container::withNetwork);
         File recordingDirOrNull = null;
         if (properties.getVnc().getMode().convert() != BrowserWebDriverContainer.VncRecordingMode.SKIP) {
@@ -104,19 +92,6 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, container, properties.getVnc().getMode().convert(), recordingDirOrNull);
         log.info("Started Selenium server. Connection details: {}", seleniumEnv);
         return container;
-    }
-
-    //See: https://github.com/testcontainers/testcontainers-java/pull/4357
-    @Deprecated
-    private WaitStrategy getWaitStrategy() {
-        WaitStrategy logWaitStrategy = new LogMessageWaitStrategy()
-                .withRegEx(".*(RemoteWebDriver instances should connect to|Selenium Server is up and running).*\n")
-                .withStartupTimeout(Duration.of(60, SECONDS));
-
-        return new WaitAllStrategy()
-                .withStrategy(logWaitStrategy)
-                .withStrategy(new HostPortWaitStrategy())
-                .withStartupTimeout(Duration.of(60, SECONDS));
     }
 
     /**
@@ -187,11 +162,11 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         // unfortunately host.docker.internal only works for mac and windows :(
         // and we need to work out the hostname for linux.
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-        if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
+        if ((OS.contains("mac")) || (OS.contains("darwin"))) {
             return "host.docker.internal";
-        } else if (OS.indexOf("win") >= 0) {
+        } else if (OS.contains("win")) {
             return "host.docker.internal";
-        } else if (OS.indexOf("nux") >= 0) {
+        } else if (OS.contains("nux")) {
             Container.ExecResult execResult;
             try {
                 execResult = container.execInContainer("/sbin/ip route|awk '/default/ { print $3 }'");
@@ -210,9 +185,7 @@ public class EmbeddedSeleniumBootstrapConfiguration {
             }
         }
 
-        // currently only supported if docker machine is installed.
-        // otherwise throws an UnsupportedOpertaion exception
-        return container.getTestHostIpAddress();
+        return DOCKER_FOR_LINUX_STATIC_IP;
     }
 
     private boolean isValidIpAddress(String ipAddress) {
@@ -222,7 +195,4 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         return InetAddresses.isInetAddress(ipAddress);
     }
 
-    private boolean isNotBlank(String str) {
-        return str != null && !str.trim().isEmpty();
-    }
 }
