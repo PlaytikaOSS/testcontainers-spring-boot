@@ -13,8 +13,7 @@ public class CustomTransportConfigCallback implements TransportConfigCallback {
 
     @Override
     public void configure(Transport transport) {
-        if (transport instanceof SshTransport) {
-            SshTransport sshTransport = (SshTransport) transport;
+        if (transport instanceof SshTransport sshTransport) {
             sshTransport.setSshSessionFactory(new CustomSshdSessionFactory(keyPair));
         }
     }

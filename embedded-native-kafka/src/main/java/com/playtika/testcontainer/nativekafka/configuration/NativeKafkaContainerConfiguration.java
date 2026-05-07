@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -92,7 +92,7 @@ public class NativeKafkaContainerConfiguration {
             log.info("Writing native kafka data to: {}", kafkaData);
             createPathAndParentOrMakeWritable(kafkaData);
 
-            nativeKafka.addFileSystemBind(kafkaData.toString(), "/tmp/kafka-logs", BindMode.READ_WRITE);
+            nativeKafka.withCopyToContainer(MountableFile.forHostPath(kafkaData.toString()), "/tmp/kafka-logs");
         }
     }
 

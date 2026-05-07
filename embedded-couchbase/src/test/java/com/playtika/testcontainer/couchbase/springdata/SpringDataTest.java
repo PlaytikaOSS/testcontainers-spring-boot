@@ -46,7 +46,7 @@ public class SpringDataTest extends EmbeddedCouchbaseBootstrapConfigurationTest 
 
         TestDocument testDocument = saveDocument(key, value);
 
-        assertThat(documentRepository.findById(key).get()).isEqualTo(testDocument);
+        assertThat(documentRepository.findById(key)).hasValue(testDocument);
     }
 
     @Test

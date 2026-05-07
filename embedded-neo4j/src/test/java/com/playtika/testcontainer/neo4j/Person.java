@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
-import static java.util.stream.Collectors.toList;
 
 @Node
 @NoArgsConstructor
@@ -52,6 +51,6 @@ public class Person {
                 .orElse(emptySet())
                 .stream()
                 .map(teamMateRelationship -> teamMateRelationship.getTeamMate().getName())
-                .collect(toList());
+                .toList();
     }
 }

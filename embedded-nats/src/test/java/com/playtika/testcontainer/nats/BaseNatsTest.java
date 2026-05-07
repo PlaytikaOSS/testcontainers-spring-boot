@@ -34,7 +34,7 @@ public abstract class BaseNatsTest {
         public Connection natsConnection(@Value("${embedded.nats.host}") String host,
                                          @Value("${embedded.nats.port}") int port) throws IOException, InterruptedException {
 
-            Options connectionOptions = getConnectionOptions(host, port, 100);
+            Options connectionOptions = getConnectionOptions(host, port);
             return Nats.connect(connectionOptions);
         }
 
@@ -42,12 +42,12 @@ public abstract class BaseNatsTest {
         @ConditionalOnToxiProxyEnabled
         public Connection natsToxicproxyConnection(@Value("${embedded.nats.toxiproxy.host}") String host,
                                                    @Value("${embedded.nats.toxiproxy.port}") int port) throws IOException, InterruptedException {
-            Options connectionOptions = getConnectionOptions(host, port, 1000);
+            Options connectionOptions = getConnectionOptions(host, port);
             return Nats.connect(connectionOptions);
         }
     }
 
-    private static Options getConnectionOptions(String host, int port, int timeoutInMillis) {
+    private static Options getConnectionOptions(String host, int port) {
         return new Options.Builder()
                 .server(String.format("nats://%s:%s", host, port))
                 .build();

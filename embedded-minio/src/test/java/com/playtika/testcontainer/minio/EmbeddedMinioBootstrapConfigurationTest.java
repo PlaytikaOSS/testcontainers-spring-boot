@@ -98,7 +98,7 @@ public class EmbeddedMinioBootstrapConfigurationTest {
     }
 
     private static String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+        java.util.Scanner s = new java.util.Scanner(is, StandardCharsets.UTF_8).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 

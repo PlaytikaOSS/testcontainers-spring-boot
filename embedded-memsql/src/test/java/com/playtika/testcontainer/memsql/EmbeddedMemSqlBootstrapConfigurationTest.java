@@ -35,9 +35,6 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
     @Autowired
     ConfigurableEnvironment environment;
 
-//    @Autowired
-//    NetworkTestOperations memsqlNetworkTestOperations;
-
     @Test
     public void shouldConnectToMemSQL() throws Exception {
         assertThat(jdbcTemplate.queryForObject("select @@version_comment", String.class)).contains("SingleStoreDB");

@@ -1,7 +1,6 @@
 package com.playtika.testcontainer.mongodb;
 
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,13 +56,7 @@ public class EmbeddedMongodbBootstrapAuthConfigurationTest {
         assertThat(environment.getProperty("embedded.mongodb.database")).isNotEmpty();
     }
 
-    @Value
-    static class Foo {
-        @Id
-        String someId;
-        String someString;
-        Instant someTimestamp;
-        Long someNumber;
+    record Foo(@Id String someId, String someString, Instant someTimestamp, Long someNumber) {
     }
 
     @EnableAutoConfiguration

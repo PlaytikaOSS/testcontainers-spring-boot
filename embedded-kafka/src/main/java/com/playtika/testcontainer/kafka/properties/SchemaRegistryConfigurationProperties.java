@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties.Authentication.BASIC;
 import static com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties.Authentication.NONE;
@@ -29,7 +29,7 @@ public class SchemaRegistryConfigurationProperties extends CommonContainerProper
     private Authentication authentication = NONE;
 
     public SchemaRegistryConfigurationProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+        this.setCapabilities(List.of(Capability.NET_ADMIN));
     }
 
     public boolean isBasicAuthenticationEnabled() {

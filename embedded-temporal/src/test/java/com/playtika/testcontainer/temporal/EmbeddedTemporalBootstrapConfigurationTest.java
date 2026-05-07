@@ -26,7 +26,7 @@ import org.testcontainers.containers.Container;
 import static io.temporal.api.enums.v1.EventType.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 class EmbeddedTemporalBootstrapConfigurationTest {
 
@@ -41,7 +41,7 @@ class EmbeddedTemporalBootstrapConfigurationTest {
         void workflowExecutionStarts(@Autowired WorkflowClient client) {
             String workflowId = startWorkflow(client);
 
-            assertThat(client.streamHistory(workflowId.toString()))
+            assertThat(client.streamHistory(workflowId))
                     .extracting(HistoryEvent::getEventType)
                     .contains(EVENT_TYPE_WORKFLOW_EXECUTION_STARTED);
         }
@@ -72,7 +72,7 @@ class EmbeddedTemporalBootstrapConfigurationTest {
                     .expectStatus().isOk()
                     .expectBody()
                     .jsonPath("$.history.events[*].eventType")
-                    .value(hasItem(EVENT_TYPE_WORKFLOW_EXECUTION_STARTED.toString()));
+                    .value(values -> assertThat(values).asInstanceOf(list(String.class)).contains(EVENT_TYPE_WORKFLOW_EXECUTION_STARTED.toString()));
         }
     }
 

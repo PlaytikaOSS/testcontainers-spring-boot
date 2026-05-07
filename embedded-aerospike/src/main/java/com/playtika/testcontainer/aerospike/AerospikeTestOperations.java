@@ -64,7 +64,7 @@ public class AerospikeTestOperations {
         if (!StringUtils.hasText(stdout)) {
             return Collections.emptyList();
         }
-        return Arrays.stream(stdout.replaceAll("\n", "").split(";"))
+        return Arrays.stream(stdout.replace("\n", "").split(";"))
                 .map(this::parseToObScanJobObject)
                 .collect(Collectors.toList());
     }
