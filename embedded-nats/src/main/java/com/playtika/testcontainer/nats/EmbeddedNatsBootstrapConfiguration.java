@@ -7,7 +7,9 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
-import lombok.extern.slf4j.Slf4j;
+import io.github.amadeusitgroup.testcontainers.nats.NatsContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -17,13 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
-import org.testcontainers.utility.MountableFile;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -32,7 +29,6 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_NATS;
 import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY;
 
-@Slf4j
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter({DockerPresenceBootstrapConfiguration.class, EmbeddedToxiProxyBootstrapConfiguration.class})
@@ -40,20 +36,21 @@ import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_
 @EnableConfigurationProperties(NatsProperties.class)
 public class EmbeddedNatsBootstrapConfiguration {
 
+    private static final Logger log = LoggerFactory.getLogger(EmbeddedNatsBootstrapConfiguration.class);
+
     private static final String NATS_NETWORK_ALIAS = "nats.testcontainer.docker";
 
     @Bean(name = BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY)
     @ConditionalOnToxiProxyEnabled(module = "nats")
     ToxiproxyClientProxy natsContainerProxy(ToxiproxyClient toxiproxyClient,
                                              ToxiproxyContainer toxiproxyContainer,
-                                             @Qualifier(BEAN_NAME_EMBEDDED_NATS) GenericContainer<?> natsContainer,
-                                             NatsProperties properties,
+                                             @Qualifier(BEAN_NAME_EMBEDDED_NATS) NatsContainer natsContainer,
                                              ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
                 toxiproxyClient,
                 toxiproxyContainer,
                 natsContainer,
-                properties.getClientPort(),
+                NatsContainer.DEFAULT_NATS_CLIENT_PORT,
                 "nats");
 
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.nats", "embeddedNatsToxiproxyInfo", environment);
@@ -62,45 +59,32 @@ public class EmbeddedNatsBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_NATS, destroyMethod = "stop")
-    public GenericContainer<?> natsContainer(ConfigurableEnvironment environment,
-                                             NatsProperties properties,
-                                             Optional<Network> network) {
-        WaitStrategy waitStrategy = new WaitAllStrategy()
-                .withStrategy(new HostPortWaitStrategy())
-                .withStartupTimeout(properties.getTimeoutDuration());
-
-        GenericContainer<?> natsContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getClientPort(), properties.getHttpMonitorPort(), properties.getRouteConnectionsPort())
-                .withCopyFileToContainer(MountableFile.forClasspathResource("nats-server.conf"), "/nats-server.conf")
-                .waitingFor(waitStrategy)
+    public NatsContainer natsContainer(ConfigurableEnvironment environment,
+                                       NatsProperties properties,
+                                       Optional<Network> network) {
+        NatsContainer natsContainer = new NatsContainer(ContainerUtils.getDockerImageName(properties))
                 .withNetworkAliases(NATS_NETWORK_ALIAS);
 
         network.ifPresent(natsContainer::withNetwork);
 
-        natsContainer = configureCommonsAndStart(natsContainer, properties, log);
+        natsContainer = (NatsContainer) configureCommonsAndStart(natsContainer, properties, log);
 
-        registerNatsEnvironment(natsContainer, environment, properties);
+        registerNatsEnvironment(natsContainer, environment);
         return natsContainer;
     }
 
-    private void registerNatsEnvironment(GenericContainer<?> natsContainer,
-                                         ConfigurableEnvironment environment,
-                                         NatsProperties properties) {
-        Integer clientMappedPort = natsContainer.getMappedPort(properties.getClientPort());
-        Integer httpMonitorMappedPort = natsContainer.getMappedPort(properties.getHttpMonitorPort());
-        Integer routeConnectionsMappedPort = natsContainer.getMappedPort(properties.getRouteConnectionsPort());
-        String host = natsContainer.getHost();
-
+    private void registerNatsEnvironment(NatsContainer natsContainer,
+                                         ConfigurableEnvironment environment) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
-        map.put("embedded.nats.host", host);
-        map.put("embedded.nats.port", clientMappedPort);
-        map.put("embedded.nats.httpMonitorPort", httpMonitorMappedPort);
-        map.put("embedded.nats.routeConnectionsPort", routeConnectionsMappedPort);
+        map.put("embedded.nats.host", natsContainer.getHost());
+        map.put("embedded.nats.port", natsContainer.getClientPort());
+        map.put("embedded.nats.httpMonitorPort", natsContainer.getHttpMonitoringPort());
+        map.put("embedded.nats.routeConnectionsPort", natsContainer.getRoutingPort());
         map.put("embedded.nats.networkAlias", NATS_NETWORK_ALIAS);
-        map.put("embedded.nats.internalClientPort", properties.getClientPort());
-        map.put("embedded.nats.internalHttpMonitorPort", properties.getHttpMonitorPort());
-        map.put("embedded.nats.internalRouteConnectionsPort", properties.getRouteConnectionsPort());
+        map.put("embedded.nats.internalClientPort", NatsContainer.DEFAULT_NATS_CLIENT_PORT);
+        map.put("embedded.nats.internalHttpMonitorPort", NatsContainer.DEFAULT_NATS_HTTP_MONITORING_PORT);
+        map.put("embedded.nats.internalRouteConnectionsPort", NatsContainer.DEFAULT_NATS_ROUTING_PORT);
 
         log.info("Started NATS server. Connection details {}", map);
 
