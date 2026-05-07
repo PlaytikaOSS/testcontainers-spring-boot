@@ -20,7 +20,7 @@ public class ArtifactoryProperties extends CommonContainerProperties {
     int generalPort = 8082;
 
     public ArtifactoryProperties() {
-        setWaitTimeoutInSeconds(120);
+        setWaitTimeoutInSeconds(300);
     }
 
     @Override
