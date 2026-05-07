@@ -14,7 +14,7 @@ import java.util.Collections;
 public class PubsubProperties extends CommonContainerProperties {
     public static final String BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB = "embeddedGooglePubsub";
     private String host = "0.0.0.0";
-    private int port = 8089;
+    private int port = 8085;
     private String projectId = "my-project-id";
     private Collection<TopicAndSubscription> topicsAndSubscriptions = Collections.emptyList();
 
@@ -22,6 +22,6 @@ public class PubsubProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "google/cloud-sdk:568.0.0";
+        return "gcr.io/google.com/cloudsdktool/google-cloud-cli:568.0.0-emulators";
     }
 }

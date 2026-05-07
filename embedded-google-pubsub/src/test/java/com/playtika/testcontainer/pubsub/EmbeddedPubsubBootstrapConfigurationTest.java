@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.gcloud.PubSubEmulatorContainer;
 
 import java.util.List;
 
@@ -122,12 +122,12 @@ class EmbeddedPubsubBootstrapConfigurationTest {
     void shouldHaveContainerWithExpectedDefaultProperties() {
         assertThat(beanFactory.getBean(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB))
                 .isNotNull()
-                .isInstanceOf(GenericContainer.class)
-                .satisfies(genericContainer -> {
-                    GenericContainer<?> container = (GenericContainer<?>) genericContainer;
-                    assertThat(container.getExposedPorts()).containsExactly(8089);
+                .isInstanceOf(PubSubEmulatorContainer.class)
+                .satisfies(bean -> {
+                    PubSubEmulatorContainer container = (PubSubEmulatorContainer) bean;
+                    assertThat(container.getExposedPorts()).containsExactly(8085);
                     assertThat(container.getCommandParts())
-                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --project my-project-id --host-port=0.0.0.0:8089");
+                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --host-port 0.0.0.0:8085");
                 });
     }
 

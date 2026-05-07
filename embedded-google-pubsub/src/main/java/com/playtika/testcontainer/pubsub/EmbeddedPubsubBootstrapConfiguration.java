@@ -18,9 +18,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.gcloud.PubSubEmulatorContainer;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.util.Optional;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
 import static com.playtika.testcontainer.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
-import static java.lang.String.format;
 
 @Slf4j
 @Configuration
@@ -47,7 +45,7 @@ public class EmbeddedPubsubBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "google.pubsub")
     ToxiproxyClientProxy googlePubSubContainerProxy(ToxiproxyClient toxiproxyClient,
                                                      ToxiproxyContainer toxiproxyContainer,
-                                                     @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub,
+                                                     @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) PubSubEmulatorContainer pubsub,
                                                      PubsubProperties properties,
                                                      ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -62,33 +60,22 @@ public class EmbeddedPubsubBootstrapConfiguration {
         return proxy;
     }
 
-
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB, destroyMethod = "stop")
-    public GenericContainer<?> pubsub(ConfigurableEnvironment environment,
-                                      PubsubProperties properties,
-                                      Optional<Network> network) {
-        GenericContainer<?> pubsubContainer = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withExposedPorts(properties.getPort())
-                .withCommand(
-                        "/bin/sh",
-                        "-c",
-                        format(
-                                "gcloud beta emulators pubsub start --project %s --host-port=%s:%d",
-                                properties.getProjectId(),
-                                properties.getHost(),
-                                properties.getPort()
-                        )
-                ).waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*started.*$"))
-                .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS);
+    public PubSubEmulatorContainer pubsub(ConfigurableEnvironment environment,
+                                          PubsubProperties properties,
+                                          Optional<Network> network) {
+        PubSubEmulatorContainer pubsubContainer =
+                new PubSubEmulatorContainer(ContainerUtils.getDockerImageName(properties))
+                        .withNetworkAliases(GOOGLE_PUB_SUB_NETWORK_ALIAS);
 
         network.ifPresent(pubsubContainer::withNetwork);
 
-        pubsubContainer = configureCommonsAndStart(pubsubContainer, properties, log);
+        pubsubContainer = (PubSubEmulatorContainer) configureCommonsAndStart(pubsubContainer, properties, log);
         registerPubsubEnvironment(pubsubContainer, environment, properties);
         return pubsubContainer;
     }
 
-    private void registerPubsubEnvironment(GenericContainer<?> container,
+    private void registerPubsubEnvironment(PubSubEmulatorContainer container,
                                            ConfigurableEnvironment environment,
                                            PubsubProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -106,9 +93,10 @@ public class EmbeddedPubsubBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB_MANAGED_CHANNEL)
-    public ManagedChannel managedChannel(@Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) GenericContainer<?> pubsub, PubsubProperties properties) {
+    public ManagedChannel managedChannel(@Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB) PubSubEmulatorContainer pubsub) {
         return ManagedChannelBuilder
-                .forAddress(pubsub.getHost(), pubsub.getMappedPort(properties.getPort())).usePlaintext()
+                .forTarget(pubsub.getEmulatorEndpoint())
+                .usePlaintext()
                 .build();
     }
 
