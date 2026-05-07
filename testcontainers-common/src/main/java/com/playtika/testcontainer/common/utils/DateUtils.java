@@ -23,11 +23,10 @@ public class DateUtils {
      */
     public static String toDateAndTimeAgo(String isoFormattedDate) {
         Object instantOrString = parseToInstantOrString(isoFormattedDate);
-        if (!(instantOrString instanceof Instant)) {
+        if (!(instantOrString instanceof Instant instant)) {
             return (String) instantOrString;
         }
-        Instant instant = ((Instant) instantOrString);
-        OffsetDateTime offsetDateTime = ((Instant) instantOrString).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        OffsetDateTime offsetDateTime = instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
         return offsetDateTime + " (" + toTimeAgo(instant.toEpochMilli()) + ")";
     }
 
