@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import org.testcontainers.utility.MountableFile;
@@ -48,7 +47,7 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     @ConditionalOnToxiProxyEnabled(module = "memsql")
     ToxiproxyClientProxy memsqlContainerProxy(ToxiproxyClient toxiproxyClient,
                                                ToxiproxyContainer toxiproxyContainer,
-                                               @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql,
+                                               @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) MemSqlContainer memsql,
                                                MemSqlProperties properties,
                                                ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -64,44 +63,41 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_MEMSQL, destroyMethod = "stop")
-    public GenericContainer<?> memsql(ConfigurableEnvironment environment,
-                                      MemSqlProperties properties,
-                                      MemSqlStatusCheck memSqlStatusCheck,
-                                      Optional<Network> network) {
-        GenericContainer<?> memsql = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
-                .withEnv("IGNORE_MIN_REQUIREMENTS", "1")
-                .withEnv("SINGLESTORE_SET_GLOBAL_DEFAULT_PARTITIONS_PER_LEAF", "1")
-                .withEnv("LICENSE_KEY", properties.getLicenseKey())
-                .withEnv("SINGLESTORE_LICENSE", properties.getLicenseKey())
-                .withEnv("ROOT_PASSWORD", properties.getPassword())
-                .withEnv("START_AFTER_INIT", "Y")
-                .withExposedPorts(properties.port)
+    public MemSqlContainer memsql(ConfigurableEnvironment environment,
+                                   MemSqlProperties properties,
+                                   MemSqlStatusCheck memSqlStatusCheck,
+                                   Optional<Network> network) {
+        MemSqlContainer memsql = new MemSqlContainer(ContainerUtils.getDockerImageName(properties))
+                .withDatabaseName(properties.getDatabase())
+                .withUsername(properties.getUser())
+                .withPassword(properties.getPassword())
+                .withLicenseKey(properties.getLicenseKey())
                 .withCopyFileToContainer(MountableFile.forClasspathResource("mem.sql"), "/schema.sql")
                 .waitingFor(memSqlStatusCheck)
                 .withNetworkAliases(MEMSQL_NETWORK_ALIAS);
-        if ("aarch".equals(System.getProperty("system.arch"))){
+
+        if ("aarch".equals(System.getProperty("system.arch"))) {
             memsql = memsql.withCommand("platform", "linux/amd64");
         }
+
         network.ifPresent(memsql::withNetwork);
-        memsql = configureCommonsAndStart(memsql, properties, log);
+        memsql = (MemSqlContainer) configureCommonsAndStart(memsql, properties, log);
         registerMemSqlEnvironment(memsql, environment, properties);
         return memsql;
     }
 
-    private void registerMemSqlEnvironment(GenericContainer<?> memsql,
-                                           ConfigurableEnvironment environment,
-                                           MemSqlProperties properties) {
-        Integer mappedPort = memsql.getMappedPort(properties.port);
-        String host = memsql.getHost();
-
+    private void registerMemSqlEnvironment(MemSqlContainer memsql,
+                                            ConfigurableEnvironment environment,
+                                            MemSqlProperties properties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("embedded.memsql.port", mappedPort);
-        map.put("embedded.memsql.host", host);
-        map.put("embedded.memsql.schema", properties.getDatabase());
-        map.put("embedded.memsql.user", properties.getUser());
-        map.put("embedded.memsql.password", properties.getPassword());
+        map.put("embedded.memsql.port", memsql.getMappedPort(MemSqlContainer.MEMSQL_PORT));
+        map.put("embedded.memsql.host", memsql.getHost());
+        map.put("embedded.memsql.schema", memsql.getDatabaseName());
+        map.put("embedded.memsql.user", memsql.getUsername());
+        map.put("embedded.memsql.password", memsql.getPassword());
+        map.put("embedded.memsql.jdbcUrl", memsql.getJdbcUrl());
         map.put("embedded.memsql.networkAlias", MEMSQL_NETWORK_ALIAS);
-        map.put("embedded.memsql.internalPort", properties.getPort());
+        map.put("embedded.memsql.internalPort", MemSqlContainer.MEMSQL_PORT);
 
         log.info("Started memsql server. Connection details {} ", map);
 
