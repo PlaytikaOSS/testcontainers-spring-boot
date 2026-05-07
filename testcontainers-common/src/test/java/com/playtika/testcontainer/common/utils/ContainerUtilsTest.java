@@ -1,7 +1,5 @@
 package com.playtika.testcontainer.common.utils;
 
-import com.github.dockerjava.api.model.AccessMode;
-import com.github.dockerjava.api.model.Bind;
 import com.playtika.testcontainer.bootstrap.EchoContainer;
 import com.playtika.testcontainer.common.checks.PositiveCommandWaitStrategy;
 import com.playtika.testcontainer.common.properties.CommonContainerProperties;
@@ -13,8 +11,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.MountableFile;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,7 @@ class ContainerUtilsTest {
     }
 
     @Test
-    void configureCommonsAndStart() {
+    void configureCommonsAndStart() throws Exception {
         String[] command = {"/bin/sh", "-c", "while true; do echo 'Press [CTRL+C] to stop..'; sleep 1; done"};
         Map<String, String> env = new HashMap<>();
         env.put("TEST_ENV_VAR", "VALUE_TEST");
@@ -79,13 +80,23 @@ class ContainerUtilsTest {
         };
         assertThat(echoContainer.getCopyToFileContainerPathMap()).hasEntrySatisfying(hasCopyToFileContainerPath);
 
+        Map<Transferable, String> transferableMap = getCopyToTransferableContainerPathMap(echoContainer);
+        assertThat(transferableMap).hasSize(2);
         for (MountVolume mountVolume : mountVolumes) {
-            Condition<Bind> hasMountBindings = new Condition<>(
-                bind -> MountableFile.forHostPath(mountVolume.getHostPath()).getResolvedPath().equals(bind.getPath())
-                    && mountVolume.getContainerPath().equals(bind.getVolume().getPath())
-                    && (BindMode.READ_WRITE.equals(mountVolume.getMode()) && AccessMode.rw == bind.getAccessMode()
-                    || BindMode.READ_ONLY.equals(mountVolume.getMode()) && AccessMode.ro == bind.getAccessMode()), "binding");
-            assertThat(echoContainer.getBinds()).hasSize(2).haveExactly(1, hasMountBindings);
+            String expectedPath = MountableFile.forHostPath(mountVolume.getHostPath()).getResolvedPath();
+            Condition<Map.Entry<Transferable, String>> hasMountVolume = new Condition<>(
+                entry -> entry.getKey() instanceof MountableFile mountableFile
+                    && mountableFile.getResolvedPath().equals(expectedPath)
+                    && mountVolume.getContainerPath().equals(entry.getValue()),
+                "mount volume copy");
+            assertThat(transferableMap).hasEntrySatisfying(hasMountVolume);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<Transferable, String> getCopyToTransferableContainerPathMap(EchoContainer container) throws Exception {
+        Field field = GenericContainer.class.getDeclaredField("copyToTransferableContainerPathMap");
+        field.setAccessible(true);
+        return (Map<Transferable, String>) field.get(container);
     }
 }
