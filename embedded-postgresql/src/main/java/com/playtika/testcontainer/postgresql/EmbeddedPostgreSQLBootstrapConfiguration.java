@@ -37,8 +37,6 @@ import static com.playtika.testcontainer.postgresql.PostgreSQLProperties.BEAN_NA
 @EnableConfigurationProperties(PostgreSQLProperties.class)
 public class EmbeddedPostgreSQLBootstrapConfiguration {
 
-    private static final String POSTGRESQL_NETWORK_ALIAS = "postgresql.testcontainer.docker";
-
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "postgresql")
     ToxiproxyClientProxy postgresqlContainerProxy(ToxiproxyClient toxiproxyClient,
@@ -68,7 +66,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
                         .withInitScript(properties.initScriptPath)
-                        .withNetworkAliases(POSTGRESQL_NETWORK_ALIAS);
+                        .withNetworkAliases(properties.getNetworkAlias());
 
         network.ifPresent(postgresql::withNetwork);
 
@@ -96,7 +94,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         map.put("embedded.postgresql.schema", properties.getDatabase());
         map.put("embedded.postgresql.user", properties.getUser());
         map.put("embedded.postgresql.password", properties.getPassword());
-        map.put("embedded.postgresql.networkAlias", POSTGRESQL_NETWORK_ALIAS);
+        map.put("embedded.postgresql.networkAlias", properties.getNetworkAlias());
         map.put("embedded.postgresql.internalPort", PostgreSQLContainer.POSTGRESQL_PORT);
 
         String jdbcURL = "jdbc:postgresql://{}:{}/{}";

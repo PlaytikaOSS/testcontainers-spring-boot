@@ -22,7 +22,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.images.builder.Transferable;
@@ -90,7 +89,7 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
                                            WaitStrategy artifactoryWaitStrategy,
                                            Network network) {
 
-        String systemYaml = getSystemYaml(postgresqlProperties,postgreSQLContainer);
+        String systemYaml = getSystemYaml(postgresqlProperties, postgreSQLContainer);
 
         GenericContainer<?> container =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -109,10 +108,10 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
         return container;
     }
 
-    private static @NonNull String getSystemYaml(PostgreSQLProperties postgresqlProperties,
-                                                 PostgreSQLContainer postgreSQLContainer) {
+    static @NonNull String getSystemYaml(PostgreSQLProperties postgresqlProperties,
+                                         PostgreSQLContainer postgreSQLContainer) {
         String jdbcUrl = "jdbc:postgresql://%s:%d/%s"
-            .formatted(postgreSQLContainer.getNetwork(), POSTGRESQL_PORT, postgresqlProperties.getDatabase());
+            .formatted(postgresqlProperties.getNetworkAlias(), POSTGRESQL_PORT, postgresqlProperties.getDatabase());
 
         return """
             shared:

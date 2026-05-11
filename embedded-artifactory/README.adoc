@@ -31,6 +31,7 @@ Configure the database via `embedded.postgresql.*` properties:
 * `embedded.postgresql.user` `(default is 'postgresql')`
 * `embedded.postgresql.password` `(default is 'letmein')`
 * `embedded.postgresql.database` `(default is 'test_db')`
+* `embedded.postgresql.networkAlias` `(default is 'postgresql.testcontainer.docker')`
 * `embedded.postgresql.dockerImage` `(default is 'postgres:18-alpine')`
 
 Example override in `bootstrap.properties`:
