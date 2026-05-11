@@ -12,9 +12,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.kafka.ConfluentKafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -50,15 +49,14 @@ public class NativeKafkaContainerConfiguration {
     }
 
     @Bean(name = NATIVE_KAFKA_BEAN_NAME, destroyMethod = "stop")
-    public ConfluentKafkaContainer nativeKafka(
+    public KafkaContainer nativeKafka(
             NativeKafkaConfigurationProperties nativeKafkaProperties,
             ConfigurableEnvironment environment,
             Network network) {
 
-        DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage())
-                .asCompatibleSubstituteFor("confluentinc/cp-kafka");
+        DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage());
 
-        ConfluentKafkaContainer nativeKafka = new ConfluentKafkaContainer(nativeKafkaImageName)
+        KafkaContainer nativeKafka = new KafkaContainer(nativeKafkaImageName)
                 .withNetwork(network)
                 .withNetworkAliases(NATIVE_KAFKA_HOST_NAME)
                 .withExtraHost(NATIVE_KAFKA_HOST_NAME, "127.0.0.1");
@@ -67,7 +65,7 @@ public class NativeKafkaContainerConfiguration {
         configureFileSystemBind(nativeKafkaProperties, nativeKafka);
 
         // Configure and start the container using common utilities
-        nativeKafka = (ConfluentKafkaContainer) configureCommonsAndStart(nativeKafka, nativeKafkaProperties, log);
+        nativeKafka = (KafkaContainer) configureCommonsAndStart(nativeKafka, nativeKafkaProperties, log);
 
         // Register environment properties
         registerNativeKafkaEnvironment(nativeKafka, environment, nativeKafkaProperties);
@@ -83,7 +81,7 @@ public class NativeKafkaContainerConfiguration {
         return new NativeKafkaTopicsConfigurer(nativeKafka, nativeKafkaProperties);
     }
 
-    private void configureFileSystemBind(NativeKafkaConfigurationProperties nativeKafkaProperties, ConfluentKafkaContainer nativeKafka) {
+    private void configureFileSystemBind(NativeKafkaConfigurationProperties nativeKafkaProperties, KafkaContainer nativeKafka) {
         NativeKafkaConfigurationProperties.FileSystemBind fileSystemBind = nativeKafkaProperties.getFileSystemBind();
         if (fileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
@@ -92,11 +90,11 @@ public class NativeKafkaContainerConfiguration {
             log.info("Writing native kafka data to: {}", kafkaData);
             createPathAndParentOrMakeWritable(kafkaData);
 
-            nativeKafka.withCopyToContainer(MountableFile.forHostPath(kafkaData.toString()), "/tmp/kafka-logs");
+            nativeKafka.withFileSystemBind(kafkaData.toString(), "/tmp/kafka-logs");
         }
     }
 
-    private void registerNativeKafkaEnvironment(ConfluentKafkaContainer nativeKafka,
+    private void registerNativeKafkaEnvironment(KafkaContainer nativeKafka,
                                               ConfigurableEnvironment environment,
                                               NativeKafkaConfigurationProperties nativeKafkaProperties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
