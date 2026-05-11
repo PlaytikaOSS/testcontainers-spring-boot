@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.kafka.configuration;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.kafka.KafkaTopicsConfigurer;
 import com.playtika.testcontainer.kafka.checks.KafkaStatusCheck;
@@ -23,7 +24,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.images.builder.Transferable;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -128,7 +130,7 @@ public class KafkaContainerConfiguration {
     }
 
     @Bean(name = KAFKA_BEAN_NAME, destroyMethod = "stop")
-    public KafkaContainer kafka(
+    public ConfluentKafkaContainer kafka(
             KafkaStatusCheck kafkaStatusCheck,
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties,
@@ -150,25 +152,30 @@ public class KafkaContainerConfiguration {
         // All properties: https://docs.confluent.io/platform/current/installation/configuration/
         // Kafka Broker properties: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 
-        KafkaContainer kafka = new KafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
+        ConfluentKafkaContainer kafka = new ConfluentKafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
             @Override
-            public String getBootstrapServers() {
-                List<String> servers = new ArrayList<>();
-                servers.add("EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort));
-                servers.add("EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort));
-                servers.add("INTERNAL_SASL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + saslPlaintextKafkaInternalPort);
-                servers.add("INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort);
+            protected void containerIsStarting(InspectContainerResponse containerInfo) {
+                String hostname = containerInfo.getConfig().getHostName();
+                List<String> advertisedListeners = new ArrayList<>();
+                advertisedListeners.add("EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort));
+                advertisedListeners.add("EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort));
+                advertisedListeners.add("INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort);
+                advertisedListeners.add("INTERNAL_SASL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + saslPlaintextKafkaInternalPort);
+                advertisedListeners.add("TOXIPROXY_INTERNAL_PLAINTEXT://" + (plainTextProxy != null
+                        ? getHost() + ":" + plainTextProxy.getProxyPort()
+                        : KAFKA_HOST_NAME + ":" + toxiProxyKafkaInternalPort));
+                advertisedListeners.add("TOXIPROXY_INTERNAL_SASL_PLAINTEXT://" + (saslProxy != null
+                        ? getHost() + ":" + saslProxy.getProxyPort()
+                        : KAFKA_HOST_NAME + ":" + toxiProxySaslPlaintextKafkaInternalPort));
+                advertisedListeners.add("BROKER://" + hostname + ":9092");
 
-                if (plainTextProxy != null) {
-                    servers.add("TOXIPROXY_INTERNAL_PLAINTEXT://" + getHost() + ":" + plainTextProxy.getProxyPort());
-                }
-                if (saslProxy != null) {
-                    servers.add("TOXIPROXY_INTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + saslProxy.getProxyPort());
-                }
-
-                return String.join(",", servers);
+                String command = "#!/bin/bash\n"
+                        + "export KAFKA_ADVERTISED_LISTENERS=" + String.join(",", advertisedListeners) + "\n"
+                        + "/etc/confluent/docker/run\n";
+                copyFileToContainer(Transferable.of(command, 0777), "/tmp/testcontainers_start.sh");
             }
         }
+
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
@@ -180,6 +187,7 @@ public class KafkaContainerConfiguration {
                                 "INTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT," +
                                 "INTERNAL_PLAINTEXT:PLAINTEXT," +
                                 "BROKER:PLAINTEXT," +
+                                "CONTROLLER:PLAINTEXT," +
                                 "TOXIPROXY_INTERNAL_PLAINTEXT:PLAINTEXT," +
                                 "TOXIPROXY_INTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT"
                 )
@@ -190,8 +198,10 @@ public class KafkaContainerConfiguration {
                                 "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
                                 "TOXIPROXY_INTERNAL_PLAINTEXT://0.0.0.0:" + toxiProxyKafkaInternalPort + "," +
                                 "TOXIPROXY_INTERNAL_SASL_PLAINTEXT://0.0.0.0:" + toxiProxySaslPlaintextKafkaInternalPort + "," +
-                                "BROKER://0.0.0.0:9092"
+                                "BROKER://0.0.0.0:9092," +
+                                "CONTROLLER://0.0.0.0:9099"
                 )
+                .withEnv("KAFKA_CONTROLLER_QUORUM_VOTERS", "1@localhost:9099")
                 .withEnv("KAFKA_INTER_BROKER_LISTENER_NAME", "BROKER")
                 .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
                 .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(kafkaProperties.getOffsetsTopicReplicationFactor()))
@@ -215,12 +225,12 @@ public class KafkaContainerConfiguration {
         kafkaFileSystemBind(kafkaProperties, kafka);
         zookeperFileSystemBind(zookeeperProperties, kafka);
 
-        kafka = (KafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
+        kafka = (ConfluentKafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;
     }
 
-    private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, KafkaContainer kafka) {
+    private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, ConfluentKafkaContainer kafka) {
         KafkaConfigurationProperties.FileSystemBind fileSystemBind = kafkaProperties.getFileSystemBind();
         if (fileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
@@ -233,7 +243,7 @@ public class KafkaContainerConfiguration {
         }
     }
 
-    private void zookeperFileSystemBind(ZookeeperConfigurationProperties zookeeperProperties, KafkaContainer kafka) {
+    private void zookeperFileSystemBind(ZookeeperConfigurationProperties zookeeperProperties, ConfluentKafkaContainer kafka) {
         ZookeeperConfigurationProperties.FileSystemBind zookeeperFileSystemBind = zookeeperProperties.getFileSystemBind();
         if (zookeeperFileSystemBind.isEnabled()) {
             String currentTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH-mm-ss-nnnnnnnnn"));
