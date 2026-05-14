@@ -1,8 +1,16 @@
 package com.playtika.testcontainer.memsql;
 
+import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
 public class MemSqlContainer extends JdbcDatabaseContainer<MemSqlContainer> {
 
     private static final DockerImageName DEFAULT_IMAGE_NAME =
@@ -80,5 +88,57 @@ public class MemSqlContainer extends JdbcDatabaseContainer<MemSqlContainer> {
     @Override
     protected String getTestQueryString() {
         return "SELECT 1";
+    }
+
+    @Override
+    protected void waitUntilContainerStarted() {
+        // JdbcDatabaseContainer.waitUntilContainerStarted() does not call super, so the
+        // waitingFor() strategy is never executed and the JDBC check connects to getJdbcUrl()
+        // which includes the database name — failing with "Unknown database" since the DB
+        // doesn't exist yet. Connect to the root URL first, create the DB, then hand off.
+        String rootUrl = "jdbc:mariadb://" + getHost() + ":" + getMappedPort(MEMSQL_PORT) + "/";
+        long startNanos = System.nanoTime();
+        long timeoutNanos = TimeUnit.SECONDS.toNanos(getStartupTimeoutSeconds());
+        Exception lastException = null;
+
+        while ((System.nanoTime() - startNanos) < timeoutNanos) {
+            if (!isRunning()) {
+                sleep(500);
+                continue;
+            }
+            try (Connection conn = DriverManager.getConnection(rootUrl, username, password);
+                 Statement stmt = conn.createStatement()) {
+                stmt.execute("CREATE DATABASE IF NOT EXISTS " + database);
+                log.debug("Database '{}' created/verified", database);
+                break;
+            } catch (Exception e) {
+                lastException = e;
+                sleep(500);
+            }
+        }
+
+        if (lastException != null && !databaseExists(rootUrl)) {
+            throw new ContainerLaunchException("Could not create database '" + database + "'", lastException);
+        }
+
+        super.waitUntilContainerStarted();
+    }
+
+    private boolean databaseExists(String rootUrl) {
+        try (Connection conn = DriverManager.getConnection(rootUrl, username, password);
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("USE " + database);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
