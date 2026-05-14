@@ -2,7 +2,6 @@ package com.playtika.testcontainer.selenium.drivers;
 
 
 import com.playtika.testcontainer.selenium.SeleniumProperties;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * {@link FirefoxOptions}
  */
-@Disabled
+@TestPropertySource(properties = {
+        "embedded.selenium.browser=FIREFOX",
+        "embedded.selenium.docker-image=selenium/standalone-firefox-debug:3.141.59-mercury"
+})
 @Import(EmbeddedFirefoxSeleniumBeanConfigurationTest.LocalTestConfiguration.class)
 public class EmbeddedFirefoxSeleniumBeanConfigurationTest extends BaseEmbeddedSeleniumTest {
 
@@ -44,7 +47,7 @@ public class EmbeddedFirefoxSeleniumBeanConfigurationTest extends BaseEmbeddedSe
     @Test
     public void testThatTestCapabilityIsSet() {
         // default is true, false is set in localtestconfiguration
-        boolean acceptUnsecureCertificates = (boolean)container.getWebDriver().getCapabilities().getCapability(CapabilityType.ACCEPT_INSECURE_CERTS);
+        boolean acceptUnsecureCertificates = (boolean) getDriver().getCapabilities().getCapability(CapabilityType.ACCEPT_INSECURE_CERTS);
         assertThat(acceptUnsecureCertificates).isFalse();
     }
 

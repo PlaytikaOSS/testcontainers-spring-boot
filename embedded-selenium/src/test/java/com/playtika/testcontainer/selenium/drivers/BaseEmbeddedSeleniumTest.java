@@ -4,12 +4,13 @@ import com.playtika.testcontainer.selenium.DockerHostname;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,6 +25,9 @@ public abstract class BaseEmbeddedSeleniumTest {
     protected BrowserWebDriverContainer container;
 
     @Autowired
+    protected MutableCapabilities capabilities;
+
+    @Autowired
     protected ConfigurableEnvironment environment;
 
     @LocalServerPort
@@ -32,16 +36,25 @@ public abstract class BaseEmbeddedSeleniumTest {
     @DockerHostname
     private String dockerHostname;
 
+    private RemoteWebDriver driver;
+
+    protected RemoteWebDriver getDriver() {
+        if (driver == null) {
+            driver = new RemoteWebDriver(container.getSeleniumAddress(), capabilities);
+        }
+        return driver;
+    }
+
     @Test
     public void seleniumShouldWork() {
-        RemoteWebDriver driver = container.getWebDriver();
+        RemoteWebDriver driver = getDriver();
         getIndexPage(driver);
         assertThat(driver.getTitle()).isEqualTo("Hello World Page");
     }
 
     @Test
     public void seleniumLinkShouldWorkAndPropertiesAreAvailable() {
-        RemoteWebDriver driver = container.getWebDriver();
+        RemoteWebDriver driver = getDriver();
         getIndexPage(driver);
         driver.findElement(By.linkText("Test Link")).click();
         assertThat(driver.getTitle()).isEqualTo("Test Link Page");
@@ -60,7 +73,7 @@ public abstract class BaseEmbeddedSeleniumTest {
     }
 
     public String getBrowserName() {
-        return (String)container.getWebDriver().getCapabilities().getCapability("browserName");
+        return (String) getDriver().getCapabilities().getCapability("browserName");
     }
 
 }
