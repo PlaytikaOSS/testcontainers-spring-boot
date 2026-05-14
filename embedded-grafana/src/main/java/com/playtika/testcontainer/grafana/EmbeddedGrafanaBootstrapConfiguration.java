@@ -67,6 +67,11 @@ public class EmbeddedGrafanaBootstrapConfiguration {
                         .withNetwork(Network.SHARED)
                         .withNetworkAliases(properties.getNetworkAlias(), GRAFANA_NETWORK_ALIAS);
 
+        if (properties.isAnonymousAuthEnabled()) {
+            container.withEnv("GF_AUTH_ANONYMOUS_ENABLED", "true")
+                    .withEnv("GF_AUTH_ANONYMOUS_ORG_ROLE", properties.getAnonymousOrgRole());
+        }
+
         network.ifPresent(container::withNetwork);
 
         configureCommonsAndStart(container, properties, log);

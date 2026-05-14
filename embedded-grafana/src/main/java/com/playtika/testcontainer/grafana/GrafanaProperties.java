@@ -21,6 +21,8 @@ public class GrafanaProperties extends CommonContainerProperties {
     int tempoPort = 3200;
     int otlpGrpcPort = 4317;
     int otlpHttpPort = 4318;
+    boolean anonymousAuthEnabled = false;
+    String anonymousOrgRole = "Viewer";
 
     // https://hub.docker.com/r/grafana/otel-lgtm
     @Override
