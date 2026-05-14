@@ -26,6 +26,8 @@
 * `embedded.grafana.tempoPort` `(default is 3200, Tempo HTTP)`
 * `embedded.grafana.otlpGrpcPort` `(default is 4317, OTLP gRPC)`
 * `embedded.grafana.otlpHttpPort` `(default is 4318, OTLP HTTP)`
+* `embedded.grafana.anonymousAuthEnabled` `(true|false, default is false)` - Sets `GF_AUTH_ANONYMOUS_ENABLED=true`
+* `embedded.grafana.anonymousOrgRole` `(default is 'Viewer')` - Sets `GF_AUTH_ANONYMOUS_ORG_ROLE`; only applied when `anonymousAuthEnabled=true`
 * `embedded.toxiproxy.proxies.grafana.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-grafana` container.
 * `embedded.grafana.filesToInclude` Classpath resources to copy into the container at startup. Use this to provision custom Grafana datasources, dashboards, or alert rules. Example `bootstrap.yaml`:
 
