@@ -18,6 +18,6 @@ public class CockroachDBProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "cockroachdb/cockroach:v26.1.4";
+        return "cockroachdb/cockroach:v26.2.0";
     }
 }
