@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import redis.clients.jedis.Jedis;
 
@@ -47,6 +48,15 @@ public class EmbeddedRedisDependenciesAutoConfiguration {
         @Bean
         public static BeanFactoryPostProcessor jedisDependencyPostProcessor() {
             return new DependsOnPostProcessor(Jedis.class, new String[]{BEAN_NAME_EMBEDDED_REDIS});
+        }
+    }
+
+    @Configuration
+    @ConditionalOnClass(LettuceConnectionFactory.class)
+    public static class LettuceDependencyContext {
+        @Bean
+        public static BeanFactoryPostProcessor lettuceConnectionFactoryDependencyPostProcessor() {
+            return new DependsOnPostProcessor(LettuceConnectionFactory.class, new String[]{BEAN_NAME_EMBEDDED_REDIS});
         }
     }
 }
