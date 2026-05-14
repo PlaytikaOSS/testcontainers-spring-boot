@@ -8,6 +8,7 @@ import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import io.github.amadeusitgroup.testcontainers.nats.NatsContainer;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,14 +30,13 @@ import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCo
 import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_NATS;
 import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY;
 
+@Slf4j
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
 @AutoConfigureAfter({DockerPresenceBootstrapConfiguration.class, EmbeddedToxiProxyBootstrapConfiguration.class})
 @ConditionalOnProperty(name = "embedded.nats.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(NatsProperties.class)
 public class EmbeddedNatsBootstrapConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(EmbeddedNatsBootstrapConfiguration.class);
 
     private static final String NATS_NETWORK_ALIAS = "nats.testcontainer.docker";
 
