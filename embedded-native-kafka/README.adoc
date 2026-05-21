@@ -20,7 +20,7 @@ WARNING: Do not try to use both embedded-kafka and embedded-native-kafka!
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.kafka.enabled` `(true|false, default is true)`
 * `embedded.kafka.topicsToCreate` `(comma separated list of topic names, default is empty)`
-* `embedded.kafka.dockerImage` `(default is set to 'apache/kafka-native:4.2.0')`
+* `embedded.kafka.dockerImage` `(default is set to 'apache/kafka-native:4.3.0')`
 ** Image versions on https://hub.docker.com/r/apache/kafka-native/tags[dockerhub]
 * `embedded.kafka.waitTimeoutInSeconds` `(default is 60 seconds)`
 * `embedded.kafka.kafkaPort` `(default is 9092)`
