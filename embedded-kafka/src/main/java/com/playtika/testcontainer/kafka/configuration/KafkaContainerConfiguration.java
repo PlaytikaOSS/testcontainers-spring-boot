@@ -26,6 +26,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
+import org.testcontainers.utility.ComparableVersion;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
@@ -59,6 +61,8 @@ import static java.lang.String.format;
 public class KafkaContainerConfiguration {
 
     public static final String KAFKA_HOST_NAME = "kafka-broker.testcontainer.docker";
+    private static final int KRAFT_CONTROLLER_PORT = 9094;
+    private static final int KRAFT_INTERNAL_PLAINTEXT_PORT = 19094;
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(Network.class)
@@ -151,14 +155,18 @@ public class KafkaContainerConfiguration {
         // All properties: https://docs.confluent.io/platform/current/installation/configuration/
         // Kafka Broker properties: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 
-        KafkaContainer kafka = new KafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
+        DockerImageName kafkaImageName = ContainerUtils.getDockerImageName(kafkaProperties);
+        boolean kraftMode = shouldUseKraft(kafkaImageName);
+        int effectiveKafkaInternalPort = getEffectiveKafkaInternalPort(kraftMode, kafkaInternalPort);
+
+        KafkaContainer kafka = new KafkaContainer(kafkaImageName) {
             @Override
             public String getBootstrapServers() {
                 List<String> servers = new ArrayList<>();
                 servers.add("EXTERNAL_PLAINTEXT://" + getHost() + ":" + getMappedPort(kafkaExternalPort));
                 servers.add("EXTERNAL_SASL_PLAINTEXT://" + getHost() + ":" + getMappedPort(saslPlaintextKafkaExternalPort));
                 servers.add("INTERNAL_SASL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + saslPlaintextKafkaInternalPort);
-                servers.add("INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + kafkaInternalPort);
+                servers.add("INTERNAL_PLAINTEXT://" + KAFKA_HOST_NAME + ":" + effectiveKafkaInternalPort);
 
                 if (plainTextProxy != null) {
                     servers.add("TOXIPROXY_INTERNAL_PLAINTEXT://" + getHost() + ":" + plainTextProxy.getProxyPort());
@@ -172,7 +180,6 @@ public class KafkaContainerConfiguration {
         }
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
-                .withEmbeddedZookeeper()
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
                 //see: https://github.com/wurstmeister/kafka-docker/blob/develop/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
@@ -189,7 +196,7 @@ public class KafkaContainerConfiguration {
                                 "EXTERNAL_PLAINTEXT://0.0.0.0:" + kafkaExternalPort + "," +
                                 "EXTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaExternalPort + "," +
                                 "INTERNAL_SASL_PLAINTEXT://0.0.0.0:" + saslPlaintextKafkaInternalPort + "," +
-                                "INTERNAL_PLAINTEXT://0.0.0.0:" + kafkaInternalPort + "," +
+                                "INTERNAL_PLAINTEXT://0.0.0.0:" + effectiveKafkaInternalPort + "," +
                                 "TOXIPROXY_INTERNAL_PLAINTEXT://0.0.0.0:" + toxiProxyKafkaInternalPort + "," +
                                 "TOXIPROXY_INTERNAL_SASL_PLAINTEXT://0.0.0.0:" + toxiProxySaslPlaintextKafkaInternalPort + "," +
                                 "BROKER://0.0.0.0:9092"
@@ -208,18 +215,39 @@ public class KafkaContainerConfiguration {
                 .withCopyFileToContainer(MountableFile.forClasspathResource("kafka_server_jaas.conf"), "/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_OPTS", "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf")
                 .withEnv("KAFKA_GC_LOG_OPTS", "-Dnogclog")
-                .withExposedPorts(kafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort)
+                .withExposedPorts(effectiveKafkaInternalPort, kafkaExternalPort, saslPlaintextKafkaExternalPort)
                 .withNetwork(network)
                 .withNetworkAliases(KAFKA_HOST_NAME)
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
                 .waitingFor(kafkaStatusCheck);
 
+        if (kraftMode) {
+            kafka.withKraft();
+        } else {
+            kafka.withEmbeddedZookeeper();
+        }
+
         kafkaFileSystemBind(kafkaProperties, kafka);
-        zookeperFileSystemBind(zookeeperProperties, kafka);
+        if (!kraftMode) {
+            zookeperFileSystemBind(zookeeperProperties, kafka);
+        }
 
         kafka = (KafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
-        registerKafkaEnvironment(kafka, environment, kafkaProperties);
+        registerKafkaEnvironment(kafka, environment, kafkaProperties, effectiveKafkaInternalPort);
         return kafka;
+    }
+
+    private boolean shouldUseKraft(DockerImageName dockerImageName) {
+        return "confluentinc/cp-kafka".equals(dockerImageName.getUnversionedPart())
+                && new ComparableVersion(dockerImageName.getVersionPart()).isGreaterThanOrEqualTo("8.0.0");
+    }
+
+    private int getEffectiveKafkaInternalPort(boolean kraftMode, int kafkaInternalPort) {
+        // Testcontainers adds the KRaft controller listener on 9094, which conflicts with our default internal listener.
+        if (kraftMode && kafkaInternalPort == KRAFT_CONTROLLER_PORT) {
+            return KRAFT_INTERNAL_PLAINTEXT_PORT;
+        }
+        return kafkaInternalPort;
     }
 
     private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, KafkaContainer kafka) {
@@ -257,7 +285,8 @@ public class KafkaContainerConfiguration {
 
     private void registerKafkaEnvironment(GenericContainer<?> kafka,
                                           ConfigurableEnvironment environment,
-                                          KafkaConfigurationProperties kafkaProperties) {
+                                          KafkaConfigurationProperties kafkaProperties,
+                                          int effectiveKafkaInternalPort) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
         String host = kafka.getHost();
@@ -274,8 +303,7 @@ public class KafkaContainerConfiguration {
         map.put("embedded.kafka.internalPort", kafkaProperties.getInternalBrokerPort());
         map.put("embedded.kafka.internalSaslPlaintextPort", kafkaProperties.getInternalSaslPlaintextBrokerPort());
 
-        Integer containerPort = kafkaProperties.getContainerBrokerPort();
-        String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, containerPort);
+        String kafkaBrokerListForContainers = format("%s:%d", KAFKA_HOST_NAME, effectiveKafkaInternalPort);
         map.put("embedded.kafka.containerBrokerList", kafkaBrokerListForContainers);
 
         MapPropertySource propertySource = new MapPropertySource("embeddedKafkaInfo", map);
