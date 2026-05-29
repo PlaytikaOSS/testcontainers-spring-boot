@@ -27,10 +27,20 @@
       "versioningTemplate": "docker"
     },
     {
-      "description": "Process embedded docker images in properties and adoc",
+      "description": "Process # renovate comments in properties files",
       "customType": "regex",
       "fileMatch": [
-        "\\.properties$",
+        "\\.properties$"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>[a-zA-Z0-9-]+).*?\\r?\\n\\s*[\\w.-]+\\s*=\\s*(?<depName>[^:\\s]+):?(?<currentValue>[\\w.-]*)"
+      ],
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "Process embedded docker images in adoc",
+      "customType": "regex",
+      "fileMatch": [
         "\\.adoc$"
       ],
       "matchStrings": [
