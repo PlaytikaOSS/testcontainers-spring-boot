@@ -51,7 +51,7 @@ public class EmbeddedKeycloakBootstrapConfiguration {
                 toxiproxyClient,
                 toxiproxyContainer,
                 keycloakContainer,
-                keycloakContainer.getHttpPort(),
+                KEYCLOAK_INTERNAL_HTTP_PORT,
                 "keycloak");
 
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.keycloak", "embeddedKeycloakToxiproxyInfo", environment);
