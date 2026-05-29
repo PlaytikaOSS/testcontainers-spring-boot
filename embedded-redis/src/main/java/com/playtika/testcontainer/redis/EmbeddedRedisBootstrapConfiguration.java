@@ -98,8 +98,9 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .withExposedPorts(properties.getPort())
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf()), "/data/redis.conf")
-                        .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
+                        // Redis 8.8+ drops privileges before startup and must still read/write these files.
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf(), 0444), "/data/redis.conf")
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf(), 0666), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy)
                         .withNetworkAliases(REDIS_NETWORK_ALIAS);
