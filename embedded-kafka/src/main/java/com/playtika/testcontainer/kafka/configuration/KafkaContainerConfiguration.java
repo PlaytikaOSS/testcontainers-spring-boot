@@ -26,6 +26,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
+import org.testcontainers.utility.ComparableVersion;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
@@ -151,7 +153,10 @@ public class KafkaContainerConfiguration {
         // All properties: https://docs.confluent.io/platform/current/installation/configuration/
         // Kafka Broker properties: https://docs.confluent.io/platform/current/installation/configuration/broker-configs.html
 
-        KafkaContainer kafka = new KafkaContainer(ContainerUtils.getDockerImageName(kafkaProperties)) {
+        DockerImageName kafkaImageName = ContainerUtils.getDockerImageName(kafkaProperties);
+        boolean kraftMode = shouldUseKraft(kafkaImageName);
+
+        KafkaContainer kafka = new KafkaContainer(kafkaImageName) {
             @Override
             public String getBootstrapServers() {
                 List<String> servers = new ArrayList<>();
@@ -172,7 +177,6 @@ public class KafkaContainerConfiguration {
         }
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser(kafkaProperties.getDockerUser()))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(KAFKA_HOST_NAME))
-                .withEmbeddedZookeeper()
                 //see: https://stackoverflow.com/questions/41868161/kafka-in-kubernetes-cluster-how-to-publish-consume-messages-from-outside-of-kub
                 //see: https://github.com/wurstmeister/kafka-docker/blob/develop/README.md
                 // order matters: external then internal since kafka.client.ClientUtils.getPlaintextBrokerEndPoints take first for simple consumers
@@ -214,12 +218,25 @@ public class KafkaContainerConfiguration {
                 .withExtraHost(KAFKA_HOST_NAME, "127.0.0.1")
                 .waitingFor(kafkaStatusCheck);
 
+        if (kraftMode) {
+            kafka.withKraft();
+        } else {
+            kafka.withEmbeddedZookeeper();
+        }
+
         kafkaFileSystemBind(kafkaProperties, kafka);
-        zookeperFileSystemBind(zookeeperProperties, kafka);
+        if (!kraftMode) {
+            zookeperFileSystemBind(zookeeperProperties, kafka);
+        }
 
         kafka = (KafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
         registerKafkaEnvironment(kafka, environment, kafkaProperties);
         return kafka;
+    }
+
+    private boolean shouldUseKraft(DockerImageName dockerImageName) {
+        return "confluentinc/cp-kafka".equals(dockerImageName.getUnversionedPart())
+                && new ComparableVersion(dockerImageName.getVersionPart()).isGreaterThanOrEqualTo("8.0.0");
     }
 
     private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, KafkaContainer kafka) {
