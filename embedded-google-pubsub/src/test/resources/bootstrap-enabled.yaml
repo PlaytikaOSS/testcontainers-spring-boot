@@ -9,3 +9,6 @@ embedded.google.pubsub:
       dead-letter:
         topic: topic0
         max-attempts: 10
+    - topic: topic2
+      subscription: subscription2
+      filter: 'attributes.eventType = "ORDER_CREATED"'

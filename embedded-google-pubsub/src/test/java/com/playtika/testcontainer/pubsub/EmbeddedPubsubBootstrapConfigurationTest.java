@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.playtika.testcontainer.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 import static java.util.Arrays.asList;
@@ -106,6 +107,25 @@ class EmbeddedPubsubBootstrapConfigurationTest {
         List<AcknowledgeablePubsubMessage> messages = template.pull("subscription0", 1, false);
 
         assertThat(messages.size()).isEqualTo(1);
+    }
+
+    @Test
+    void shouldHaveFilterConfigured() {
+        ProjectSubscriptionName subscription2 = ProjectSubscriptionName.of(projectId, "subscription2");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription2);
+        assertThat(subscription.getFilter()).isEqualTo("attributes.eventType = \"ORDER_CREATED\"");
+    }
+
+    @Test
+    void shouldOnlyConsumeMessagesMatchingFilter() {
+        template.publish("topic2", "matching", Map.of("eventType", "ORDER_CREATED"));
+        template.publish("topic2", "non-matching", Map.of("eventType", "PING"));
+
+        List<AcknowledgeablePubsubMessage> messages = template.pull("subscription2", 10, false);
+
+        assertThat(messages)
+                .extracting(message -> message.getPubsubMessage().getData().toStringUtf8())
+                .containsExactly("matching");
     }
 
     @Test
