@@ -54,7 +54,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                 toxiproxyContainer,
                 azurite,
                 properties.getBlobStoragePort(),
-                "azurite");
+                "azurite-blob");
 
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteBlobToxiproxyInfo", environment, "blobStoragePort");
 
@@ -73,9 +73,9 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                 toxiproxyContainer,
                 azurite,
                 properties.getQueueStoragePort(),
-                "azurite");
+                "azurite-queue");
 
-        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteQueueToxiproxyInfo", environment, "queueStoragePor");
+        ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteQueueToxiproxyInfo", environment, "queueStoragePort");
 
         return proxy;
     }
@@ -92,7 +92,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
                 toxiproxyContainer,
                 azurite,
                 properties.getTableStoragePort(),
-                "azurite");
+                "azurite-table");
 
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.azurite", "embeddedAzuriteTableToxiproxyInfo", environment, "tableStoragePort");
 
@@ -165,7 +165,7 @@ public class EmbeddedAzuriteBootstrapConfiguration {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.azurite.host", host);
         map.put("embedded.azurite.blobStoragePort", mappedBlobStoragePort);
-        map.put("embedded.azurite.queueStoragePor", mappedQueueStoragePort);
+        map.put("embedded.azurite.queueStoragePort", mappedQueueStoragePort);
         map.put("embedded.azurite.tableStoragePort", mappedTableStoragePort);
         map.put("embedded.azurite.account-name", AzuriteProperties.ACCOUNT_NAME);
         map.put("embedded.azurite.account-key", AzuriteProperties.ACCOUNT_KEY);
