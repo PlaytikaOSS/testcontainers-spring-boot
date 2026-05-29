@@ -10,7 +10,7 @@
     {
       "name": "embedded.mockserver.docker-image",
       "type": "java.lang.String",
-      "defaultValue": "mockserver/mockserver:5.15.0"
+      "defaultValue": "mockserver/mockserver:6.1.0"
     }
   ],
   "hints": [
@@ -31,8 +31,8 @@
       "name": "embedded.mockserver.docker-image",
       "values": [
         {
-          "value": "mockserver/mockserver:5.15.0",
-          "description": "Latest mockserver:5.15.0 version. Ref https://hub.docker.com/r/mockserver/mockserver/tags for further info."
+          "value": "mockserver/mockserver:6.1.0",
+          "description": "Latest mockserver:6.1.0 version. Ref https://hub.docker.com/r/mockserver/mockserver/tags for further info."
         }
       ]
     }

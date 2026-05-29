@@ -13,6 +13,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
@@ -34,16 +35,22 @@ public class EmbeddedMockServerBootstrapConfiguration {
     public MockServerContainer mockServerContainer(ConfigurableEnvironment environment,
                                                    MockServerProperties properties,
                                                    Optional<Network> network) {
-        MockServerContainer mockServerContainer = new MockServerContainer(ContainerUtils.getDockerImageName(properties));
-        mockServerContainer
-                .withExposedPorts(properties.getPort())
-                .withNetworkAliases(MOCKSERVER_NETWORK_ALIAS);
+        MockServerContainer mockServerContainer = createMockServerContainer(properties);
 
         network.ifPresent(mockServerContainer::withNetwork);
 
         mockServerContainer = (MockServerContainer) configureCommonsAndStart(mockServerContainer, properties, log);
         registerMockServerEnvironment(mockServerContainer, properties, environment);
         return mockServerContainer;
+    }
+
+    MockServerContainer createMockServerContainer(MockServerProperties properties) {
+        String port = String.valueOf(properties.getPort());
+        return new MockServerContainer(ContainerUtils.getDockerImageName(properties))
+                .withCommand("-serverPort", port)
+                .waitingFor(Wait.forLogMessage(".*started on port: " + port + ".*", 1))
+                .withExposedPorts(properties.getPort())
+                .withNetworkAliases(MOCKSERVER_NETWORK_ALIAS);
     }
 
     private void registerMockServerEnvironment(MockServerContainer mockServerContainer,
