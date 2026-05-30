@@ -10,5 +10,7 @@ embedded.google.pubsub:
         topic: topic0
         max-attempts: 10
     - topic: topic2
-      subscription: subscription2
-      filter: 'attributes.eventType = "ORDER_CREATED"'
+      subscription: subscription2-unfiltered
+    - topic: topic2
+      subscription: subscription2-filtered
+      filter: 'attributes.eventType = "CREATED"'

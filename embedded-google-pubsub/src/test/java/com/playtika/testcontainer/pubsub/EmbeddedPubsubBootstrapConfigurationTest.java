@@ -65,6 +65,13 @@ class EmbeddedPubsubBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].enable-message-ordering")).isEqualTo("true");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic")).isEqualTo("topic0");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts")).isEqualTo("10");
+
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[2].topic")).isEqualTo("topic2");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[2].subscription")).isEqualTo("subscription2-unfiltered");
+
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[3].topic")).isEqualTo("topic2");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[3].subscription")).isEqualTo("subscription2-filtered");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[3].filter")).isEqualTo("attributes.eventType = \"CREATED\"");
     }
 
     @Test
@@ -110,22 +117,35 @@ class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
+    void shouldNotHaveFilterConfigured() {
+        ProjectSubscriptionName subscription2Unfiltered = ProjectSubscriptionName.of(projectId, "subscription2-unfiltered");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription2Unfiltered);
+        assertThat(subscription.getFilter()).isEmpty();
+    }
+
+    @Test
     void shouldHaveFilterConfigured() {
-        ProjectSubscriptionName subscription2 = ProjectSubscriptionName.of(projectId, "subscription2");
-        Subscription subscription = resourcesGenerator.getSubscription(subscription2);
-        assertThat(subscription.getFilter()).isEqualTo("attributes.eventType = \"ORDER_CREATED\"");
+        ProjectSubscriptionName subscription2Filtered = ProjectSubscriptionName.of(projectId, "subscription2-filtered");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription2Filtered);
+        assertThat(subscription.getFilter()).isEqualTo("attributes.eventType = \"CREATED\"");
     }
 
     @Test
     void shouldOnlyConsumeMessagesMatchingFilter() {
-        template.publish("topic2", "matching", Map.of("eventType", "ORDER_CREATED"));
         template.publish("topic2", "non-matching", Map.of("eventType", "PING"));
+        template.publish("topic2", "matching", Map.of("eventType", "CREATED"));
 
-        List<AcknowledgeablePubsubMessage> messages = template.pull("subscription2", 10, false);
+        List<AcknowledgeablePubsubMessage> filteredMessages = template.pull("subscription2-filtered", 10, false);
 
-        assertThat(messages)
+        assertThat(filteredMessages)
                 .extracting(message -> message.getPubsubMessage().getData().toStringUtf8())
                 .containsExactly("matching");
+
+        List<AcknowledgeablePubsubMessage> unfilteredMessages = template.pull("subscription2-unfiltered", 10, false);
+
+        assertThat(unfilteredMessages)
+                .extracting(message -> message.getPubsubMessage().getData().toStringUtf8())
+                .containsExactly("non-matching", "matching");
     }
 
     @Test
