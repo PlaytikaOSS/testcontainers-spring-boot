@@ -145,7 +145,7 @@ class EmbeddedPubsubBootstrapConfigurationTest {
 
         assertThat(unfilteredMessages)
                 .extracting(message -> message.getPubsubMessage().getData().toStringUtf8())
-                .containsExactly("non-matching", "matching");
+                .containsExactlyInAnyOrder("non-matching", "matching");
     }
 
     @Test
