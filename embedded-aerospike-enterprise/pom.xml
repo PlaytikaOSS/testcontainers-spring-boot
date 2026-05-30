@@ -15,7 +15,7 @@
     <artifactId>embedded-aerospike-enterprise</artifactId>
 
     <properties>
-        <aerospike-client.version>10.1.0</aerospike-client.version>
+        <aerospike-client.version>10.2.0</aerospike-client.version>
     </properties>
 
     <dependencies>
