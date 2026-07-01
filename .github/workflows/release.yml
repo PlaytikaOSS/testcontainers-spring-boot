@@ -34,7 +34,7 @@ jobs:
           private-key: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
     
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{github.event.release.target_commitish}}
           token: ${{ steps.app-token.outputs.token }}
