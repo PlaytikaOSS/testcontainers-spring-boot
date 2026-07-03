@@ -15,7 +15,7 @@
     <artifactId>embedded-temporal</artifactId>
 
     <properties>
-        <temporal.version>1.36.0</temporal.version>
+        <temporal.version>1.36.1</temporal.version>
     </properties>
 
     <dependencyManagement>
