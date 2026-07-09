@@ -48,6 +48,6 @@ public class CouchbaseProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "couchbase/server:8.0.1";
+        return "couchbase/server:8.0.2";
     }
 }
