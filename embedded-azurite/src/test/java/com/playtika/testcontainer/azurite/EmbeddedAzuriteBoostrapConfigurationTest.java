@@ -53,7 +53,7 @@ class EmbeddedAzuriteBoostrapConfigurationTest {
         SendMessageResult sendMessageResult = queueClient.sendMessage("test");
         QueueMessageItem queueMessageItem = queueClient.receiveMessage();
         assertThat(queueMessageItem.getBody().toString()).isEqualTo("test");
-        assertThat(queueMessageItem.getMessageId().toString()).isEqualTo(sendMessageResult.getMessageId());
+        assertThat(queueMessageItem.getMessageId()).isEqualTo(sendMessageResult.getMessageId());
         queueClient.delete();
     }
 

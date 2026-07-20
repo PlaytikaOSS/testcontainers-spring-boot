@@ -24,9 +24,7 @@ public abstract class AbstractDependsOnPostProcessor implements BeanFactoryPostP
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         List<String> beanNamesForType = asList(getBeanNamesForType(beanFactory));
         beanNamesForType.forEach(
-                datastoreClientBeanName -> {
-                    setupDependsOn(beanFactory, datastoreClientBeanName);
-                }
+                datastoreClientBeanName -> setupDependsOn(beanFactory, datastoreClientBeanName)
         );
     }
 

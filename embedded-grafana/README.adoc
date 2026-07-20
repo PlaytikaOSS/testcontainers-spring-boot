@@ -16,12 +16,29 @@
 
 * `embedded.grafana.enabled` `(true|false, default is true)`
 * `embedded.grafana.reuseContainer` `(true|false, default is false)`
-* `embedded.grafana.dockerImage` `(default is 'grafana/grafana:13.1.0')`
-** Image versions on https://hub.docker.com/r/grafana/grafana/tags[dockerhub]
+* `embedded.grafana.dockerImage` `(default is 'grafana/otel-lgtm:0.9.3')`
+** Image versions on https://hub.docker.com/r/grafana/otel-lgtm/tags[dockerhub]
 * `embedded.grafana.networkAlias` `(default is 'grafana')`
 * `embedded.grafana.username` `(default is 'admin')`
 * `embedded.grafana.password` `(default is 'password')`
+* `embedded.grafana.port` `(default is 3000, Grafana UI)`
+* `embedded.grafana.lokiPort` `(default is 3100, Loki HTTP)`
+* `embedded.grafana.tempoPort` `(default is 3200, Tempo HTTP)`
+* `embedded.grafana.otlpGrpcPort` `(default is 4317, OTLP gRPC)`
+* `embedded.grafana.otlpHttpPort` `(default is 4318, OTLP HTTP)`
+* `embedded.grafana.anonymousAuthEnabled` `(true|false, default is false)` - Sets `GF_AUTH_ANONYMOUS_ENABLED=true`
+* `embedded.grafana.anonymousOrgRole` `(default is 'Viewer')` - Sets `GF_AUTH_ANONYMOUS_ORG_ROLE`; only applied when `anonymousAuthEnabled=true`
 * `embedded.toxiproxy.proxies.grafana.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-grafana` container.
+* `embedded.grafana.filesToInclude` Classpath resources to copy into the container at startup. Use this to provision custom Grafana datasources, dashboards, or alert rules. Example `bootstrap.yaml`:
+
+[source,yaml]
+----
+embedded:
+  grafana:
+    filesToInclude:
+      - classpathResource: /embedded/grafana/provisioning/datasources/my-datasource.yml
+        containerPath: /etc/grafana/provisioning/datasources/my-datasource.yml
+----
 
 
 ==== Produces
@@ -30,8 +47,12 @@
 * `embedded.grafana.port`
 * `embedded.grafana.username`
 * `embedded.grafana.password`
-* `embedded.grafana.toxiproxy.host`
-* `embedded.grafana.toxiproxy.port`
 * `embedded.grafana.networkAlias`
 * `embedded.grafana.internalPort`
+* `embedded.grafana.loki.port`
+* `embedded.grafana.tempo.port`
+* `embedded.grafana.otlp.grpc.port`
+* `embedded.grafana.otlp.http.port`
+* `embedded.grafana.toxiproxy.host`
+* `embedded.grafana.toxiproxy.port`
 * Bean `ToxiproxyClientProxy grafanaContainerProxy`

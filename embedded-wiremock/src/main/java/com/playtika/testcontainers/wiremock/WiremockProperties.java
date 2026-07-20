@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class WiremockProperties extends CommonContainerProperties {
 
     private String host = "localhost";
-    private int port = 8990;
 
     // https://hub.docker.com/r/wiremock/wiremock
     @Override

@@ -48,16 +48,6 @@ public class TestcontainerScope implements Scope {
     public void registerDestructionCallback(String name, Runnable callback) {
     }
 
-    @Override
-    public Object resolveContextualObject(String key) {
-        return null;
-    }
-
-    @Override
-    public String getConversationId() {
-        return null;
-    }
-
     /**
      * Register this scope with the specified context and reassign appropriate bean
      * definitions to used it.
@@ -102,9 +92,7 @@ public class TestcontainerScope implements Scope {
         instances.values().stream()
                 .filter(TestLifecycleAware.class::isInstance)
                 .map(TestLifecycleAware.class::cast)
-                .forEach(value -> {
-                    value.afterTest(testDescription(testContext), Optional.ofNullable(testContext.getTestException()));
-                });
+                .forEach(value -> value.afterTest(testDescription(testContext), Optional.ofNullable(testContext.getTestException())));
      }
 
     private TestDescription testDescription(TestContext testContext) {
@@ -126,8 +114,6 @@ public class TestcontainerScope implements Scope {
         instances.values().stream()
                 .filter(TestLifecycleAware.class::isInstance)
                 .map(TestLifecycleAware.class::cast)
-                .forEach(value -> {
-                    value.beforeTest(testDescription(testContext));
-                });
+                .forEach(value -> value.beforeTest(testDescription(testContext)));
     }
 }

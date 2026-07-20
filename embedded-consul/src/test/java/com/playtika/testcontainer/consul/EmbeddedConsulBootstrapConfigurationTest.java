@@ -28,8 +28,6 @@ public class EmbeddedConsulBootstrapConfigurationTest extends EmbeddedConsulBoot
     public void shouldUpdateKey() {
         ConsulClient client = buildClient();
 
-        client.putValue("key", "val").onComplete(res ->{
-            assertThat(res.result()).isEqualTo(true);
-        });
+        client.putValue("key", "val").onComplete(res -> assertThat(res.result()).isEqualTo(true));
     }
 }

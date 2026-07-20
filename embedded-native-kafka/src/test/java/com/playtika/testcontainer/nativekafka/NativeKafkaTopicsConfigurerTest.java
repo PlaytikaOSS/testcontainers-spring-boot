@@ -21,6 +21,7 @@ import org.testcontainers.kafka.KafkaContainer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -111,7 +112,7 @@ class NativeKafkaTopicsConfigurerTest {
             when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
             when(createTopicsResult.all()).thenReturn(future);
 
-            Collection<String> topicsToCreate = Arrays.asList("topic1");
+            Collection<String> topicsToCreate = List.of("topic1");
             Collection<TopicConfiguration> topicsConfiguration = Arrays.asList(
                     new TopicConfiguration("topic1", 5),
                     new TopicConfiguration("topic2", 3)
@@ -149,8 +150,8 @@ class NativeKafkaTopicsConfigurerTest {
             when(createTopicsResult.all()).thenReturn(future);
 
             Collection<String> topicsToCreate = Arrays.asList("topic1", "topic2");
-            Collection<TopicConfiguration> topicsConfiguration = Arrays.asList(
-                    new TopicConfiguration("topic1", 10)
+            Collection<TopicConfiguration> topicsConfiguration = List.of(
+                new TopicConfiguration("topic1", 10)
             );
 
             configurer.createTopics(topicsToCreate, topicsConfiguration);
@@ -196,7 +197,7 @@ class NativeKafkaTopicsConfigurerTest {
             when(createTopicsResult.all()).thenReturn(future);
             when(future.get()).thenThrow(new ExecutionException(new TopicExistsException("Topic exists")));
 
-            Collection<String> topicsToCreate = Arrays.asList("topic1");
+            Collection<String> topicsToCreate = List.of("topic1");
             Collection<TopicConfiguration> topicsConfiguration = Collections.emptyList();
 
             assertThatThrownBy(() -> configurer.createTopics(topicsToCreate, topicsConfiguration))
@@ -217,7 +218,7 @@ class NativeKafkaTopicsConfigurerTest {
             when(createTopicsResult.all()).thenReturn(future);
             when(future.get()).thenThrow(new InterruptedException("Interrupted"));
 
-            Collection<String> topicsToCreate = Arrays.asList("topic1");
+            Collection<String> topicsToCreate = List.of("topic1");
             Collection<TopicConfiguration> topicsConfiguration = Collections.emptyList();
 
             assertThatThrownBy(() -> configurer.createTopics(topicsToCreate, topicsConfiguration))
@@ -237,7 +238,7 @@ class NativeKafkaTopicsConfigurerTest {
             when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
             when(createTopicsResult.all()).thenReturn(future);
 
-            Collection<String> topicsToCreate = Arrays.asList("topic1");
+            Collection<String> topicsToCreate = List.of("topic1");
             Collection<TopicConfiguration> topicsConfiguration = Collections.emptyList();
 
             configurer.createTopics(topicsToCreate, topicsConfiguration);
@@ -262,8 +263,8 @@ class NativeKafkaTopicsConfigurerTest {
             when(createTopicsResult.all()).thenReturn(future);
 
             Collection<String> topicsToCreate = Collections.emptyList();
-            Collection<TopicConfiguration> topicsConfiguration = Arrays.asList(
-                    new TopicConfiguration("configuredTopic", 2)
+            Collection<TopicConfiguration> topicsConfiguration = List.of(
+                new TopicConfiguration("configuredTopic", 2)
             );
 
             configurer.createTopics(topicsToCreate, topicsConfiguration);

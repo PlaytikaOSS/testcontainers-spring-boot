@@ -1,6 +1,9 @@
 package com.playtika.testcontainer.memsql;
 
+import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
+import eu.rekawek.toxiproxy.model.ToxicDirection;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +38,8 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
     @Autowired
     ConfigurableEnvironment environment;
 
-//    @Autowired
-//    NetworkTestOperations memsqlNetworkTestOperations;
+    @Autowired
+    ToxiproxyClientProxy memsqlContainerProxy;
 
     @Test
     public void shouldConnectToMemSQL() throws Exception {
@@ -46,20 +49,21 @@ public class EmbeddedMemSqlBootstrapConfigurationTest {
         assertThat(jdbcTemplate.queryForList("select * from foo")).hasSize(3);
     }
 
-//    @Test
-//    @Disabled("image doesn't support to simply install tc")
-//    public void shouldEmulateLatency() throws Exception {
-//        jdbcTemplate.execute("create table bar (id int primary key);");
-//        jdbcTemplate.execute("insert into bar values (1), (2), (3);");
-//
-//        memsqlNetworkTestOperations.withNetworkLatency(ofMillis(1000),
-//                () -> assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
-//                        .isGreaterThan(1000L)
-//        );
-//
-//        assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
-//                .isLessThan(100L);
-//    }
+    @Test
+    public void shouldEmulateLatency() throws Exception {
+        jdbcTemplate.execute("create table bar (id int primary key);");
+        jdbcTemplate.execute("insert into bar values (1), (2), (3);");
+
+        memsqlContainerProxy.toxics().latency("latency", ToxicDirection.UPSTREAM, 1000);
+
+        assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
+                .isCloseTo(1000L, Offset.offset(100L));
+
+        memsqlContainerProxy.toxics().get("latency").remove();
+
+        assertThat(durationOf(() -> jdbcTemplate.queryForList("select * from bar")))
+                .isLessThan(100L);
+    }
 
     @Test
     public void shouldSetupDependsOnForAllDataSources() throws Exception {

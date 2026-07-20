@@ -1,7 +1,7 @@
 package com.playtika.testcontainer.keycloak.spring;
 
-import com.playtika.testcontainer.keycloak.KeycloakContainer;
 import com.playtika.testcontainer.keycloak.util.KeyCloakToken;
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -51,7 +51,7 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
                         keycloakContainer.getHttpPort()));
 
         assertThat(environment.getProperty("embedded.keycloak.host"))
-                .isEqualTo(keycloakContainer.getIp());
+                .isEqualTo(keycloakContainer.getHost());
 
         assertThat(environment.getProperty("embedded.keycloak.http-port", Integer.class))
                 .isEqualTo(keycloakContainer.getHttpPort());

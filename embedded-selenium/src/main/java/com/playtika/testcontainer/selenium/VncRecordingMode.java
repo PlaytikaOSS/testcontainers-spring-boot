@@ -1,10 +1,10 @@
 package com.playtika.testcontainer.selenium;
 
 
-import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 
 /**
- * See {@link org.testcontainers.containers.BrowserWebDriverContainer.VncRecordingMode}
+ * See {@link org.testcontainers.selenium.BrowserWebDriverContainer.VncRecordingMode}
  */
 public enum VncRecordingMode {
     SKIP, RECORD_ALL, RECORD_FAILING;

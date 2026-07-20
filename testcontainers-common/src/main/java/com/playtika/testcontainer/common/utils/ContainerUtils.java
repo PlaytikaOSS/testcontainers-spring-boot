@@ -84,7 +84,7 @@ public class ContainerUtils {
         }
 
         for (MountVolume mountVolume : properties.getMountVolumes()) {
-            updatedContainer.addFileSystemBind(mountVolume.getHostPath(), mountVolume.getContainerPath(), mountVolume.getMode());
+            updatedContainer.withCopyToContainer(MountableFile.forHostPath(mountVolume.getHostPath()), mountVolume.getContainerPath());
         }
 
         for (Capability capability : properties.getCapabilities()) {

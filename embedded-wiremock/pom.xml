@@ -15,12 +15,18 @@
 
     <properties>
         <wiremock.version>3.13.2</wiremock.version>
+        <wiremock-testcontainers-module.version>1.0-alpha-13</wiremock-testcontainers-module.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock.integrations.testcontainers</groupId>
+            <artifactId>wiremock-testcontainers-module</artifactId>
+            <version>${wiremock-testcontainers-module.version}</version>
         </dependency>
 
         <dependency>
