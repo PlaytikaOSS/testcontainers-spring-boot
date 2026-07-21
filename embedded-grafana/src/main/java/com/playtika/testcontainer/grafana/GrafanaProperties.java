@@ -29,6 +29,6 @@ public class GrafanaProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "grafana/otel-lgtm:0.9.3";
+        return "grafana/otel-lgtm:0.29.1";
     }
 }
