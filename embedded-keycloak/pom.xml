@@ -14,7 +14,7 @@
     <artifactId>embedded-keycloak</artifactId>
 
     <properties>
-        <testcontainers-keycloak.version>3.3.0</testcontainers-keycloak.version>
+        <testcontainers-keycloak.version>3.9.1</testcontainers-keycloak.version>
     </properties>
 
     <dependencies>
