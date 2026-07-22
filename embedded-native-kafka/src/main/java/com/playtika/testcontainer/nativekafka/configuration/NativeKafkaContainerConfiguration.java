@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
@@ -50,13 +49,12 @@ public class NativeKafkaContainerConfiguration {
     }
 
     @Bean(name = NATIVE_KAFKA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> nativeKafka(
+    public KafkaContainer nativeKafka(
             NativeKafkaConfigurationProperties nativeKafkaProperties,
             ConfigurableEnvironment environment,
             Network network) {
 
-        DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage())
-                .asCompatibleSubstituteFor("confluentinc/cp-kafka");
+        DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage());
 
         KafkaContainer nativeKafka = new KafkaContainer(nativeKafkaImageName)
                 .withNetwork(network)
@@ -92,16 +90,16 @@ public class NativeKafkaContainerConfiguration {
             log.info("Writing native kafka data to: {}", kafkaData);
             createPathAndParentOrMakeWritable(kafkaData);
 
-            nativeKafka.addFileSystemBind(kafkaData.toString(), "/tmp/kafka-logs", BindMode.READ_WRITE);
+            nativeKafka.withFileSystemBind(kafkaData.toString(), "/tmp/kafka-logs");
         }
     }
 
-    private void registerNativeKafkaEnvironment(GenericContainer<?> nativeKafka,
+    private void registerNativeKafkaEnvironment(KafkaContainer nativeKafka,
                                               ConfigurableEnvironment environment,
                                               NativeKafkaConfigurationProperties nativeKafkaProperties) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
-        String bootstrapServers = ((KafkaContainer) nativeKafka).getBootstrapServers();
+        String bootstrapServers = nativeKafka.getBootstrapServers();
         map.put("embedded.kafka.bootstrapServers", bootstrapServers);
         map.put("embedded.kafka.brokerList", bootstrapServers);
         map.put("embedded.kafka.networkAlias", NATIVE_KAFKA_HOST_NAME);

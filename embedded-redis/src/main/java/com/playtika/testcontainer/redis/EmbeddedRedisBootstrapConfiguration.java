@@ -8,6 +8,7 @@ import com.playtika.testcontainer.redis.wait.RedisStatusCheck;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
+import com.redis.testcontainers.RedisContainer;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
@@ -86,25 +86,26 @@ public class EmbeddedRedisBootstrapConfiguration {
     }
 
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
-    public GenericContainer<?> redis(ConfigurableEnvironment environment,
+    public RedisContainer redis(ConfigurableEnvironment environment,
                                      @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy,
                                      Optional<Network> network) throws Exception {
 
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
-        GenericContainer<?> redis =
-                new FixedHostPortGenericContainer(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
+        RedisContainer redis =
+            new RedisContainerWithExposedPort(ContainerUtils.getDockerImageName(properties).asCanonicalNameString())
                         .withFixedExposedPort(properties.getPort(), properties.getPort())
                         .withExposedPorts(properties.getPort())
                         .withEnv("REDIS_USER", properties.getUser())
                         .withEnv("REDIS_PASSWORD", properties.getPassword())
-                        .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf()), "/data/redis.conf")
-                        .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf()), "/data/nodes.conf")
+                        // Redis 8.8+ drops privileges before startup and must still read/write these files.
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareRedisConf(), 0444), "/data/redis.conf")
+                        .withCopyFileToContainer(MountableFile.forHostPath(prepareNodesConf(), 0666), "/data/nodes.conf")
                         .withCommand("redis-server", "/data/redis.conf")
                         .waitingFor(redisStartupCheckStrategy)
                         .withNetworkAliases(REDIS_NETWORK_ALIAS);
         network.ifPresent(redis::withNetwork);
-        redis = configureCommonsAndStart(redis, properties, log);
+        redis = (RedisContainer) configureCommonsAndStart(redis, properties, log);
         Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.getPort());
         log.info("Started Redis cluster. Connection details: {}", redisEnv);
         return redis;
@@ -122,5 +123,17 @@ public class EmbeddedRedisBootstrapConfiguration {
         return FileUtils.resolveTemplateAsPath(resourceLoader, "nodes.conf", content -> content
                 .replace("{{port}}", String.valueOf(properties.getPort()))
                 .replace("{{busPort}}", String.valueOf(properties.getPort() + 10000)));
+    }
+
+    private static class RedisContainerWithExposedPort extends RedisContainer {
+        public RedisContainerWithExposedPort(String dockerImageName) {
+            super(dockerImageName);
+        }
+
+        public RedisContainer withFixedExposedPort(int hostPort, int containerPort) {
+            super.addFixedExposedPort(hostPort, containerPort);
+
+            return self();
+        }
     }
 }

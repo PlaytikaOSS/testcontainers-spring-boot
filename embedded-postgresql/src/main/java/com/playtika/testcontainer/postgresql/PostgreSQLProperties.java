@@ -10,10 +10,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("embedded.postgresql")
 public class PostgreSQLProperties extends CommonContainerProperties {
     static final String BEAN_NAME_EMBEDDED_POSTGRESQL = "embeddedPostgreSql";
+    static final String DEFAULT_NETWORK_ALIAS = "postgresql.testcontainer.docker";
 
     String user = "postgresql";
     String password = "letmein";
     String database = "test_db";
+    String networkAlias = DEFAULT_NETWORK_ALIAS;
     String startupLogCheckRegex;
     /**
      * The SQL file path to execute after the container starts to initialize the database.

@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>3.1.24</version>
+    <version>4.0.3</version>
     <packaging>pom</packaging>
 
     <name>testcontainers-spring-boot</name>
@@ -38,6 +38,7 @@
         <module>testcontainers-spring-boot-bom</module>
         <module>testcontainers-spring-boot-parent</module>
         <module>testcontainers-common</module>
+        <module>embedded-toxiproxy</module>
         <module>embedded-kafka</module>
         <module>embedded-native-kafka</module>
         <module>embedded-keycloak</module>
@@ -72,7 +73,6 @@
         <module>embedded-db2</module>
         <module>embedded-artifactory</module>
         <module>embedded-azurite</module>
-        <module>embedded-toxiproxy</module>
         <module>embedded-mssqlserver</module>
         <module>embedded-victoriametrics</module>
         <module>embedded-nats</module>
@@ -99,17 +99,17 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
         <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
-        <maven.enforcer.plugin.version>3.6.2</maven.enforcer.plugin.version>
+        <maven.enforcer.plugin.version>3.6.3</maven.enforcer.plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <spotless-maven-plugin.version>3.3.0</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>3.8.0</spotless-maven-plugin.version>
         <gitflow-incremental-builder.version>4.6.0</gitflow-incremental-builder.version>
-        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
 
         <!-- GPG -->
         <gpg.keyname>3EEF24C7</gpg.keyname>
@@ -118,7 +118,7 @@
         <gpg.lockMode>never</gpg.lockMode>
 
         <docker.cleanup.skip>true</docker.cleanup.skip>
-        <central-publishing-maven-plugin.version>0.10.0</central-publishing-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
     </properties>
 
     <profiles>
@@ -340,7 +340,7 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>5.0.0</version>
+                <version>5.1.1</version>
                 <configuration>
                     <mapping>
                         <txt>SMILEY_STYLE</txt>

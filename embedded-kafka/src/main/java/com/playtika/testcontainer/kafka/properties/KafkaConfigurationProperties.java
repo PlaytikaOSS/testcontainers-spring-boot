@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -64,7 +64,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     protected FileSystemBind fileSystemBind = new FileSystemBind();
 
     public KafkaConfigurationProperties() {
-        this.setCapabilities(Arrays.asList(Capability.NET_ADMIN));
+        this.setCapabilities(List.of(Capability.NET_ADMIN));
     }
 
     // https://hub.docker.com/r/confluentinc/cp-kafka
@@ -73,7 +73,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "confluentinc/cp-kafka:7.9.6";
+        return "confluentinc/cp-kafka:7.9.8";
     }
 
     @AllArgsConstructor

@@ -1,50 +1,26 @@
 package com.playtika.testcontainer.keycloak.vanilla;
 
-import com.playtika.testcontainer.keycloak.KeycloakContainer;
-import com.playtika.testcontainer.keycloak.KeycloakContainer.ImportFileNotFoundException;
-import com.playtika.testcontainer.keycloak.KeycloakProperties;
+import com.playtika.testcontainer.keycloak.EmbeddedKeycloakBootstrapConfiguration;
+import com.playtika.testcontainer.keycloak.EmbeddedKeycloakBootstrapConfiguration.ImportFileNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.testcontainers.containers.ContainerLaunchException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
 public class KeycloakContainerTest {
 
-    @Mock
-    ResourceLoader resourceLoader;
-
-    @Spy
-    KeycloakProperties properties = setupProperties();
-
-    @InjectMocks
-    KeycloakContainer container;
-
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(EmbeddedKeycloakBootstrapConfiguration.class));
 
     @Test
     public void shouldThrowImportFileNotFoundExceptionWhenImportFileDoesNotExist() {
-        Resource importFile = mock(Resource.class);
-        when(importFile.exists()).thenReturn(false);
-        when(resourceLoader.getResource(any())).thenReturn(importFile);
-
-        assertThatThrownBy(container::start)
-                .isInstanceOf(ContainerLaunchException.class)
-                .hasCauseInstanceOf(ImportFileNotFoundException.class);
-    }
-
-    private KeycloakProperties setupProperties() {
-        KeycloakProperties properties = new KeycloakProperties();
-        properties.setImportFile("any-import-file.json");
-        return properties;
+        contextRunner
+                .withPropertyValues("embedded.keycloak.import-file=non-existent-file.json")
+                .run(context -> {
+                    assertThat(context).hasFailed();
+                    assertThat(context.getStartupFailure())
+                            .hasRootCauseInstanceOf(ImportFileNotFoundException.class);
+                });
     }
 }

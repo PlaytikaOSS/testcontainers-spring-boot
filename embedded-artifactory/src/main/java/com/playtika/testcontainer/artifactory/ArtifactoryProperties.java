@@ -20,13 +20,13 @@ public class ArtifactoryProperties extends CommonContainerProperties {
     int generalPort = 8082;
 
     public ArtifactoryProperties() {
-        setWaitTimeoutInSeconds(120);
+        setWaitTimeoutInSeconds(300);
     }
 
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.77.12";
+        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.98.9";
     }
 }

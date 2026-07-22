@@ -15,11 +15,17 @@
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.azurite.enabled` `(true|false, default is true)`
 * `embedded.azurite.reuseContainer` `(true|false, default is false)`
-* `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite:3.35.0')`
+* `embedded.azurite.dockerImage` `(default is 'mcr.microsoft.com/azure-storage/azurite:3.36.0')`
 ** Image versions on https://hub.docker.com/_/microsoft-azure-storage-azurite
 * `embedded.azurite.blobStoragePort` `(default is 10000)`
 * `embedded.azurite.queueStoragePort` `(default is 10001)`
 * `embedded.azurite.tableStoragePort` `(default is 10002)`
+* `embedded.azurite.https-enabled` `(true|false, default is false)` — enables HTTPS. When `true` and no cert paths are provided, an embedded self-signed certificate for `localhost` is used automatically.
+* `embedded.azurite.oauth-enabled` `(true|false, default is false)` — enables OAuth basic emulation (`--oauth basic`), required for `DefaultAzureCredential`. Implies `https-enabled=true`.
+* `embedded.azurite.pem-cert-path` — path to a custom PEM certificate (prefix with `classpath:` for classpath resources, or provide an absolute file path). Used together with `pem-key-path`.
+* `embedded.azurite.pem-key-path` — path to a custom PEM private key. Used together with `pem-cert-path`.
+* `embedded.azurite.pfx-cert-path` — path to a custom PFX/PKCS12 certificate. Used together with `pfx-password`.
+* `embedded.azurite.pfx-password` — password for the PFX certificate.
 * `embedded.toxiproxy.proxies.azurite.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-azurite` container.
 
 
@@ -30,9 +36,9 @@ Account name and account key are hardcoded as of https://github.com/Azure/Azurit
 * `embedded.azurite.host`
 * `embedded.azurite.account-name`
 * `embedded.azurite.account-key`
-* `embedded.azurite.blob-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-blob`)
-* `embedded.azurite.queue-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-queue`)
-* `embedded.azurite.table-endpoint` (computed property `http://${host}:${port}/${accountName}` for convient configuration with `spring-cloud-azure-starter-storage-table`)
+* `embedded.azurite.blob-endpoint` (computed property `{http|https}://${host}:${port}/${accountName}` for convenient configuration with `spring-cloud-azure-starter-storage-blob`)
+* `embedded.azurite.queue-endpoint` (computed property `{http|https}://${host}:${port}/${accountName}` for convenient configuration with `spring-cloud-azure-starter-storage-queue`)
+* `embedded.azurite.table-endpoint` (computed property `{http|https}://${host}:${port}/${accountName}` for convenient configuration with `spring-cloud-azure-starter-storage-table`)
 * `embedded.azurite.toxiproxy.host`
 * `embedded.azurite.toxiproxy.blobStoragePort`
 * `embedded.azurite.toxiproxy.queueStoragePort`
@@ -64,3 +70,43 @@ spring:
 ----
 
 You can then access all beans from `spring-cloud-azure-starter-storage-blob`, i.e. `BlobServiceClientBuilder`.
+
+==== HTTPS and OAuth (DefaultAzureCredential) Example
+
+To use `DefaultAzureCredential` or any token-based credential, enable HTTPS and OAuth:
+
+./src/test/resources/bootstrap.properties
+[source,properties]
+----
+embedded.azurite.https-enabled=true
+embedded.azurite.oauth-enabled=true
+----
+
+The embedded self-signed certificate is used automatically. Since it is self-signed you must configure the Azure SDK HTTP client to trust it in tests. The certificate is available as a classpath resource at `azurite/cert.pem`:
+
+[source,java]
+----
+@Bean
+BlobServiceClient blobServiceClient(AzuriteContainer azuriteContainer) throws SSLException {
+    SslContext insecureSslContext = SslContextBuilder.forClient()
+            .trustManager(InsecureTrustManagerFactory.INSTANCE)
+            .build();
+    HttpClient reactor = HttpClient.create().secure(spec -> spec.sslContext(insecureSslContext));
+    com.azure.core.http.HttpClient azureHttpClient = new NettyAsyncHttpClientBuilder(reactor).build();
+
+    return new BlobServiceClientBuilder()
+            .connectionString(azuriteContainer.getConnectionString())
+            .httpClient(azureHttpClient)
+            .buildClient();
+}
+----
+
+To provide your own certificate instead of the embedded one:
+
+./src/test/resources/bootstrap.properties
+[source,properties]
+----
+embedded.azurite.https-enabled=true
+embedded.azurite.pem-cert-path=classpath:my-cert.pem
+embedded.azurite.pem-key-path=classpath:my-key.pem
+----

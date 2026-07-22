@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.24</version>
+        <version>4.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,15 +15,15 @@
     <description>Parent pom for all embedded testcontainers</description>
 
     <properties>
-        <spring.boot.version>4.0.5</spring.boot.version>
-        <spring.cloud.version>2025.1.1</spring.cloud.version>
-        <spring.cloud.gcp.version>8.0.2</spring.cloud.gcp.version>
+        <spring.boot.version>4.1.0</spring.boot.version>
+        <spring.cloud.version>2025.1.2</spring.cloud.version>
+        <spring.cloud.gcp.version>8.1.0</spring.cloud.gcp.version>
         <equalsverifier.version>4.5</equalsverifier.version>
-        <junit-jupiter.version>6.0.3</junit-jupiter.version>
-        <spring.cloud.aws.version>4.0.0</spring.cloud.aws.version>
-        <spring.cloud.azure.version>7.2.0</spring.cloud.azure.version>
+        <junit-jupiter.version>6.1.2</junit-jupiter.version>
+        <spring.cloud.aws.version>4.0.2</spring.cloud.aws.version>
+        <spring.cloud.azure.version>7.3.0</spring.cloud.azure.version>
         <toxiproxy-java.version>2.1.11</toxiproxy-java.version>
-        <rest-assured.version>6.0.0</rest-assured.version>
+        <rest-assured.version>6.0.1</rest-assured.version>
     </properties>
 
     <dependencyManagement>
@@ -78,6 +78,11 @@
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-toxiproxy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

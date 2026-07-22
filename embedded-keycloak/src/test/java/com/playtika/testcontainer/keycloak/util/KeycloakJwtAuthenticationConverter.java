@@ -37,7 +37,7 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
         var resourceRoles = new ArrayList<String>();
 
         if (resourceAccess.containsKey(clientId)) {
-            var resource = (Map<String, List<String>>) resourceAccess.get(clientId);
+            var resource = resourceAccess.get(clientId);
             resourceRoles.addAll(resource.get("roles"));
         }
 

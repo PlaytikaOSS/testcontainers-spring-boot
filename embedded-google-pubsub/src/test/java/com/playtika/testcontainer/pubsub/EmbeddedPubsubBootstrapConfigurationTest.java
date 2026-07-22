@@ -17,9 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.gcloud.PubSubEmulatorContainer;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.playtika.testcontainer.pubsub.PubsubProperties.BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB;
 import static java.util.Arrays.asList;
@@ -64,6 +65,13 @@ class EmbeddedPubsubBootstrapConfigurationTest {
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].enable-message-ordering")).isEqualTo("true");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.topic")).isEqualTo("topic0");
         assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[1].dead-letter.max-attempts")).isEqualTo("10");
+
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[2].topic")).isEqualTo("topic2");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[2].subscription")).isEqualTo("subscription2-unfiltered");
+
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[3].topic")).isEqualTo("topic2");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[3].subscription")).isEqualTo("subscription2-filtered");
+        assertThat(environment.getProperty("embedded.google.pubsub.topics-and-subscriptions[3].filter")).isEqualTo("attributes.eventType = \"CREATED\"");
     }
 
     @Test
@@ -109,6 +117,38 @@ class EmbeddedPubsubBootstrapConfigurationTest {
     }
 
     @Test
+    void shouldNotHaveFilterConfigured() {
+        ProjectSubscriptionName subscription2Unfiltered = ProjectSubscriptionName.of(projectId, "subscription2-unfiltered");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription2Unfiltered);
+        assertThat(subscription.getFilter()).isEmpty();
+    }
+
+    @Test
+    void shouldHaveFilterConfigured() {
+        ProjectSubscriptionName subscription2Filtered = ProjectSubscriptionName.of(projectId, "subscription2-filtered");
+        Subscription subscription = resourcesGenerator.getSubscription(subscription2Filtered);
+        assertThat(subscription.getFilter()).isEqualTo("attributes.eventType = \"CREATED\"");
+    }
+
+    @Test
+    void shouldOnlyConsumeMessagesMatchingFilter() {
+        template.publish("topic2", "non-matching", Map.of("eventType", "PING"));
+        template.publish("topic2", "matching", Map.of("eventType", "CREATED"));
+
+        List<AcknowledgeablePubsubMessage> filteredMessages = template.pull("subscription2-filtered", 10, false);
+
+        assertThat(filteredMessages)
+                .extracting(message -> message.getPubsubMessage().getData().toStringUtf8())
+                .containsExactly("matching");
+
+        List<AcknowledgeablePubsubMessage> unfilteredMessages = template.pull("subscription2-unfiltered", 10, false);
+
+        assertThat(unfilteredMessages)
+                .extracting(message -> message.getPubsubMessage().getData().toStringUtf8())
+                .containsExactlyInAnyOrder("non-matching", "matching");
+    }
+
+    @Test
     void shouldSetupDependsOnForPubSubTemplate() {
         String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, PubSubTemplate.class);
         assertThat(beanNamesForType)
@@ -122,12 +162,12 @@ class EmbeddedPubsubBootstrapConfigurationTest {
     void shouldHaveContainerWithExpectedDefaultProperties() {
         assertThat(beanFactory.getBean(BEAN_NAME_EMBEDDED_GOOGLE_PUBSUB))
                 .isNotNull()
-                .isInstanceOf(GenericContainer.class)
-                .satisfies(genericContainer -> {
-                    GenericContainer<?> container = (GenericContainer<?>) genericContainer;
-                    assertThat(container.getExposedPorts()).containsExactly(8089);
+                .isInstanceOf(PubSubEmulatorContainer.class)
+                .satisfies(bean -> {
+                    PubSubEmulatorContainer container = (PubSubEmulatorContainer) bean;
+                    assertThat(container.getExposedPorts()).containsExactly(8085);
                     assertThat(container.getCommandParts())
-                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --project my-project-id --host-port=0.0.0.0:8089");
+                            .containsExactly("/bin/sh", "-c", "gcloud beta emulators pubsub start --host-port 0.0.0.0:8085");
                 });
     }
 

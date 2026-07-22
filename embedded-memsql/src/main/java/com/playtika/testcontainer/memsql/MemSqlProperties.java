@@ -23,7 +23,7 @@ public class MemSqlProperties extends CommonContainerProperties {
     @NotEmpty
     String licenseKey;
     int port = 3306;
-    String statusCheck = "source /schema.sql; use test_db; SELECT 1;";
+    String statusCheck = "SELECT 1;";
 
     @Override
     public String getDefaultDockerImage() {

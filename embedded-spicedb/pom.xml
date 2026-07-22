@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.24</version>
+        <version>4.0.3</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,9 +14,9 @@
     <artifactId>embedded-spicedb</artifactId>
 
     <properties>
-        <grpc-protobuf.version>1.79.0</grpc-protobuf.version>
-        <authzed.version>1.5.4</authzed.version>
-        <protobuf-java.version>4.34.1</protobuf-java.version>
+        <grpc-protobuf.version>1.82.2</grpc-protobuf.version>
+        <authzed.version>1.6.0</authzed.version>
+        <protobuf-java.version>4.35.1</protobuf-java.version>
     </properties>
 
     <dependencies>

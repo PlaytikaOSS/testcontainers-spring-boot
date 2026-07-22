@@ -5,7 +5,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.24</version>
+        <version>4.0.3</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
     <artifactId>embedded-keycloak</artifactId>
 
     <properties>
-        <keycloak.version>26.5.5</keycloak.version>
+        <testcontainers-keycloak.version>4.3.1</testcontainers-keycloak.version>
     </properties>
 
     <dependencies>
@@ -26,14 +26,10 @@
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
         </dependency>
-
-        <!-- using vanilla Keycloak -->
         <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-core</artifactId>
-            <version>${keycloak.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
+            <groupId>com.github.dasniko</groupId>
+            <artifactId>testcontainers-keycloak</artifactId>
+            <version>${testcontainers-keycloak.version}</version>
         </dependency>
 
         <dependency>

@@ -36,7 +36,7 @@ public class AutoConfiguredDatasourceDependsOnTest {
 
     @Test
     public void shouldConnectToMySQL() {
-        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.1.");
+        assertThat(jdbcTemplate.queryForObject("select version()", String.class)).startsWith("9.7.");
     }
 
     @Test

@@ -36,6 +36,7 @@ import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME
 public class EmbeddedCouchbaseBootstrapConfiguration {
 
     private static final String COUCHBASE_NETWORK_ALIAS = "couchbase.testcontainer.docker";
+    private static final int COUCHBASE_INTERNAL_HTTP_PORT = 8091;
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "couchbase")
@@ -47,7 +48,7 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
                 toxiproxyClient,
                 toxiproxyContainer,
                 couchbase,
-                couchbase.getBootstrapHttpDirectPort(),
+                COUCHBASE_INTERNAL_HTTP_PORT,
                 "couchbase");
 
         ToxiproxyHelper.registerProxyEnvironment(proxy, "embedded.couchbase", "embeddedCouchbaseToxiProxyInfo", environment);

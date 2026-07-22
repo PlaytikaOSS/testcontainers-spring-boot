@@ -38,6 +38,17 @@
       "versioningTemplate": "docker"
     },
     {
+      "description": "Process # renovate comments in properties files",
+      "fileMatch": [
+        "^.*\\.properties"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>[a-zA-Z0-9-]+).*?\\r?\\n\\s*[\\w.-]+\\s*=\\s*(?<depName>[^:\\s]+):?(?<currentValue>[\\w.-]*)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
       "description": "Process update properties for docker images",
       "fileMatch": [
         "^.*\\.properties"
@@ -70,6 +81,5 @@
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     }
-
   ]
 }

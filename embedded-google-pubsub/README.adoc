@@ -16,7 +16,7 @@
 
 * `embedded.google.pubsub.enabled` `(true|false, default is true)`
 * `embedded.google.pubsub.reuseContainer` `(true|false, default is false)`
-* `embedded.google.pubsub.dockerImage` `(default is set to 'google/cloud-sdk:523.0.1')`
+* `embedded.google.pubsub.dockerImage` `(default is set to 'google/cloud-sdk:559.0.0')`
 ** Image versions on https://hub.docker.com/r/google/cloud-sdk/tags[dockerhub]
 [NOTE]
 ====
@@ -43,6 +43,9 @@ embedded.google.pubsub:
       dead-letter:
         topic: topic0
         max-attempts: 10
+    - topic: topic2
+      subscription: subscription2
+      filter: 'attributes.eventType = "ORDER_CREATED"'
 ----
 
 ==== Produces

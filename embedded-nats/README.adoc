@@ -16,7 +16,7 @@
 
 * `embedded.nats.enabled` `(true|false, default is true)`
 * `embedded.nats.reuseContainer` `(true|false, default is false)`
-* `embedded.nats.dockerImage` `(default is 'nats:2.12')`
+* `embedded.nats.dockerImage` `(default is 'nats:2.14')`
 ** Image versions on https://hub.docker.com/_/nats/tags[dockerhub]
 * `embedded.toxiproxy.proxies.nats.enabled` Enables both creation of the container with ToxiProxy TCP proxy and a proxy to the `embedded-nats` container.
 
@@ -33,11 +33,17 @@
 * `embedded.nats.internalClientPort`
 * `embedded.nats.internalHttpMonitorPort`
 * `embedded.nats.internalRouteConnectionsPort`
+* Bean `NatsContainer embeddedNats`
 * Bean `ToxiproxyClientProxy natsContainerProxy`
 
 ==== Notes
 
-Nats container has no security enabled, you can use any credentials.
+Uses https://github.com/amadeusitgroup/nats-testcontainers[NatsContainer] from `io.github.amadeusitgroup.testcontainers:nats`.
+Exposes ports 4222 (client), 6222 (routing), 8222 (HTTP monitoring).
+No security enabled by default; any credentials are accepted.
+
+To enable JetStream or authentication, inject the `NatsContainer` bean and configure it before the context starts,
+or use the `embedded.nats.command` property to pass flags (e.g. `--jetstream`).
 
 ===== Create client with ToxiProxy
 You can also create client pointed at ToxiProxy TCP proxy:

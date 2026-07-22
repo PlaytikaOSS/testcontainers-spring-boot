@@ -10,17 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
@@ -40,19 +37,10 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     private static final String GRAFANA_NETWORK_ALIAS = "grafana.testcontainer.docker";
 
     @Bean
-    @ConditionalOnMissingBean(name = "grafanaWaitStrategy")
-    public WaitStrategy grafanaWaitStrategy(GrafanaProperties properties) {
-        return new HttpWaitStrategy()
-                .forPath("/")
-                .forPort(properties.getPort())
-                .forStatusCode(200);
-    }
-
-    @Bean
     @ConditionalOnToxiProxyEnabled(module = "grafana")
     ToxiproxyClientProxy grafanaContainerProxy(ToxiproxyClient toxiproxyClient,
                                                 ToxiproxyContainer toxiproxyContainer,
-                                                @Qualifier(GRAFANA_BEAN_NAME) GenericContainer<?> grafana,
+                                                @Qualifier(GRAFANA_BEAN_NAME) LgtmStackContainer grafana,
                                                 GrafanaProperties properties,
                                                 ConfigurableEnvironment environment) {
         ToxiproxyClientProxy proxy = ToxiproxyHelper.createProxy(
@@ -68,19 +56,21 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     }
 
     @Bean(name = GRAFANA_BEAN_NAME, destroyMethod = "stop")
-    public GenericContainer<?> grafana(ConfigurableEnvironment environment,
-                                       GrafanaProperties properties,
-                                       WaitStrategy grafanaWaitStrategy,
-                                       Optional<Network> network) {
+    public LgtmStackContainer grafana(ConfigurableEnvironment environment,
+                                      GrafanaProperties properties,
+                                      Optional<Network> network) {
 
-        GenericContainer<?> container =
-                new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
+        LgtmStackContainer container =
+                new LgtmStackContainer(ContainerUtils.getDockerImageName(properties))
                         .withEnv("GF_SECURITY_ADMIN_USER", properties.getUsername())
                         .withEnv("GF_SECURITY_ADMIN_PASSWORD", properties.getPassword())
-                        .withExposedPorts(properties.getPort())
                         .withNetwork(Network.SHARED)
-                        .withNetworkAliases(properties.getNetworkAlias(), GRAFANA_NETWORK_ALIAS)
-                        .waitingFor(grafanaWaitStrategy);
+                        .withNetworkAliases(properties.getNetworkAlias(), GRAFANA_NETWORK_ALIAS);
+
+        if (properties.isAnonymousAuthEnabled()) {
+            container.withEnv("GF_AUTH_ANONYMOUS_ENABLED", "true")
+                    .withEnv("GF_AUTH_ANONYMOUS_ORG_ROLE", properties.getAnonymousOrgRole());
+        }
 
         network.ifPresent(container::withNetwork);
 
@@ -91,22 +81,25 @@ public class EmbeddedGrafanaBootstrapConfiguration {
         return container;
     }
 
-    private void registerEnvironment(GenericContainer<?> grafana,
+    private void registerEnvironment(LgtmStackContainer grafana,
                                      ConfigurableEnvironment environment,
                                      GrafanaProperties properties) {
 
-        Integer mappedPort = grafana.getMappedPort(properties.port);
         String host = grafana.getHost();
 
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("embedded.grafana.host", host);
-        map.put("embedded.grafana.port", mappedPort);
+        map.put("embedded.grafana.port", grafana.getMappedPort(properties.getPort()));
         map.put("embedded.grafana.username", properties.getUsername());
         map.put("embedded.grafana.password", properties.getPassword());
         map.put("embedded.grafana.networkAlias", GRAFANA_NETWORK_ALIAS);
         map.put("embedded.grafana.internalPort", properties.getPort());
+        map.put("embedded.grafana.loki.port", grafana.getMappedPort(properties.getLokiPort()));
+        map.put("embedded.grafana.tempo.port", grafana.getMappedPort(properties.getTempoPort()));
+        map.put("embedded.grafana.otlp.grpc.port", grafana.getMappedPort(properties.getOtlpGrpcPort()));
+        map.put("embedded.grafana.otlp.http.port", grafana.getMappedPort(properties.getOtlpHttpPort()));
 
-        log.info("Started Grafana server. Connection details: {}", map);
+        log.info("Started Grafana LGTM stack. Connection details: {}", map);
 
         MapPropertySource propertySource = new MapPropertySource("embeddedGrafanaInfo", map);
         environment.getPropertySources().addFirst(propertySource);

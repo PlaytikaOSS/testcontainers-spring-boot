@@ -25,7 +25,7 @@ public class FileUtils {
         String modifiedFile = resolveTemplateAsString(resourceLoader, fileName, modifyFunc);
         Path tempFilePath = Files.createTempFile("tc_", "_" + fileName);
         tempFilePath.toFile().deleteOnExit();
-        Files.write(tempFilePath, modifiedFile.getBytes(StandardCharsets.UTF_8));
+        Files.writeString(tempFilePath, modifiedFile);
         return tempFilePath;
     }
 

@@ -13,7 +13,7 @@ A clear and concise description of what the bug is and stack trace.
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Enviroment (please complete the following information):**
+**Environment (please complete the following information):**
  - OS name : [e.g. MacOS]
  - Docker Version: [e.g. 20.10.24]
 

@@ -21,7 +21,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import org.testcontainers.vault.VaultContainer;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +66,6 @@ public class EmbeddedVaultBootstrapConfiguration {
 
         VaultContainer vault = new VaultContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withVaultToken(properties.getToken())
-                .withExposedPorts(properties.getPort())
                 .withNetworkAliases(VAULT_NETWORK_ALIAS);
 
         network.ifPresent(vault::withNetwork);
@@ -77,7 +75,7 @@ public class EmbeddedVaultBootstrapConfiguration {
                 .toArray(String[]::new);
 
         if (secrets.length > 0) {
-            vault.withSecretInVault(properties.getPath(), secrets[0], Arrays.copyOfRange(secrets, 1, secrets.length));
+            vault.withInitCommand("kv put " + properties.getPath() + " " + String.join(" ", secrets));
         }
 
         if (properties.isCasEnabled()) {

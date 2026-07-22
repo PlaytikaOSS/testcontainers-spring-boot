@@ -7,6 +7,7 @@ public class TopicAndSubscription {
     private String topic;
     private String subscription;
     private boolean enableMessageOrdering;
+    private String filter;
     private DeadLetter deadLetter;
 
     @Data

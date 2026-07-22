@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.24</version>
+        <version>4.0.3</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -15,7 +15,7 @@
     <artifactId>embedded-pulsar</artifactId>
 
     <properties>
-        <pulsar-clients.version>4.2.0</pulsar-clients.version>
+        <pulsar-clients.version>4.2.3</pulsar-clients.version>
     </properties>
 
     <dependencies>
@@ -63,6 +63,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-resttestclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-restclient</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

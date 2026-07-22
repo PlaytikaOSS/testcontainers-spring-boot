@@ -40,9 +40,7 @@ public class EmbeddedNativeKafkaWithBindingTest extends EmbeddedNativeKafkaTest 
         nativeKafka.execInContainer("rm", "-rf", "/tmp/kafka-logs");
 
         // Delete mounted directories after test run
-        Runtime.getRuntime().addShutdownHook(new Thread(DockerClientFactory.TESTCONTAINERS_THREAD_GROUP, () -> {
-            PathUtils.recursiveDeleteDir(nativeKafkaDataFolder);
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(DockerClientFactory.TESTCONTAINERS_THREAD_GROUP, () -> PathUtils.recursiveDeleteDir(nativeKafkaDataFolder)));
     }
 
     protected static Path projectDir() {

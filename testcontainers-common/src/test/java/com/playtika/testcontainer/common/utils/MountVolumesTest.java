@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 public class MountVolumesTest {
 
-    ApplicationContextRunner context = new ApplicationContextRunner()
+    final ApplicationContextRunner context = new ApplicationContextRunner()
         .withUserConfiguration(PostgreSQLContainerPropertiesConfiguration.class);
 
     private static void assertMountVolume(CommonContainerProperties properties, String folder, String s, BindMode readOnly) {

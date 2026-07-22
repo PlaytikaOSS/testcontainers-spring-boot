@@ -47,6 +47,6 @@ public class AerospikeWaitStrategy extends AbstractRetryingWaitStrategy {
         Ports ports = networkSettings.getPorts();
         Map<ExposedPort, Ports.Binding[]> bindings = ports.getBindings();
         Ports.Binding[] binding = bindings.get(exposedPort);
-        return Integer.valueOf(binding[0].getHostPortSpec());
+        return Integer.parseInt(binding[0].getHostPortSpec());
     }
 }

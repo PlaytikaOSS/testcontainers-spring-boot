@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot-parent</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>3.1.24</version>
+        <version>4.0.3</version>
         <relativePath>../testcontainers-spring-boot-parent</relativePath>
     </parent>
 
@@ -16,6 +16,8 @@
 
     <properties>
         <google-cloud-storage.version>2.4.4</google-cloud-storage.version>
+        <!-- renovate: datasource=github-releases depName=Aiven-Open/testcontainers-fake-gcs-server -->
+        <testcontainers-fake-gcs-server.version>0.3.0</testcontainers-fake-gcs-server.version>
     </properties>
 
     <dependencies>
@@ -26,6 +28,11 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>embedded-toxiproxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.aiven</groupId>
+            <artifactId>testcontainers-fake-gcs-server</artifactId>
+            <version>${testcontainers-fake-gcs-server.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
