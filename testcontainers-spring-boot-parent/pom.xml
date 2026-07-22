@@ -82,6 +82,11 @@
             </dependency>
             <dependency>
                 <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>embedded-postgresql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>embedded-aerospike</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -17,6 +17,11 @@
       "type": "java.lang.String",
       "defaultValue": "null",
       "description": "The SQL file path to execute after the container starts to initialize the database."
+    },
+    {
+      "name": "embedded.postgresql.network-alias",
+      "type": "java.lang.String",
+      "defaultValue": "postgresql.testcontainer.docker"
     }
   ],
   "hints": [

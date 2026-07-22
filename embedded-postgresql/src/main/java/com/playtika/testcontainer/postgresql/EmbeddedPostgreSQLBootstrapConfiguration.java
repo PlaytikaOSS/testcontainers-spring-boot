@@ -18,9 +18,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.util.LinkedHashMap;
@@ -36,8 +36,6 @@ import static com.playtika.testcontainer.postgresql.PostgreSQLProperties.BEAN_NA
 @ConditionalOnProperty(name = "embedded.postgresql.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(PostgreSQLProperties.class)
 public class EmbeddedPostgreSQLBootstrapConfiguration {
-
-    private static final String POSTGRESQL_NETWORK_ALIAS = "postgresql.testcontainer.docker";
 
     @Bean
     @ConditionalOnToxiProxyEnabled(module = "postgresql")
@@ -63,12 +61,12 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
                                           Optional<Network> network) {
 
         PostgreSQLContainer postgresql =
-                new PostgreSQLContainer<>(ContainerUtils.getDockerImageName(properties))
+                new PostgreSQLContainer(ContainerUtils.getDockerImageName(properties))
                         .withUsername(properties.getUser())
                         .withPassword(properties.getPassword())
                         .withDatabaseName(properties.getDatabase())
                         .withInitScript(properties.initScriptPath)
-                        .withNetworkAliases(POSTGRESQL_NETWORK_ALIAS);
+                        .withNetworkAliases(properties.getNetworkAlias());
 
         network.ifPresent(postgresql::withNetwork);
 
@@ -96,7 +94,7 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
         map.put("embedded.postgresql.schema", properties.getDatabase());
         map.put("embedded.postgresql.user", properties.getUser());
         map.put("embedded.postgresql.password", properties.getPassword());
-        map.put("embedded.postgresql.networkAlias", POSTGRESQL_NETWORK_ALIAS);
+        map.put("embedded.postgresql.networkAlias", properties.getNetworkAlias());
         map.put("embedded.postgresql.internalPort", PostgreSQLContainer.POSTGRESQL_PORT);
 
         String jdbcURL = "jdbc:postgresql://{}:{}/{}";

@@ -22,6 +22,7 @@
 * `embedded.postgresql.database`
 * `embedded.postgresql.user`
 * `embedded.postgresql.password`
+* `embedded.postgresql.networkAlias` `(default is 'postgresql.testcontainer.docker')`
 * `embedded.postgresql.initScriptPath` `(default is null)`
 * `embedded.postgresql.startupLogCheckRegex` `(default is null)`
 * `embedded.postgresql.mountVolumes` `(default is empty list)`
