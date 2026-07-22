@@ -2,7 +2,7 @@ embedded:
   keycloak:
     enabled: true
     wait-timeout-in-seconds: 60
-    import-file: 'test-realm.json'
+    import-file: 'test-realm-realm.json'
 
 # values here need to relate to data provided within realm import file
 testing:
