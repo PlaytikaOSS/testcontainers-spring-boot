@@ -27,6 +27,6 @@ public class ArtifactoryProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.98.9";
+        return "releases-docker.jfrog.io/jfrog/artifactory-oss:7.146.29";
     }
 }
