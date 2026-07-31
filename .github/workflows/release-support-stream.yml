@@ -70,7 +70,7 @@ jobs:
 
       - name: Commit & Push changes
         if: ${{ success() }}
-        uses: actions-js/push@v1.5
+        uses: actions-js/push@v1.6
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           message: 'Release ${{github.event.inputs.version}}'
