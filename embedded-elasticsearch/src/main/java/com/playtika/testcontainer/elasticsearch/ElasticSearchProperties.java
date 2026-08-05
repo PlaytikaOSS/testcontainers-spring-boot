@@ -26,6 +26,6 @@ public class ElasticSearchProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "docker.elastic.co/elasticsearch/elasticsearch:9.4.4";
+        return "docker.elastic.co/elasticsearch/elasticsearch:9.5.0";
     }
 }
