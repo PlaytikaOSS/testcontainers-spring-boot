@@ -14,7 +14,7 @@
     <artifactId>embedded-localstack</artifactId>
 
     <properties>
-        <aws-sdk.version>2.50.3</aws-sdk.version>
+        <aws-sdk.version>2.51.0</aws-sdk.version>
     </properties>
 
     <dependencyManagement>
