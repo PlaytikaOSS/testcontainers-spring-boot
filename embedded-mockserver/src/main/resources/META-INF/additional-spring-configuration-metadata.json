@@ -31,7 +31,7 @@
       "name": "embedded.mockserver.docker-image",
       "values": [
         {
-          "value": "mockserver/mockserver:6.1.0",
+          "value": "mockserver/mockserver:7.5.0",
           "description": "Latest mockserver:6.1.0 version. Ref https://hub.docker.com/r/mockserver/mockserver/tags for further info."
         }
       ]
