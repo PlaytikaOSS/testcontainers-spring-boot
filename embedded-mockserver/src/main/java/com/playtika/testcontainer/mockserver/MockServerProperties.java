@@ -17,6 +17,6 @@ public class MockServerProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "mockserver/mockserver:6.1.0";
+        return "mockserver/mockserver:7.5.0";
     }
 }
