@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.cockroach;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.cockroach.CockroachDBProperties.BEAN_NAME_EMBEDDED_COCKROACHDB;
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Slf4j
 @Configuration
@@ -57,7 +58,8 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_COCKROACHDB, destroyMethod = "stop")
     public CockroachContainer cockroach(ConfigurableEnvironment environment,
                                           CockroachDBProperties properties,
-                                          Optional<Network> network) throws Exception {
+                                          Optional<Network> network,
+                                          ContainerStartupCoordinator startupCoordinator) throws Exception {
 
         CockroachContainer cockroachContainer = new CockroachContainer(ContainerUtils.getDockerImageName(properties))
                 .withInitScript(properties.getInitScriptPath())
@@ -65,9 +67,12 @@ public class EmbeddedCockroachDBBootstrapConfiguration {
 
         network.ifPresent(cockroachContainer::withNetwork);
 
-        cockroachContainer = (CockroachContainer) configureCommonsAndStart(cockroachContainer, properties, log);
-        registerCockroachDBEnvironment(cockroachContainer, environment);
-        return cockroachContainer;
+        CockroachContainer configuredCockroachContainer = (CockroachContainer) configureCommons(cockroachContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredCockroachContainer, log);
+            registerCockroachDBEnvironment(configuredCockroachContainer, environment);
+        });
+        return configuredCockroachContainer;
     }
 
     private void registerCockroachDBEnvironment(CockroachContainer cockroach,

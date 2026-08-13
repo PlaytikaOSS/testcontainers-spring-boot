@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.victoriametrics;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinatorConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -10,6 +11,7 @@ public class ToxiProxyDisabledTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
+                    ContainerStartupCoordinatorConfiguration.class,
                     EmbeddedVictoriaMetricsBootstrapConfiguration.class));
 
     @Test

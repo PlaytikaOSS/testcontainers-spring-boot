@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.solr;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.solr.SolrProperties.BEAN_NAME_EMBEDDED_SOLR;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class EmbeddedSolrBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_SOLR, destroyMethod = "stop")
     public GenericContainer<?> solrContainer(ConfigurableEnvironment environment,
                                              SolrProperties properties,
-                                             Optional<Network> network) {
+                                             Optional<Network> network,
+                                             ContainerStartupCoordinator startupCoordinator) {
 
         SolrContainer solrContainer = new SolrContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
@@ -67,10 +69,12 @@ public class EmbeddedSolrBootstrapConfiguration {
 
         network.ifPresent(solrContainer::withNetwork);
 
-        solrContainer = (SolrContainer) configureCommonsAndStart(solrContainer, properties, log);
-
-        registerNatsEnvironment(solrContainer, environment, properties);
-        return solrContainer;
+        SolrContainer configuredSolrContainer = (SolrContainer) configureCommons(solrContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredSolrContainer, log);
+            registerNatsEnvironment(configuredSolrContainer, environment, properties);
+        });
+        return configuredSolrContainer;
     }
 
     private void registerNatsEnvironment(GenericContainer<?> natsContainer,
