@@ -44,7 +44,9 @@
         <dependencies>
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
+                <!-- OkHttp 5.x publishes the plain "okhttp" artifact as Gradle-metadata-only
+                     (no classes); Maven must depend on the JVM variant directly. -->
+                <artifactId>okhttp-jvm</artifactId>
                 <version>${okhttp.version}</version>
             </dependency>
         </dependencies>
