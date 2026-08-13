@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.minio;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.minio.MinioProperties.BEAN_NAME_EMBEDDED_MINIO;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class EmbeddedMinioBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MINIO, destroyMethod = "stop")
     public MinIOContainer minio(ConfigurableEnvironment environment,
                                 MinioProperties properties,
-                                Optional<Network> network) {
+                                Optional<Network> network,
+                                ContainerStartupCoordinator startupCoordinator) {
         MinIOContainer minio =
                 new MinIOContainer(ContainerUtils.getDockerImageName(properties))
                         .withUserName(properties.getAccessKey())
@@ -73,9 +75,12 @@ public class EmbeddedMinioBootstrapConfiguration {
                         .withNetworkAliases(MINIO_NETWORK_ALIAS);
 
         network.ifPresent(minio::withNetwork);
-        minio = (MinIOContainer) configureCommonsAndStart(minio, properties, log);
-        registerEnvironment(minio, environment, properties);
-        return minio;
+        MinIOContainer configuredMinio = (MinIOContainer) configureCommons(minio, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMinio, log);
+            registerEnvironment(configuredMinio, environment, properties);
+        });
+        return configuredMinio;
     }
 
     private void registerEnvironment(MinIOContainer container,

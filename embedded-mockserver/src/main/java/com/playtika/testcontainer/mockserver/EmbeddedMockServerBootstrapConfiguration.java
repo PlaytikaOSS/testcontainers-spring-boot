@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mockserver;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.mockserver.MockServerProperties.EMBEDDED_MOCK_SERVER;
 
 @Slf4j
@@ -34,14 +35,18 @@ public class EmbeddedMockServerBootstrapConfiguration {
     @Bean(name = EMBEDDED_MOCK_SERVER, destroyMethod = "stop")
     public MockServerContainer mockServerContainer(ConfigurableEnvironment environment,
                                                    MockServerProperties properties,
-                                                   Optional<Network> network) {
+                                                   Optional<Network> network,
+                                                   ContainerStartupCoordinator startupCoordinator) {
         MockServerContainer mockServerContainer = createMockServerContainer(properties);
 
         network.ifPresent(mockServerContainer::withNetwork);
 
-        mockServerContainer = (MockServerContainer) configureCommonsAndStart(mockServerContainer, properties, log);
-        registerMockServerEnvironment(mockServerContainer, properties, environment);
-        return mockServerContainer;
+        MockServerContainer configuredMockServerContainer = (MockServerContainer) configureCommons(mockServerContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMockServerContainer, log);
+            registerMockServerEnvironment(configuredMockServerContainer, properties, environment);
+        });
+        return configuredMockServerContainer;
     }
 
     MockServerContainer createMockServerContainer(MockServerProperties properties) {

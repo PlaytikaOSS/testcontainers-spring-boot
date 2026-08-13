@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.aerospike;
 
 import com.aerospike.client.AerospikeClient;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinatorConfiguration;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -15,6 +16,7 @@ public class ReplaceExpiredDocumentsCleanerBeanTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withUserConfiguration(TestConfiguration.class)
             .withConfiguration(AutoConfigurations.of(
+                    ContainerStartupCoordinatorConfiguration.class,
                     EmbeddedAerospikeBootstrapConfiguration.class,
                     EmbeddedAerospikeTestOperationsAutoConfiguration.class));
 

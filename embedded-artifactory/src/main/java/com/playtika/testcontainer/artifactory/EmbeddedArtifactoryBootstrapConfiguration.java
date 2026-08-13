@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.artifactory;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.postgresql.EmbeddedPostgreSQLBootstrapConfiguration;
@@ -32,7 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 
 import static com.playtika.testcontainer.artifactory.ArtifactoryProperties.ARTIFACTORY_BEAN_NAME;
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static org.testcontainers.postgresql.PostgreSQLContainer.POSTGRESQL_PORT;
 
 @Slf4j
@@ -87,7 +88,8 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
                                            PostgreSQLContainer postgreSQLContainer,
                                            PostgreSQLProperties postgresqlProperties,
                                            WaitStrategy artifactoryWaitStrategy,
-                                           Network network) {
+                                           Network network,
+                                           ContainerStartupCoordinator startupCoordinator) {
 
         String systemYaml = getSystemYaml(postgresqlProperties, postgreSQLContainer);
 
@@ -101,11 +103,14 @@ public class EmbeddedArtifactoryBootstrapConfiguration {
                                 "/opt/jfrog/artifactory/var/etc/system.yaml")
                         .waitingFor(artifactoryWaitStrategy);
 
-        configureCommonsAndStart(container, properties, log);
+        GenericContainer<?> configuredContainer = configureCommons(container, properties, log);
 
-        registerEnvironment(container, environment, properties);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredContainer, log);
+            registerEnvironment(configuredContainer, environment, properties);
+        });
 
-        return container;
+        return configuredContainer;
     }
 
     static @NonNull String getSystemYaml(PostgreSQLProperties postgresqlProperties,

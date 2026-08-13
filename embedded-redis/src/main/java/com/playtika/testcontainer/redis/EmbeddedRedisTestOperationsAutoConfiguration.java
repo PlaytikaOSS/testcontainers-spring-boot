@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.redis;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ApkPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,10 @@ public class EmbeddedRedisTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller redisPackageInstaller(
             @Qualifier(BEAN_NAME_EMBEDDED_REDIS_PACKAGE_PROPERTIES) InstallPackageProperties redisPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis
+            @Qualifier(BEAN_NAME_EMBEDDED_REDIS) GenericContainer<?> redis,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        startupCoordinator.flush();
         return new ApkPackageInstaller(redisPackageProperties, redis);
     }
 }

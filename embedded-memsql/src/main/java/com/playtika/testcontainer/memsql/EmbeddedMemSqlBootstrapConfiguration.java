@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.memsql;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.utility.MountableFile;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.memsql.MemSqlProperties.BEAN_NAME_EMBEDDED_MEMSQL;
 
 @Slf4j
@@ -66,7 +67,8 @@ public class EmbeddedMemSqlBootstrapConfiguration {
     public MemSqlContainer memsql(ConfigurableEnvironment environment,
                                    MemSqlProperties properties,
                                    MemSqlStatusCheck memSqlStatusCheck,
-                                   Optional<Network> network) {
+                                   Optional<Network> network,
+                                   ContainerStartupCoordinator startupCoordinator) {
         MemSqlContainer memsql = new MemSqlContainer(ContainerUtils.getDockerImageName(properties))
                 .withDatabaseName(properties.getDatabase())
                 .withUsername(properties.getUser())
@@ -81,9 +83,12 @@ public class EmbeddedMemSqlBootstrapConfiguration {
         }
 
         network.ifPresent(memsql::withNetwork);
-        memsql = (MemSqlContainer) configureCommonsAndStart(memsql, properties, log);
-        registerMemSqlEnvironment(memsql, environment, properties);
-        return memsql;
+        MemSqlContainer configuredMemsql = (MemSqlContainer) configureCommons(memsql, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMemsql, log);
+            registerMemSqlEnvironment(configuredMemsql, environment, properties);
+        });
+        return configuredMemsql;
     }
 
     private void registerMemSqlEnvironment(MemSqlContainer memsql,
