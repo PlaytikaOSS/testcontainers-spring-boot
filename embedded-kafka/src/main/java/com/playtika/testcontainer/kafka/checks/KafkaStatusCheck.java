@@ -9,19 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class KafkaStatusCheck extends AbstractCommandWaitStrategy {
 
-    private static final String MIN_BROKERS_COUNT = "1";
-    private static final String TIMEOUT_IN_SEC = "30";
-
     private final KafkaConfigurationProperties properties;
 
     @Override
     public String[] getCheckCommand() {
+        // cp-kafka:8.x dropped the `cub` (Confluent Utility Belt) tool that older images shipped;
+        // kafka-broker-api-versions is the CLI still present that fails fast while the broker isn't reachable yet.
         return new String[] {
-                "cub",
-                "kafka-ready",
-                MIN_BROKERS_COUNT,
-                TIMEOUT_IN_SEC,
-                "-b",
+                "kafka-broker-api-versions",
+                "--bootstrap-server",
                 String.format("localhost:%d", 9092)
         };
     }
