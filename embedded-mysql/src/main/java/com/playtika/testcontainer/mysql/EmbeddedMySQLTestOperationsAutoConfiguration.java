@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.mysql;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.AptGetPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,10 @@ public class EmbeddedMySQLTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller mysqlPackageInstaller(
             @Qualifier(BEAN_NAME_EMBEDDED_MYSQL_PACKAGE_PROPERTIES) InstallPackageProperties mysqlPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql
+            @Qualifier(BEAN_NAME_EMBEDDED_MYSQL) MySQLContainer mysql,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        startupCoordinator.flush();
         return new AptGetPackageInstaller(mysqlPackageProperties, mysql);
     }
 }

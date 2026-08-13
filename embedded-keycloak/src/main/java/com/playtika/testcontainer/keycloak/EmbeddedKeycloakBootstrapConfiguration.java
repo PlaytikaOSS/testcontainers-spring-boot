@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.keycloak;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.keycloak.KeycloakProperties.BEAN_NAME_EMBEDDED_KEYCLOAK;
 import static java.lang.String.format;
 
@@ -63,7 +64,8 @@ public class EmbeddedKeycloakBootstrapConfiguration {
     public KeycloakContainer keycloakContainer(ConfigurableEnvironment environment,
                                                KeycloakProperties properties,
                                                ResourceLoader resourceLoader,
-                                               Optional<Network> network) {
+                                               Optional<Network> network,
+                                               ContainerStartupCoordinator startupCoordinator) {
         KeycloakContainer keycloak = new KeycloakContainer(ContainerUtils.getDockerImageName(properties).toString())
                 .withNetworkAliases(KEYCLOAK_NETWORK_ALIAS)
                 .withAdminUsername(properties.getAdminUser())
@@ -74,9 +76,12 @@ public class EmbeddedKeycloakBootstrapConfiguration {
 
         network.ifPresent(keycloak::withNetwork);
 
-        keycloak = (KeycloakContainer) configureCommonsAndStart(keycloak, properties, log);
-        registerEnvironment(keycloak, environment, properties);
-        return keycloak;
+        KeycloakContainer configuredKeycloak = (KeycloakContainer) configureCommons(keycloak, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredKeycloak, log);
+            registerEnvironment(configuredKeycloak, environment, properties);
+        });
+        return configuredKeycloak;
     }
 
     private void applyDbConfig(KeycloakContainer keycloak, KeycloakProperties properties) {

@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.influxdb;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.influxdb.InfluxDBProperties.EMBEDDED_INFLUX_DB;
 import static org.testcontainers.containers.InfluxDBContainer.INFLUXDB_PORT;
 
@@ -61,7 +62,8 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
     @Bean(name = EMBEDDED_INFLUX_DB, destroyMethod = "stop")
     public InfluxDBContainer influxdb(ConfigurableEnvironment environment,
                                               InfluxDBProperties properties,
-                                              Optional<Network> network) {
+                                              Optional<Network> network,
+                                              ContainerStartupCoordinator startupCoordinator) {
         InfluxDBContainer influxDBContainer = new InfluxDBContainer(ContainerUtils.getDockerImageName(properties));
         influxDBContainer
                 .withAdmin(properties.getAdminUser())
@@ -78,9 +80,12 @@ public class EmbeddedInfluxDBBootstrapConfiguration {
 
         influxDBContainer.waitingFor(getInfluxWaitStrategy(properties.getUser(), properties.getPassword()));
 
-        influxDBContainer = (InfluxDBContainer) configureCommonsAndStart(influxDBContainer, properties, log);
-        registerInfluxEnvironment(influxDBContainer, environment, properties);
-        return influxDBContainer;
+        InfluxDBContainer configuredInfluxDBContainer = (InfluxDBContainer) configureCommons(influxDBContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredInfluxDBContainer, log);
+            registerInfluxEnvironment(configuredInfluxDBContainer, environment, properties);
+        });
+        return configuredInfluxDBContainer;
     }
 
     private void registerInfluxEnvironment(InfluxDBContainer influx,

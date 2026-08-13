@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.cassandra;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.common.utils.FileUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -33,7 +34,7 @@ import java.util.Optional;
 
 import static com.playtika.testcontainer.cassandra.CassandraProperties.BEAN_NAME_EMBEDDED_CASSANDRA;
 import static com.playtika.testcontainer.cassandra.CassandraProperties.DEFAULT_DATACENTER;
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Slf4j
 @Configuration
@@ -70,18 +71,26 @@ public class EmbeddedCassandraBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_CASSANDRA, destroyMethod = "stop")
     public CassandraContainer cassandra(ConfigurableEnvironment environment,
                                         CassandraProperties properties,
-                                        Optional<Network> network) throws Exception {
+                                        Optional<Network> network,
+                                        ContainerStartupCoordinator startupCoordinator) {
 
         CassandraContainer cassandra = new CassandraContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .withNetworkAliases(CASSANDRA_NETWORK_ALIAS);
 
         network.ifPresent(cassandra::withNetwork);
-        cassandra = (CassandraContainer) configureCommonsAndStart(cassandra, properties, log);
-        initKeyspace(properties, cassandra);
-        Map<String, Object> cassandraEnv = registerCassandraEnvironment(environment, cassandra, properties);
-        log.info("Started Cassandra. Connection details: {}", cassandraEnv);
-        return cassandra;
+        CassandraContainer configuredCassandra = (CassandraContainer) configureCommons(cassandra, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredCassandra, log);
+            try {
+                initKeyspace(properties, configuredCassandra);
+            } catch (ScriptException e) {
+                throw new IllegalStateException("Failed to init Cassandra keyspace", e);
+            }
+            Map<String, Object> cassandraEnv = registerCassandraEnvironment(environment, configuredCassandra, properties);
+            log.info("Started Cassandra. Connection details: {}", cassandraEnv);
+        });
+        return configuredCassandra;
     }
 
     static Map<String, Object> registerCassandraEnvironment(ConfigurableEnvironment environment,

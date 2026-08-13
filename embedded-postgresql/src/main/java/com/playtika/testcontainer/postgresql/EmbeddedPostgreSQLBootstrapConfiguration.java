@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.postgresql;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -26,7 +27,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.postgresql.PostgreSQLProperties.BEAN_NAME_EMBEDDED_POSTGRESQL;
 
 @Slf4j
@@ -58,7 +59,8 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_POSTGRESQL, destroyMethod = "stop")
     public PostgreSQLContainer postgresql(ConfigurableEnvironment environment,
                                           PostgreSQLProperties properties,
-                                          Optional<Network> network) {
+                                          Optional<Network> network,
+                                          ContainerStartupCoordinator startupCoordinator) {
 
         PostgreSQLContainer postgresql =
                 new PostgreSQLContainer(ContainerUtils.getDockerImageName(properties))
@@ -77,9 +79,12 @@ public class EmbeddedPostgreSQLBootstrapConfiguration {
             postgresql.waitingFor(waitStrategy);
         }
 
-        postgresql = (PostgreSQLContainer) configureCommonsAndStart(postgresql, properties, log);
-        registerPostgresqlEnvironment(postgresql, environment, properties);
-        return postgresql;
+        PostgreSQLContainer configuredPostgresql = (PostgreSQLContainer) configureCommons(postgresql, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredPostgresql, log);
+            registerPostgresqlEnvironment(configuredPostgresql, environment, properties);
+        });
+        return configuredPostgresql;
     }
 
     private void registerPostgresqlEnvironment(PostgreSQLContainer postgresql,

@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.grafana;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -23,7 +24,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.grafana.GrafanaProperties.GRAFANA_BEAN_NAME;
 
 @Slf4j
@@ -58,7 +59,8 @@ public class EmbeddedGrafanaBootstrapConfiguration {
     @Bean(name = GRAFANA_BEAN_NAME, destroyMethod = "stop")
     public LgtmStackContainer grafana(ConfigurableEnvironment environment,
                                       GrafanaProperties properties,
-                                      Optional<Network> network) {
+                                      Optional<Network> network,
+                                      ContainerStartupCoordinator startupCoordinator) {
 
         LgtmStackContainer container =
                 new LgtmStackContainer(ContainerUtils.getDockerImageName(properties))
@@ -74,11 +76,14 @@ public class EmbeddedGrafanaBootstrapConfiguration {
 
         network.ifPresent(container::withNetwork);
 
-        configureCommonsAndStart(container, properties, log);
+        LgtmStackContainer configuredContainer = (LgtmStackContainer) configureCommons(container, properties, log);
 
-        registerEnvironment(container, environment, properties);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredContainer, log);
+            registerEnvironment(configuredContainer, environment, properties);
+        });
 
-        return container;
+        return configuredContainer;
     }
 
     private void registerEnvironment(LgtmStackContainer grafana,

@@ -132,6 +132,24 @@ embedded.containers.forceShutdown=true #default is false
 ----
 NOTE: Otherwise, it will be shutdown with delay, see https://github.com/testcontainers/moby-ryuk
 
+=== Start containers in parallel
+./src/test/resources/application.properties
+[source,properties]
+----
+embedded.containers.parallelStartup=true #default is false
+----
+By default, embedded containers start one after another, so total startup time is the sum of every
+container's own startup time. Enabling this option starts them concurrently instead, so the total
+startup time is closer to the slowest single container. Supported by every module except
+`embedded-toxiproxy` (its container is a direct dependency of every other module's Toxiproxy proxy
+bean, so it always starts eagerly, ahead of the rest).
+
+NOTE: if you have your own beans that read `embedded.*` connection properties via `@Value`, they must
+either depend on a Spring Boot auto-configured infrastructure bean (`DataSource`, `RabbitTemplate`,
+etc. - these already wait correctly) or inject `ContainerStartupCoordinator` and call `flush()` before
+reading the property, otherwise the property may not be registered yet when parallel startup is
+enabled.
+
 === Disable all embedded containers
 
 ./src/test/resources/bootstrap.properties

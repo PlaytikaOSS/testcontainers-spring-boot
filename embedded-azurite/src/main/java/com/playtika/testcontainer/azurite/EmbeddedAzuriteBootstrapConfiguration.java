@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.azurite;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -30,7 +31,7 @@ import java.util.Optional;
 import static com.playtika.testcontainer.azurite.AzuriteProperties.AZURITE_BEAN_NAME;
 import static com.playtika.testcontainer.azurite.AzuriteProperties.DEFAULT_CERT_CLASSPATH;
 import static com.playtika.testcontainer.azurite.AzuriteProperties.DEFAULT_KEY_CLASSPATH;
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Slf4j
 @Configuration
@@ -102,7 +103,8 @@ public class EmbeddedAzuriteBootstrapConfiguration {
     @Bean(name = AZURITE_BEAN_NAME, destroyMethod = "stop")
     public AzuriteContainer azurite(ConfigurableEnvironment environment,
                                     AzuriteProperties properties,
-                                    Optional<Network> network) {
+                                    Optional<Network> network,
+                                    ContainerStartupCoordinator startupCoordinator) {
         AzuriteContainer azuriteContainer = new AzuriteContainer(ContainerUtils.getDockerImageName(properties))
                 .withNetworkAliases(AZURITE_BLOB_NETWORK_ALIAS)
                 .withCreateContainerCmdModifier(cmd -> {
@@ -119,9 +121,12 @@ public class EmbeddedAzuriteBootstrapConfiguration {
 
         network.ifPresent(azuriteContainer::withNetwork);
 
-        azuriteContainer = (AzuriteContainer) configureCommonsAndStart(azuriteContainer, properties, log);
-        registerEnvironment(azuriteContainer, environment, properties);
-        return azuriteContainer;
+        AzuriteContainer configuredAzuriteContainer = (AzuriteContainer) configureCommons(azuriteContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredAzuriteContainer, log);
+            registerEnvironment(configuredAzuriteContainer, environment, properties);
+        });
+        return configuredAzuriteContainer;
     }
 
     private void configureSsl(AzuriteContainer azuriteContainer, AzuriteProperties properties) {

@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mysql;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -23,7 +24,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.mysql.MySQLProperties.BEAN_NAME_EMBEDDED_MYSQL;
 
 @Slf4j
@@ -58,7 +59,8 @@ public class EmbeddedMySQLBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MYSQL, destroyMethod = "stop")
     public MySQLContainer mysql(ConfigurableEnvironment environment,
                                 MySQLProperties properties,
-                                Optional<Network> network) {
+                                Optional<Network> network,
+                                ContainerStartupCoordinator startupCoordinator) {
 
         MySQLContainer mysql = new MySQLContainer(ContainerUtils.getDockerImageName(properties))
                 .withEnv("MYSQL_ALLOW_EMPTY_PASSWORD", "yes")
@@ -73,9 +75,12 @@ public class EmbeddedMySQLBootstrapConfiguration {
                 .withNetworkAliases(MYSQL_NETWORK_ALIAS);
 
         network.ifPresent(mysql::withNetwork);
-        mysql = (MySQLContainer) configureCommonsAndStart(mysql, properties, log);
-        registerMySQLEnvironment(mysql, environment, properties);
-        return mysql;
+        MySQLContainer configuredMysql = (MySQLContainer) configureCommons(mysql, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMysql, log);
+            registerMySQLEnvironment(configuredMysql, environment, properties);
+        });
+        return configuredMysql;
     }
 
     private void registerMySQLEnvironment(MySQLContainer mysql,

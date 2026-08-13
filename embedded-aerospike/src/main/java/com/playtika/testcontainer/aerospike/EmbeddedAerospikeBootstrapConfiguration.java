@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.aerospike;
 
 import com.aerospike.client.IAerospikeClient;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
@@ -31,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.aerospike.AerospikeProperties.BEAN_NAME_AEROSPIKE;
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Slf4j
 @Configuration
@@ -74,7 +75,8 @@ public class EmbeddedAerospikeBootstrapConfiguration {
     public GenericContainer<?> aerospike(AerospikeWaitStrategy aerospikeWaitStrategy,
                                       ConfigurableEnvironment environment,
                                       AerospikeProperties properties,
-                                      Optional<Network> network) {
+                                      Optional<Network> network,
+                                      ContainerStartupCoordinator startupCoordinator) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(aerospikeWaitStrategy)
                 .withStrategy(new HostPortWaitStrategy())
@@ -101,9 +103,12 @@ public class EmbeddedAerospikeBootstrapConfiguration {
                 .withEnv("FEATURES", featureKey)
                 .withEnv("FEATURE_KEY_FILE", "env-b64:FEATURES");
         }
-        aerospike = configureCommonsAndStart(aerospike, properties, log);
-        registerAerospikeEnvironment(aerospike, environment, properties);
-        return aerospike;
+        GenericContainer<?> configuredAerospike = configureCommons(aerospike, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredAerospike, log);
+            registerAerospikeEnvironment(configuredAerospike, environment, properties);
+        });
+        return configuredAerospike;
     }
 
     private void registerAerospikeEnvironment(GenericContainer<?> aerospike,
