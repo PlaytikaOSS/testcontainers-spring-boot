@@ -51,4 +51,4 @@ To auto-configure `spring-data-mongodb` use these properties in your test `appli
 spring.mongodb.uri=mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
 ----
 
-For replicaset, add additional mongodb properties: `?rs=${embedded.mongodb.replica-set-name}&directConnection=true&authSource=admin`
+For replicaset, add additional mongodb properties: `?replicaSet=${embedded.mongodb.replica-set-name}&directConnection=true&authSource=admin`

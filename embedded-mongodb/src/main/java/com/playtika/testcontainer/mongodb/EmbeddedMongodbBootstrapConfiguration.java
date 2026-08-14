@@ -94,7 +94,6 @@ public class EmbeddedMongodbBootstrapConfiguration {
                     .withEnv("MONGO_INITDB_ROOT_USERNAME", properties.getUsername())
                     .withEnv("MONGO_INITDB_ROOT_PASSWORD", properties.getPassword())
                     .withEnv("MONGO_INITDB_DATABASE", properties.getDatabase())
-                    .withEnv("MONGO_INITDB_REPL_SET_HOST", properties.getHost())
                     .withExposedPorts(properties.getPort())
                     .waitingFor(new MongodbWaitStrategy(properties))
                     .withNetworkAliases(MONGODB_NETWORK_ALIAS);
@@ -124,7 +123,7 @@ public class EmbeddedMongodbBootstrapConfiguration {
         }
 
         log.info("Started mongodb. Connection Details: {}, Connection URI: mongodb://{}:{}/{}{}", map, host, mappedPort, properties.getDatabase(), Optional.ofNullable(
-                properties.getReplicaSetName()).map("?directConnection=true&authSource=admin&rs="::concat).orElse("")
+                properties.getReplicaSetName()).map("?directConnection=true&authSource=admin&replicaSet="::concat).orElse("")
         );
 
         MapPropertySource propertySource = new MapPropertySource("embeddedMongoInfo", map);
