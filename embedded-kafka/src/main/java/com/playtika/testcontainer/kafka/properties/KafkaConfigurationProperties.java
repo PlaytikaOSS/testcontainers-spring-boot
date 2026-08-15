@@ -73,7 +73,7 @@ public class KafkaConfigurationProperties extends CommonContainerProperties {
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "confluentinc/cp-kafka:8.2.1";
+        return "confluentinc/cp-kafka:8.3.1";
     }
 
     @AllArgsConstructor
