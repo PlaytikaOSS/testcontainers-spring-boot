@@ -14,7 +14,7 @@
     <artifactId>embedded-clickhouse</artifactId>
 
     <properties>
-        <clickhouse-driver.version>0.9.8</clickhouse-driver.version>
+        <clickhouse-driver.version>0.10.0</clickhouse-driver.version>
     </properties>
 
     <dependencies>
