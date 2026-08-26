@@ -5,8 +5,8 @@ https://maven-badges.sml.io/sonatype-central/com.playtika.testcontainers/testcon
 
 If you develop services using Spring Boot and maybe Spring Cloud and you do
 https://testing.googleblog.com/2010/12/test-sizes.html[medium sized] tests during build process, then this set of
-Spring Boot auto-configurations might be handy. By adding module into classpath, you will get stateful service,
-like Couchbase or Kafka, auto-started and available for connection from your application service w/o wiring any
+Spring Boot auto-configurations might be handy. By adding a module to the classpath, you will get a stateful service,
+like Couchbase or Kafka, auto-started and available for connection from your application service without wiring any
 additional code. https://www.docker.com/[Docker] and https://www.testcontainers.org/[TestContainers] are used to
 bootstrap stateful service using Spring Cloud https://cloud.spring.io/spring-cloud-static/spring-cloud.html#_the_bootstrap_application_context[bootstrap phase].
 Usage of Spring Cloud in your production code is optional, but __you will need it in tests__. See <<how-to-use, How to use>> below.
@@ -14,7 +14,7 @@ Usage of Spring Cloud in your production code is optional, but __you will need i
 == Versions compatibility
 
 |===
-| Spring Boot | Test Containers Spring Boot
+| Spring Boot | Testcontainers Spring Boot
 
 |2.5.X, 2.6.X, 2.7.X
 |2.X.X
@@ -33,8 +33,8 @@ Usage of Spring Cloud in your production code is optional, but __you will need i
 == How to use
 
 . https://docs.docker.com/install/[Install Docker] on your machine
-. Make sure you have http://projects.spring.io/spring-cloud/#quick-start[Spring Boot and Spring Cloud] in classpath of your tests.
-In case if you need to https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap[pick version].
+. Make sure you have http://projects.spring.io/spring-cloud/#quick-start[Spring Boot and Spring Cloud] in the classpath of your tests.
+If needed, https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap[pick a version].
 +
 .pom.xml
 [source,xml]
