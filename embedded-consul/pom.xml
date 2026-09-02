@@ -14,7 +14,7 @@
   <artifactId>embedded-consul</artifactId>
 
   <properties>
-    <vertx-consul-client-version>5.1.6</vertx-consul-client-version>
+    <vertx-consul-client-version>5.1.7</vertx-consul-client-version>
   </properties>
 
   <dependencies>
