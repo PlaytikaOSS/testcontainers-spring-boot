@@ -11,6 +11,20 @@ additional code. https://www.docker.com/[Docker] and https://www.testcontainers.
 bootstrap stateful service using Spring Cloud https://cloud.spring.io/spring-cloud-static/spring-cloud.html#_the_bootstrap_application_context[bootstrap phase].
 Usage of Spring Cloud in your production code is optional, but __you will need it in tests__. See <<how-to-use, How to use>> below.
 
+== This project vs official Testcontainers
+
+https://github.com/testcontainers/testcontainers-java[testcontainers-java] and Spring Boot's
+https://docs.spring.io/spring-boot/reference/testing/testcontainers.html[Testcontainers support]
+(since 3.1, including `@ServiceConnection`) are the lower-level path: you declare containers in
+the test and wire connection details yourself (`@DynamicPropertySource` or a service connection).
+
+This project sits on top of Testcontainers. Putting an `embedded-*` module on the test classpath
+starts that service during the Spring Cloud bootstrap phase and exposes connection properties
+(`embedded.kafka.brokerList`, and so on) without extra test code.
+
+Use this project when you want that auto-configuration. Use official Testcontainers /
+`@ServiceConnection` when you want to own the container lifecycle in the test class.
+
 == Versions compatibility
 
 |===
