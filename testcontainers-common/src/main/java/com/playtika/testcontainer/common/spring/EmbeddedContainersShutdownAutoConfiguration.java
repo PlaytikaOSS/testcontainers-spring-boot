@@ -30,11 +30,16 @@ public class EmbeddedContainersShutdownAutoConfiguration {
     @Bean(name = ALL_CONTAINERS)
     public AllContainers allContainers(@Autowired(required = false) DockerPresenceMarker dockerAvailable,
                                        @Autowired(required = false) GenericContainer[] allContainers,
-                                       TestcontainersProperties testcontainersProperties) {
+                                       TestcontainersProperties testcontainersProperties,
+                                       ContainerStartupCoordinator startupCoordinator) {
         //Docker presence marker is not available == no spring cloud
         if (dockerAvailable == null)
             throw new NoDockerPresenceMarkerException("No docker presence marker available. " +
                     "Did you add spring cloud starter into classpath?");
+
+        // every GenericContainer bean above is already resolved at this point, so any container
+        // start scheduled via ContainerStartupCoordinator is guaranteed to be pending here
+        startupCoordinator.flush();
 
         List<GenericContainer> containers = allContainers != null ? asList(allContainers) : emptyList();
         return new AllContainers(containers, testcontainersProperties);

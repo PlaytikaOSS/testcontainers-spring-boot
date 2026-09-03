@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.memsql;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import com.playtika.testcontainer.common.utils.YumPackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,9 +30,11 @@ public class EmbeddedMemSqlTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller memsqlPackageInstaller(
+            ContainerStartupCoordinator startupCoordinator,
             @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL_PACKAGE_PROPERTIES) InstallPackageProperties memsqlPackageProperties,
             @Qualifier(BEAN_NAME_EMBEDDED_MEMSQL) GenericContainer<?> memsql
     ) {
+        startupCoordinator.flush();
         return new YumPackageInstaller(memsqlPackageProperties, memsql);
     }
 }

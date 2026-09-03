@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.pulsar;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
@@ -55,14 +56,18 @@ public class EmbeddedPulsarBootstrapConfiguration {
     @Bean(name = EMBEDDED_PULSAR)
     public PulsarContainer embeddedPulsar(PulsarProperties pulsarProperties,
                                           ConfigurableEnvironment environment,
-                                          Optional<Network> network) {
+                                          Optional<Network> network,
+                                          ContainerStartupCoordinator startupCoordinator) {
         PulsarContainer pulsarContainer = new PulsarContainer(ContainerUtils.getDockerImageName(pulsarProperties))
                 .withNetworkAliases(PULSAR_NETWORK_ALIAS);
 
         network.ifPresent(pulsarContainer::withNetwork);
-        pulsarContainer = (PulsarContainer) ContainerUtils.configureCommonsAndStart(pulsarContainer, pulsarProperties, log);
-        registerEmbeddedPulsarEnvironment(environment, pulsarContainer, pulsarProperties);
-        return pulsarContainer;
+        PulsarContainer configuredPulsarContainer = (PulsarContainer) ContainerUtils.configureCommons(pulsarContainer, pulsarProperties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredPulsarContainer, log);
+            registerEmbeddedPulsarEnvironment(environment, configuredPulsarContainer, pulsarProperties);
+        });
+        return configuredPulsarContainer;
     }
 
     private static void registerEmbeddedPulsarEnvironment(final ConfigurableEnvironment environment,

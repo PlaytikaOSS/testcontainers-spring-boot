@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mssqlserver;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -26,7 +27,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.mssqlserver.MSSQLServerProperties.BEAN_NAME_EMBEDDED_MSSQLSERVER;
 
 @Slf4j
@@ -60,7 +61,8 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MSSQLSERVER, destroyMethod = "stop")
     public MSSQLServerContainer mssqlserver(ConfigurableEnvironment environment,
                                                     MSSQLServerProperties properties,
-                                                    Optional<Network> network) {
+                                                    Optional<Network> network,
+                                                    ContainerStartupCoordinator startupCoordinator) {
 
         MSSQLServerContainer mssqlServerContainer = new MSSQLServerContainer(ContainerUtils.getDockerImageName(properties))
                 .withPassword(properties.getPassword())
@@ -80,10 +82,13 @@ public class EmbeddedMSSQLServerBootstrapConfiguration {
             mssqlServerContainer.acceptLicense();
         }
 
-        mssqlServerContainer = (MSSQLServerContainer) configureCommonsAndStart(mssqlServerContainer, properties, log);
-        registerMSSQLServerEnvironment(mssqlServerContainer, environment, properties);
+        MSSQLServerContainer configuredMssqlServerContainer = (MSSQLServerContainer) configureCommons(mssqlServerContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMssqlServerContainer, log);
+            registerMSSQLServerEnvironment(configuredMssqlServerContainer, environment, properties);
+        });
 
-        return mssqlServerContainer;
+        return configuredMssqlServerContainer;
     }
 
     private void registerMSSQLServerEnvironment(MSSQLServerContainer mssqlServerContainer,

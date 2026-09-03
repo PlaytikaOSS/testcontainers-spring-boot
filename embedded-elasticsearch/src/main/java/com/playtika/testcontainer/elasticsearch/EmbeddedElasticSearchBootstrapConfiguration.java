@@ -1,6 +1,8 @@
 package com.playtika.testcontainer.elasticsearch;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
@@ -23,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.elasticsearch.ElasticSearchProperties.BEAN_NAME_EMBEDDED_ELASTIC_SEARCH;
 
 @Slf4j
@@ -59,14 +61,18 @@ public class EmbeddedElasticSearchBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_ELASTIC_SEARCH, destroyMethod = "stop")
     public ElasticsearchContainer elasticSearch(ConfigurableEnvironment environment,
                                                 ElasticSearchProperties properties,
-                                                Optional<Network> network) {
+                                                Optional<Network> network,
+                                                ContainerStartupCoordinator startupCoordinator) {
 
         ElasticsearchContainer elasticSearch = ElasticSearchContainerFactory.create(properties)
                 .withNetworkAliases(ELASTICSEARCH_NETWORK_ALIAS);
         network.ifPresent(elasticSearch::withNetwork);
-        elasticSearch = (ElasticsearchContainer) configureCommonsAndStart(elasticSearch, properties, log);
-        registerElasticSearchEnvironment(elasticSearch, environment, properties);
-        return elasticSearch;
+        ElasticsearchContainer configuredElasticSearch = (ElasticsearchContainer) configureCommons(elasticSearch, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredElasticSearch, log);
+            registerElasticSearchEnvironment(configuredElasticSearch, environment, properties);
+        });
+        return configuredElasticSearch;
     }
 
     private void registerElasticSearchEnvironment(ElasticsearchContainer elasticSearch,

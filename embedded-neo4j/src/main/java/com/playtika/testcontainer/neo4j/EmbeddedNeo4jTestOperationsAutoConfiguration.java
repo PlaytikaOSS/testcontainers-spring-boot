@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.neo4j;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.AptGetPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,10 @@ public class EmbeddedNeo4jTestOperationsAutoConfiguration {
     @Bean()
     public PackageInstaller neo4jPackageInstaller(
             @Qualifier(BEAN_NAME_EMBEDDED_NEO4J_PACKAGE_PROPERTIES) InstallPackageProperties neo4jPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer<?> neo4j
+            @Qualifier(BEAN_NAME_EMBEDDED_NEO4J) GenericContainer<?> neo4j,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        startupCoordinator.flush();
         return new AptGetPackageInstaller(neo4jPackageProperties, neo4j);
     }
 }

@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.consul;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -26,7 +27,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.consul.ConsulProperties.BEAN_NAME_EMBEDDED_CONSUL;
 
 @Slf4j
@@ -61,7 +62,8 @@ public class EmbeddedConsulBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_CONSUL, destroyMethod = "stop")
     public ConsulContainer consulContainer(ConfigurableEnvironment environment,
                                               ConsulProperties properties,
-                                              Optional<Network> network) {
+                                              Optional<Network> network,
+                                              ContainerStartupCoordinator startupCoordinator) {
         ConsulContainer consul = new ConsulContainer(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getPort())
                 .waitingFor(
@@ -78,9 +80,14 @@ public class EmbeddedConsulBootstrapConfiguration {
                     BindMode.READ_ONLY);
         }
 
-        consul = (ConsulContainer) configureCommonsAndStart(consul, properties, log);
-        registerConsulEnvironment(consul, environment, properties);
-        return consul;
+        ConsulContainer configuredConsul = (ConsulContainer) configureCommons(consul, properties, log);
+
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredConsul, log);
+            registerConsulEnvironment(configuredConsul, environment, properties);
+        });
+
+        return configuredConsul;
     }
 
     private void registerConsulEnvironment(GenericContainer<?> consul, ConfigurableEnvironment environment,

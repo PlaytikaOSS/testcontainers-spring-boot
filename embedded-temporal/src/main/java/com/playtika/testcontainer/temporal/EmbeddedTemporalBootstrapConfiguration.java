@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.temporal;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.temporal.TemporalProperties.BEAN_NAME_EMBEDDED_TEMPORAL;
 import static com.playtika.testcontainer.temporal.TemporalProperties.INTERNAL_PORT;
 import static com.playtika.testcontainer.temporal.TemporalProperties.INTERNAL_UI_PORT;
@@ -39,7 +40,8 @@ public class EmbeddedTemporalBootstrapConfiguration {
     @Bean(value = BEAN_NAME_EMBEDDED_TEMPORAL, destroyMethod = "stop")
     public GenericContainer<?> temporal(ConfigurableEnvironment environment,
                                         TemporalProperties properties,
-                                        Optional<Network> network) {
+                                        Optional<Network> network,
+                                        ContainerStartupCoordinator startupCoordinator) {
 
         GenericContainer<?> container =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -63,11 +65,14 @@ public class EmbeddedTemporalBootstrapConfiguration {
 
         network.ifPresent(container::withNetwork);
 
-        configureCommonsAndStart(container, properties, log);
+        GenericContainer<?> configuredContainer = configureCommons(container, properties, log);
 
-        registerTemporalEnvironment(container, environment, properties);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredContainer, log);
+            registerTemporalEnvironment(configuredContainer, environment, properties);
+        });
 
-        return container;
+        return configuredContainer;
     }
 
     private void registerTemporalEnvironment(GenericContainer<?> container,

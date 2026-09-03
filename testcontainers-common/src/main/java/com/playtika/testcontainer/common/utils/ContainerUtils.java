@@ -63,7 +63,15 @@ public class ContainerUtils {
     public static GenericContainer<?> configureCommonsAndStart(GenericContainer<?> container,
                                                                CommonContainerProperties properties,
                                                                Logger logger) {
-        log.info("Starting container with Docker image: {}", container.getDockerImageName());
+        GenericContainer<?> updatedContainer = configureCommons(container, properties, logger);
+        startAndLogTime(updatedContainer, logger);
+        return updatedContainer;
+    }
+
+    public static GenericContainer<?> configureCommons(GenericContainer<?> container,
+                                                        CommonContainerProperties properties,
+                                                        Logger logger) {
+        log.info("Configuring container with Docker image: {}", container.getDockerImageName());
         GenericContainer<?> updatedContainer = container
                 .withStartupTimeout(properties.getTimeoutDuration())
                 .withReuse(properties.isReuseContainer())
@@ -94,11 +102,10 @@ public class ContainerUtils {
         updatedContainer = properties.getCommand() != null ? updatedContainer.withCommand(properties.getCommand()) : updatedContainer;
         updatedContainer = properties.isAttachContainerLog() ? updatedContainer.withLogConsumer(new Slf4jLogConsumer(log, true).withPrefix(container.getDockerImageName())) : updatedContainer;
 
-        startAndLogTime(updatedContainer, logger);
         return updatedContainer;
     }
 
-    private long startAndLogTime(GenericContainer<?> container, Logger logger) {
+    public static long startAndLogTime(GenericContainer<?> container, Logger logger) {
         Instant startTime = Instant.now();
         container.start();
         long startupTime = Duration.between(startTime, Instant.now()).toMillis() / 1000;
