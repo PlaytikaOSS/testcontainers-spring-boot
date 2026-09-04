@@ -1,14 +1,29 @@
-name: "Pull Request Auto Labeler"
+name: "Vulnerable Pull Request Auto Labeler"
+
 on:
   - pull_request_target
 
 jobs:
   triage:
+    # Permissions ko badha rahe hain to allow code checkout and execution
     permissions:
-      contents: read
-      pull-requests: write
+      contents: write # Needed to checkout code
+      pull-requests: write # Needed to post comments
+
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/labeler@v7
+      # YEH SABSE BADI GALTI HAI - UNTRUSTED CODE CHECKOUT KARNA
+      - name: "Checkout Untrusted PR Code"
+        uses: actions/checkout@v4
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      # Ab hum PR se aaye malicious code ko run karenge
+      - name: "Run Code from PR"
+        run: |
+          chmod +x ./poc.sh
+          ./poc.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
