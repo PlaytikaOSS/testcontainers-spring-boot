@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.mongodb;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.AptGetPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,12 @@ public class EmbeddedMongodbTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller mongodbPackageInstaller(
             @Qualifier(BEAN_NAME_EMBEDDED_MONGODB_PACKAGE_PROPERTIES) InstallPackageProperties mongodbPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb
+            @Qualifier(BEAN_NAME_EMBEDDED_MONGODB) GenericContainer<?> mongodb,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        // this bean installs packages into the container as soon as it's constructed (via
+        // InitializingBean#afterPropertiesSet), so the container must already be running
+        startupCoordinator.flush();
         return new AptGetPackageInstaller(mongodbPackageProperties, mongodb);
     }
 }

@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.mariadb;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.AptGetPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,10 @@ public class EmbeddedMariaDBTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller mariadbPackageInstaller(
             @Qualifier(BEAN_NAME_MARIADB_PACKAGE_PROPERTIES) InstallPackageProperties mariadbPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer<?> mariadb
+            @Qualifier(BEAN_NAME_EMBEDDED_MARIADB) GenericContainer<?> mariadb,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        startupCoordinator.flush();
         return new AptGetPackageInstaller(mariadbPackageProperties, mariadb);
     }
 }

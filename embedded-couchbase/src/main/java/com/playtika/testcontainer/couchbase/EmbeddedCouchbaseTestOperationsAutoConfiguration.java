@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.couchbase;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.AptGetPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,10 @@ public class EmbeddedCouchbaseTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller couchbasePackageInstaller(
             @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE_PACKAGE_PROPERTIES) InstallPackageProperties couchbasePackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer<?> couchbase
+            @Qualifier(BEAN_NAME_EMBEDDED_COUCHBASE) GenericContainer<?> couchbase,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        startupCoordinator.flush();
         return new AptGetPackageInstaller(couchbasePackageProperties, couchbase);
     }
 }

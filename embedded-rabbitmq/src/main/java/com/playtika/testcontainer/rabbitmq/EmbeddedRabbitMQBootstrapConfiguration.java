@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.rabbitmq;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.rabbitmq.RabbitMQProperties.BEAN_NAME_EMBEDDED_RABBITMQ;
 
 @Slf4j
@@ -60,7 +61,8 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_RABBITMQ, destroyMethod = "stop")
     public RabbitMQContainer rabbitmq(ConfigurableEnvironment environment,
                                       RabbitMQProperties properties,
-                                      Optional<Network> network) throws IOException, InterruptedException {
+                                      Optional<Network> network,
+                                      ContainerStartupCoordinator startupCoordinator) {
 
         Integer[] exposedPorts = Stream.concat(properties.getAdditionalPorts().stream(), Stream.of(properties.getPort(), properties.getHttpPort()))
                 .distinct()
@@ -74,18 +76,31 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
                         .withNetworkAliases(RABBITMQ_NETWORK_ALIAS);
 
         network.ifPresent(rabbitMQ::withNetwork);
-        rabbitMQ = (RabbitMQContainer) configureCommonsAndStart(rabbitMQ, properties, log);
+        RabbitMQContainer configuredRabbitMQ = (RabbitMQContainer) configureCommons(rabbitMQ, properties, log);
 
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredRabbitMQ, log);
+            enablePlugins(configuredRabbitMQ, properties);
+            registerRabbitMQEnvironment(configuredRabbitMQ, environment, properties);
+        });
+        return configuredRabbitMQ;
+    }
+
+    private void enablePlugins(RabbitMQContainer rabbitMQ, RabbitMQProperties properties) {
         if (properties.getEnabledPlugins() != null && !properties.getEnabledPlugins().isEmpty()) {
             List<String> command = new ArrayList<>(properties.getEnabledPlugins().size() + 2);
             command.add("rabbitmq-plugins");
             command.add("enable");
             command.addAll(properties.getEnabledPlugins());
-            rabbitMQ.execInContainer(command.toArray(new String[0]));
+            try {
+                rabbitMQ.execInContainer(command.toArray(new String[0]));
+            } catch (IOException | InterruptedException e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                throw new IllegalStateException("Failed to enable RabbitMQ plugins: " + properties.getEnabledPlugins(), e);
+            }
         }
-
-        registerRabbitMQEnvironment(rabbitMQ, environment, properties);
-        return rabbitMQ;
     }
 
     private void registerRabbitMQEnvironment(RabbitMQContainer rabbitMQ,

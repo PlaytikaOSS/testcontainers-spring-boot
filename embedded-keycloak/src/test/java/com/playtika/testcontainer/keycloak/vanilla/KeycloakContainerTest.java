@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.keycloak.vanilla;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinatorConfiguration;
 import com.playtika.testcontainer.keycloak.EmbeddedKeycloakBootstrapConfiguration;
 import com.playtika.testcontainer.keycloak.EmbeddedKeycloakBootstrapConfiguration.ImportFileNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class KeycloakContainerTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(EmbeddedKeycloakBootstrapConfiguration.class));
+            .withConfiguration(AutoConfigurations.of(
+                    ContainerStartupCoordinatorConfiguration.class,
+                    EmbeddedKeycloakBootstrapConfiguration.class));
 
     @Test
     public void shouldThrowImportFileNotFoundExceptionWhenImportFileDoesNotExist() {

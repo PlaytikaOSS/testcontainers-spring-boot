@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.redis;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.common.utils.FileUtils;
@@ -33,7 +34,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.redis.EnvUtils.registerRedisEnvironment;
 import static com.playtika.testcontainer.redis.RedisProperties.BEAN_NAME_EMBEDDED_REDIS;
 
@@ -88,7 +89,8 @@ public class EmbeddedRedisBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_REDIS, destroyMethod = "stop")
     public RedisContainer redis(ConfigurableEnvironment environment,
                                      @Qualifier(REDIS_WAIT_STRATEGY_BEAN_NAME) WaitStrategy redisStartupCheckStrategy,
-                                     Optional<Network> network) throws Exception {
+                                     Optional<Network> network,
+                                     ContainerStartupCoordinator startupCoordinator) throws Exception {
 
         // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
         // container must be the same
@@ -105,10 +107,15 @@ public class EmbeddedRedisBootstrapConfiguration {
                         .waitingFor(redisStartupCheckStrategy)
                         .withNetworkAliases(REDIS_NETWORK_ALIAS);
         network.ifPresent(redis::withNetwork);
-        redis = (RedisContainer) configureCommonsAndStart(redis, properties, log);
-        Map<String, Object> redisEnv = registerRedisEnvironment(environment, redis, properties, properties.getPort());
-        log.info("Started Redis cluster. Connection details: {}", redisEnv);
-        return redis;
+        RedisContainer configuredRedis = (RedisContainer) configureCommons(redis, properties, log);
+
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredRedis, log);
+            Map<String, Object> redisEnv = registerRedisEnvironment(environment, configuredRedis, properties, properties.getPort());
+            log.info("Started Redis cluster. Connection details: {}", redisEnv);
+        });
+
+        return configuredRedis;
     }
 
     private Path prepareRedisConf() throws IOException {

@@ -1,5 +1,6 @@
 package com.playtika.testcontainers.wiremock;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import org.wiremock.integrations.testcontainers.WireMockContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Configuration
 @ConditionalOnExpression("${embedded.containers.enabled:true}")
@@ -35,16 +36,20 @@ public class EmbeddedWiremockBootstrapConfiguration {
     @Bean(value = BEAN_NAME_EMBEDDED_WIREMOCK, destroyMethod = "stop")
     public WireMockContainer wiremockContainer(ConfigurableEnvironment environment,
                                                WiremockProperties properties,
-                                               Optional<Network> network) {
+                                               Optional<Network> network,
+                                               ContainerStartupCoordinator startupCoordinator) {
         WireMockContainer wiremock =
                 new WireMockContainer(ContainerUtils.getDockerImageName(properties))
                         .withNetworkAliases(WIREMOCK_NETWORK_ALIAS);
 
         network.ifPresent(wiremock::withNetwork);
 
-        wiremock = (WireMockContainer) configureCommonsAndStart(wiremock, properties, log);
-        registerWiremockEnvironment(wiremock, environment);
-        return wiremock;
+        WireMockContainer configuredWiremock = (WireMockContainer) configureCommons(wiremock, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredWiremock, log);
+            registerWiremockEnvironment(configuredWiremock, environment);
+        });
+        return configuredWiremock;
     }
 
     private void registerWiremockEnvironment(WireMockContainer container, ConfigurableEnvironment environment) {

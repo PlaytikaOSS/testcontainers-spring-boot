@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.oracle;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -23,7 +24,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.oracle.OracleProperties.BEAN_NAME_EMBEDDED_ORACLE;
 import static com.playtika.testcontainer.oracle.OracleProperties.ORACLE_DB;
 import static com.playtika.testcontainer.oracle.OracleProperties.ORACLE_PORT;
@@ -59,7 +60,8 @@ public class EmbeddedOracleBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_ORACLE, destroyMethod = "stop")
     public OracleContainer oracle(ConfigurableEnvironment environment,
                                   OracleProperties properties,
-                                  Optional<Network> network) {
+                                  Optional<Network> network,
+                                  ContainerStartupCoordinator startupCoordinator) {
 
         OracleContainer oracle =
                 new OracleContainer(ContainerUtils.getDockerImageName(properties))
@@ -69,9 +71,12 @@ public class EmbeddedOracleBootstrapConfiguration {
                         .withNetworkAliases(ORACLE_NETWORK_ALIAS);
 
         network.ifPresent(oracle::withNetwork);
-        oracle = (OracleContainer) configureCommonsAndStart(oracle, properties, log);
-        registerOracleEnvironment(oracle, environment, properties);
-        return oracle;
+        OracleContainer configuredOracle = (OracleContainer) configureCommons(oracle, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredOracle, log);
+            registerOracleEnvironment(configuredOracle, environment, properties);
+        });
+        return configuredOracle;
     }
 
     private void registerOracleEnvironment(OracleContainer oracle,

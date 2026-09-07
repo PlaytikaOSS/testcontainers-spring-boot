@@ -1,9 +1,9 @@
 package com.playtika.testcontainer.kafka.configuration;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ import org.testcontainers.containers.Network;
 
 import java.util.LinkedHashMap;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties.SCHEMA_REGISTRY_BEAN_NAME;
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
@@ -31,8 +31,14 @@ public class SchemaRegistryContainerConfiguration {
     public GenericContainer<?> schemaRegistry(
             ConfigurableEnvironment environment,
             SchemaRegistryConfigurationProperties properties,
-            @Value("${embedded.kafka.containerBrokerList}") String kafkaContainerBrokerList,
-            Network network) {
+            Network network,
+            ContainerStartupCoordinator startupCoordinator) {
+
+        // the kafka broker registers "embedded.kafka.containerBrokerList" only once its own start
+        // has been scheduled/run; flush now so the property is available before we read it below,
+        // since it's needed to configure (not just start) this container.
+        startupCoordinator.flush();
+        String kafkaContainerBrokerList = environment.getProperty("embedded.kafka.containerBrokerList");
 
         GenericContainer<?> schemaRegistry = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withCreateContainerCmdModifier(cmd -> cmd.withHostName(SCHEMA_REGISTRY_HOST_NAME))
@@ -54,9 +60,12 @@ public class SchemaRegistryContainerConfiguration {
                     .withEnv("SCHEMA_REGISTRY_OPTS", "-Djava.security.auth.login.config=/etc/schema-registry/jaas_config.file");
         }
 
-        schemaRegistry = configureCommonsAndStart(schemaRegistry, properties, log);
-        registerSchemaRegistryEnvironment(schemaRegistry, environment, properties);
-        return schemaRegistry;
+        GenericContainer<?> configuredSchemaRegistry = configureCommons(schemaRegistry, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredSchemaRegistry, log);
+            registerSchemaRegistryEnvironment(configuredSchemaRegistry, environment, properties);
+        });
+        return configuredSchemaRegistry;
     }
 
     private void registerSchemaRegistryEnvironment(GenericContainer<?> schemaRegistry, ConfigurableEnvironment environment,

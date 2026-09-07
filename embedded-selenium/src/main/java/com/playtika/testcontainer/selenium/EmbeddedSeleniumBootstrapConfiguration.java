@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.selenium;
 
 import com.google.common.net.InetAddresses;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,8 @@ public class EmbeddedSeleniumBootstrapConfiguration {
     @ConditionalOnMissingBean
     public BrowserWebDriverContainer selenium(ConfigurableEnvironment environment,
                                               SeleniumProperties properties,
-                                              Optional<Network> network) {
+                                              Optional<Network> network,
+                                              ContainerStartupCoordinator startupCoordinator) {
 
         BrowserWebDriverContainer container = new BrowserWebDriverContainer(ContainerUtils.getDockerImageName(properties))
             .withRecordingFileFactory(getRecordingFileFactory())
@@ -87,11 +89,15 @@ public class EmbeddedSeleniumBootstrapConfiguration {
         }
         container.withRecordingMode(properties.getVnc().getMode().convert(), recordingDirOrNull);
 
-        ContainerUtils.configureCommonsAndStart(container, properties, log);
+        BrowserWebDriverContainer configuredContainer = (BrowserWebDriverContainer) ContainerUtils.configureCommons(container, properties, log);
 
-        Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, container, properties.getVnc().getMode().convert(), recordingDirOrNull);
-        log.info("Started Selenium server. Connection details: {}", seleniumEnv);
-        return container;
+        File finalRecordingDirOrNull = recordingDirOrNull;
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredContainer, log);
+            Map<String, Object> seleniumEnv = registerSeleniumEnvironment(environment, configuredContainer, properties.getVnc().getMode().convert(), finalRecordingDirOrNull);
+            log.info("Started Selenium server. Connection details: {}", seleniumEnv);
+        });
+        return configuredContainer;
     }
 
     /**

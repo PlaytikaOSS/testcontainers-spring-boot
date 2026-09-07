@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.keydb;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.common.utils.FileUtils;
@@ -33,7 +34,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.keydb.EnvUtils.registerKeyDbEnvironment;
 import static com.playtika.testcontainer.keydb.KeyDbProperties.BEAN_NAME_EMBEDDED_KEYDB;
 
@@ -88,7 +89,8 @@ public class EmbeddedKeyDbBootstrapConfiguration {
   @Bean(name = BEAN_NAME_EMBEDDED_KEYDB, destroyMethod = "stop")
   public RedisContainer keydb(ConfigurableEnvironment environment,
                                    @Qualifier(KEYDB_WAIT_STRATEGY_BEAN_NAME) WaitStrategy keydbStartupCheckStrategy,
-                                   Optional<Network> network) throws Exception {
+                                   Optional<Network> network,
+                                   ContainerStartupCoordinator startupCoordinator) throws Exception {
 
     // CLUSTER SLOTS command returns IP:port for each node, so ports outside and inside
     // container must be the same
@@ -104,10 +106,13 @@ public class EmbeddedKeyDbBootstrapConfiguration {
         .waitingFor(keydbStartupCheckStrategy)
         .withNetworkAliases(KEYDB_NETWORK_ALIAS);
     network.ifPresent(keydb::withNetwork);
-    keydb = (RedisContainer) configureCommonsAndStart(keydb, properties, log);
-    Map<String, Object> keydbEnv = registerKeyDbEnvironment(environment, keydb, properties, properties.getPort());
-    log.info("Started KeyDb cluster. Connection details: {}", keydbEnv);
-    return keydb;
+    RedisContainer configuredKeydb = (RedisContainer) configureCommons(keydb, properties, log);
+    startupCoordinator.schedule(() -> {
+      ContainerUtils.startAndLogTime(configuredKeydb, log);
+      Map<String, Object> keydbEnv = registerKeyDbEnvironment(environment, configuredKeydb, properties, properties.getPort());
+      log.info("Started KeyDb cluster. Connection details: {}", keydbEnv);
+    });
+    return configuredKeydb;
   }
 
   private Path prepareKeyDbConf() throws IOException {

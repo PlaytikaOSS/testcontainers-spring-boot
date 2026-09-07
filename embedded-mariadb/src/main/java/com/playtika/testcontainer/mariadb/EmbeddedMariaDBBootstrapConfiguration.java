@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mariadb;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.mariadb.MariaDBProperties.BEAN_NAME_EMBEDDED_MARIADB;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class EmbeddedMariaDBBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MARIADB, destroyMethod = "stop")
     public MariaDBContainer mariadb(ConfigurableEnvironment environment,
                                     MariaDBProperties properties,
-                                    Optional<Network> network) throws Exception {
+                                    Optional<Network> network,
+                                    ContainerStartupCoordinator startupCoordinator) throws Exception {
 
         MariaDBContainer mariadb =
                 new MariaDBContainer(ContainerUtils.getDockerImageName(properties))
@@ -77,9 +79,14 @@ public class EmbeddedMariaDBBootstrapConfiguration {
 
         network.ifPresent(mariadb::withNetwork);
 
-        mariadb = (MariaDBContainer) configureCommonsAndStart(mariadb, properties, log);
-        registerMariadbEnvironment(mariadb, environment, properties);
-        return mariadb;
+        MariaDBContainer configuredMariadb = (MariaDBContainer) configureCommons(mariadb, properties, log);
+
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMariadb, log);
+            registerMariadbEnvironment(configuredMariadb, environment, properties);
+        });
+
+        return configuredMariadb;
     }
 
     private void registerMariadbEnvironment(MariaDBContainer mariadb,

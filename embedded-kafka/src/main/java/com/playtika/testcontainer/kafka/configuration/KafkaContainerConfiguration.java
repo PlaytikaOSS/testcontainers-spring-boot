@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.kafka.configuration;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.kafka.KafkaTopicsConfigurer;
 import com.playtika.testcontainer.kafka.checks.KafkaStatusCheck;
@@ -46,7 +47,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME;
 import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_SASL_TOXI_PROXY_BEAN_NAME;
@@ -139,7 +140,8 @@ public class KafkaContainerConfiguration {
             @Autowired(required = false) @Qualifier(KAFKA_PLAIN_TEXT_TOXI_PROXY_BEAN_NAME)
                     ToxiproxyClientProxy plainTextProxy,
             @Autowired(required = false) @Qualifier(KAFKA_SASL_TOXI_PROXY_BEAN_NAME)
-                    ToxiproxyClientProxy saslProxy) {
+                    ToxiproxyClientProxy saslProxy,
+            ContainerStartupCoordinator startupCoordinator) {
 
         int kafkaInternalPort = kafkaProperties.getContainerBrokerPort(); // for access from other containers
         int kafkaExternalPort = kafkaProperties.getBrokerPort();  // for access from host
@@ -225,9 +227,12 @@ public class KafkaContainerConfiguration {
         kafkaFileSystemBind(kafkaProperties, kafka);
         zookeperFileSystemBind(zookeeperProperties, kafka);
 
-        kafka = (ConfluentKafkaContainer) configureCommonsAndStart(kafka, kafkaProperties, log);
-        registerKafkaEnvironment(kafka, environment, kafkaProperties);
-        return kafka;
+        ConfluentKafkaContainer configuredKafka = (ConfluentKafkaContainer) configureCommons(kafka, kafkaProperties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredKafka, log);
+            registerKafkaEnvironment(configuredKafka, environment, kafkaProperties);
+        });
+        return configuredKafka;
     }
 
     private void kafkaFileSystemBind(KafkaConfigurationProperties kafkaProperties, ConfluentKafkaContainer kafka) {
@@ -295,9 +300,11 @@ public class KafkaContainerConfiguration {
 
     @Bean
     public KafkaTopicsConfigurer kafkaConfigurer(
+            ContainerStartupCoordinator startupCoordinator,
             @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka,
             KafkaConfigurationProperties kafkaProperties,
             ZookeeperConfigurationProperties zookeeperProperties) {
+        startupCoordinator.flush();
         return new KafkaTopicsConfigurer(kafka, zookeeperProperties, kafkaProperties);
     }
 

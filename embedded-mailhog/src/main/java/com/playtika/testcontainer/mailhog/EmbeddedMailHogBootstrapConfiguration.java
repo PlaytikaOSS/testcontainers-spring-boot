@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mailhog;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.mailhog.MailHogProperties.BEAN_NAME_EMBEDDED_MAILHOG;
 
 @Slf4j
@@ -61,7 +62,8 @@ public class EmbeddedMailHogBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_MAILHOG, destroyMethod = "stop")
     public GenericContainer<?> mailHog(ConfigurableEnvironment environment,
                                        MailHogProperties properties,
-                                       Optional<Network> network) {
+                                       Optional<Network> network,
+                                       ContainerStartupCoordinator startupCoordinator) {
         GenericContainer<?> mailHog = new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withExposedPorts(properties.getSmtpPort(), properties.getHttpPort())
                 .withNetworkAliases(MAILHOG_NETWORK_ALIAS)
@@ -69,9 +71,12 @@ public class EmbeddedMailHogBootstrapConfiguration {
 
         network.ifPresent(mailHog::withNetwork);
 
-        mailHog = configureCommonsAndStart(mailHog, properties, log);
-        registerMailHogEnvironment(mailHog, environment, properties);
-        return mailHog;
+        GenericContainer<?> configuredMailHog = configureCommons(mailHog, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMailHog, log);
+            registerMailHogEnvironment(configuredMailHog, environment, properties);
+        });
+        return configuredMailHog;
     }
 
     private void registerMailHogEnvironment(GenericContainer<?> mailHog, ConfigurableEnvironment environment, MailHogProperties properties) {

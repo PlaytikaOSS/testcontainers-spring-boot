@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.kafka.configuration;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import com.playtika.testcontainer.common.utils.YumPackageInstaller;
 import com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties;
@@ -29,8 +30,10 @@ public class EmbeddedKafkaTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller kafkaPackageInstaller(@Qualifier(KAFKA_PACKAGE_PROPERTIES_BEAN_NAME) InstallPackageProperties kafkaPackageProperties,
+    public PackageInstaller kafkaPackageInstaller(ContainerStartupCoordinator startupCoordinator,
+                                                  @Qualifier(KAFKA_PACKAGE_PROPERTIES_BEAN_NAME) InstallPackageProperties kafkaPackageProperties,
                                                   @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka) {
+        startupCoordinator.flush();
         return new YumPackageInstaller(kafkaPackageProperties, kafka);
     }
 }

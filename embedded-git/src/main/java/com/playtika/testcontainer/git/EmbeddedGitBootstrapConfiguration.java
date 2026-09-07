@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.git;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.git.GitProperties.BEAN_NAME_EMBEDDED_GIT;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -64,9 +65,13 @@ public class EmbeddedGitBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_GIT, destroyMethod = "stop")
     public GenericContainer<?> embeddedGit(ConfigurableEnvironment environment,
                                            GitProperties properties,
-                                           Optional<Network> network) {
-        GenericContainer<?> gitContainer = configureCommonsAndStart(createContainer(properties, network), properties, log);
-        registerGitEnvironment(gitContainer, environment, properties);
+                                           Optional<Network> network,
+                                           ContainerStartupCoordinator startupCoordinator) {
+        GenericContainer<?> gitContainer = configureCommons(createContainer(properties, network), properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(gitContainer, log);
+            registerGitEnvironment(gitContainer, environment, properties);
+        });
         return gitContainer;
     }
 
