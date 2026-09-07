@@ -16,7 +16,7 @@
 
 * `embedded.google.pubsub.enabled` `(true|false, default is true)`
 * `embedded.google.pubsub.reuseContainer` `(true|false, default is false)`
-* `embedded.google.pubsub.dockerImage` `(default is set to 'google/cloud-sdk:559.0.0')`
+* `embedded.google.pubsub.dockerImage` `(default is set to 'gcr.io/google.com/cloudsdktool/google-cloud-cli:583.0.0-emulators')`
 ** Image versions on https://hub.docker.com/r/google/cloud-sdk/tags[dockerhub]
 [NOTE]
 ====
