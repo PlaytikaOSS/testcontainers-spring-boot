@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mongodb;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -30,7 +31,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.mongodb.MongodbProperties.BEAN_NAME_EMBEDDED_MONGODB;
 
 @Slf4j
@@ -69,7 +70,8 @@ public class EmbeddedMongodbBootstrapConfiguration {
     @Bean(value = BEAN_NAME_EMBEDDED_MONGODB, destroyMethod = "stop")
     public MongoDBContainer mongodb(ConfigurableEnvironment environment,
                                        MongodbProperties properties,
-                                       Optional<Network> network) throws IOException, InterruptedException {
+                                       Optional<Network> network,
+                                       ContainerStartupCoordinator startupCoordinator) throws IOException {
 
         MongoDBContainer mongodb;
         if (StringUtils.isBlank(properties.getReplicaSetName())) {
@@ -102,9 +104,12 @@ public class EmbeddedMongodbBootstrapConfiguration {
 
         network.ifPresent(mongodb::withNetwork);
 
-        mongodb = (MongoDBContainer) configureCommonsAndStart(mongodb, properties, log);
-        registerMongodbEnvironment(mongodb, environment, properties);
-        return mongodb;
+        MongoDBContainer configuredMongodb = (MongoDBContainer) configureCommons(mongodb, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredMongodb, log);
+            registerMongodbEnvironment(configuredMongodb, environment, properties);
+        });
+        return configuredMongodb;
     }
 
     private void registerMongodbEnvironment(GenericContainer<?> mongodb, ConfigurableEnvironment environment, MongodbProperties properties) {

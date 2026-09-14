@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.vault;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.vault.VaultProperties.BEAN_NAME_EMBEDDED_VAULT;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -62,7 +63,8 @@ public class EmbeddedVaultBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_VAULT, destroyMethod = "stop")
     public VaultContainer vault(ConfigurableEnvironment environment,
                                 VaultProperties properties,
-                                Optional<Network> network) {
+                                Optional<Network> network,
+                                ContainerStartupCoordinator startupCoordinator) {
 
         VaultContainer vault = new VaultContainer<>(ContainerUtils.getDockerImageName(properties))
                 .withVaultToken(properties.getToken())
@@ -87,9 +89,12 @@ public class EmbeddedVaultBootstrapConfiguration {
             enableCasForSubPaths(properties.getCasEnabledForSubPaths(), vault);
         }
 
-        vault = (VaultContainer) configureCommonsAndStart(vault, properties, log);
-        registerVaultEnvironment(vault, environment, properties);
-        return vault;
+        VaultContainer configuredVault = (VaultContainer) configureCommons(vault, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredVault, log);
+            registerVaultEnvironment(configuredVault, environment, properties);
+        });
+        return configuredVault;
     }
 
     private void registerVaultEnvironment(VaultContainer vault, ConfigurableEnvironment environment, VaultProperties properties) {

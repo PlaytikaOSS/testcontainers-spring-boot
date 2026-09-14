@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.nativekafka.configuration;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import com.playtika.testcontainer.common.utils.YumPackageInstaller;
 import com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties;
@@ -29,8 +30,10 @@ public class EmbeddedNativeKafkaTestOperationsAutoConfiguration {
     }
 
     @Bean
-    public PackageInstaller nativeKafkaPackageInstaller(@Qualifier(NATIVE_KAFKA_PACKAGE_PROPERTIES_BEAN_NAME) InstallPackageProperties nativeKafkaPackageProperties,
+    public PackageInstaller nativeKafkaPackageInstaller(ContainerStartupCoordinator startupCoordinator,
+                                                       @Qualifier(NATIVE_KAFKA_PACKAGE_PROPERTIES_BEAN_NAME) InstallPackageProperties nativeKafkaPackageProperties,
                                                        @Qualifier(NATIVE_KAFKA_BEAN_NAME) GenericContainer<?> nativeKafka) {
+        startupCoordinator.flush();
         return new YumPackageInstaller(nativeKafkaPackageProperties, nativeKafka);
     }
 }
