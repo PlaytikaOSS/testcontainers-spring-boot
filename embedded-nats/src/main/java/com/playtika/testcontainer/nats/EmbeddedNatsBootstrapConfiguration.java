@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.nats;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_NATS;
 import static com.playtika.testcontainer.nats.NatsProperties.BEAN_NAME_EMBEDDED_NATS_TOXI_PROXY;
 
@@ -59,16 +60,19 @@ public class EmbeddedNatsBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_NATS, destroyMethod = "stop")
     public NatsContainer natsContainer(ConfigurableEnvironment environment,
                                        NatsProperties properties,
-                                       Optional<Network> network) {
+                                       Optional<Network> network,
+                                       ContainerStartupCoordinator startupCoordinator) {
         NatsContainer natsContainer = new NatsContainer(ContainerUtils.getDockerImageName(properties))
                 .withNetworkAliases(NATS_NETWORK_ALIAS);
 
         network.ifPresent(natsContainer::withNetwork);
 
-        natsContainer = (NatsContainer) configureCommonsAndStart(natsContainer, properties, log);
-
-        registerNatsEnvironment(natsContainer, environment);
-        return natsContainer;
+        NatsContainer configuredNatsContainer = (NatsContainer) configureCommons(natsContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredNatsContainer, log);
+            registerNatsEnvironment(configuredNatsContainer, environment);
+        });
+        return configuredNatsContainer;
     }
 
     private void registerNatsEnvironment(NatsContainer natsContainer,

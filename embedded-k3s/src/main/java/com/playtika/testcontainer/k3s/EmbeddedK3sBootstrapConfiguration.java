@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.k3s;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import org.testcontainers.k3s.K3sContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.k3s.K3sProperties.EMBEDDED_K3S;
 
 @Slf4j
@@ -34,7 +35,8 @@ public class EmbeddedK3sBootstrapConfiguration {
     @Bean(name = EMBEDDED_K3S, destroyMethod = "stop")
     public K3sContainer k3s(ConfigurableEnvironment environment,
                             K3sProperties properties,
-                            Optional<Network> network) {
+                            Optional<Network> network,
+                            ContainerStartupCoordinator startupCoordinator) {
         K3sContainer k3sContainer = new K3sContainer(ContainerUtils.getDockerImageName(properties));
         k3sContainer
                 .withCommand(new String[]{"server", "--tls-san=" + k3sContainer.getHost()})
@@ -44,11 +46,14 @@ public class EmbeddedK3sBootstrapConfiguration {
 
         network.ifPresent(k3sContainer::withNetwork);
 
-        k3sContainer = (K3sContainer) configureCommonsAndStart(k3sContainer, properties, log);
-        registerK3sEnvironment(k3sContainer, environment, properties);
-        log.info("Started K3s");
+        K3sContainer configuredK3sContainer = (K3sContainer) configureCommons(k3sContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredK3sContainer, log);
+            registerK3sEnvironment(configuredK3sContainer, environment, properties);
+            log.info("Started K3s");
+        });
 
-        return k3sContainer;
+        return configuredK3sContainer;
     }
 
     private void registerK3sEnvironment(K3sContainer k3s,

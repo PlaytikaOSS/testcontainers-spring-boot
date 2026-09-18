@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.prometheus;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -26,7 +27,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.prometheus.PrometheusProperties.PROMETHEUS_BEAN_NAME;
 
 
@@ -72,7 +73,8 @@ public class EmbeddedPrometheusBootstrapConfiguration {
     public GenericContainer<?> prometheus(ConfigurableEnvironment environment,
                                           PrometheusProperties properties,
                                           WaitStrategy prometheusWaitStrategy,
-                                          Optional<Network> network) {
+                                          Optional<Network> network,
+                                          ContainerStartupCoordinator startupCoordinator) {
 
         GenericContainer<?> container =
                 new GenericContainer<>(ContainerUtils.getDockerImageName(properties))
@@ -83,11 +85,14 @@ public class EmbeddedPrometheusBootstrapConfiguration {
 
         network.ifPresent(container::withNetwork);
 
-        configureCommonsAndStart(container, properties, log);
+        GenericContainer<?> configuredContainer = configureCommons(container, properties, log);
 
-        registerEnvironment(container, environment, properties);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredContainer, log);
+            registerEnvironment(configuredContainer, environment, properties);
+        });
 
-        return container;
+        return configuredContainer;
     }
 
     private void registerEnvironment(GenericContainer<?> prometheus,

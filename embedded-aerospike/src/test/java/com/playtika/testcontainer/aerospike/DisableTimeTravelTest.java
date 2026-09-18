@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.aerospike;
 
 import com.aerospike.client.AerospikeClient;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinatorConfiguration;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -16,6 +17,7 @@ public class DisableTimeTravelTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(UserConfigurations.of(TestConfiguration.class))
             .withConfiguration(AutoConfigurations.of(
+                    ContainerStartupCoordinatorConfiguration.class,
                     EmbeddedAerospikeBootstrapConfiguration.class,
                     EmbeddedAerospikeTestOperationsAutoConfiguration.class));
 
