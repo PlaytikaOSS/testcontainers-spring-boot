@@ -1,5 +1,7 @@
 package com.playtika.testcontainer.nativekafka.configuration;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
+import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.nativekafka.NativeKafkaTopicsConfigurer;
 import com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.nativekafka.properties.NativeKafkaConfigurationProperties.NATIVE_KAFKA_BEAN_NAME;
 
 @Slf4j
@@ -52,7 +54,8 @@ public class NativeKafkaContainerConfiguration {
     public KafkaContainer nativeKafka(
             NativeKafkaConfigurationProperties nativeKafkaProperties,
             ConfigurableEnvironment environment,
-            Network network) {
+            Network network,
+            ContainerStartupCoordinator startupCoordinator) {
 
         DockerImageName nativeKafkaImageName = DockerImageName.parse(nativeKafkaProperties.getDefaultDockerImage());
 
@@ -64,20 +67,25 @@ public class NativeKafkaContainerConfiguration {
         // Configure file system bind if enabled
         configureFileSystemBind(nativeKafkaProperties, nativeKafka);
 
-        // Configure and start the container using common utilities
-        nativeKafka = (KafkaContainer) configureCommonsAndStart(nativeKafka, nativeKafkaProperties, log);
+        // Configure the container using common utilities
+        KafkaContainer configuredNativeKafka = (KafkaContainer) configureCommons(nativeKafka, nativeKafkaProperties, log);
 
-        // Register environment properties
-        registerNativeKafkaEnvironment(nativeKafka, environment, nativeKafkaProperties);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredNativeKafka, log);
+            // Register environment properties
+            registerNativeKafkaEnvironment(configuredNativeKafka, environment, nativeKafkaProperties);
+        });
 
-        return nativeKafka;
+        return configuredNativeKafka;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public NativeKafkaTopicsConfigurer nativeKafkaTopicsConfigurer(
+            ContainerStartupCoordinator startupCoordinator,
             GenericContainer<?> nativeKafka,
             NativeKafkaConfigurationProperties nativeKafkaProperties) {
+        startupCoordinator.flush();
         return new NativeKafkaTopicsConfigurer(nativeKafka, nativeKafkaProperties);
     }
 

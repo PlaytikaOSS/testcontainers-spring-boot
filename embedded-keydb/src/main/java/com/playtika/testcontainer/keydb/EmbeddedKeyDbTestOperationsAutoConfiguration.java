@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.keydb;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ApkPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,10 @@ public class EmbeddedKeyDbTestOperationsAutoConfiguration {
   @Bean
   public PackageInstaller keyDbPackageInstaller(
     @Qualifier(BEAN_NAME_EMBEDDED_KEYDB_PACKAGE_PROPERTIES) InstallPackageProperties keyDbPackageProperties,
-    @Qualifier(BEAN_NAME_EMBEDDED_KEYDB) GenericContainer<?> keyDb
+    @Qualifier(BEAN_NAME_EMBEDDED_KEYDB) GenericContainer<?> keyDb,
+    ContainerStartupCoordinator startupCoordinator
   ) {
+    startupCoordinator.flush();
     return new ApkPackageInstaller(keyDbPackageProperties, keyDb);
   }
 

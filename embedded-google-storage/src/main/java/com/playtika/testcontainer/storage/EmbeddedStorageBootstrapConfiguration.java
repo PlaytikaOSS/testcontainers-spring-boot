@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.storage;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -9,7 +10,6 @@ import eu.rekawek.toxiproxy.ToxiproxyClient;
 import io.aiven.testcontainers.fakegcsserver.FakeGcsServerContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -25,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.storage.StorageProperties.BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER;
 
 @Slf4j
@@ -60,7 +60,8 @@ public class EmbeddedStorageBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER, destroyMethod = "stop")
     FakeGcsServerContainer storageServer(ConfigurableEnvironment environment,
                                          StorageProperties properties,
-                                         Optional<Network> network) {
+                                         Optional<Network> network,
+                                         ContainerStartupCoordinator startupCoordinator) {
         FakeGcsServerContainer storageContainer =
                 new FakeGcsServerContainer(ContainerUtils.getDockerImageName(properties))
                         .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint(
@@ -75,9 +76,12 @@ public class EmbeddedStorageBootstrapConfiguration {
 
         network.ifPresent(storageContainer::withNetwork);
 
-        storageContainer = (FakeGcsServerContainer) configureCommonsAndStart(storageContainer, properties, log);
-        registerStorageEnvironment(storageContainer, environment, properties);
-        return storageContainer;
+        FakeGcsServerContainer configuredStorageContainer = (FakeGcsServerContainer) configureCommons(storageContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredStorageContainer, log);
+            registerStorageEnvironment(configuredStorageContainer, environment, properties);
+        });
+        return configuredStorageContainer;
     }
 
     private void registerStorageEnvironment(
@@ -102,8 +106,14 @@ public class EmbeddedStorageBootstrapConfiguration {
 
     @Bean
     StorageResourcesGenerator storageResourcesGenerator(
-            @Value("${embedded.google.storage.endpoint}") String endpoint,
-            StorageProperties storageProperties) {
+            ConfigurableEnvironment environment,
+            StorageProperties storageProperties,
+            ContainerStartupCoordinator startupCoordinator) {
+        // the endpoint property is only registered once the storage container has started, so the
+        // scheduled start must be flushed before it can be read - a @Value parameter would resolve
+        // too early (at argument-binding time, before this method body runs)
+        startupCoordinator.flush();
+        String endpoint = environment.getProperty("embedded.google.storage.endpoint");
         return new StorageResourcesGenerator(endpoint, storageProperties);
     }
 }
