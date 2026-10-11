@@ -45,7 +45,10 @@ To auto-configure `spring-jdbc` use these properties in your test `application.p
 ./src/test/resources/application.properties
 ----
 spring.datasource.driver-class-name=com.clickhouse.jdbc.Driver
-spring.datasource.url=jdbc:clickhouse://${embedded.clickhouse.host}:${embedded.clickhouse.port}/${embedded.clickhouse.schema}
+spring.datasource.url=jdbc:clickhouse://${embedded.clickhouse.host}:${embedded.clickhouse.port}/${embedded.clickhouse.schema}?clickhouse_setting_network_compression_method=lz4
 spring.datasource.username=${embedded.clickhouse.user}
 spring.datasource.password=${embedded.clickhouse.password}
 ----
+
+The example explicitly requests LZ4 response compression for the JDBC v2 driver,
+including with server versions that default to ZSTD.
