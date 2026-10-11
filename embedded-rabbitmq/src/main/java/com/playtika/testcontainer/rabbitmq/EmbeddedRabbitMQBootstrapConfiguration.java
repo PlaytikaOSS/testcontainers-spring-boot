@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
@@ -93,7 +94,11 @@ public class EmbeddedRabbitMQBootstrapConfiguration {
             command.add("enable");
             command.addAll(properties.getEnabledPlugins());
             try {
-                rabbitMQ.execInContainer(command.toArray(new String[0]));
+                Container.ExecResult result = rabbitMQ.execInContainer(command.toArray(new String[0]));
+                if (result.getExitCode() != 0) {
+                    throw new IllegalStateException("Failed to enable RabbitMQ plugins: " + properties.getEnabledPlugins()
+                            + "; exit code: " + result.getExitCode() + "; stderr: " + result.getStderr());
+                }
             } catch (IOException | InterruptedException e) {
                 if (e instanceof InterruptedException) {
                     Thread.currentThread().interrupt();

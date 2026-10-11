@@ -4,6 +4,7 @@ import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.testcontainers.containers.Network;
 import java.util.LinkedHashMap;
 
 import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
+import static com.playtika.testcontainer.kafka.properties.KafkaConfigurationProperties.KAFKA_BEAN_NAME;
 import static com.playtika.testcontainer.kafka.properties.SchemaRegistryConfigurationProperties.SCHEMA_REGISTRY_BEAN_NAME;
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
@@ -32,6 +34,7 @@ public class SchemaRegistryContainerConfiguration {
             ConfigurableEnvironment environment,
             SchemaRegistryConfigurationProperties properties,
             Network network,
+            @Qualifier(KAFKA_BEAN_NAME) GenericContainer<?> kafka,
             ContainerStartupCoordinator startupCoordinator) {
 
         // the kafka broker registers "embedded.kafka.containerBrokerList" only once its own start

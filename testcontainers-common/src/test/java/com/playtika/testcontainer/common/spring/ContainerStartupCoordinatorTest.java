@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.common.spring;
 
 import com.playtika.testcontainer.common.properties.TestcontainersProperties;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CyclicBarrier;
@@ -12,10 +13,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ContainerStartupCoordinatorTest {
 
+    private ContainerStartupCoordinator coordinator;
+
+    @AfterEach
+    void destroyCoordinator() {
+        if (coordinator != null) {
+            coordinator.destroy();
+        }
+    }
+
     private ContainerStartupCoordinator coordinator(boolean parallelStartup) {
         TestcontainersProperties properties = new TestcontainersProperties();
         properties.setParallelStartup(parallelStartup);
-        return new ContainerStartupCoordinator(properties);
+        coordinator = new ContainerStartupCoordinator(properties);
+        return coordinator;
     }
 
     @Test

@@ -108,6 +108,7 @@ public class EmbeddedStorageBootstrapConfiguration {
     StorageResourcesGenerator storageResourcesGenerator(
             ConfigurableEnvironment environment,
             StorageProperties storageProperties,
+            @Qualifier(BEAN_NAME_EMBEDDED_GOOGLE_STORAGE_SERVER) FakeGcsServerContainer storageServer,
             ContainerStartupCoordinator startupCoordinator) {
         // the endpoint property is only registered once the storage container has started, so the
         // scheduled start must be flushed before it can be read - a @Value parameter would resolve

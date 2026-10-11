@@ -47,7 +47,7 @@ Use this project when you want that auto-configuration. Use official Testcontain
 == How to use
 
 . https://docs.docker.com/install/[Install Docker] on your machine
-. Make sure you have http://projects.spring.io/spring-cloud/#quick-start[Spring Boot and Spring Cloud] in the classpath of your tests.
+. Make sure you have https://spring.io/projects/spring-cloud/#getting-started[Spring Boot and Spring Cloud] in the classpath of your tests.
 If needed, https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap[pick a version].
 +
 .pom.xml
@@ -159,10 +159,9 @@ startup time is closer to the slowest single container. Supported by every modul
 bean, so it always starts eagerly, ahead of the rest).
 
 NOTE: if you have your own beans that read `embedded.*` connection properties via `@Value`, they must
-either depend on a Spring Boot auto-configured infrastructure bean (`DataSource`, `RabbitTemplate`,
-etc. - these already wait correctly) or inject `ContainerStartupCoordinator` and call `flush()` before
-reading the property, otherwise the property may not be registered yet when parallel startup is
-enabled.
+depend on a Spring Boot auto-configured infrastructure bean (`DataSource`, `RabbitTemplate`, etc. -
+these already wait correctly). To flush explicitly, inject `ConfigurableEnvironment` and
+`ContainerStartupCoordinator`, call `flush()`, then read the property from the environment.
 
 === Disable all embedded containers
 
