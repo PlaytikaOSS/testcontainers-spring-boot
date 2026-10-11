@@ -1,68 +1,23 @@
-name: Publish to the Maven Central Repository
+name: Publish to Maven Central
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: Version to be released
-        required: true
+  release:
+    types: [published]
+
+permissions: {}
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
-
-      - name: Validate ${{ github.event.inputs.version }} release exists
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-              const response = await github.rest.repos.listReleases({
-                owner: context.repo.owner,
-                repo: context.repo.repo
-              });
-              if (!response) {
-                  throw new Error(`There are no available releases`);
-              }
-              for (const release of response.data) {
-                  if (release.name === "${{ github.event.inputs.version }}") {
-                      return
-                  }
-              }
-              throw new Error(`Release ${{ github.event.inputs.version }} is not available`);
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '11'
-          server-id: ossrh
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
-      - name: Update version
-        run: |
-          ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{ github.event.inputs.version }} versions:commit
-          git config user.name "jenkins"
-          git config user.email "jenkins@playtika.com"
-          git commit -m "Release ${{ github.event.inputs.version }}" -a
-          git push
-
-      - name: Publish to the Maven Central Repository
-        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -Ddocker.cleanup.skip=true -P ossrh -DskipTests deploy
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Publish release on GitHub
-        uses: test-room-7/action-publish-release-drafts@v0
-        with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            tag-name: ${{ github.event.inputs.version }}
+  release:
+    uses: PlaytikaOSS/playtika-workflows/.github/workflows/maven-central-release.yml@414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+    with:
+      workflow-sha: 414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
+      group-id: com.playtika.testcontainers
+      release-branch: support/2.3.X
+      java-version: '11'
+      # Require successful Java CI for the release commit before approval.
+      skip-tests: true
