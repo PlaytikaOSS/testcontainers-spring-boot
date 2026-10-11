@@ -63,7 +63,7 @@ public class EmbeddedMinioBootstrapConfiguration {
                                 Optional<Network> network,
                                 ContainerStartupCoordinator startupCoordinator) {
         MinIOContainer minio =
-                new MinIOContainer(ContainerUtils.getDockerImageName(properties))
+                new MinIOContainer(ContainerUtils.getDockerImageName(properties).asCompatibleSubstituteFor("minio/minio"))
                         .withUserName(properties.getAccessKey())
                         .withPassword(properties.getSecretKey())
                         .withEnv("MINIO_SITE_REGION", properties.getRegion())

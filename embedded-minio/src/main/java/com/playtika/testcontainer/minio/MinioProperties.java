@@ -25,11 +25,11 @@ public class MinioProperties extends CommonContainerProperties {
     int port = 9000;
     int consolePort = 9001;
 
-    // https://hub.docker.com/r/minio/minio
+    // https://github.com/coollabsio/minio
     @Override
     public String getDefaultDockerImage() {
         // Please don`t remove this comment.
         // renovate: datasource=docker
-        return "minio/minio:RELEASE.2023-03-13T19-46-17Z";
+        return "ghcr.io/coollabsio/minio:RELEASE.2025-04-22T22-12-26Z";
     }
 }
