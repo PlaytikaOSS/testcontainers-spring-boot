@@ -1,47 +1,23 @@
-name: Publish to the Maven Central Repository
+name: Publish to Maven Central
 
 on:
   release:
-    types: [ published ]
+    types: [published]
+
+permissions: {}
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.release.target_commitish}}
-          token: ${{ secrets.RELEASE_PERSONAL_ACCESS_TOKEN }}
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          server-id: ossrh
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-          cache: 'maven'
-
-      - name: Update version
-        if: ${{ success() }}
-        run: ./mvnw --batch-mode --no-transfer-progress versions:set -DnewVersion=${{github.event.release.tag_name}} versions:commit
-
-      - name: Publish to the Maven Central Repository
-        if: ${{ success() }}
-        run: ./mvnw --batch-mode --no-transfer-progress -Dgib.disable=true -P ossrh -DskipTests deploy
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Commit & Push changes
-        if: ${{ success() }}
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: 'Release ${{github.event.release.tag_name}}'
-          branch: ${{ github.event.release.target_commitish }}
+  release:
+    uses: PlaytikaOSS/playtika-workflows/.github/workflows/maven-central-release.yml@414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+    with:
+      workflow-sha: 414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
+      group-id: com.playtika.testcontainers
+      release-branch: support/3.0.X
+      java-version: '17'
+      # Require successful Java CI for the release commit before approval.
+      skip-tests: true
