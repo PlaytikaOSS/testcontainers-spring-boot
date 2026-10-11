@@ -51,37 +51,35 @@ public class CouchbaseJavaClientTest extends EmbeddedCouchbaseBootstrapConfigura
                         Optional.of(mappedCarrierPort),
                         Optional.of(mappedHttpPort))));
 
-        ClusterEnvironment env = ClusterEnvironment.builder()
+        try (ClusterEnvironment env = ClusterEnvironment.builder()
                 .retryStrategy(BestEffortRetryStrategy.withExponentialBackoff(Duration.ofMillis(50), Duration.ofMillis(500), 2))
                 .maxNumRequestsInRetry(5)
                 .timeoutConfig(timeout -> timeout.kvTimeout(Duration.ofSeconds(20)))
                 .build();
+             Cluster cluster = Cluster.connect(seedNodes, ClusterOptions
+                     .clusterOptions(user, password)
+                     .environment(env))) {
+            Bucket bucket = cluster.bucket(bucketName);
+            bucket.waitUntilReady(Duration.ofSeconds(20));
+            Collection collection = bucket.defaultCollection();
 
-        ClusterOptions options = ClusterOptions
-                .clusterOptions(user, password)
-                .environment(env);
+            MutationResult upsertResult = collection.upsert(
+                    "my-document",
+                    JsonObject.create().put("name", "mike")
+            );
 
-        Cluster cluster = Cluster.connect(seedNodes, options);
+            assertThat(upsertResult).isNotNull();
 
-        Bucket bucket = cluster.bucket(bucketName);
-        Collection collection = bucket.defaultCollection();
+            GetResult getResult = collection.get("my-document");
 
-        MutationResult upsertResult = collection.upsert(
-                "my-document",
-                JsonObject.create().put("name", "mike")
-        );
+            assertThat(getResult).isNotNull();
+            assertThat(getResult.contentAsObject()).isNotNull();
+            assertThat(getResult.contentAsObject().get("name")).isEqualTo("mike");
 
-        assertThat(upsertResult).isNotNull();
+            QueryResult result = cluster.query("select \"Hello World\" as greeting");
 
-        GetResult getResult = collection.get("my-document");
-
-        assertThat(getResult).isNotNull();
-        assertThat(getResult.contentAsObject()).isNotNull();
-        assertThat(getResult.contentAsObject().get("name")).isEqualTo("mike");
-
-        QueryResult result = cluster.query("select \"Hello World\" as greeting");
-
-        assertThat(result).isNotNull();
-        assertThat(result.rowsAsObject()).isNotNull();
+            assertThat(result).isNotNull();
+            assertThat(result.rowsAsObject()).isNotNull();
+        }
     }
 }
