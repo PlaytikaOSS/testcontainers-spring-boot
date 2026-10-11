@@ -34,7 +34,7 @@ exact release commit before Environment approval.
 Support-stream publication also uses published releases on immutable tags.
 The old push/manual support publisher is removed. Merge the corresponding
 caller migration on each support branch before releasing that stream; protect
-that branch and require its Java CI. Support 2.3 uses JDK 8; support 3.0 and
+that branch and require its Java CI. Support 2.3 targets Java 8 and builds on JDK 11; support 3.0 and
 3.1 use JDK 17.
 
 +Publish the release only after the caller is merged into the release commit's
