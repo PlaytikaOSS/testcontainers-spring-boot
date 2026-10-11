@@ -18,6 +18,6 @@ jobs:
       workflow-sha: 414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
       group-id: com.playtika.testcontainers
       release-branch: support/2.3.X
-      java-version: '8'
+      java-version: '11'
       # Require successful Java CI for the release commit before approval.
       skip-tests: true
