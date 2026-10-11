@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.localstack;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.localstack.LocalStackProperties.BEAN_NAME_EMBEDDED_LOCALSTACK;
 
 @Slf4j
@@ -60,7 +61,8 @@ public class EmbeddedLocalStackBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
     public LocalStackContainer localStack(ConfigurableEnvironment environment,
                                           LocalStackProperties properties,
-                                          Optional<Network> network) {
+                                          Optional<Network> network,
+                                          ContainerStartupCoordinator startupCoordinator) {
         LocalStackContainer localStackContainer = new LocalStackContainer(ContainerUtils.getDockerImageName(properties));
         localStackContainer
                 .withExposedPorts(properties.getEdgePort())
@@ -75,9 +77,12 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         for (LocalStackContainer.Service service : properties.services) {
             localStackContainer.withServices(service);
         }
-        localStackContainer = (LocalStackContainer) configureCommonsAndStart(localStackContainer, properties, log);
-        registerLocalStackEnvironment(localStackContainer, environment, properties);
-        return localStackContainer;
+        LocalStackContainer configuredLocalStackContainer = (LocalStackContainer) configureCommons(localStackContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredLocalStackContainer, log);
+            registerLocalStackEnvironment(configuredLocalStackContainer, environment, properties);
+        });
+        return configuredLocalStackContainer;
     }
 
     private void registerLocalStackEnvironment(LocalStackContainer localStack,

@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.spicedb;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
@@ -27,7 +28,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.spicedb.SpiceDBProperties.BEAN_NAME_EMBEDDED_SPICEDB;
 import static com.playtika.testcontainer.spicedb.SpiceDBProperties.BEAN_NAME_EMBEDDED_SPICEDB_TOXI_PROXY;
 
@@ -63,7 +64,8 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_SPICEDB, destroyMethod = "stop")
     public GenericContainer<?> spicedbContainer(ConfigurableEnvironment environment,
                                                 SpiceDBProperties properties,
-                                                Optional<Network> network) {
+                                                Optional<Network> network,
+                                                ContainerStartupCoordinator startupCoordinator) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(new HostPortWaitStrategy())
                 .withStartupTimeout(properties.getTimeoutDuration());
@@ -76,10 +78,12 @@ public class EmbeddedSpiceDBBootstrapConfiguration {
 
         network.ifPresent(spicedbContainer::withNetwork);
 
-        spicedbContainer = configureCommonsAndStart(spicedbContainer, properties, log);
-
-        registerNatsEnvironment(spicedbContainer, environment, properties);
-        return spicedbContainer;
+        GenericContainer<?> configuredSpicedbContainer = configureCommons(spicedbContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredSpicedbContainer, log);
+            registerNatsEnvironment(configuredSpicedbContainer, environment, properties);
+        });
+        return configuredSpicedbContainer;
     }
 
     private void registerNatsEnvironment(GenericContainer<?> natsContainer,

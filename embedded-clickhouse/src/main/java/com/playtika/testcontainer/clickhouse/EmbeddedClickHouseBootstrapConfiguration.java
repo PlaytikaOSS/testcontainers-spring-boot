@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.clickhouse;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static com.playtika.testcontainer.clickhouse.ClickHouseProperties.BEAN_NAME_EMBEDDED_CLICK_HOUSE;
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Slf4j
 @Configuration
@@ -59,7 +60,8 @@ public class EmbeddedClickHouseBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_CLICK_HOUSE, destroyMethod = "stop")
     public ClickHouseContainer clickHouseContainer(ConfigurableEnvironment environment,
                                                    ClickHouseProperties properties,
-                                                   Optional<Network> network) {
+                                                   Optional<Network> network,
+                                                   ContainerStartupCoordinator startupCoordinator) {
         ClickHouseContainer clickHouseContainer = new ClickHouseContainer(ContainerUtils.getDockerImageName(properties))
                 .withInitScript(properties.getInitScriptPath())
                 .withNetworkAliases(CLICKHOUSE_NETWORK_ALIAS);
@@ -71,11 +73,14 @@ public class EmbeddedClickHouseBootstrapConfiguration {
         clickHouseContainer.addEnv("CLICKHOUSE_USER", username);
         clickHouseContainer.addEnv("CLICKHOUSE_PASSWORD", password == null ? "" : password);
 
-        clickHouseContainer = (ClickHouseContainer) configureCommonsAndStart(clickHouseContainer, properties, log);
+        ClickHouseContainer configuredClickHouseContainer = (ClickHouseContainer) configureCommons(clickHouseContainer, properties, log);
 
-        registerClickHouseEnvironment(clickHouseContainer, environment, properties, username, password);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredClickHouseContainer, log);
+            registerClickHouseEnvironment(configuredClickHouseContainer, environment, properties, username, password);
+        });
 
-        return clickHouseContainer;
+        return configuredClickHouseContainer;
     }
 
     private void registerClickHouseEnvironment(ClickHouseContainer clickHouseContainer,

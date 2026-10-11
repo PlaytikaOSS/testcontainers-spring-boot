@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.victoriametrics;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.toxiproxy.EmbeddedToxiProxyBootstrapConfiguration;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -25,8 +26,9 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.common.utils.ContainerUtils.getDockerImageName;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.startAndLogTime;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false)
@@ -71,7 +73,8 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
     public GenericContainer<?> victoriaMetrics(ConfigurableEnvironment environment,
                                             VictoriaMetricsProperties properties,
                                             WaitStrategy victoriaMetricsWaitStrategy,
-                                            Optional<Network> network) {
+                                            Optional<Network> network,
+                                            ContainerStartupCoordinator startupCoordinator) {
 
         GenericContainer<?> victoriaMetrics =
                 new GenericContainer<>(getDockerImageName(properties))
@@ -82,11 +85,14 @@ public class EmbeddedVictoriaMetricsBootstrapConfiguration {
 
         network.ifPresent(victoriaMetrics::withNetwork);
 
-        configureCommonsAndStart(victoriaMetrics, properties, log);
+        GenericContainer<?> configuredVictoriaMetrics = configureCommons(victoriaMetrics, properties, log);
 
-        registerEnvironment(victoriaMetrics, environment, properties);
+        startupCoordinator.schedule(() -> {
+            startAndLogTime(configuredVictoriaMetrics, log);
+            registerEnvironment(configuredVictoriaMetrics, environment, properties);
+        });
 
-        return victoriaMetrics;
+        return configuredVictoriaMetrics;
     }
 
     private void registerEnvironment(GenericContainer<?> victoriaMetrics,

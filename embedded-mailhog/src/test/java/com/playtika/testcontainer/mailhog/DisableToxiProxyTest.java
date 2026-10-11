@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.mailhog;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinatorConfiguration;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -11,6 +12,7 @@ class DisableToxiProxyTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
+                    ContainerStartupCoordinatorConfiguration.class,
                     EmbeddedMailHogBootstrapConfiguration.class));
 
     @Test

@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.db2;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -27,7 +28,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.db2.Db2Properties.BEAN_NAME_EMBEDDED_DB2;
 
 @Slf4j
@@ -61,7 +62,8 @@ public class EmbeddedDb2BootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_DB2, destroyMethod = "stop")
     public Db2Container db2(ConfigurableEnvironment environment,
                             Db2Properties properties,
-                            Optional<Network> network) {
+                            Optional<Network> network,
+                            ContainerStartupCoordinator startupCoordinator) {
         Db2Container db2Container = new Db2Container(ContainerUtils.getDockerImageName(properties))
                 .withDatabaseName(properties.getDatabase())
                 .withUsername(properties.getUser())
@@ -82,10 +84,13 @@ public class EmbeddedDb2BootstrapConfiguration {
             db2Container.acceptLicense();
         }
 
-        db2Container = (Db2Container) configureCommonsAndStart(db2Container, properties, log);
-        registerDb2Environment(db2Container, environment, properties);
+        Db2Container configuredDb2Container = (Db2Container) configureCommons(db2Container, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredDb2Container, log);
+            registerDb2Environment(configuredDb2Container, environment, properties);
+        });
 
-        return db2Container;
+        return configuredDb2Container;
     }
 
     private void registerDb2Environment(Db2Container db2Container,

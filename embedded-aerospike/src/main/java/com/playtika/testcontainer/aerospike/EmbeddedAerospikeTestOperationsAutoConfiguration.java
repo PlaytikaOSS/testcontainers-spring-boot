@@ -2,6 +2,7 @@ package com.playtika.testcontainer.aerospike;
 
 import com.aerospike.client.IAerospikeClient;
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.AptGetPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,7 +34,9 @@ public class EmbeddedAerospikeTestOperationsAutoConfiguration {
 
     @Bean
     public PackageInstaller aerospikePackageInstaller(@Qualifier(BEAN_NAME_AEROSPIKE_BEAN_NAME) InstallPackageProperties aerospikePackageProperties,
-                                                      @Qualifier(BEAN_NAME_AEROSPIKE) GenericContainer<?> aerospike) {
+                                                      @Qualifier(BEAN_NAME_AEROSPIKE) GenericContainer<?> aerospike,
+                                                      ContainerStartupCoordinator startupCoordinator) {
+        startupCoordinator.flush();
         return new AptGetPackageInstaller(aerospikePackageProperties, aerospike);
     }
 

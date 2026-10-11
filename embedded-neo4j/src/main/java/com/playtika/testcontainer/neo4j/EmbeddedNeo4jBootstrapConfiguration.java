@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.neo4j;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -23,7 +24,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.neo4j.Neo4jProperties.BEAN_NAME_EMBEDDED_NEO4J;
 
 @Slf4j
@@ -58,15 +59,19 @@ public class EmbeddedNeo4jBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_NEO4J, destroyMethod = "stop")
     public Neo4jContainer neo4j(ConfigurableEnvironment environment,
                                 Neo4jProperties properties,
-                                Optional<Network> network) {
+                                Optional<Network> network,
+                                ContainerStartupCoordinator startupCoordinator) {
         Neo4jContainer neo4j = new Neo4jContainer(ContainerUtils.getDockerImageName(properties))
                 .withAdminPassword(properties.password)
                 .withNetworkAliases(NEO4J_NETWORK_ALIAS);
 
         network.ifPresent(neo4j::withNetwork);
-        neo4j = (Neo4jContainer) configureCommonsAndStart(neo4j, properties, log);
-        registerNeo4jEnvironment(neo4j, environment, properties);
-        return neo4j;
+        Neo4jContainer configuredNeo4j = (Neo4jContainer) configureCommons(neo4j, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredNeo4j, log);
+            registerNeo4jEnvironment(configuredNeo4j, environment, properties);
+        });
+        return configuredNeo4j;
     }
 
     private void registerNeo4jEnvironment(Neo4jContainer neo4j,

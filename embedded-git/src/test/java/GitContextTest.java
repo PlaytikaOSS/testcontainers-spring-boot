@@ -1,3 +1,4 @@
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinatorConfiguration;
 import com.playtika.testcontainer.git.EmbeddedGitBootstrapConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -9,7 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GitContextTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(EmbeddedGitBootstrapConfiguration.class));
+            .withConfiguration(AutoConfigurations.of(
+                    ContainerStartupCoordinatorConfiguration.class,
+                    EmbeddedGitBootstrapConfiguration.class));
 
     @Test
     public void contextLoads() {

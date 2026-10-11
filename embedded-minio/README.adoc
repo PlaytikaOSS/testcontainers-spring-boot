@@ -15,8 +15,8 @@
 ==== Consumes (via `bootstrap.properties`)
 * `embedded.minio.enabled` `(true|false, default is true)`
 * `embedded.minio.reuseContainer` `(true|false, default is false)`
-* `embedded.minio.dockerImage` `(default is 'minio/minio:RELEASE.2023-03-13T19-46-17Z')`
-** Image versions on https://hub.docker.com/r/minio/minio/tags[dockerhub]
+* `embedded.minio.dockerImage` `(default is 'ghcr.io/coollabsio/minio:RELEASE.2025-04-22T22-12-26Z')`
+** Images built from official MinIO releases are published by https://github.com/coollabsio/minio[Coollabs].
 * `embedded.minio.accessKey` `(default is 'AKIAIOSFODNN7EXAMPLE")`
 * `embedded.minio.secretKey` `(default is 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')`
 * `embedded.minio.region`  `(default is '')`

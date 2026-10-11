@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.vertica;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.vertica.VerticaProperties.BEAN_NAME_EMBEDDED_VERTICA;
 
 @Slf4j
@@ -59,16 +60,20 @@ public class EmbeddedVerticaBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_VERTICA, destroyMethod = "stop")
     public GenericContainer<?> embeddedVertica(ConfigurableEnvironment environment,
                                                VerticaProperties properties,
-                                               Optional<Network> network) {
+                                               Optional<Network> network,
+                                               ContainerStartupCoordinator startupCoordinator) {
         GenericContainer<?> verticaContainer = createContainer(properties)
             .withNetwork(Network.SHARED)
             .withNetworkAliases(VERTICA_NETWORK_ALIAS);
 
         network.ifPresent(verticaContainer::withNetwork);
 
-        verticaContainer = configureCommonsAndStart(verticaContainer, properties, log);
-        registerVerticaEnvironment(verticaContainer, environment, properties);
-        return verticaContainer;
+        GenericContainer<?> configuredVerticaContainer = configureCommons(verticaContainer, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredVerticaContainer, log);
+            registerVerticaEnvironment(configuredVerticaContainer, environment, properties);
+        });
+        return configuredVerticaContainer;
     }
 
     private GenericContainer<?> createContainer(VerticaProperties properties) {

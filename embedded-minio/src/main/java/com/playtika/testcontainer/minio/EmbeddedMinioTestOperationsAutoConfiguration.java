@@ -1,6 +1,7 @@
 package com.playtika.testcontainer.minio;
 
 import com.playtika.testcontainer.common.properties.InstallPackageProperties;
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.utils.MicroDnfPackageInstaller;
 import com.playtika.testcontainer.common.utils.PackageInstaller;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,8 +31,12 @@ public class EmbeddedMinioTestOperationsAutoConfiguration {
     @Bean
     public PackageInstaller minioPackageInstaller(
             @Qualifier(BEAN_NAME_EMBEDDED_MINIO_PACKAGE_PROPERTIES) InstallPackageProperties minioPackageProperties,
-            @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio
+            @Qualifier(BEAN_NAME_EMBEDDED_MINIO) GenericContainer<?> minio,
+            ContainerStartupCoordinator startupCoordinator
     ) {
+        // this bean installs packages into the container as soon as it's constructed (via
+        // InitializingBean#afterPropertiesSet), so the container must already be running
+        startupCoordinator.flush();
         return new MicroDnfPackageInstaller(minioPackageProperties, minio);
     }
 }

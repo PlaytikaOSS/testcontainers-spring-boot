@@ -1,5 +1,6 @@
 package com.playtika.testcontainer.couchbase;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
@@ -24,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.couchbase.CouchbaseProperties.BEAN_NAME_EMBEDDED_COUCHBASE;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_COUCHBASE, destroyMethod = "stop")
     public CouchbaseContainer couchbase(ConfigurableEnvironment environment,
                                         CouchbaseProperties properties,
-                                        Optional<Network> network) {
+                                        Optional<Network> network,
+                                        ContainerStartupCoordinator startupCoordinator) {
         BucketDefinition bucketDefinition = new BucketDefinition(properties.getBucket())
                 .withPrimaryIndex(true)
                 .withQuota(properties.getBucketRamMb());
@@ -71,10 +73,14 @@ public class EmbeddedCouchbaseBootstrapConfiguration {
                 .withNetworkAliases(COUCHBASE_NETWORK_ALIAS);
 
         network.ifPresent(couchbase::withNetwork);
-        couchbase = (CouchbaseContainer) configureCommonsAndStart(couchbase, properties, log);
+        CouchbaseContainer configuredCouchbase = (CouchbaseContainer) configureCommons(couchbase, properties, log);
 
-        registerCouchbaseEnvironment(couchbase, environment, properties);
-        return couchbase;
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredCouchbase, log);
+            registerCouchbaseEnvironment(configuredCouchbase, environment, properties);
+        });
+
+        return configuredCouchbase;
     }
 
     private void registerCouchbaseEnvironment(CouchbaseContainer couchbase,

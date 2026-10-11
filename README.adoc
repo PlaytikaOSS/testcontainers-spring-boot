@@ -47,7 +47,7 @@ Use this project when you want that auto-configuration. Use official Testcontain
 == How to use
 
 . https://docs.docker.com/install/[Install Docker] on your machine
-. Make sure you have http://projects.spring.io/spring-cloud/#quick-start[Spring Boot and Spring Cloud] in the classpath of your tests.
+. Make sure you have https://spring.io/projects/spring-cloud/#getting-started[Spring Boot and Spring Cloud] in the classpath of your tests.
 If needed, https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap[pick a version].
 +
 .pom.xml
@@ -145,6 +145,23 @@ embedded.kafka.topicsToCreate=some_topic
 embedded.containers.forceShutdown=true #default is false
 ----
 NOTE: Otherwise, it will be shutdown with delay, see https://github.com/testcontainers/moby-ryuk
+
+=== Start containers in parallel
+./src/test/resources/application.properties
+[source,properties]
+----
+embedded.containers.parallelStartup=true #default is false
+----
+By default, embedded containers start one after another, so total startup time is the sum of every
+container's own startup time. Enabling this option starts them concurrently instead, so the total
+startup time is closer to the slowest single container. Supported by every module except
+`embedded-toxiproxy` (its container is a direct dependency of every other module's Toxiproxy proxy
+bean, so it always starts eagerly, ahead of the rest).
+
+NOTE: if you have your own beans that read `embedded.*` connection properties via `@Value`, they must
+depend on a Spring Boot auto-configured infrastructure bean (`DataSource`, `RabbitTemplate`, etc. -
+these already wait correctly). To flush explicitly, inject `ConfigurableEnvironment` and
+`ContainerStartupCoordinator`, call `flush()`, then read the property from the environment.
 
 === Disable all embedded containers
 

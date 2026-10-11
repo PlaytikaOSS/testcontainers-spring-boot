@@ -1,6 +1,8 @@
 package com.playtika.testcontainer.opensearch;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
+import com.playtika.testcontainer.common.utils.ContainerUtils;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyClientProxy;
 import com.playtika.testcontainer.toxiproxy.ToxiproxyHelper;
 import com.playtika.testcontainer.toxiproxy.condition.ConditionalOnToxiProxyEnabled;
@@ -23,7 +25,7 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 import static com.playtika.testcontainer.opensearch.OpenSearchProperties.BEAN_NAME_EMBEDDED_OPEN_SEARCH;
 
 @Slf4j
@@ -59,14 +61,18 @@ public class EmbeddedOpenSearchBootstrapConfiguration {
     @Bean(name = BEAN_NAME_EMBEDDED_OPEN_SEARCH, destroyMethod = "stop")
     public GenericContainer openSearch(ConfigurableEnvironment environment,
                                           OpenSearchProperties properties,
-                                          Optional<Network> network) {
+                                          Optional<Network> network,
+                                          ContainerStartupCoordinator startupCoordinator) {
 
         GenericContainer openSearch = OpenSearchContainerFactory.create(properties)
                 .withNetworkAliases(OPENSEARCH_NETWORK_ALIAS);
         network.ifPresent(openSearch::withNetwork);
-        openSearch = configureCommonsAndStart(openSearch, properties, log);
-        registerOpenSearchEnvironment(openSearch, environment, properties);
-        return openSearch;
+        GenericContainer configuredOpenSearch = configureCommons(openSearch, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredOpenSearch, log);
+            registerOpenSearchEnvironment(configuredOpenSearch, environment, properties);
+        });
+        return configuredOpenSearch;
     }
 
     private void registerOpenSearchEnvironment(GenericContainer openSearch,

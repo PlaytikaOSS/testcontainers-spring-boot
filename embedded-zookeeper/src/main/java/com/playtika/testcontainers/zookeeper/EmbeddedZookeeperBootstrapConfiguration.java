@@ -1,5 +1,6 @@
 package com.playtika.testcontainers.zookeeper;
 
+import com.playtika.testcontainer.common.spring.ContainerStartupCoordinator;
 import com.playtika.testcontainer.common.spring.DockerPresenceBootstrapConfiguration;
 import com.playtika.testcontainer.common.utils.ContainerUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
-import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommonsAndStart;
+import static com.playtika.testcontainer.common.utils.ContainerUtils.configureCommons;
 
 @Slf4j
 @Configuration
@@ -36,7 +37,8 @@ public class EmbeddedZookeeperBootstrapConfiguration {
     @Bean(destroyMethod = "stop")
     public GenericContainer<?> zooKeeperContainer(ConfigurableEnvironment environment,
                                          ZookeeperConfigurationProperties properties,
-                                         Optional<Network> network) {
+                                         Optional<Network> network,
+                                         ContainerStartupCoordinator startupCoordinator) {
         WaitStrategy waitStrategy = new WaitAllStrategy()
                 .withStrategy(new HostPortWaitStrategy())
                 .withStrategy(Wait.forHttp("/commands/ruok")
@@ -51,10 +53,13 @@ public class EmbeddedZookeeperBootstrapConfiguration {
                 .waitingFor(waitStrategy);
         network.ifPresent(zookeeper::withNetwork);
 
-        zookeeper = configureCommonsAndStart(zookeeper, properties, log);
-        registerZookeeperEnvironment(zookeeper, environment, properties);
+        GenericContainer<?> configuredZookeeper = configureCommons(zookeeper, properties, log);
+        startupCoordinator.schedule(() -> {
+            ContainerUtils.startAndLogTime(configuredZookeeper, log);
+            registerZookeeperEnvironment(configuredZookeeper, environment, properties);
+        });
 
-        return zookeeper;
+        return configuredZookeeper;
     }
 
     private void registerZookeeperEnvironment(GenericContainer<?> zookeeper, ConfigurableEnvironment environment,
