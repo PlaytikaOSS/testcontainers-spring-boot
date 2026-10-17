@@ -23,7 +23,7 @@
         <spring.cloud.aws.version>4.2.0</spring.cloud.aws.version>
         <spring.cloud.azure.version>7.4.0</spring.cloud.azure.version>
         <toxiproxy-java.version>2.1.11</toxiproxy-java.version>
-        <rest-assured.version>6.0.1</rest-assured.version>
+        <rest-assured.version>6.2.0</rest-assured.version>
     </properties>
 
     <dependencyManagement>
