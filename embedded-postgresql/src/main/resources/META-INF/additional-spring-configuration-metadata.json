@@ -42,7 +42,7 @@
       "name": "embedded.postgresql.docker-image",
       "values": [
         {
-          "value": "postgres:18-alpine",
+          "value": "postgres:19-alpine",
           "description": "Latest 10.x alpine version. Ref https://hub.docker.com/_/postgres for further info."
         },
         {
