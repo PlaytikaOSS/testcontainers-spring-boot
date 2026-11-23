@@ -3,15 +3,10 @@ package com.playtika.testcontainer.kafka;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @Order(4)
 class EmbeddedSchemaRegistryTest extends AbstractEmbeddedKafkaTest {
@@ -29,18 +24,20 @@ class EmbeddedSchemaRegistryTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     void schemaCreation() {
-        TestRestTemplate restTemplate = new TestRestTemplate(new RestTemplateBuilder()
-                .rootUri(String.format("http://%s:%d", host, port)));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(CONTENT_TYPE, "application/vnd.schemaregistry.v1+json");
-
-        HttpEntity<String> request = new HttpEntity<>("{\"schema\": \"{\\\"type\\\": \\\"string\\\"}\"}", headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity("/subjects/test-subject/versions", request, String.class);
+        RestClient restClient = RestClient.builder()
+                .baseUrl(String.format("http://%s:%d", host, port))
+                .build();
+        ResponseEntity<String> response = restClient.post()
+                .uri("/subjects/test-subject/versions")
+                .headers(h -> h.setContentType(MediaType.parseMediaType("application/vnd.schemaregistry.v1+json")))
+                .body("""
+                        {"schema": "{"type": "string"}"}
+                        """)
+                .retrieve().toEntity(String.class);
 
         assertThat(response)
                 .extracting(ResponseEntity::getStatusCode, ResponseEntity::getBody)
-                .contains(HttpStatus.OK, "{\"id\":1}");
+                .contains(HttpStatus.OK, """
+                        {"id":1}""");
     }
 }

@@ -2,9 +2,9 @@ package com.playtika.testcontainer.pulsar;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.web.client.RestClient;
 
 import java.net.URI;
 import java.util.List;
@@ -19,7 +19,7 @@ class EmbeddedPulsarHttpServiceTest extends AbstractEmbeddedPulsarTest {
             "/admin/broker-stats/metrics"
     );
 
-    private final TestRestTemplate testRestTemplate = new TestRestTemplate();
+    private final RestClient restClient = RestClient.builder().build();
 
     @Value("${embedded.pulsar.httpServiceUrl}")
     private String pulsarServiceUrl;
@@ -28,7 +28,7 @@ class EmbeddedPulsarHttpServiceTest extends AbstractEmbeddedPulsarTest {
     void shouldCommunicateWithPulsarHttpService() {
         List<HttpStatusCode> statuses = METRICS_PATHS.stream()
                 .map(path -> URI.create(pulsarServiceUrl + path))
-                .map(uri -> testRestTemplate.getForEntity(uri, String.class).getStatusCode())
+                .map(uri -> restClient.get().uri(uri).retrieve().toEntity(String.class).getStatusCode())
                 .toList();
 
         assertThat(statuses)

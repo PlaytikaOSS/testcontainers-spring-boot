@@ -8,12 +8,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static com.playtika.testcontainer.keycloak.KeycloakProperties.DEFAULT_REALM;
 import static com.playtika.testcontainer.keycloak.util.KeycloakClient.newKeycloakClient;
@@ -21,7 +18,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpMethod.GET;
 
 @SpringBootTest(
         classes = SpringTestApplication.class,
@@ -67,16 +63,12 @@ public class EmbeddedKeycloakBootstrapConfigurationTest {
         KeyCloakToken keyCloakToken = newKeycloakClient(environment).keycloakToken();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, format("Bearer %s", keyCloakToken.getAccessToken()));
+        headers.setBearerAuth(keyCloakToken.getAccessToken());
 
-        RestOperations restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:" + httpPort + "/api/echo",
-                GET,
-                new HttpEntity<>(headers),
-                String.class
-        );
-
-        return response.getBody();
+        RestClient restClient = RestClient.builder().baseUrl("http://localhost:" + httpPort).build();
+        return restClient.get()
+                .uri("/api/echo")
+                .headers(h -> h.addAll(headers))
+                .retrieve().body(String.class);
     }
 }

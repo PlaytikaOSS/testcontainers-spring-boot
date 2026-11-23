@@ -1,11 +1,10 @@
 package com.playtika.testcontainer.keycloak.util;
 
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -14,11 +13,11 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 public final class KeycloakClient {
 
     private final Environment environment;
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     private KeycloakClient(Environment environment) {
         this.environment = environment;
-        this.restTemplate = new RestTemplate();
+        this.restClient = RestClient.builder().build();
     }
 
     public static KeycloakClient newKeycloakClient(Environment environment) {
@@ -37,7 +36,7 @@ public final class KeycloakClient {
         map.add("password", fromEnv("testing.keycloak.password"));
 
         String url = format("%s/realms/%s/protocol/openid-connect/token", baseUrl(), realm());
-        return restTemplate.postForObject(url, new HttpEntity<>(map, headers), KeyCloakToken.class);
+        return restClient.post().uri(url).headers(h -> h.addAll(headers)).body(map).retrieve().body(KeyCloakToken.class);
     }
 
     public String baseUrl() {
@@ -49,8 +48,7 @@ public final class KeycloakClient {
     }
 
     public RealmInfo getRealmInfo(String realm) {
-        return restTemplate.getForObject(
-            format("%s/realms/%s", baseUrl(), requireNonNull(realm)),
+        return restClient.get().uri(format("%s/realms/%s", baseUrl(), requireNonNull(realm))).retrieve().body(
             RealmInfo.class);
     }
 

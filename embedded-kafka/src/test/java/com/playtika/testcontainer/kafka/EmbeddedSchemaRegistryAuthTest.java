@@ -3,13 +3,14 @@ package com.playtika.testcontainer.kafka;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Order(5)
 @TestPropertySource(properties = {
@@ -32,11 +33,12 @@ class EmbeddedSchemaRegistryAuthTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     void authenticationSucceeded() {
-        TestRestTemplate restTemplate = new TestRestTemplate(new RestTemplateBuilder()
-                .rootUri(String.format("http://%s:%d", host, port))
-                .basicAuthentication(username, password));
-
-        ResponseEntity<String> response = restTemplate.getForEntity("/", String.class);
+        RestClient restClient = RestClient.builder().baseUrl(String.format("http://%s:%d", host, port)).build();
+        ResponseEntity<String> response = restClient.get()
+                .uri("/")
+                .headers(h -> h.setBasicAuth(username, password))
+                .retrieve()
+                .toEntity(String.class);
 
         assertThat(response)
                 .extracting(ResponseEntity::getStatusCode)
@@ -45,13 +47,10 @@ class EmbeddedSchemaRegistryAuthTest extends AbstractEmbeddedKafkaTest {
 
     @Test
     void authenticationFailed() {
-        TestRestTemplate restTemplate = new TestRestTemplate(new RestTemplateBuilder()
-                .rootUri(String.format("http://%s:%d", host, port)));
+        RestClient restClient = RestClient.builder().baseUrl(String.format("http://%s:%d", host, port)).build();
+        assertThatThrownBy(() ->{
+            ResponseEntity<String> response = restClient.get().uri("/").retrieve().toEntity(String.class);
+        }).isInstanceOf(HttpClientErrorException.Unauthorized.class);
 
-        ResponseEntity<String> response = restTemplate.getForEntity("/", String.class);
-
-        assertThat(response)
-                .extracting(ResponseEntity::getStatusCode)
-                .isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 }
