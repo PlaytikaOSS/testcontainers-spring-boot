@@ -1,5 +1,7 @@
 package com.playtika.testcontainer.toxiproxy;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.model.ContainerNetwork;
 import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import lombok.experimental.UtilityClass;
@@ -11,8 +13,10 @@ import org.testcontainers.toxiproxy.ToxiproxyContainer;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
  * Helper class for creating and managing Toxiproxy proxies using ToxiproxyClient
@@ -24,6 +28,7 @@ public class ToxiproxyHelper {
     private static final int FIRST_PROXIED_PORT = 8666;
     private static final int LAST_PROXIED_PORT = 8866;
     private static final AtomicInteger nextPort = new AtomicInteger(FIRST_PROXIED_PORT);
+    private static final Pattern GENERATED_ALIAS_PATTERN = Pattern.compile("^tc-[1-9A-HJ-NP-Za-km-z]{8}$");
 
     /**
      * Creates a proxy for the given container using ToxiproxyClient.
@@ -104,25 +109,70 @@ public class ToxiproxyHelper {
 
     /**
      * Gets the upstream address for a container.
-     * Uses the container's network aliases if available, otherwise uses the container's network address.
+     * Prefers an explicit (non-generated) network alias so container reuse works reliably
+     * (Testcontainers prepends a new random {@code tc-<8chars>} alias at index 0 on every JVM run,
+     * which does not exist on a reused container's Docker network).
+     * If no explicit alias is configured, inspects the running container's actual Docker network
+     * aliases/IP before falling back to any configured alias.
      */
-    private static String getUpstreamAddress(GenericContainer<?> container, int port) {
-        // Try to get network aliases first
-        var networkAliases = container.getNetworkAliases();
-        if (!networkAliases.isEmpty()) {
-            // Use the first network alias
-            String alias = networkAliases.get(0);
-            if (alias != null && !alias.isEmpty()) {
-                return alias + ":" + port;
+    static String getUpstreamAddress(GenericContainer<?> container, int port) {
+        List<String> networkAliases = container.getNetworkAliases();
+        if (networkAliases != null && !networkAliases.isEmpty()) {
+            String explicitAlias = networkAliases.stream()
+                    .filter(alias -> alias != null && !alias.isBlank() && !isGeneratedAlias(alias))
+                    .findFirst()
+                    .orElse(null);
+            if (explicitAlias != null) {
+                return explicitAlias + ":" + port;
             }
         }
 
-        // Fallback to container network IP
-        return container.getContainerInfo().getNetworkSettings().getNetworks()
-                .values().stream()
-                .findFirst()
-                .map(network -> network.getIpAddress() + ":" + port)
-                .orElseThrow(() -> new IllegalStateException("Cannot determine upstream address for container"));
+        String liveAddress = getLiveContainerAddress(container);
+        if (liveAddress != null) {
+            return liveAddress + ":" + port;
+        }
+
+        if (networkAliases != null) {
+            String fallbackAlias = networkAliases.stream()
+                    .filter(alias -> alias != null && !alias.isBlank())
+                    .findFirst()
+                    .orElse(null);
+            if (fallbackAlias != null) {
+                return fallbackAlias + ":" + port;
+            }
+        }
+
+        throw new IllegalStateException("Cannot determine upstream address for container");
+    }
+
+    private static boolean isGeneratedAlias(String alias) {
+        return GENERATED_ALIAS_PATTERN.matcher(alias).matches();
+    }
+
+    private static String getLiveContainerAddress(GenericContainer<?> container) {
+        InspectContainerResponse containerInfo = container.getContainerInfo();
+        if (containerInfo == null || containerInfo.getNetworkSettings() == null) {
+            return null;
+        }
+        Map<String, ContainerNetwork> networks = containerInfo.getNetworkSettings().getNetworks();
+        if (networks == null || networks.isEmpty()) {
+            return null;
+        }
+        for (ContainerNetwork network : networks.values()) {
+            if (network != null && network.getAliases() != null) {
+                for (String alias : network.getAliases()) {
+                    if (alias != null && !alias.isBlank()) {
+                        return alias;
+                    }
+                }
+            }
+        }
+        for (ContainerNetwork network : networks.values()) {
+            if (network != null && network.getIpAddress() != null && !network.getIpAddress().isBlank()) {
+                return network.getIpAddress();
+            }
+        }
+        return null;
     }
 
     /**
